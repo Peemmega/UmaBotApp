@@ -1,6 +1,5 @@
 import os
 import requests
-import sqlite3
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse, JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,6 +7,8 @@ from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 import uvicorn
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 load_dotenv()
 
@@ -23,8 +24,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- 2. การตั้งค่า Path (Database & Frontend) ---
-# ตรวจสอบว่ารันบน Railway หรือเครื่องตัวเอง
 IS_RAILWAY = os.getenv("RAILWAY_ENVIRONMENT") is not None
 MOUNT_PATH = "/app/data" if IS_RAILWAY else "."
 DB_NAME = os.path.join(MOUNT_PATH, "uma_database.db") # เปลี่ยนชื่อไฟล์ให้ตรงกับใน Volume
@@ -32,10 +31,12 @@ DB_NAME = os.path.join(MOUNT_PATH, "uma_database.db") # เปลี่ยนช
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
-# URL ของหน้า Dashboard (ถ้าอยู่บน Local เป็น localhost ถ้าบน Cloud เป็น domain ของคุณ)
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
-# --- 3. API Routes ---
+DATABASE_URL = os.getenv("DATABASE_URL")
+def get_db_connection():
+    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+
 
 @app.get("/login")
 def login():
@@ -62,22 +63,14 @@ def callback(code: str):
 
 @app.get("/api/bot-stats")
 def get_bot_stats():
-    if not os.path.exists(DB_NAME):
-        return {"error": f"Database file not found at {DB_NAME}", "is_railway": IS_RAILWAY}
-
     try:
-        # เชื่อมต่อแบบ Read-Only (mode=ro) เพื่อความปลอดภัยและลดปัญหาไฟล์ล็อก
-        conn = sqlite3.connect(f"file:{DB_NAME}?mode=ro", uri=True)
-        conn.row_factory = sqlite3.Row 
+        conn = get_db_connection()
         cur = conn.cursor()
-        
-        # เปลี่ยนชื่อตารางตามโครงสร้างจริงของ UmaDnDBot
         cur.execute("SELECT COUNT(*) as total_players FROM users") 
         row = cur.fetchone()
-        
-        total = row["total_players"] if row else 0
+        cur.close()
         conn.close()
-        return {"total_players": total}
+        return {"total_players": row["total_players"] if row else 0}
     except Exception as e:
         return {"error": str(e)}
 
