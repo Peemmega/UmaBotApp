@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-const API_BASE = "https://umabotapp-production-c99a.up.railway.app"
+const APP_BASE = "https://umabotapp-production-c99a.up.railway.app"
+const BOT_API_BASE  = "https://umadndbot-production.up.railway.app";
 
 const mainStats = [
   { key: "speed", label: "Speed", icon: "⚡" },
@@ -184,7 +185,7 @@ function LoginScreen() {
 
         <button
           onClick={() => {
-            window.location.href = `${API_BASE}/login`;
+            window.location.href = `${APP_BASE}/login`;
           }}
           className="rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-8 py-3 text-lg font-bold text-white shadow-lg transition hover:scale-[1.02] hover:shadow-fuchsia-500/30"
         >
@@ -208,39 +209,39 @@ function App() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!username || !userId) return;
+  if (!username || !userId) return;
 
-    const load = async () => {
-      try {
-        setLoading(true);
-        setError("");
+  const load = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-        const [playerRes, summaryRes] = await Promise.all([
-          fetch(`${API_BASE}/player/${userId}`),
-          fetch(`${API_BASE}/api/bot-stats`),
-        ]);
+      const [playerRes, summaryRes] = await Promise.all([
+        fetch(`${BOT_API_BASE}/player/${userId}`),
+        fetch(`${APP_BASE}/api/bot-stats`),
+      ]);
 
-        if (!playerRes.ok) {
-          throw new Error(await playerRes.text());
-        }
-
-        const playerData = await playerRes.json();
-        setPlayer(playerData);
-
-        if (summaryRes.ok) {
-          const summaryData = await summaryRes.json();
-          setStatsSummary(summaryData);
-        }
-      } catch (err) {
-        console.error(err);
-        setError(String(err));
-      } finally {
-        setLoading(false);
+      if (!playerRes.ok) {
+        throw new Error(await playerRes.text());
       }
-    };
 
-    load();
-  }, [username, userId]);
+      const playerData = await playerRes.json();
+      setPlayer(playerData);
+
+      if (summaryRes.ok) {
+        const summaryData = await summaryRes.json();
+        setStatsSummary(summaryData);
+      }
+    } catch (err) {
+      console.error(err);
+      setError(String(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  load();
+}, [username, userId]);
 
   const avatarUrl = useMemo(() => {
     if (!userId || !avatarHash) return null;
