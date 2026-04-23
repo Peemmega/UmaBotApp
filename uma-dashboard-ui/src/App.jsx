@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 
+// --- Configuration ---
 const APP_BASE = "https://umabotapp-production-c99a.up.railway.app";
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
@@ -12,31 +13,9 @@ const mainStats = [
 ];
 
 const aptitudeRows = [
-  {
-    title: "Track",
-    items: [
-      { key: "turf", label: "Turf" },
-      { key: "dirt", label: "Dirt" },
-    ],
-  },
-  {
-    title: "Distance",
-    items: [
-      { key: "sprint", label: "Sprint" },
-      { key: "mile", label: "Mile" },
-      { key: "medium", label: "Medium" },
-      { key: "long", label: "Long" },
-    ],
-  },
-  {
-    title: "Style",
-    items: [
-      { key: "front", label: "Front" },
-      { key: "pace", label: "Pace" },
-      { key: "late", label: "Late" },
-      { key: "end_style", label: "End" },
-    ],
-  },
+  { title: "Track", items: [{ key: "turf", label: "Turf" }, { key: "dirt", label: "Dirt" }] },
+  { title: "Distance", items: [{ key: "sprint", label: "Sprint" }, { key: "mile", label: "Mile" }, { key: "medium", label: "Medium" }, { key: "long", label: "Long" }] },
+  { title: "Style", items: [{ key: "front", label: "Front" }, { key: "pace", label: "Pace" }, { key: "late", label: "Late" }, { key: "end_style", label: "End" }] },
 ];
 
 const zoneBuildMeta = {
@@ -48,17 +27,12 @@ const zoneBuildMeta = {
   self_heal_stamina: { label: "Stamina Heal", icon: "💚", format: (v) => `Heal ${v} STA` },
 };
 
+// --- Helpers ---
 function statLetter(value = 0) {
   const v = Number(value) || 0;
-  if (v >= 9) return "SS";
-  if (v >= 8) return "S";
-  if (v >= 7) return "A";
-  if (v >= 6) return "B";
-  if (v >= 5) return "C";
-  if (v >= 4) return "D";
-  if (v >= 3) return "E";
-  if (v >= 2) return "F";
-  return "G";
+  if (v >= 9) return "SS"; if (v >= 8) return "S"; if (v >= 7) return "A";
+  if (v >= 6) return "B"; if (v >= 5) return "C"; if (v >= 4) return "D";
+  if (v >= 3) return "E"; if (v >= 2) return "F"; return "G";
 }
 
 function gradeColor(letter) {
@@ -76,13 +50,14 @@ function gradeColor(letter) {
   return map[letter] || map.G;
 }
 
+// --- Components ---
 function ResourcePill({ label, value, icon }) {
   return (
-    <div className="rounded-full border border-white/15 bg-white/90 px-4 py-2 text-zinc-800 shadow-lg">
-      <div className="text-xs font-semibold text-zinc-500">{label}</div>
-      <div className="flex items-center gap-2 text-2xl font-bold">
-        <span>{value ?? 0}</span>
-        <span className="text-lg">{icon}</span>
+    <div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-md shadow-lg transition-transform hover:scale-105">
+      <div className="text-xs font-bold text-white/60 uppercase tracking-wider mb-1">{label}</div>
+      <div className="flex items-center justify-between">
+        <span className="text-2xl font-black text-white">{value ?? 0}</span>
+        <span className="text-xl">{icon}</span>
       </div>
     </div>
   );
@@ -90,27 +65,16 @@ function ResourcePill({ label, value, icon }) {
 
 function StatCell({ icon, label, value }) {
   const letter = statLetter(value);
-
   return (
-    <div className="flex flex-col items-center justify-center py-6 px-2 text-zinc-800">
-      {/* วงกลมสเตตัส */}
-      <div
-        className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${gradeColor(
-          letter
-        )} text-2xl font-black shadow-sm mb-3`}
-      >
+    <div className="flex flex-col items-center justify-center p-6 min-w-[120px] transition-colors hover:bg-white/5">
+      <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${gradeColor(letter)} text-2xl font-black shadow-lg mb-3`}>
         {letter}
       </div>
-      
-      {/* รายละเอียด */}
       <div className="text-center">
-        <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
-          <span>{icon}</span>
-          <span>{label}</span>
+        <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-white/40 uppercase">
+          <span>{icon}</span> <span>{label}</span>
         </div>
-        <div className="text-2xl font-extrabold text-zinc-800 leading-none mt-1">
-          {value ?? 0}
-        </div>
+        <div className="text-2xl font-black text-white mt-1">{value ?? 0}</div>
       </div>
     </div>
   );
@@ -119,92 +83,17 @@ function StatCell({ icon, label, value }) {
 function AptitudeItem({ label, value }) {
   const letter = statLetter(value);
   return (
-    <div className="flex items-center justify-between rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-800 shadow-sm">
-      <span className="text-lg font-semibold">{label}</span>
-      <span className="rounded-lg bg-zinc-100 px-3 py-1 text-xl font-extrabold text-zinc-600">
+    <div className="flex items-center justify-between min-w-[150px] rounded-2xl border border-white/10 bg-white/5 px-4 py-4 shadow-sm hover:border-white/30 transition-all">
+      <span className="text-sm font-bold text-white/80">{label}</span>
+      <span className={`rounded-lg px-2 py-1 text-lg font-black bg-gradient-to-br ${gradeColor(letter)}`}>
         {letter}
       </span>
     </div>
   );
 }
 
-function ZoneEffectsGrid({ build }) {
-  const entries = Object.entries(build || {}).filter(([, v]) => Number(v) !== 0);
-
-  if (!entries.length) {
-    return (
-      <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-5 text-white/50">
-        ยังไม่มีการอัปเกรด Zone Build
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-      {entries.map(([key, value]) => {
-        const meta = zoneBuildMeta[key];
-        if (!meta) return null;
-
-        return (
-          <div key={key} className="rounded-2xl border border-white/10 bg-black/20 p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-white">
-              <span>{meta.icon}</span>
-              <span>{meta.label}</span>
-            </div>
-            <div className="mt-2 text-lg font-bold text-cyan-300">
-              {meta.format(Number(value))}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function LoadingScreen() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#1a1333_0%,#090611_40%,#05030a_100%)] text-white">
-      <div className="rounded-3xl border border-white/10 bg-white/5 px-8 py-6 text-center shadow-2xl backdrop-blur-xl">
-        <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-white/20 border-t-fuchsia-400" />
-        <p className="text-white/70">Loading player data...</p>
-      </div>
-    </div>
-  );
-}
-
-function LoginScreen() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,#1a1333_0%,#090611_45%,#05030a_100%)] px-4 text-white">
-      <div className="w-full max-w-xl rounded-[2rem] border border-fuchsia-500/20 bg-white/5 p-10 text-center shadow-2xl backdrop-blur-xl">
-        <div className="mb-4 inline-flex rounded-full border border-fuchsia-400/20 bg-fuchsia-500/10 px-4 py-1 text-sm text-fuchsia-200">
-          UmaDnD Dashboard
-        </div>
-
-        <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white">
-          Connect your
-          <span className="bg-gradient-to-r from-indigo-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
-            {" "}Discord Account
-          </span>
-        </h1>
-
-        <p className="mx-auto mb-8 max-w-md text-white/60">
-          เข้าสู่ระบบเพื่อดูค่าสเตตัส โปรไฟล์ Zone และข้อมูลผู้เล่นของคุณใน UmaDnD
-        </p>
-
-        <button
-          onClick={() => {
-            window.location.href = `${APP_BASE}/login`;
-          }}
-          className="rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-8 py-3 text-lg font-bold text-white shadow-lg transition hover:scale-[1.02] hover:shadow-fuchsia-500/30"
-        >
-          Connect with Discord
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function App() {
+// --- Main App ---
+export default function App() {
   const query = new URLSearchParams(window.location.search);
   const username = query.get("username");
   const userId = query.get("id");
@@ -218,118 +107,59 @@ function App() {
 
   useEffect(() => {
     if (!username || !userId) return;
-
-    const cacheKey = `player:${userId}`;
-    const cached = sessionStorage.getItem(cacheKey);
-
-    if (cached) {
+    const loadData = async () => {
+      setLoading(true);
       try {
-        setPlayer(JSON.parse(cached));
-      } catch {}
-    }
-
-    const loadPlayer = async () => {
-      try {
-        setLoading(true);
-        setError("");
-
-        const res = await fetch(`${BOT_API_BASE}/player/${userId}`);
-        if (!res.ok) throw new Error(`player API failed: ${res.status}`);
-
-        const data = await res.json();
-        setPlayer(data);
-        sessionStorage.setItem(cacheKey, JSON.stringify(data));
-      } catch (err) {
-        console.error(err);
-        setError(String(err));
-      } finally {
-        setLoading(false);
-      }
+        const [pRes, sRes] = await Promise.all([
+          fetch(`${BOT_API_BASE}/player/${userId}`),
+          fetch(`${APP_BASE}/api/bot-stats`)
+        ]);
+        if (pRes.ok) setPlayer(await pRes.json());
+        if (sRes.ok) setStatsSummary(await sRes.json());
+      } catch (err) { setError("Failed to fetch data"); }
+      setLoading(false);
     };
-
-    const loadStats = async () => {
-      try {
-        const res = await fetch(`${APP_BASE}/api/bot-stats`);
-        if (!res.ok) return;
-        const data = await res.json();
-        setStatsSummary(data);
-      } catch (err) {
-        console.error("stats load error:", err);
-      }
-    };
-
-    loadPlayer();
-    loadStats();
+    loadData();
   }, [username, userId]);
 
-  const avatarUrl = useMemo(() => {
-    if (!userId || !avatarHash) return null;
-    return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png`;
-  }, [userId, avatarHash]);
+  const avatarUrl = useMemo(() => userId && avatarHash ? `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png` : null, [userId, avatarHash]);
 
-  if (!username) return <LoginScreen />;
-  if (loading && !player) return <LoadingScreen />;
+  if (!username) return <div className="text-white p-10 text-center">Please login via Discord.</div>;
+  if (loading) return <div className="text-white p-10 text-center animate-pulse tracking-widest uppercase">Loading Stats...</div>;
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#1a1333_0%,#090611_40%,#05030a_100%)] px-3 py-6 text-white md:px-6">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="min-h-screen w-full bg-[#0a0a0c] text-white p-4 md:p-8 font-sans selection:bg-fuchsia-500/30">
+      <div className="mx-auto max-w-6xl space-y-10">
+        
+        {/* Header */}
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
           <div>
-            <div className="text-sm text-white/50">Player Dashboard</div>
-            <h1 className="text-3xl font-extrabold md:text-5xl">UmaDnD Control Panel</h1>
+            <h1 className="text-5xl font-black tracking-tighter bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent italic">
+              UMA DND <span className="text-fuchsia-500 font-normal not-italic text-2xl ml-2">DASHBOARD</span>
+            </h1>
+            <p className="text-white/40 mt-2 font-medium">Player identity and performance metrics</p>
           </div>
-
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => setShowRaw((prev) => !prev)}
-              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 transition hover:bg-white/10"
-            >
-              {showRaw ? "ซ่อน Debug" : "แสดง Debug"}
+          <div className="flex gap-4">
+            <button onClick={() => setShowRaw(!showRaw)} className="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-bold hover:bg-white/10 transition-all">
+              {showRaw ? "HIDE DEBUG" : "SHOW DEBUG"}
             </button>
-
-            <button
-              onClick={() => (window.location.href = "/")}
-              className="rounded-full border border-red-400/30 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-300 transition hover:bg-red-500/20"
-            >
-              Logout
+            <button onClick={() => window.location.href = '/'} className="px-5 py-2 rounded-full bg-red-500/20 border border-red-500/50 text-red-400 text-sm font-bold hover:bg-red-500/40 transition-all">
+              LOGOUT
             </button>
           </div>
-        </div>
+        </header>
 
-        {error && (
-          <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-red-200">
-            {error}
-          </div>
-        )}
-
-        <section className="overflow-hidden rounded-[2rem] border border-lime-500/20 bg-white/90 shadow-2xl">
-          <div className="bg-gradient-to-r from-lime-400 to-lime-500 px-6 py-4">
-            <h2 className="text-center text-3xl font-extrabold text-white md:text-5xl">Profile</h2>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 bg-[linear-gradient(180deg,#bdd7ff_0%,#dce8ff_100%)] px-6 py-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-            <div className="flex flex-col items-center justify-center">
-              {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt="profile"
-                  className="h-48 w-48 rounded-full border-[8px] border-yellow-300 object-cover shadow-xl"
-                />
-              ) : (
-                <div className="flex h-48 w-48 items-center justify-center rounded-full border-[8px] border-yellow-300 bg-white text-6xl shadow-xl">
-                  👤
-                </div>
-              )}
+        {/* Profile Card */}
+        <section className="relative overflow-hidden rounded-[3rem] border border-white/10 bg-gradient-to-br from-white/10 to-transparent p-8 md:p-12 shadow-2xl backdrop-blur-xl">
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
+            <div className="relative">
+              <div className="absolute -inset-2 rounded-full bg-gradient-to-tr from-fuchsia-500 to-cyan-400 blur-lg opacity-40 animate-pulse"></div>
+              <img src={avatarUrl || "https://via.placeholder.com/150"} alt="Avatar" className="relative h-40 w-40 rounded-full border-4 border-white/20 object-cover shadow-2xl" />
             </div>
-
-            <div className="flex flex-col justify-center">
-              <div className="border-b-4 border-white/80 pb-3 text-center lg:text-left">
-                <div className="text-4xl font-extrabold text-amber-900 drop-shadow md:text-6xl">
-                  {player?.username || username}
-                </div>
-              </div>
-
-              <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3">
+            
+            <div className="flex-1 text-center md:text-left">
+              <h2 className="text-6xl font-black tracking-tight text-white mb-6 uppercase">{player?.username || username}</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <ResourcePill label="Uma Coins" value={player?.uma_coin} icon="🪙" />
                 <ResourcePill label="Stats Points" value={player?.stats_point} icon="📈" />
                 <ResourcePill label="Skill Points" value={player?.skill_point} icon="🎯" />
@@ -338,104 +168,95 @@ function App() {
           </div>
         </section>
 
-        // ส่วนของ Main Stats ใน App.js
-        <div className="border-t border-lime-500/20 bg-zinc-100 px-4 py-4 w-full">
-          <div className="flex flex-row flex-nowrap overflow-x-auto rounded-[1.5rem] border border-lime-500/40 bg-white shadow-inner custom-scrollbar" 
-              style={{ display: 'flex', flexDirection: 'row' }}> {/* ใส่ inline style กันไว้เผื่อ CSS หลักแรงกว่า */}
-            {mainStats.map((item) => (
-              <div key={item.key} className="min-w-[130px] flex-1 border-r border-lime-500/10 last:border-r-0">
-                <StatCell
-                  icon={item.icon}
-                  label={item.label}
-                  value={player?.[item.key]}
-                />
-              </div>
-            ))}
+        {/* Main Stats - Horizontal Scroll */}
+        <section className="space-y-4">
+          <h3 className="text-sm font-black text-white/30 uppercase tracking-[0.3em] pl-2">Core Attributes</h3>
+          <div className="overflow-x-auto rounded-[2rem] border border-white/5 bg-white/5 backdrop-blur-md custom-scrollbar">
+            <div className="flex flex-row divide-x divide-white/5">
+              {mainStats.map((item) => (
+                <StatCell key={item.key} icon={item.icon} label={item.label} value={player?.[item.key]} />
+              ))}
+            </div>
           </div>
-        </div>
+        </section>
 
-        // ส่วนของ Aptitude Items
-        <div className="flex flex-row flex-nowrap gap-3 overflow-x-auto pb-2 custom-scrollbar"
-            style={{ display: 'flex', flexDirection: 'row' }}>
-          {row.items.map((item) => (
-            <div key={item.key} className="min-w-[140px] flex-1">
-              <AptitudeItem
-                label={item.label}
-                value={player?.[item.key]}
-              />
+        {/* Aptitudes - The Fixed Part */}
+        <section className="grid grid-cols-1 gap-8">
+          {aptitudeRows.map((row) => (
+            <div key={row.title} className="space-y-4">
+              <div className="flex items-center gap-4">
+                <h3 className="text-sm font-black text-white/30 uppercase tracking-[0.3em] whitespace-nowrap">{row.title} Aptitude</h3>
+                <div className="h-[1px] w-full bg-white/5"></div>
+              </div>
+              <div className="flex flex-row gap-4 overflow-x-auto pb-4 custom-scrollbar">
+                {row.items.map((item) => (
+                  <AptitudeItem key={item.key} label={item.label} value={player?.[item.key]} />
+                ))}
+              </div>
             </div>
           ))}
-        </div>
+        </section>
 
-        <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl">
-            <div className="mb-4">
-              <h3 className="text-2xl font-bold text-cyan-300">🌌 Zone</h3>
-              <p className="mt-1 text-sm text-white/45">
-                แสดงผล Zone และการอัปเกรดตามข้อมูลในบอท
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
+        {/* Zone Section */}
+        <section className="rounded-[3rem] border border-cyan-500/20 bg-cyan-500/5 p-8 md:p-12">
+          <div className="flex flex-col lg:flex-row gap-12">
+            <div className="lg:w-1/3 space-y-6">
+              <div>
+                <span className="text-cyan-400 text-xs font-black tracking-widest uppercase italic">Current Location</span>
+                <h3 className="text-4xl font-black text-white mt-1">{player?.zone?.name || "The Frontier"}</h3>
+              </div>
               <div className="space-y-4">
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <div className="text-xs uppercase tracking-wide text-white/45">Zone Name</div>
-                  <div className="mt-2 text-xl font-bold text-cyan-200">
-                    {player?.zone?.name || "Default Zone"}
-                  </div>
+                <div className="bg-black/40 rounded-2xl p-6 border border-white/5">
+                  <div className="text-xs text-white/40 uppercase font-bold">Zone Points</div>
+                  <div className="text-4xl font-black text-cyan-400 mt-1">{player?.zone?.points ?? 0}</div>
                 </div>
-
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <div className="text-xs uppercase tracking-wide text-white/45">Zone Points</div>
-                  <div className="mt-2 text-3xl font-extrabold text-white">
-                    {player?.zone?.points ?? 0}
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <div className="text-xs uppercase tracking-wide text-white/45">Players</div>
-                  <div className="mt-2 text-3xl font-extrabold text-white">
-                    {statsSummary?.total_players ?? "-"}
-                  </div>
+                <div className="bg-black/40 rounded-2xl p-6 border border-white/5">
+                  <div className="text-xs text-white/40 uppercase font-bold">Total Players in Region</div>
+                  <div className="text-4xl font-black text-white mt-1">{statsSummary?.total_players ?? "--"}</div>
                 </div>
               </div>
-
-              <div className="space-y-4">
-                {player?.zone?.image_url ? (
-                  <img
-                    src={player.zone.image_url}
-                    alt="zone"
-                    className="max-h-72 w-full rounded-2xl border border-white/10 object-cover"
-                  />
-                ) : null}
-
-                <ZoneEffectsGrid build={player?.zone?.build} />
+            </div>
+            <div className="flex-1 space-y-6">
+              {player?.zone?.image_url && (
+                <img src={player.zone.image_url} alt="Zone" className="w-full h-64 object-cover rounded-[2rem] border border-white/10 shadow-2xl" />
+              )}
+              {/* Reuse your existing ZoneEffectsGrid or style it similarly */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 {Object.entries(player?.zone?.build || {}).map(([key, value]) => {
+                   const meta = zoneBuildMeta[key];
+                   if(!meta || Number(value) === 0) return null;
+                   return (
+                    <div key={key} className="bg-white/5 border border-white/10 rounded-2xl p-5 transition-all hover:bg-white/10">
+                      <div className="flex items-center gap-2 text-xs font-bold text-white/50 uppercase">
+                        {meta.icon} {meta.label}
+                      </div>
+                      <div className="text-lg font-black text-cyan-300 mt-2">{meta.format(Number(value))}</div>
+                    </div>
+                   );
+                 })}
               </div>
             </div>
           </div>
-
-          {showRaw && (
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl">
-              <h3 className="mb-4 text-xl font-bold text-fuchsia-300">🔍 Debug / Raw Data</h3>
-              <pre className="overflow-x-auto rounded-2xl border border-white/10 bg-black/30 p-4 text-xs text-green-300">
-                {JSON.stringify(
-                  {
-                    username,
-                    userId,
-                    avatarHash,
-                    player,
-                    statsSummary,
-                  },
-                  null,
-                  2
-                )}
-              </pre>
-            </div>
-          )}
         </section>
+
+        {/* Debug View */}
+        {showRaw && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <pre className="p-8 rounded-[2rem] bg-black border border-white/10 text-emerald-400 text-xs overflow-x-auto shadow-2xl">
+              {JSON.stringify(player, null, 2)}
+            </pre>
+          </div>
+        )}
+
       </div>
+      
+      {/* Custom Scrollbar Styles */}
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar { height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+      `}</style>
     </div>
   );
 }
-
-export default App;
