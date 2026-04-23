@@ -22,13 +22,14 @@ export default function DashboardPage({
 }) {
   return (
     <div
-        className="dashboard-page"
-        style={{
-            backgroundImage: `url(${bgImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-        }}
+    className="dashboard-page"
+    style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+    }}
     >
     <div className="bg-overlay">
 
@@ -36,7 +37,7 @@ export default function DashboardPage({
         <div className="dashboard-topbar">
           <div>
             <div className="dashboard-eyebrow">Player Dashboard</div>
-            <h1 className="dashboard-title">UmaDnD Control Panel</h1>
+            <h1 className="dashboard-title">Uma musume RP</h1>
           </div>
 
           <div className="dashboard-actions">
