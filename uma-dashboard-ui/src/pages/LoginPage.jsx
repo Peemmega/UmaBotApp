@@ -1,3 +1,5 @@
+import bgImage from "../assets/bg/profile-bg.png";
+
 export default function LoginPage({ appBase }) {
   return (
     
