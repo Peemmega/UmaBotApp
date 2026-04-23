@@ -4,6 +4,10 @@ import { mainStats, aptitudeRows } from "../data/dashboardConfig";
 import StatCell from "../components/StatCell";
 import AptitudeItem from "../components/AptitudeItem";
 
+import coinIcon from "../assets/icons/umaCoin.png";
+import statIcon from "../assets/icons/statsPoint.png";
+import skillIcon from "../assets/icons/skillPoint.png";
+
 export default function DashboardPage({
   username,
   userId,
@@ -24,9 +28,9 @@ export default function DashboardPage({
           </div>
 
           <div className="dashboard-actions">
-            <button onClick={() => setShowRaw((prev) => !prev)} className="ghost-btn">
+            {/* <button onClick={() => setShowRaw((prev) => !prev)} className="ghost-btn">
               {showRaw ? "ซ่อน Debug" : "แสดง Debug"}
-            </button>
+            </button> */}
             <button onClick={() => (window.location.href = "/")} className="danger-btn">
               Logout
             </button>
@@ -49,24 +53,29 @@ export default function DashboardPage({
               )}
             </div>
 
-            <div className="profile-info">
-              <div className="profile-name">{player?.username || username}</div>
-              <div className="profile-id">Discord ID: {userId}</div>
+            <div className="profile-header">
+                <h1 className="username">{username}</h1>
 
-              <div className="profile-resources">
-                <div className="resource-pill">
-                  <div className="resource-label">Uma Coins</div>
-                  <div className="resource-value">{player?.uma_coin ?? 0}</div>
+                {/* ⭐ ใส่ตรงนี้ */}
+                <div className="resource-row">
+                    <ResourcePill
+                    icon={coinIcon}
+                    label="Uma Coins"
+                    value={player?.uma_coin}
+                    />
+
+                    <ResourcePill
+                    icon={statIcon}
+                    label="Stats Points"
+                    value={player?.stats_point}
+                    />
+
+                    <ResourcePill
+                    icon={skillIcon}
+                    label="Skill Points"
+                    value={player?.skill_point}
+                    />
                 </div>
-                <div className="resource-pill">
-                  <div className="resource-label">Stats Points</div>
-                  <div className="resource-value">{player?.stats_point ?? 0}</div>
-                </div>
-                <div className="resource-pill">
-                  <div className="resource-label">Skill Points</div>
-                  <div className="resource-value">{player?.skill_point ?? 0}</div>
-                </div>
-              </div>
             </div>
           </div>
         </section>
