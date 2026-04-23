@@ -6,6 +6,8 @@ from fastapi.responses import RedirectResponse, JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
+import uvicorn
+import os
 
 load_dotenv()
 
@@ -93,7 +95,7 @@ if os.path.exists("dist"):
         return FileResponse("dist/index.html")
 
 if __name__ == "__main__":
-    import uvicorn
-    # ใช้พอร์ตจาก Environment Variable ถ้ามี (Railway จะกำหนดพอร์ตให้เอง)
-    port = int(os.getenv("PORT", 8000))
+
+    # Railway จะส่งค่า PORT มาให้ผ่าน Environment Variable
+    port = int(os.getenv("PORT", 8080))
     uvicorn.run(app, host="0.0.0.0", port=port)
