@@ -3,6 +3,7 @@ import "../styles/dashboard.css";
 import { mainStats, aptitudeRows } from "../data/dashboardConfig";
 import StatCell from "../components/StatCell";
 import AptitudeItem from "../components/AptitudeItem";
+import ResourcePill from "../components/ResourcePill";
 
 import coinIcon from "../assets/icons/umaCoin.png";
 import statIcon from "../assets/icons/statsPoint.png";
@@ -28,10 +29,10 @@ export default function DashboardPage({
           </div>
 
           <div className="dashboard-actions">
-            {/* <button onClick={() => setShowRaw((prev) => !prev)} className="ghost-btn">
-              {showRaw ? "ซ่อน Debug" : "แสดง Debug"}
-            </button> */}
-            <button onClick={() => (window.location.href = "/")} className="danger-btn">
+            <button
+              onClick={() => (window.location.href = "/")}
+              className="danger-btn"
+            >
               Logout
             </button>
           </div>
@@ -53,29 +54,27 @@ export default function DashboardPage({
               )}
             </div>
 
-            <div className="profile-header">
-                <h1 className="username">{username}</h1>
+            <div className="profile-info">
+              <div className="profile-name">{player?.username || username}</div>
+              <div className="profile-id">Discord ID: {userId}</div>
 
-                {/* ⭐ ใส่ตรงนี้ */}
-                <div className="resource-row">
-                    <ResourcePill
-                    icon={coinIcon}
-                    label="Uma Coins"
-                    value={player?.uma_coin}
-                    />
-
-                    <ResourcePill
-                    icon={statIcon}
-                    label="Stats Points"
-                    value={player?.stats_point}
-                    />
-
-                    <ResourcePill
-                    icon={skillIcon}
-                    label="Skill Points"
-                    value={player?.skill_point}
-                    />
-                </div>
+              <div className="profile-resources">
+                <ResourcePill
+                  icon={coinIcon}
+                  label="Uma Coins"
+                  value={player?.uma_coin ?? 0}
+                />
+                <ResourcePill
+                  icon={statIcon}
+                  label="Stats Points"
+                  value={player?.stats_point ?? 0}
+                />
+                <ResourcePill
+                  icon={skillIcon}
+                  label="Skill Points"
+                  value={player?.skill_point ?? 0}
+                />
+              </div>
             </div>
           </div>
         </section>
@@ -86,7 +85,7 @@ export default function DashboardPage({
             {mainStats.map((item) => (
               <StatCell
                 key={item.key}
-                icon={item.icon}
+                statKey={item.key}
                 label={item.label}
                 value={player?.[item.key]}
               />

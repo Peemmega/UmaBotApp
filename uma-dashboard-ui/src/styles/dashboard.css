@@ -203,10 +203,6 @@
   border-right: none;
 }
 
-.stat-icon {
-  width: 30px;
-  height: 30px;
-}
 
 .stat-label {
   display: flex;
@@ -281,6 +277,35 @@
   font-weight: 700;
   color: #71717a;
   text-transform: uppercase;
+}
+
+.resource-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(120, 113, 108, 0.15);
+  border-radius: 999px;
+  padding: 14px 18px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+.resource-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.resource-icon {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.stat-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 
 .stat-value {
@@ -397,10 +422,6 @@
   .stat-cell {
     border-right: none;
     border-bottom: 1px solid rgba(132,204,22,0.18);
-  }
-
-  .stat-cell:last-child {
-    border-bottom: none;
   }
 
   .aptitude-row-items {

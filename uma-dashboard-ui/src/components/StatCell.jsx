@@ -7,7 +7,7 @@ import powerIcon from "../assets/icons/Power.png";
 import gutIcon from "../assets/icons/Gut.png";
 import witIcon from "../assets/icons/Wit.png";
 
-const iconMap = {
+const statIcons = {
   speed: speedIcon,
   stamina: staminaIcon,
   power: powerIcon,
@@ -16,16 +16,19 @@ const iconMap = {
 };
 
 export default function StatCell({ statKey, label, value }) {
+  const letter = statLetter(value);
+
   return (
     <div className="stat-cell">
-      
-      <div className="stat-label">
-        <img src={statIcons[statKey]} className="stat-icon" />
-        <span>{label}</span>
+      <div className={`stat-rank ${gradeColor(letter)}`}>{letter}</div>
+
+      <div className="stat-meta">
+        <div className="stat-label">
+          <img src={statIcons[statKey]} alt={label} className="stat-icon" />
+          <span>{label}</span>
+        </div>
+        <div className="stat-value">{value ?? 0}</div>
       </div>
-
-      <div className="stat-value">{value}</div>
-
     </div>
   );
 }
