@@ -27,7 +27,9 @@ export default function App() {
     if (cached) {
       try {
         setPlayer(JSON.parse(cached));
-      } catch {}
+      } catch {
+        sessionStorage.removeItem(cacheKey);
+      }
     }
 
     const loadPlayer = async () => {
@@ -36,12 +38,15 @@ export default function App() {
         setError("");
 
         const res = await fetch(`${BOT_API_BASE}/player/${userId}`);
-        if (!res.ok) throw new Error(`player API failed: ${res.status}`);
+        if (!res.ok) {
+          throw new Error(`player API failed: ${res.status}`);
+        }
 
         const data = await res.json();
         setPlayer(data);
         sessionStorage.setItem(cacheKey, JSON.stringify(data));
       } catch (err) {
+        console.error("loadPlayer error:", err);
         setError(String(err));
       } finally {
         setLoading(false);
@@ -52,9 +57,12 @@ export default function App() {
       try {
         const res = await fetch(`${APP_BASE}/api/bot-stats`);
         if (!res.ok) return;
+
         const data = await res.json();
         setStatsSummary(data);
-      } catch {}
+      } catch (err) {
+        console.error("loadStats error:", err);
+      }
     };
 
     loadPlayer();
@@ -66,8 +74,13 @@ export default function App() {
     return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png`;
   }, [userId, avatarHash]);
 
-  if (!username) return <LoginPage appBase={APP_BASE} />;
-  if (loading && !player) return <LoadingPage />;
+  if (!username) {
+    return <LoginPage appBase={APP_BASE} />;
+  }
+
+  if (loading && !player) {
+    return <LoadingPage />;
+  }
 
   return (
     <DashboardPage
