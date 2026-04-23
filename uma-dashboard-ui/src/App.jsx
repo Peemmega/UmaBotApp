@@ -211,23 +211,29 @@ function App() {
   useEffect(() => {
   if (!username || !userId) return;
 
- const load = async () => {
+const load = async () => {
   try {
     setLoading(true);
     setError("");
 
-    const res = await fetch(`${BOT_API_BASE}/player/${userId}`);
+    const [playerRes, summaryRes] = await Promise.all([
+      fetch(`${BOT_API_BASE}/player/${userId}`),
+      fetch(`${APP_BASE}/api/bot-stats`),
+    ]);
 
-    console.log("status:", res.status);
+    if (!playerRes.ok) {
+      throw new Error(`player API failed: ${playerRes.status}`);
+    }
 
-    const text = await res.text();  // 👈 เปลี่ยนเป็น text ก่อน
-    console.log("raw response:", text);
+    const playerData = await playerRes.json();
+    setPlayer(playerData);
 
-    const data = JSON.parse(text);  // 👈 parse ทีหลัง
-    setPlayer(data);
-
+    if (summaryRes.ok) {
+      const summaryData = await summaryRes.json();
+      setStatsSummary(summaryData);
+    }
   } catch (err) {
-    console.error("LOAD ERROR:", err);
+    console.error(err);
     setError(String(err));
   } finally {
     setLoading(false);
