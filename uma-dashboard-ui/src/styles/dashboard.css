@@ -551,6 +551,155 @@
   color: white;
 }
 
+.edit-stats-points-box {
+  margin-bottom: 16px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 2px solid #d9f99d;
+  padding: 16px;
+  text-align: center;
+}
+
+.edit-stats-points-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: #7c3f15;
+}
+
+.edit-stats-points-value {
+  font-size: 40px;
+  font-weight: 900;
+  color: #166534;
+  line-height: 1.1;
+  margin-top: 4px;
+}
+
+.edit-stats-points-sub {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.edit-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.edit-stat-card {
+  background: white;
+  border: 2px solid #d6d3d1;
+  border-radius: 18px;
+  padding: 16px;
+  text-align: center;
+}
+
+.edit-stat-label {
+  font-size: 18px;
+  font-weight: 900;
+  color: #7c3f15;
+}
+
+.edit-stat-current {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.edit-stat-controls {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.edit-stat-value {
+  min-width: 42px;
+  font-size: 30px;
+  font-weight: 900;
+  color: #1f2937;
+}
+
+.stat-adjust-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  font-size: 22px;
+  font-weight: 900;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.stat-adjust-btn.plus {
+  background: #84cc16;
+}
+
+.stat-adjust-btn.plus:hover:not(:disabled) {
+  background: #65a30d;
+}
+
+.stat-adjust-btn.minus {
+  background: #f59e0b;
+}
+
+.stat-adjust-btn.minus:hover:not(:disabled) {
+  background: #d97706;
+}
+
+.stat-adjust-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.edit-stats-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.secondary-btn,
+.save-stats-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.secondary-btn {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.save-stats-btn {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  color: white;
+}
+
+.save-message {
+  margin-top: 14px;
+  text-align: center;
+  font-weight: 700;
+  color: #166534;
+}
+
+@media (max-width: 1024px) {
+  .edit-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .edit-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* RESPONSIVE */
 
 @media (max-width: 1100px) {

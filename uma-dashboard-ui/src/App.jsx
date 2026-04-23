@@ -80,6 +80,7 @@ export default function App() {
       userId={userId}
       avatarUrl={avatarUrl}
       player={player}
+      setPlayer={setPlayer}
       statsSummary={statsSummary}
       showRaw={showRaw}
       setShowRaw={setShowRaw}
