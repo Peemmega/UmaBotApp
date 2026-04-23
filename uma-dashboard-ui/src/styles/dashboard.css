@@ -494,14 +494,14 @@
   background: #84cc16; /* เขียวแบบ Uma */
   color: white;
 
-  font-size: 24px;
+  font-size: 40px;
   font-weight: 900;
 
-  padding: 16px;
+  padding: 30px;
 }
 
 .login-card > *:not(.login-header) {
-  padding: 24px;
+  padding: 20px;
 }
 
 .login-card {
