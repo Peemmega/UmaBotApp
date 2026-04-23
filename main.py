@@ -18,7 +18,10 @@ app = FastAPI()
 # เพิ่ม URL ของ Railway ของคุณลงใน list นี้เมื่อ deploy แล้ว
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "*"], 
+    allow_origins=[
+        "http://localhost:5173",
+        "https://umabotapp-production-c99a.up.railway.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -66,7 +69,7 @@ def get_bot_stats():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT COUNT(*) as total_players FROM users") 
+        cur.execute("SELECT COUNT(*) as total_players FROM players")
         row = cur.fetchone()
         cur.close()
         conn.close()
