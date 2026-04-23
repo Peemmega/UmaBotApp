@@ -3,7 +3,7 @@
     <div className="login-header">UmaDnD Dashboard</div>
 
     <h1 className="login-title">
-      Connect your <span>Discord Account</span>
+       <span>Connect your Discord Account</span>
     </h1>
 
     <p className="login-subtitle">
