@@ -367,13 +367,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  background: linear-gradient(
-    180deg,
-    #f0f9ff 0%,   /* ฟ้าอ่อน */
-    #e0f2fe 40%,
-    #f0fdf4 100%  /* เขียวอ่อน */
-  );
 }
 
 .login-overlay {
