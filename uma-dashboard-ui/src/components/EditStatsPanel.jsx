@@ -8,7 +8,7 @@ const STAT_KEYS = [
   ["wit", "Wit"],
 ];
 
-export default function EditStatsPanel({ userId, player, onSaved }) {
+export default function EditStatsModal({ userId, player, onClose, onSaved }) {
   const [draftStats, setDraftStats] = useState({
     speed: player?.speed ?? 0,
     stamina: player?.stamina ?? 0,
@@ -19,7 +19,7 @@ export default function EditStatsPanel({ userId, player, onSaved }) {
 
   const [draftPoints, setDraftPoints] = useState(player?.stats_point ?? 0);
   const [saving, setSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState("");
+  const [message, setMessage] = useState("");
 
   const canDecrease = (key) => {
     const base = player?.[key] ?? 0;
@@ -63,13 +63,13 @@ export default function EditStatsPanel({ userId, player, onSaved }) {
       wit: player?.wit ?? 0,
     });
     setDraftPoints(player?.stats_point ?? 0);
-    setSaveMessage("");
+    setMessage("");
   };
 
   const saveStats = async () => {
     try {
       setSaving(true);
-      setSaveMessage("");
+      setMessage("");
 
       const res = await fetch("https://umadndbot-production.up.railway.app/player/stats/update", {
         method: "POST",
@@ -93,7 +93,7 @@ export default function EditStatsPanel({ userId, player, onSaved }) {
         throw new Error(data?.detail || data?.message || "Save failed");
       }
 
-      setSaveMessage("บันทึกสำเร็จ");
+      setMessage("บันทึกสำเร็จ");
 
       onSaved?.({
         ...draftStats,
@@ -101,61 +101,68 @@ export default function EditStatsPanel({ userId, player, onSaved }) {
       });
     } catch (err) {
       console.error(err);
-      setSaveMessage(`บันทึกไม่สำเร็จ: ${String(err)}`);
+      setMessage(`บันทึกไม่สำเร็จ: ${String(err)}`);
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <section className="sheet-card">
-      <div className="section-title">Edit Stats</div>
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="stats-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="stats-modal-header">
+          <h3>อัปเดต Stats</h3>
+          <button className="modal-close-btn" onClick={onClose}>
+            ✕
+          </button>
+        </div>
 
-      <div className="edit-stats-points-box">
-        <div className="edit-stats-points-label">Stats Points คงเหลือ</div>
-        <div className="edit-stats-points-value">{draftPoints}</div>
-        <div className="edit-stats-points-sub">ใช้ไป {spentPoints} แต้ม</div>
-      </div>
+        <div className="edit-stats-points-box">
+          <div className="edit-stats-points-label">Stats Points คงเหลือ</div>
+          <div className="edit-stats-points-value">{draftPoints}</div>
+          <div className="edit-stats-points-sub">ใช้ไป {spentPoints} แต้ม</div>
+        </div>
 
-      <div className="edit-stats-grid">
-        {STAT_KEYS.map(([key, label]) => (
-          <div className="edit-stat-card" key={key}>
-            <div className="edit-stat-label">{label}</div>
-            <div className="edit-stat-current">ปัจจุบัน: {player?.[key] ?? 0}</div>
+        <div className="edit-stats-grid">
+          {STAT_KEYS.map(([key, label]) => (
+            <div className="edit-stat-card" key={key}>
+              <div className="edit-stat-label">{label}</div>
+              <div className="edit-stat-current">ปัจจุบัน: {player?.[key] ?? 0}</div>
 
-            <div className="edit-stat-controls">
-              <button
-                className="stat-adjust-btn minus"
-                onClick={() => decreaseStat(key)}
-                disabled={!canDecrease(key) || saving}
-              >
-                -
-              </button>
+              <div className="edit-stat-controls">
+                <button
+                  className="stat-adjust-btn minus"
+                  onClick={() => decreaseStat(key)}
+                  disabled={!canDecrease(key) || saving}
+                >
+                  -
+                </button>
 
-              <div className="edit-stat-value">{draftStats[key]}</div>
+                <div className="edit-stat-value">{draftStats[key]}</div>
 
-              <button
-                className="stat-adjust-btn plus"
-                onClick={() => increaseStat(key)}
-                disabled={draftPoints <= 0 || saving}
-              >
-                +
-              </button>
+                <button
+                  className="stat-adjust-btn plus"
+                  onClick={() => increaseStat(key)}
+                  disabled={draftPoints <= 0 || saving}
+                >
+                  +
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <div className="edit-stats-actions">
-        <button className="secondary-btn" onClick={resetDraft} disabled={saving}>
-          รีเซ็ต
-        </button>
-        <button className="save-stats-btn" onClick={saveStats} disabled={saving}>
-          {saving ? "Saving..." : "บันทึก"}
-        </button>
-      </div>
+        <div className="edit-stats-actions">
+          <button className="secondary-btn" onClick={resetDraft} disabled={saving}>
+            รีเซ็ต
+          </button>
+          <button className="save-stats-btn" onClick={saveStats} disabled={saving}>
+            {saving ? "Saving..." : "บันทึก"}
+          </button>
+        </div>
 
-      {saveMessage ? <div className="save-message">{saveMessage}</div> : null}
-    </section>
+        {message ? <div className="save-message">{message}</div> : null}
+      </div>
+    </div>
   );
 }
