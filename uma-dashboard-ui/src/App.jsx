@@ -92,20 +92,25 @@ function StatCell({ icon, label, value }) {
   const letter = statLetter(value);
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 text-zinc-800 transition-colors hover:bg-zinc-50">
+    <div className="flex flex-col items-center justify-center py-6 px-2 text-zinc-800">
+      {/* วงกลมสเตตัส */}
       <div
         className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${gradeColor(
           letter
-        )} text-2xl font-extrabold shadow-sm mb-3`}
+        )} text-2xl font-black shadow-sm mb-3`}
       >
         {letter}
       </div>
+      
+      {/* รายละเอียด */}
       <div className="text-center">
-        <div className="flex items-center justify-center gap-1 text-xs font-bold text-zinc-500 uppercase tracking-wider">
+        <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
           <span>{icon}</span>
           <span>{label}</span>
         </div>
-        <div className="text-2xl font-black text-zinc-900">{value ?? 0}</div>
+        <div className="text-2xl font-extrabold text-zinc-800 leading-none mt-1">
+          {value ?? 0}
+        </div>
       </div>
     </div>
   );
@@ -333,9 +338,9 @@ function App() {
           </div>
 
           <div className="border-t border-lime-500/20 bg-zinc-100 px-4 py-4">
-            <div className="flex overflow-x-auto rounded-[1.5rem] border border-lime-500/40 bg-white shadow-inner">
+            <div className="flex flex-nowrap overflow-x-auto rounded-[1.5rem] border border-lime-500/40 bg-white shadow-inner custom-scrollbar">
               {mainStats.map((item) => (
-                <div key={item.key} className="min-w-[140px] flex-1 border-r border-lime-500/20 last:border-r-0">
+                <div key={item.key} className="min-w-[120px] flex-1 border-r border-lime-500/10 last:border-r-0">
                   <StatCell
                     icon={item.icon}
                     label={item.label}
@@ -347,19 +352,18 @@ function App() {
           </div>
         </section>
 
-        <div className="mt-5 space-y-6 rounded-[1.5rem] border border-zinc-200 bg-white p-6">
+        {/* --- ส่วน Aptitude --- */}
+        <div className="mt-5 space-y-6 rounded-[1.5rem] border border-zinc-200 bg-white p-6 shadow-sm">
           {aptitudeRows.map((row) => (
             <div key={row.title} className="flex flex-col gap-3">
-              {/* หัวข้ออยู่บรรทัดบน */}
               <div className="text-xl font-bold text-amber-900 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-amber-500"></span>
+                <div className="h-4 w-1 bg-amber-500 rounded-full"></div>
                 {row.title}
               </div>
               
-              {/* รายการเรียงแนวนอน และเลื่อนได้ถ้าจอมือถือเล็กเกินไป */}
-              <div className="flex flex-nowrap gap-3 overflow-x-auto pb-2">
+              <div className="flex flex-nowrap gap-3 overflow-x-auto pb-2 custom-scrollbar">
                 {row.items.map((item) => (
-                  <div key={item.key} className="min-w-[120px] flex-1">
+                  <div key={item.key} className="min-w-[140px] flex-1">
                     <AptitudeItem
                       label={item.label}
                       value={player?.[item.key]}
