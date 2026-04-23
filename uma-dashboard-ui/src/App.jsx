@@ -92,22 +92,20 @@ function StatCell({ icon, label, value }) {
   const letter = statLetter(value);
 
   return (
-    <div className="grid min-h-[120px] grid-cols-[88px_1fr] items-center border-r border-lime-500/30 bg-white/95 px-4 py-4 last:border-r-0">
-      <div className="text-center">
-        <div
-          className={`mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${gradeColor(
-            letter
-          )} text-3xl font-extrabold shadow-md`}
-        >
-          {letter}
-        </div>
+    <div className="flex flex-col items-center justify-center p-4 text-zinc-800 transition-colors hover:bg-zinc-50">
+      <div
+        className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${gradeColor(
+          letter
+        )} text-2xl font-extrabold shadow-sm mb-3`}
+      >
+        {letter}
       </div>
-      <div className="pl-3 text-zinc-800">
-        <div className="mb-1 flex items-center gap-2 text-lg font-bold">
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-1 text-xs font-bold text-zinc-500 uppercase tracking-wider">
           <span>{icon}</span>
           <span>{label}</span>
         </div>
-        <div className="text-4xl font-extrabold">{value ?? 0}</div>
+        <div className="text-2xl font-black text-zinc-900">{value ?? 0}</div>
       </div>
     </div>
   );
@@ -335,44 +333,43 @@ function App() {
           </div>
 
           <div className="border-t border-lime-500/20 bg-zinc-100 px-4 py-4">
-            <div className="grid grid-cols-1 overflow-hidden rounded-[1.5rem] border border-lime-500/40 bg-white lg:grid-cols-5">
+            <div className="flex overflow-x-auto rounded-[1.5rem] border border-lime-500/40 bg-white shadow-inner">
               {mainStats.map((item) => (
-                <StatCell
-                  key={item.key}
-                  icon={item.icon}
-                  label={item.label}
-                  value={player?.[item.key]}
-                />
-              ))}
-            </div>
-
-            <div className="mt-5 space-y-4 rounded-[1.5rem] border border-zinc-200 bg-white p-5">
-              {aptitudeRows.map((row) => (
-                <div
-                  key={row.title}
-                  className="grid grid-cols-1 gap-3 md:grid-cols-[140px_minmax(0,1fr)] md:items-center"
-                >
-                  <div className="text-2xl font-bold text-amber-900">{row.title}</div>
-                  <div
-                    className={`grid gap-3 ${
-                      row.items.length === 2
-                        ? "grid-cols-2"
-                        : "grid-cols-2 lg:grid-cols-4"
-                    }`}
-                  >
-                    {row.items.map((item) => (
-                      <AptitudeItem
-                        key={item.key}
-                        label={item.label}
-                        value={player?.[item.key]}
-                      />
-                    ))}
-                  </div>
+                <div key={item.key} className="min-w-[140px] flex-1 border-r border-lime-500/20 last:border-r-0">
+                  <StatCell
+                    icon={item.icon}
+                    label={item.label}
+                    value={player?.[item.key]}
+                  />
                 </div>
               ))}
             </div>
           </div>
         </section>
+
+        <div className="mt-5 space-y-6 rounded-[1.5rem] border border-zinc-200 bg-white p-6">
+          {aptitudeRows.map((row) => (
+            <div key={row.title} className="flex flex-col gap-3">
+              {/* หัวข้ออยู่บรรทัดบน */}
+              <div className="text-xl font-bold text-amber-900 flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-amber-500"></span>
+                {row.title}
+              </div>
+              
+              {/* รายการเรียงแนวนอน และเลื่อนได้ถ้าจอมือถือเล็กเกินไป */}
+              <div className="flex flex-nowrap gap-3 overflow-x-auto pb-2">
+                {row.items.map((item) => (
+                  <div key={item.key} className="min-w-[120px] flex-1">
+                    <AptitudeItem
+                      label={item.label}
+                      value={player?.[item.key]}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
 
         <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl">
