@@ -336,41 +336,33 @@ function App() {
               </div>
             </div>
           </div>
-
-          <div className="border-t border-lime-500/20 bg-zinc-100 px-4 py-4">
-            <div className="flex flex-nowrap overflow-x-auto rounded-[1.5rem] border border-lime-500/40 bg-white shadow-inner custom-scrollbar">
-              {mainStats.map((item) => (
-                <div key={item.key} className="min-w-[120px] flex-1 border-r border-lime-500/10 last:border-r-0">
-                  <StatCell
-                    icon={item.icon}
-                    label={item.label}
-                    value={player?.[item.key]}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
         </section>
 
-        {/* --- ส่วน Aptitude --- */}
-        <div className="mt-5 space-y-6 rounded-[1.5rem] border border-zinc-200 bg-white p-6 shadow-sm">
-          {aptitudeRows.map((row) => (
-            <div key={row.title} className="flex flex-col gap-3">
-              <div className="text-xl font-bold text-amber-900 flex items-center gap-2">
-                <div className="h-4 w-1 bg-amber-500 rounded-full"></div>
-                {row.title}
+        // ส่วนของ Main Stats ใน App.js
+        <div className="border-t border-lime-500/20 bg-zinc-100 px-4 py-4 w-full">
+          <div className="flex flex-row flex-nowrap overflow-x-auto rounded-[1.5rem] border border-lime-500/40 bg-white shadow-inner custom-scrollbar" 
+              style={{ display: 'flex', flexDirection: 'row' }}> {/* ใส่ inline style กันไว้เผื่อ CSS หลักแรงกว่า */}
+            {mainStats.map((item) => (
+              <div key={item.key} className="min-w-[130px] flex-1 border-r border-lime-500/10 last:border-r-0">
+                <StatCell
+                  icon={item.icon}
+                  label={item.label}
+                  value={player?.[item.key]}
+                />
               </div>
-              
-              <div className="flex flex-nowrap gap-3 overflow-x-auto pb-2 custom-scrollbar">
-                {row.items.map((item) => (
-                  <div key={item.key} className="min-w-[140px] flex-1">
-                    <AptitudeItem
-                      label={item.label}
-                      value={player?.[item.key]}
-                    />
-                  </div>
-                ))}
-              </div>
+            ))}
+          </div>
+        </div>
+
+        // ส่วนของ Aptitude Items
+        <div className="flex flex-row flex-nowrap gap-3 overflow-x-auto pb-2 custom-scrollbar"
+            style={{ display: 'flex', flexDirection: 'row' }}>
+          {row.items.map((item) => (
+            <div key={item.key} className="min-w-[140px] flex-1">
+              <AptitudeItem
+                label={item.label}
+                value={player?.[item.key]}
+              />
             </div>
           ))}
         </div>

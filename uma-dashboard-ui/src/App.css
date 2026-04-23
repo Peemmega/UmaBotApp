@@ -60,14 +60,9 @@
   display: flex;
   flex-direction: column;
   gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
 
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
+  width: 100%; 
+  flex-grow: 1;
 }
 
 #next-steps {
@@ -154,13 +149,13 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  height: 4px;
+  height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.1);
+  background: rgba(163, 230, 53, 0.5); 
   border-radius: 10px;
 }
 
