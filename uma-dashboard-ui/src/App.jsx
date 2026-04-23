@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-const API_BASE = import.meta.env.VITE_BOT_API;
+const API_BASE = "https://umabotapp-production-c99a.up.railway.app"
 
 const mainStats = [
   { key: "speed", label: "Speed", icon: "⚡" },
