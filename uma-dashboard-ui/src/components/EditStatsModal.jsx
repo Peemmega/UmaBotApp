@@ -53,7 +53,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
   };
 
   const decreaseStat = (key) => {
-    if ((draftStats[key] ?? 0) <= 0) return;
+    if ((draftStats[key] ?? 0) <= 1) return;
 
     setDraftStats((prev) => ({
       ...prev,
@@ -141,7 +141,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
                 <button
                   className="stat-adjust-btn minus"
                   onClick={() => decreaseStat(key)}
-                  disabled={(draftStats[key] ?? 0) <= 0 || saving}
+                  disabled={(draftStats[key] ?? 0) <= 1 || saving}
                 >
                   -
                 </button>
