@@ -8,6 +8,7 @@ import ResourcePill from "../components/ResourcePill";
 import coinIcon from "../assets/icons/umaCoin.png";
 import statIcon from "../assets/icons/statsPoint.png";
 import skillIcon from "../assets/icons/skillPoint.png";
+import bgImage from "../assets/bg/profile-bg.png";
 
 export default function DashboardPage({
   username,
@@ -20,7 +21,17 @@ export default function DashboardPage({
   error,
 }) {
   return (
-    <div className="dashboard-page">
+    <div
+        className="dashboard-page"
+        style={{
+            backgroundImage: `url(${bgImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+        }}
+    >
+    <div className="bg-overlay">
+
       <div className="dashboard-shell">
         <div className="dashboard-topbar">
           <div>
@@ -130,6 +141,7 @@ export default function DashboardPage({
             </div>
           </div>
         </section>
+      </div>
       </div>
     </div>
   );
