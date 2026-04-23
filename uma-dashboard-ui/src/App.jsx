@@ -38,15 +38,13 @@ export default function App() {
         setError("");
 
         const res = await fetch(`${BOT_API_BASE}/player/${userId}`);
-        if (!res.ok) {
-          throw new Error(`player API failed: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`player API failed: ${res.status}`);
 
         const data = await res.json();
         setPlayer(data);
         sessionStorage.setItem(cacheKey, JSON.stringify(data));
       } catch (err) {
-        console.error("loadPlayer error:", err);
+        console.error(err);
         setError(String(err));
       } finally {
         setLoading(false);
@@ -57,11 +55,10 @@ export default function App() {
       try {
         const res = await fetch(`${APP_BASE}/api/bot-stats`);
         if (!res.ok) return;
-
         const data = await res.json();
         setStatsSummary(data);
       } catch (err) {
-        console.error("loadStats error:", err);
+        console.error("stats load error:", err);
       }
     };
 
@@ -74,19 +71,13 @@ export default function App() {
     return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png`;
   }, [userId, avatarHash]);
 
-  if (!username) {
-    return <LoginPage appBase={APP_BASE} />;
-  }
-
-  if (loading && !player) {
-    return <LoadingPage />;
-  }
+  if (!username) return <LoginPage appBase={APP_BASE} />;
+  if (loading && !player) return <LoadingPage />;
 
   return (
     <DashboardPage
       username={username}
       userId={userId}
-      avatarHash={avatarHash}
       avatarUrl={avatarUrl}
       player={player}
       statsSummary={statsSummary}

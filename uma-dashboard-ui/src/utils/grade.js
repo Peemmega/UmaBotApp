@@ -13,15 +13,15 @@ export function statLetter(value = 0) {
 
 export function gradeColor(letter) {
   const map = {
-    SS: "from-yellow-300 to-orange-400 text-zinc-900",
-    S: "from-orange-300 to-amber-400 text-zinc-900",
-    A: "from-emerald-300 to-green-400 text-zinc-900",
-    B: "from-cyan-300 to-sky-400 text-zinc-900",
-    C: "from-lime-300 to-green-300 text-zinc-900",
-    D: "from-sky-300 to-blue-400 text-zinc-900",
-    E: "from-fuchsia-300 to-pink-400 text-zinc-900",
-    F: "from-violet-300 to-purple-400 text-zinc-900",
-    G: "from-zinc-300 to-zinc-400 text-zinc-900",
+    SS: "rank-ss",
+    S: "rank-s",
+    A: "rank-a",
+    B: "rank-b",
+    C: "rank-c",
+    D: "rank-d",
+    E: "rank-e",
+    F: "rank-f",
+    G: "rank-g",
   };
-  return map[letter] || map.G;
+  return map[letter] || "rank-g";
 }
