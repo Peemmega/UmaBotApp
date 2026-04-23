@@ -1,5 +1,5 @@
 # 1. Build React Frontend
-FROM node:18 AS frontend-build
+FROM node:20 AS frontend-build
 WORKDIR /app/frontend
 
 # ก๊อปปี้ package files ก่อนเพื่อใช้ประโยชน์จาก Docker Cache
