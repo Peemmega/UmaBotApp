@@ -17,22 +17,31 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
     wit: player?.wit ?? 0,
   });
 
-  const [draftPoints, setDraftPoints] = useState(player?.stats_point ?? 0);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
-  const canDecrease = (key) => {
-    const base = player?.[key] ?? 0;
-    return (draftStats[key] ?? 0) > base;
-  };
+  const totalPool = useMemo(() => {
+    return (
+      (player?.speed ?? 0) +
+      (player?.stamina ?? 0) +
+      (player?.power ?? 0) +
+      (player?.gut ?? 0) +
+      (player?.wit ?? 0) +
+      (player?.stats_point ?? 0)
+    );
+  }, [player]);
 
-  const spentPoints = useMemo(() => {
-    return STAT_KEYS.reduce((sum, [key]) => {
-      const base = player?.[key] ?? 0;
-      const now = draftStats[key] ?? 0;
-      return sum + Math.max(0, now - base);
-    }, 0);
-  }, [draftStats, player]);
+  const usedPoints = useMemo(() => {
+    return (
+      (draftStats.speed ?? 0) +
+      (draftStats.stamina ?? 0) +
+      (draftStats.power ?? 0) +
+      (draftStats.gut ?? 0) +
+      (draftStats.wit ?? 0)
+    );
+  }, [draftStats]);
+
+  const draftPoints = totalPool - usedPoints;
 
   const increaseStat = (key) => {
     if (draftPoints <= 0) return;
@@ -41,17 +50,15 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
       ...prev,
       [key]: (prev[key] ?? 0) + 1,
     }));
-    setDraftPoints((prev) => prev - 1);
   };
 
   const decreaseStat = (key) => {
-    if (!canDecrease(key)) return;
+    if ((draftStats[key] ?? 0) <= 0) return;
 
     setDraftStats((prev) => ({
       ...prev,
       [key]: (prev[key] ?? 0) - 1,
     }));
-    setDraftPoints((prev) => prev + 1);
   };
 
   const resetDraft = () => {
@@ -62,7 +69,6 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
       gut: player?.gut ?? 0,
       wit: player?.wit ?? 0,
     });
-    setDraftPoints(player?.stats_point ?? 0);
     setMessage("");
   };
 
@@ -120,20 +126,22 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
         <div className="edit-stats-points-box">
           <div className="edit-stats-points-label">Stats Points คงเหลือ</div>
           <div className="edit-stats-points-value">{draftPoints}</div>
-          <div className="edit-stats-points-sub">ใช้ไป {spentPoints} แต้ม</div>
+          <div className="edit-stats-points-sub">
+            แต้มรวมทั้งหมด {totalPool}
+          </div>
         </div>
 
         <div className="edit-stats-grid">
           {STAT_KEYS.map(([key, label]) => (
             <div className="edit-stat-card" key={key}>
               <div className="edit-stat-label">{label}</div>
-              <div className="edit-stat-current">ปัจจุบัน: {player?.[key] ?? 0}</div>
+              <div className="edit-stat-current">เดิม: {player?.[key] ?? 0}</div>
 
               <div className="edit-stat-controls">
                 <button
                   className="stat-adjust-btn minus"
                   onClick={() => decreaseStat(key)}
-                  disabled={!canDecrease(key) || saving}
+                  disabled={(draftStats[key] ?? 0) <= 0 || saving}
                 >
                   -
                 </button>
