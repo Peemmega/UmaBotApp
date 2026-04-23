@@ -1,11 +1,23 @@
 export default function LoginPage({ appBase }) {
   return (
+    
     <div className="login-page">
+        <div
+            className="dashboard-page"
+            style={{
+                backgroundImage: `url(${bgImage})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundAttachment: "fixed",
+            }}
+        ></div>
+        
         <div className="login-card">
-            <div className="login-header">UmaDnD Dashboard</div>
+            <div className="login-header">Uma Bot Dashboard</div>
 
             <h1 className="login-title">
-            Connect your <span>Discord Account</span>
+            เข้าถึง <span>Discord Account</span> ของคุณ
             </h1>
 
             <p className="login-subtitle">
