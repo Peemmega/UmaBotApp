@@ -31,4 +31,4 @@ COPY --from=frontend-build /app/frontend/dist ./dist
 ENV PORT=8080
 
 # สั่งรัน uvicorn โดยดึงค่า Port จาก Environment Variable
-CMD ["sh", "-c", "uvicorn main.py:app --host 0.0.0.0 --port ${PORT}"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT}"]
