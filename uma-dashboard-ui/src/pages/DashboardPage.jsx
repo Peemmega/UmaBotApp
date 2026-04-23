@@ -9,6 +9,7 @@ import EditStatsModal from "../components/EditStatsModal";
 import coinIcon from "../assets/icons/umaCoin.png";
 import statIcon from "../assets/icons/statsPoint.png";
 import skillIcon from "../assets/icons/skillPoint.png";
+import bgImage from "../assets/bg/profile-bg.png";
 
 export default function DashboardPage({
   username,
