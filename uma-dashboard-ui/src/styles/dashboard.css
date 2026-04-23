@@ -456,7 +456,7 @@
 }
 
 .login-button {
-  margin-top: 20px;
+  margin-bottom: 20px;
 
   background: linear-gradient(90deg, #22c55e, #16a34a);
   color: white;
@@ -505,13 +505,7 @@
 }
 
 .login-card {
-  background: linear-gradient(
-    to bottom,
-    #84cc16 0px,
-    #84cc16 80px,
-    #c7d2fe 80px,
-    #c7d2fe 100%
-  );
+  background: linear-gradient(#84cc16 0 80px, #f3f3f3 80px 100%)
 }
 
 
