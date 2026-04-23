@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # ก๊อปปี้ไฟล์จาก Backend
 COPY main.py .
-COPY .env . 
+# COPY .env . 
 
 # ก๊อปปี้ไฟล์ที่ Build เสร็จแล้วจาก React มาไว้ที่โฟลเดอร์ dist
 COPY --from=frontend-build /app/frontend/dist ./dist
