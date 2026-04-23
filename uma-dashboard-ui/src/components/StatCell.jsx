@@ -1,5 +1,5 @@
 import React from "react";
-import { gradeColor, statLetter } from "../utils/grade";
+import { getGradeImage, statLetter } from "../utils/grade";
 
 import speedIcon from "../assets/icons/Speed.png";
 import staminaIcon from "../assets/icons/Stamina.png";
@@ -17,16 +17,17 @@ const statIcons = {
 
 export default function StatCell({ statKey, label, value }) {
   const letter = statLetter(value);
+  const gradeImg = getGradeImage(letter);
 
   return (
     <div className="stat-cell">
-      <div className={`stat-rank ${gradeColor(letter)}`}>{letter}</div>
+      <div className="stat-header">
+        <img src={statIcons[statKey]} alt={label} className="stat-icon" />
+        <span>{label}</span>
+      </div>
 
-      <div className="stat-meta">
-        <div className="stat-label">
-          <img src={statIcons[statKey]} alt={label} className="stat-icon" />
-          <span>{label}</span>
-        </div>
+      <div className="stat-body">
+        <img src={gradeImg} alt={letter} className="grade-image" />
         <div className="stat-value">{value ?? 0}</div>
       </div>
     </div>

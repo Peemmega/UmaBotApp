@@ -80,37 +80,37 @@ export default function DashboardPage({
         </section>
 
         <section className="sheet-card">
-          <div className="section-title">Main Stats</div>
-          <div className="stats-grid">
-            {mainStats.map((item) => (
-              <StatCell
-                key={item.key}
-                statKey={item.key}
-                label={item.label}
-                value={player?.[item.key]}
-              />
-            ))}
-          </div>
+            <div className="section-title">Main Stats</div>
+            <div className="stats-grid">
+                {mainStats.map((item) => (
+                <StatCell
+                    key={item.key}
+                    statKey={item.key}
+                    label={item.label}
+                    value={player?.[item.key]}
+                />
+                ))}
+            </div>
         </section>
 
         <section className="sheet-card">
-          <div className="section-title">Aptitude / Attitude</div>
-          <div className="aptitude-table">
-            {aptitudeRows.map((row) => (
-              <div className="aptitude-row" key={row.title}>
-                <div className="aptitude-row-title">{row.title}</div>
-                <div className="aptitude-row-items">
-                  {row.items.map((item) => (
-                    <AptitudeItem
-                      key={item.key}
-                      label={item.label}
-                      value={player?.[item.key]}
-                    />
-                  ))}
+            <div className="section-title">Aptitude / Attitude</div>
+            <div className="aptitude-table">
+                {aptitudeRows.map((row) => (
+                <div className="aptitude-row" key={row.title}>
+                    <div className="aptitude-row-title">{row.title}</div>
+                    <div className="aptitude-row-items">
+                    {row.items.map((item) => (
+                        <AptitudeItem
+                        key={item.key}
+                        label={item.label}
+                        value={player?.[item.key]}
+                        />
+                    ))}
+                    </div>
                 </div>
-              </div>
-            ))}
-          </div>
+                ))}
+            </div>
         </section>
 
         <section className="sheet-card">

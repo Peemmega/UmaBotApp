@@ -7,7 +7,6 @@ export default function ResourcePill({ icon, label, value }) {
         <div className="resource-label">{label}</div>
         <div className="resource-value">{value ?? 0}</div>
       </div>
-
       <img src={icon} alt={label} className="resource-icon" />
     </div>
   );

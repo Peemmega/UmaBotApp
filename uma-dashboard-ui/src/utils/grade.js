@@ -1,6 +1,14 @@
+import gradeA from "../assets/grades/A.png";
+import gradeB from "../assets/grades/B.png";
+import gradeC from "../assets/grades/C.png";
+import gradeD from "../assets/grades/D.png";
+import gradeE from "../assets/grades/E.png";
+import gradeF from "../assets/grades/F.png";
+import gradeG from "../assets/grades/G.png";
+import gradeS from "../assets/grades/S.png";
+
 export function statLetter(value = 0) {
   const v = Number(value) || 0;
-  if (v >= 9) return "SS";
   if (v >= 8) return "S";
   if (v >= 7) return "A";
   if (v >= 6) return "B";
@@ -11,17 +19,16 @@ export function statLetter(value = 0) {
   return "G";
 }
 
-export function gradeColor(letter) {
+export function getGradeImage(letter) {
   const map = {
-    SS: "rank-ss",
-    S: "rank-s",
-    A: "rank-a",
-    B: "rank-b",
-    C: "rank-c",
-    D: "rank-d",
-    E: "rank-e",
-    F: "rank-f",
-    G: "rank-g",
+    S: gradeS,
+    A: gradeA,
+    B: gradeB,
+    C: gradeC,
+    D: gradeD,
+    E: gradeE,
+    F: gradeF,
+    G: gradeG,
   };
-  return map[letter] || "rank-g";
+  return map[letter] || gradeG;
 }
