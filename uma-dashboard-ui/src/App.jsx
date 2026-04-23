@@ -208,37 +208,37 @@ function App() {
   const [showRaw, setShowRaw] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+useEffect(() => {
   if (!username || !userId) return;
 
-const load = async () => {
-  try {
-    setLoading(true);
-    setError("");
+  const cacheKey = `player:${userId}`;
+  const cached = sessionStorage.getItem(cacheKey);
 
-    const [playerRes, summaryRes] = await Promise.all([
-      fetch(`${BOT_API_BASE}/player/${userId}`),
-      fetch(`${APP_BASE}/api/bot-stats`),
-    ]);
-
-    if (!playerRes.ok) {
-      throw new Error(`player API failed: ${playerRes.status}`);
-    }
-
-    const playerData = await playerRes.json();
-    setPlayer(playerData);
-
-    if (summaryRes.ok) {
-      const summaryData = await summaryRes.json();
-      setStatsSummary(summaryData);
-    }
-  } catch (err) {
-    console.error(err);
-    setError(String(err));
-  } finally {
-    setLoading(false);
+  if (cached) {
+    try {
+      setPlayer(JSON.parse(cached));
+      setLoading(false);
+    } catch {}
   }
-};
+
+  const load = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const res = await fetch(`${BOT_API_BASE}/player/${userId}`);
+      if (!res.ok) throw new Error(`player API failed: ${res.status}`);
+
+      const data = await res.json();
+      setPlayer(data);
+      sessionStorage.setItem(cacheKey, JSON.stringify(data));
+    } catch (err) {
+      console.error(err);
+      setError(String(err));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   load();
 }, [username, userId]);
