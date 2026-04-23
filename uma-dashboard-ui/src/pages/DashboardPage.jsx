@@ -24,6 +24,17 @@ export default function DashboardPage({
   const [isEditStatsOpen, setIsEditStatsOpen] = useState(false);
 
   return (
+<div
+    className="dashboard-page"
+    style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+    }}
+    >
+
     <div className="dashboard-page">
       <div className="dashboard-shell">
         <div className="dashboard-topbar">
@@ -157,6 +168,7 @@ export default function DashboardPage({
           }}
         />
       )}
+    </div>
     </div>
   );
 }
