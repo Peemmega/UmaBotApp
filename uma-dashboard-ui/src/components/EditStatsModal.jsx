@@ -83,7 +83,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: Number(userId),
+          user_id: userId,
           speed: draftStats.speed,
           stamina: draftStats.stamina,
           power: draftStats.power,
