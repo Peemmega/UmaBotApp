@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import LoginPage from "./pages/LoginPage";
 import LoadingPage from "./pages/LoadingPage";
 import DashboardPage from "./pages/DashboardPage";
+import LoadingScreen from "./components/LoadingScreen";
 
 const APP_BASE = "https://umabotapp-production-c99a.up.railway.app";
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
@@ -75,6 +76,7 @@ export default function App() {
   if (loading && !player) return <LoadingPage />;
 
   return (
+    <LoadingScreen />,
     <DashboardPage
       username={username}
       userId={userId}
