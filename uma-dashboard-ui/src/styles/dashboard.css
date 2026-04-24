@@ -722,6 +722,10 @@
   transition: 0.2s ease;
 }
 
+.update-stats-btn.active {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+}
+
 .update-stats-btn:hover {
   transform: translateY(-50%) scale(1.05);
 }

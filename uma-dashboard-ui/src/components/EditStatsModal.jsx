@@ -1,4 +1,18 @@
 import React, { useMemo, useState } from "react";
+import clickSound from "../assets/sounds/click.mp3";
+import closeSound from "../assets/sounds/close.mp3";
+
+const openAudio = new Audio(openSound);
+const closeAudio = new Audio(closeSound);
+
+const playAdded = () => {
+  openAudio.currentTime = 0;
+  openAudio.play().catch(() => {});
+};
+const playReduced = () => {
+  closeAudio.currentTime = 0;
+  closeAudio.play().catch(() => {});
+};
 
 const STAT_KEYS = [
   ["speed", "Speed"],
@@ -132,7 +146,9 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
               <div className="edit-stat-controls">
                 <button
                   className="stat-adjust-btn minus"
-                  onClick={() => decreaseStat(key)}
+                  onClick={() => {
+                    playReduced(); 
+                    decreaseStat(key)}}
                   disabled={(draftStats[key] ?? 0) <= 1 || saving}
                 >
                   -
@@ -142,7 +158,10 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
 
                 <button
                   className="stat-adjust-btn plus"
-                  onClick={() => increaseStat(key)}
+                  onClick={() => {
+                    playAdded(); 
+                    increaseStat(key)
+                  }}
                   disabled={draftPoints <= 0 || saving}
                 >
                   +
@@ -163,10 +182,17 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
        
 
         <div className="edit-stats-actions">
-          <button className="secondary-btn" onClick={resetDraft} disabled={saving}>
+          <button className="secondary-btn" onClick={() => {
+              playReduced(); 
+              resetDraft()
+            }}
+            disabled={saving}>
             รีเซ็ต
           </button>
-          <button className="save-stats-btn" onClick={saveStats} disabled={saving}>
+          <button className="save-stats-btn" onClick={() => {
+              playAdded(); 
+              saveStats()
+            }} disabled={saving}>
             {saving ? "Saving..." : "บันทึก"}
           </button>
         </div>

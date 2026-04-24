@@ -10,6 +10,20 @@ import coinIcon from "../assets/icons/umaCoin.png";
 import statIcon from "../assets/icons/statsPoint.png";
 import skillIcon from "../assets/icons/skillPoint.png";
 import bgImage from "../assets/bg/profile-bg.png";
+import clickSound from "../assets/sounds/click.mp3";
+import closeSound from "../assets/sounds/close.mp3";
+
+const openAudio = new Audio(openSound);
+const closeAudio = new Audio(closeSound);
+
+const playOpen = () => {
+  openAudio.currentTime = 0;
+  openAudio.play().catch(() => {});
+};
+const playClose = () => {
+  closeAudio.currentTime = 0;
+  closeAudio.play().catch(() => {});
+};
 
 export default function DashboardPage({
   username,
@@ -23,7 +37,7 @@ export default function DashboardPage({
   error,
 }) {
   const [isEditStatsOpen, setIsEditStatsOpen] = useState(false);
-
+  
   return (
 <div
     className="dashboard-page"
@@ -103,19 +117,19 @@ export default function DashboardPage({
               <div className="section-title">Main Stats</div>
 
               <button
-                className="update-stats-btn"
-                onClick={() => setIsEditStatsOpen(true)}
+                className={`update-stats-btn ${isEditStatsOpen ? "active" : ""}`}
+                onClick={() => {
+                  if (isEditStatsOpen) {
+                    closeAudio();
+                  } else {
+                    playOpen(); 
+                  }
+                  setIsEditStatsOpen((prev) => !prev);
+                }}
               >
-                อัปเดต Stats
+                {isEditStatsOpen ? "ปิดอัปเดต Stats" : "อัปเดต Stats"}
               </button>
             </div>
-            
-            <button
-              className="update-stats-btn"
-              onClick={() => setIsEditStatsOpen(true)}
-            >
-              อัปเดต Stats
-            </button>
           </div>
 
           <div className="stats-grid">
