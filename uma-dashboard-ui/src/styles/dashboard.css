@@ -1,56 +1,33 @@
-* {
-  box-sizing: border-box;
-}
-
-html,
-body,
 #root {
+  min-height: 100vh;
+  max-width: none;
   width: 100%;
-  min-height: 100%;
   margin: 0;
+  padding: 0;
+  text-align: initial;
 }
 
 .dashboard-page {
-  width: 100%;
   min-height: 100vh;
-  padding: 32px 16px 64px;
-  overflow-x: hidden;
+  /* background: radial-gradient(circle at top, #1a1333 0%, #090611 40%, #05030a 100%); */
+  color: white;
+  padding: 24px 16px 40px;
 }
 
 .dashboard-shell {
-  width: min(100%, 980px);
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
+  max-width: 1280px;
+  margin: 0 20%;
+  display: grid;
   gap: 24px;
 }
 
 .dashboard-topbar {
-  width: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: end;
   gap: 16px;
+  flex-wrap: wrap;
 }
-
-.profile-card,
-.sheet-card {
-  width: 100%;
-  max-width: 100%;
-}
-
-.profile-body {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 28px;
-}
-
-.profile-resources {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-
 
 .dashboard-eyebrow {
   font-size: 14px;
@@ -155,6 +132,14 @@ body,
   color: white;
 }
 
+.profile-body {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 28px;
+  padding: 26px 30px;
+  background: #ececec;
+}
+
 .profile-avatar-wrap {
   display: flex;
   align-items: center;
@@ -205,6 +190,13 @@ body,
   text-align: center;
   color: rgba(66, 33, 11, 0.65);
   font-size: 14px;
+}
+
+.profile-resources {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
 }
 
 /* RESOURCE PILL */
