@@ -120,7 +120,7 @@ export default function DashboardPage({
                 className={`update-stats-btn ${isEditStatsOpen ? "active" : ""}`}
                 onClick={() => {
                   if (isEditStatsOpen) {
-                    closeAudio();
+                    playClose();
                   } else {
                     playOpen(); 
                   }
