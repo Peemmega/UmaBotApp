@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import LoginPage from "./pages/LoginPage";
-import LoadingPage from "./pages/LoadingPage";
 import DashboardPage from "./pages/DashboardPage";
 import LoadingScreen from "./components/LoadingScreen";
 
@@ -13,7 +12,7 @@ export default function App() {
   const userId = query.get("id");
   const avatarHash = query.get("avatar");
 
-  const [appReady, setAppReady] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
   const [player, setPlayer] = useState(null);
   const [statsSummary, setStatsSummary] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -21,8 +20,16 @@ export default function App() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowIntro(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     if (!username || !userId) return;
-    
+
     const cacheKey = `player:${userId}`;
     const cached = sessionStorage.getItem(cacheKey);
 
@@ -68,42 +75,30 @@ export default function App() {
     loadStats();
   }, [username, userId]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAppReady(true);
-    }, 1200);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   const avatarUrl = useMemo(() => {
     if (!userId || !avatarHash) return null;
     return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png`;
   }, [userId, avatarHash]);
 
-  if (!appReady) {
-    return <LoadingScreen />;
-  }
-
-  if (!username) {
-    return <LoginPage appBase={APP_BASE} />;
-  }
-
-  if (loading && !player) {
-    return <LoadingPage />;
-  }
-
   return (
-    <DashboardPage
-      username={username}
-      userId={userId}
-      avatarUrl={avatarUrl}
-      player={player}
-      setPlayer={setPlayer}
-      statsSummary={statsSummary}
-      showRaw={showRaw}
-      setShowRaw={setShowRaw}
-      error={error}
-    />
+    <>
+      {!username ? (
+        <LoginPage appBase={APP_BASE} />
+      ) : (
+        <DashboardPage
+          username={username}
+          userId={userId}
+          avatarUrl={avatarUrl}
+          player={player}
+          setPlayer={setPlayer}
+          statsSummary={statsSummary}
+          showRaw={showRaw}
+          setShowRaw={setShowRaw}
+          error={error}
+        />
+      )}
+
+      {showIntro && <LoadingScreen />}
+    </>
   );
 }

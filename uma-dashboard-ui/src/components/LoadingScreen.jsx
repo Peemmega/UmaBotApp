@@ -1,20 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import icon from "../assets/icons/uma-icon.gif";
 import "../styles/loading.css";
 
 export default function LoadingScreen() {
-  const [hide, setHide] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setHide(true);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
-    <div className={`loading-screen ${hide ? "hide" : ""}`}>
+    <div className="loading-screen">
       <div className="loading-card">
         <img src={icon} className="loading-icon" />
         <div className="loading-title">Tracen Academy RP</div>

@@ -5,10 +5,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(circle at top, rgba(255,255,255,0.95), rgba(240,248,232,0.96)),
-    linear-gradient(180deg, #ffffff, #eaffd8);
-  transition: opacity 450ms ease, visibility 450ms ease;
+  background: rgba(245, 255, 240, 0.96);
+  animation: loadingFadeOut 650ms ease forwards;
+  animation-delay: 1.6s;
+}
+
+@keyframes loadingFadeOut {
+  from {
+    opacity: 1;
+    visibility: visible;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
 }
 
 .loading-screen.hide {
