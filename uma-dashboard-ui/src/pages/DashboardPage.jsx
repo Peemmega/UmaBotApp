@@ -46,13 +46,6 @@ export default function DashboardPage({
 
           <div className="dashboard-actions">
             <button
-              className="ghost-btn"
-              onClick={() => setIsEditStatsOpen(true)}
-            >
-              อัปเดต Stats
-            </button>
-
-            <button
               onClick={() => (window.location.href = "/")}
               className="danger-btn"
             >
@@ -102,8 +95,20 @@ export default function DashboardPage({
           </div>
         </section>
 
-        <section className="sheet-card">
-          <div className="section-title">Main Stats</div>
+        <section className="sheet-card main-stats-card">
+          <div className="section-header-row">
+            <div></div>
+
+            <div className="section-title">Main Stats</div>
+
+            <button
+              className="update-stats-btn"
+              onClick={() => setIsEditStatsOpen(true)}
+            >
+              อัปเดต Stats
+            </button>
+          </div>
+
           <div className="stats-grid">
             {mainStats.map((item) => (
               <StatCell
@@ -114,6 +119,21 @@ export default function DashboardPage({
               />
             ))}
           </div>
+          
+          {isEditStatsOpen && (
+            <EditStatsModal
+              userId={userId}
+              player={player}
+              onClose={() => setIsEditStatsOpen(false)}
+              onSaved={(updated) => {
+                setPlayer((prev) => ({
+                  ...prev,
+                  ...updated,
+                }));
+                setIsEditStatsOpen(false);
+              }}
+            />
+          )}
         </section>
 
         <section className="sheet-card">
@@ -155,20 +175,7 @@ export default function DashboardPage({
         </section>
       </div>
 
-      {isEditStatsOpen && (
-        <EditStatsModal
-          userId={userId}
-          player={player}
-          onClose={() => setIsEditStatsOpen(false)}
-          onSaved={(updated) => {
-            setPlayer((prev) => ({
-              ...prev,
-              ...updated,
-            }));
-            setIsEditStatsOpen(false);
-          }}
-        />
-      )}
+      
     </div>
     </div>
   );

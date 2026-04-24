@@ -115,7 +115,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="stats-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="stats-modal stats-modal-wide" onClick={(e) => e.stopPropagation()}>
         <div className="stats-modal-header">
           <h3>อัปเดต Stats</h3>
           <button className="modal-close-btn" onClick={onClose}>
