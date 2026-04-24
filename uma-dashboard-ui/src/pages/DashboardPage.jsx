@@ -13,7 +13,7 @@ import bgImage from "../assets/bg/profile-bg.png";
 import clickSound from "../assets/sounds/click.mp3";
 import closeSound from "../assets/sounds/close.mp3";
 
-const openAudio = new Audio(openSound);
+const openAudio = new Audio(clickSound);
 const closeAudio = new Audio(closeSound);
 
 const playOpen = () => {
