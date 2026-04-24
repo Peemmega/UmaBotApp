@@ -72,21 +72,37 @@ export default function App() {
     return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png`;
   }, [userId, avatarHash]);
 
-  if (!username) return <LoginPage appBase={APP_BASE} />;
-  if (loading && !player) return <LoadingPage />;
+  if (!username) {
+    return (
+      <>
+        <LoadingScreen />
+        <LoginPage appBase={APP_BASE} />
+      </>
+    );
+  }
+  if (loading && !player) {
+    return (
+      <>
+        <LoadingScreen />
+        <LoadingPage />
+      </>
+    );
+  }
 
   return (
-    <LoadingScreen />,
-    <DashboardPage
-      username={username}
-      userId={userId}
-      avatarUrl={avatarUrl}
-      player={player}
-      setPlayer={setPlayer}
-      statsSummary={statsSummary}
-      showRaw={showRaw}
-      setShowRaw={setShowRaw}
-      error={error}
-    />
+    <>
+      <LoadingScreen />
+      <DashboardPage
+        username={username}
+        userId={userId}
+        avatarUrl={avatarUrl}
+        player={player}
+        setPlayer={setPlayer}
+        statsSummary={statsSummary}
+        showRaw={showRaw}
+        setShowRaw={setShowRaw}
+        error={error}
+      />
+    </>
   );
 }
