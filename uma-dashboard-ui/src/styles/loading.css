@@ -2,24 +2,17 @@
   position: fixed;
   inset: 0;
   z-index: 99999;
+
+  width: 100vw;
+  height: 100vh;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(245, 255, 240, 0.96);
-  animation: loadingFadeOut 650ms ease forwards;
-  animation-delay: 1.6s;
-}
 
-@keyframes loadingFadeOut {
-  from {
-    opacity: 1;
-    visibility: visible;
-  }
-  to {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
+  background: linear-gradient(180deg, #f7fff2 0%, #eaffdc 100%);
+  animation: loadingFadeOut 650ms ease forwards;
+  animation-delay: 2.2s;
 }
 
 .loading-screen.hide {
@@ -29,33 +22,40 @@
 }
 
 .loading-card {
-  width: 100%;
-  /* padding: 34px 30px; */
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 3px solid #8dd62c;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
-  text-align: center;
-  animation: loadingPop 500ms ease-out;
+  width: 100vw;
+  height: 100vh;
+
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.92), rgba(235, 255, 220, 0.96)),
+    linear-gradient(180deg, #ffffff, #eaffd8);
 }
 
 .loading-icon {
-  width: 96px;
-  height: 96px;
+  width: clamp(90px, 14vw, 180px);
+  height: clamp(90px, 14vw, 180px);
   object-fit: contain;
-  animation: loadingBounce 900ms ease-in-out infinite;
 }
 
 .loading-title {
-  margin-top: 14px;
-  font-size: 28px;
+  margin-top: 20px;
+  font-size: clamp(28px, 5vw, 64px);
   font-weight: 900;
   color: #7c3f15;
 }
 
 .loading-bar {
+  width: min(70vw, 720px);
   height: 16px;
-  margin-top: 22px;
+  margin-top: 28px;
   overflow: hidden;
   border-radius: 999px;
   background: #e5e7eb;
@@ -64,15 +64,16 @@
 
 .loading-bar-fill {
   height: 100%;
-  width: 45%;
+  width: 35%;
   border-radius: 999px;
   background: linear-gradient(90deg, #8dd62c, #68b900);
   animation: loadingMove 1s ease-in-out infinite;
 }
 
 .loading-text {
-  margin-top: 12px;
+  margin-top: 14px;
   color: #84461b;
+  font-size: 18px;
   font-weight: 900;
 }
 
@@ -96,11 +97,24 @@
   }
 }
 
+
+@keyframes loadingFadeOut {
+  from {
+    opacity: 1;
+    visibility: visible;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
 @keyframes loadingMove {
   0% {
     transform: translateX(-120%);
   }
   100% {
-    transform: translateX(260%);
+    transform: translateX(300%);
   }
 }
