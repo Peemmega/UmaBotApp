@@ -99,8 +99,17 @@ export default function DashboardPage({
           <div className="section-header-row">
             <div></div>
 
-            <div className="section-title">Main Stats</div>
+            <div className="main-stats-header">
+              <div className="section-title">Main Stats</div>
 
+              <button
+                className="update-stats-btn"
+                onClick={() => setIsEditStatsOpen(true)}
+              >
+                อัปเดต Stats
+              </button>
+            </div>
+            
             <button
               className="update-stats-btn"
               onClick={() => setIsEditStatsOpen(true)}
@@ -119,7 +128,7 @@ export default function DashboardPage({
               />
             ))}
           </div>
-          
+
           {isEditStatsOpen && (
             <EditStatsModal
               userId={userId}

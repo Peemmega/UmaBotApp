@@ -117,25 +117,17 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="stats-modal stats-modal-wide" onClick={(e) => e.stopPropagation()}>
         <div className="stats-modal-header">
-          <h3>อัปเดต Stats</h3>
+          {/* <h3>อัปเดต Stats</h3> */}
           <button className="modal-close-btn" onClick={onClose}>
             ✕
           </button>
         </div>
 
-        <div className="edit-stats-points-box">
-          <div className="edit-stats-points-label">Stats Points คงเหลือ</div>
-          <div className="edit-stats-points-value">{draftPoints}</div>
-          <div className="edit-stats-points-sub">
-            แต้มรวมทั้งหมด {totalPool}
-          </div>
-        </div>
-
         <div className="edit-stats-grid">
           {STAT_KEYS.map(([key, label]) => (
             <div className="edit-stat-card" key={key}>
-              <div className="edit-stat-label">{label}</div>
-              <div className="edit-stat-current">เดิม: {player?.[key] ?? 0}</div>
+              {/* <div className="edit-stat-label">{label}</div> */}
+              {/* <div className="edit-stat-current">เดิม: {player?.[key] ?? 0}</div> */}
 
               <div className="edit-stat-controls">
                 <button
@@ -159,6 +151,16 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
             </div>
           ))}
         </div>
+
+        <div className="edit-stats-points-box">
+          <div className="edit-stats-points-label">Stats Points คงเหลือ</div>
+          <div className="edit-stats-points-value">{draftPoints}</div>
+          <div className="edit-stats-points-sub">
+            แต้มรวมทั้งหมด {totalPool}
+          </div>
+        </div>
+
+       
 
         <div className="edit-stats-actions">
           <button className="secondary-btn" onClick={resetDraft} disabled={saving}>
