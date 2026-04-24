@@ -593,6 +593,39 @@ body {
   margin-top: 18px;
 }
 
+.stat-adjust-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  font-size: 22px;
+  font-weight: 900;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.stat-adjust-btn.plus {
+  background: #84cc16;
+}
+
+.stat-adjust-btn.plus:hover:not(:disabled) {
+  background: #65a30d;
+}
+
+.stat-adjust-btn.minus {
+  background: #f59e0b;
+}
+
+.stat-adjust-btn.minus:hover:not(:disabled) {
+  background: #d97706;
+}
+
+.stat-adjust-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 @media (max-width: 1024px) {
   .edit-stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
