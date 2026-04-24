@@ -62,8 +62,8 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
     );
   }, [originalBuild]);
 
-  const totalPool = 5;
-  const remaining = totalPool - usedPoints;
+  const MAX_ZONE_POINT = 5;
+  const remaining = MAX_ZONE_POINT - usedPoints;
 
   const closeModal = () => {
     playSound("close");
@@ -108,7 +108,6 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
         user_id: String(userId),
         name: zoneName.trim(),
         image_url: imageUrl,
-        points: remaining,
         build: draft,
       };
 
