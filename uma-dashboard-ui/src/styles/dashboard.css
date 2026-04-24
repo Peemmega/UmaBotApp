@@ -732,8 +732,8 @@ body {
 }
 
 .rename-btn img {
-  width: 34px;
-  height: 34px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
