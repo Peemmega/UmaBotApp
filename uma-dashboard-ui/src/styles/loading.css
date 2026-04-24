@@ -2,17 +2,15 @@
   position: fixed;
   inset: 0;
   z-index: 99999;
-
   width: 100vw;
   height: 100vh;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: linear-gradient(180deg, #f7fff2 0%, #eaffdc 100%);
-  animation: loadingFadeOut 650ms ease forwards;
-  animation-delay: 2.2s;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 650ms ease, visibility 650ms ease;
 }
 
 .loading-screen.hide {

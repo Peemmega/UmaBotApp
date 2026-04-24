@@ -98,7 +98,9 @@ export default function App() {
         />
       )}
 
-      {showIntro && <LoadingScreen />}
+      {showIntro && (
+        <LoadingScreen onFinished={() => setShowIntro(false)} />
+      )}
     </>
   );
 }
