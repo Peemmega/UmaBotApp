@@ -104,10 +104,17 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
       setSaving(true);
       playSound("click");
 
+      const cleanImageUrl = imageUrl.trim();
+
+      if (cleanImageUrl && !/^https?:\/\//i.test(cleanImageUrl)) {
+        alert("กรุณาใส่ URL รูปที่ขึ้นต้นด้วย http:// หรือ https://");
+        return;
+      }
+
       const payload = {
         user_id: String(userId),
         name: zoneName.trim(),
-        image_url: imageUrl,
+        image_url: cleanImageUrl,
         build: draft,
       };
 
@@ -155,12 +162,14 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
             ) : (
               <div className="zone-image-placeholder">Zone Image</div>
             )}
-
-            <label className="zone-edit-image-btn">
-              <img src={editIcon} alt="edit image" />
-              <input type="file" accept="image/*" hidden onChange={handleImageUpload} />
-            </label>
           </div>
+
+          <input
+              className="zone-image-url-input"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="วาง Image URL เช่น https://..."
+          />  
 
           <div className="zone-edit-name-wrap">
             {editingName ? (

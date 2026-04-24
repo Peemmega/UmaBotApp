@@ -1046,6 +1046,22 @@ body {
   font-weight: 900;
 }
 
+.zone-image-url-input {
+  width: 100%;
+  margin: 10px 0 14px;
+  border: 2px solid #d6d3d1;
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #815758;
+  font-size: 15px;
+  font-weight: 800;
+  outline: none;
+}
+
+.zone-image-url-input:focus {
+  border-color: #8dd62c;
+  box-shadow: 0 0 0 4px rgba(141, 214, 44, 0.2);
+}
 
 .zone-adjust-btn:disabled {
   opacity: 0.45;
