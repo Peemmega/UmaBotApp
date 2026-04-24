@@ -24,7 +24,7 @@ export default function RenameModal({ userId, currentName, onClose, onSave }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: Number(userId),
+          user_id: String(userId),
           username: trimmed,
         }),
       });
