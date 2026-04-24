@@ -156,13 +156,13 @@ body {
 }
 
 .resource-label {
-  font-size: clamp(16px, 2vw, 22px);
+  font-size: clamp(12px, 2vw, 18px);
   color: #7c3f15;
   font-weight: 900;
 }
 
 .resource-value {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 900;
   color: #7c3f15;
 }
@@ -268,8 +268,8 @@ body {
 
 .grade-image {
   width: clamp(48px, 6vw, 64px);
-  height: clamp(48px, 6vw, 64px);
-  object-fit: contain;
+  width: auto;  
+  object-fit: contain; 
 }
 
 .stat-value {

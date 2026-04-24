@@ -26,7 +26,10 @@ export default function MailboxModal({ userId, onClose }) {
   const closeModal = () => {
     playSound("close");
     setClosing(true);
-    setTimeout(onClose, 180);
+
+    setTimeout(() => {
+      onClose();
+    }, 180); 
   };
 
   const loadMailbox = async () => {
