@@ -19,18 +19,18 @@ export default function LoginPage({ appBase }) {
             <div className="login-badge">Tracen Academy RP</div>
 
             <h1 className="login-title">
-              Connect your <span>Discord Account</span>
+              เชื่อมต่อกับ <span>Discord Account</span> ของคุณ
             </h1>
 
             <p className="login-subtitle">
-              เข้าสู่ระบบเพื่อดูโปรไฟล์ ค่าสเตตัส Aptitude และ Mailbox ของคุณ
+              เข้าสู่ระบบเพื่อดูโปรไฟล์ อัพเกรดค่าสเตตัส Aptitude และ Mailbox ของคุณ
             </p>
 
-            <div className="login-features">
+            {/* <div className="login-features">
               <div className="login-feature">📊 Profile & Stats</div>
               <div className="login-feature">🏇 Aptitude</div>
               <div className="login-feature">📬 Mailbox</div>
-            </div>
+            </div> */}
 
             <button
               onClick={() => {
@@ -40,7 +40,7 @@ export default function LoginPage({ appBase }) {
               className="login-button"
             >
               <img src={discordIcon} className="login-button-icon" />
-              Connect with Discord
+              Login ด้วย Discord
             </button>
 
             <div className="login-footer">
