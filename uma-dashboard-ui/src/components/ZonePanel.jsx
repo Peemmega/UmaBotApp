@@ -3,7 +3,7 @@ import ZoneEditModal from "./ZoneEditModal";
 import editIcon from "../assets/icons/change_icon.png";
 import { playSound } from "../utils/soundManager";
 
-export default function ZonePanel({ player, onSaved }) {
+export default function ZonePanel({ userId, player, onSaved }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   const zone = player?.zone || {};
