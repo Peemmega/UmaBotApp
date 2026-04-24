@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { playSound } from "../utils/soundManager";
+
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
-export default function RenameModal({ currentName, onClose, onSave }) {
+export default function RenameModal({ userId, currentName, onClose, onSave }) {
   const [name, setName] = useState(currentName || "");
   const [closing, setClosing] = useState(false);
 
@@ -12,18 +13,16 @@ export default function RenameModal({ currentName, onClose, onSave }) {
     setTimeout(onClose, 180);
   };
 
-const saveName = async () => {
-  const trimmed = name.trim();
-  if (!trimmed) return;
+  const saveName = async () => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
 
     try {
       playSound("click");
 
       const res = await fetch(`${BOT_API_BASE}/player/username/update`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id: Number(userId),
           username: trimmed,
@@ -76,19 +75,6 @@ const saveName = async () => {
           </button>
         </div>
       </div>
-
-      <RenameModal
-        userId={userId}
-        currentName={player?.username || username}
-        onClose={() => setIsRenameOpen(false)}
-        onSave={(newName) => {
-          setPlayer((prev) => ({
-            ...prev,
-            username: newName,
-          }));
-          setIsRenameOpen(false);
-        }}
-      />
     </div>
   );
 }

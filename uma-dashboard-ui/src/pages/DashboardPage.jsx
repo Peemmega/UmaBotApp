@@ -276,8 +276,10 @@ export default function DashboardPage({
       />
     )}
 
+
     {isRenameOpen && (
       <RenameModal
+        userId={userId}
         currentName={player?.username || username}
         onClose={() => setIsRenameOpen(false)}
         onSave={(newName) => {
