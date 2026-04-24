@@ -29,8 +29,8 @@
 }
 
 .loading-card {
-  width: min(88vw, 420px);
-  padding: 34px 30px;
+  width: 100%;
+  /* padding: 34px 30px; */
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.9);
   border: 3px solid #8dd62c;
