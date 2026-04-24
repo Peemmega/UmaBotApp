@@ -513,3 +513,94 @@ body {
     height: 44px;
   }
 }
+
+.edit-stats-points-box {
+  margin-bottom: 16px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 2px solid #d9f99d;
+  padding: 16px;
+  margin-top: 16px;
+  text-align: center;
+}
+
+.edit-stats-points-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: #7c3f15;
+}
+
+.edit-stats-points-value {
+  font-size: 40px;
+  font-weight: 900;
+  color: #166534;
+  line-height: 1.1;
+  margin-top: 4px;
+}
+
+.edit-stats-points-sub {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.edit-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.edit-stat-card {
+  background: white;
+  border: 2px solid #d6d3d1;
+  border-radius: 18px;
+  padding: 16px;
+  text-align: center;
+}
+
+.edit-stat-label {
+  font-size: 18px;
+  font-weight: 900;
+  color: #7c3f15;
+}
+
+.edit-stat-current {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.edit-stat-controls {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.edit-stat-value {
+  min-width: 42px;
+  font-size: 30px;
+  font-weight: 900;
+  color: #1f2937;
+}
+
+.edit-stats-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+@media (max-width: 1024px) {
+  .edit-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .edit-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
