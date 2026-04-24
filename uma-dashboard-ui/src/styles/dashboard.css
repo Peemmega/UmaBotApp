@@ -839,8 +839,8 @@ body {
   background: #f3f3f3;
 }
 
-.rename-secondary-btn,
-.rename-save-btn {
+.white-btn,
+.green-btn {
   min-width: 140px;
   border-radius: 16px;
   padding: 12px 22px;
@@ -849,13 +849,13 @@ body {
   cursor: pointer;
 }
 
-.rename-secondary-btn {
+.white-btn {
   border: 2px solid #aaa;
   background: white;
   color: #7c3f15;
 }
 
-.rename-save-btn {
+.green-btn {
   border: none;
   background: linear-gradient(#8dd62c, #68b900);
   color: white;

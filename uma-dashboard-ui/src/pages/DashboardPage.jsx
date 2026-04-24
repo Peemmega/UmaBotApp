@@ -120,7 +120,7 @@ export default function DashboardPage({
 
         <section className="profile-card">
           <div className="profile-banner">
-            <h2>โปรไฟล์</h2>
+            <h2>Profile</h2>
           </div>
 
           <div className="profile-body">

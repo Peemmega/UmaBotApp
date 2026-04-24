@@ -43,10 +43,10 @@ export default function RenameModal({ currentName, onClose, onSave }) {
         </div>
 
         <div className="rename-footer">
-          <button className="rename-secondary-btn" onClick={closeModal}>
+          <button className="white-btn" onClick={closeModal}>
             Cancel
           </button>
-          <button className="rename-save-btn" onClick={saveName}>
+          <button className="green-btn" onClick={saveName}>
             Save
           </button>
         </div>

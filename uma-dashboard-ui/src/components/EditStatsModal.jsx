@@ -162,14 +162,14 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
        
 
         <div className="edit-stats-actions">
-          <button className="secondary-btn" onClick={() => {
+          <button className="white-btn" onClick={() => {
               playSound("close"); 
               resetDraft()
             }}
             disabled={saving}>
             รีเซ็ต
           </button>
-          <button className="save-stats-btn" onClick={() => {
+          <button className="green-btn" onClick={() => {
               playSound("click"); 
               saveStats()
             }} disabled={saving}>
