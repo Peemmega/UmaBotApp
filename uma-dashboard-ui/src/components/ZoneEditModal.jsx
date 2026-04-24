@@ -10,7 +10,7 @@ const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const ZONE_FIELDS = [
   ["flat", "เพิ่มแต้มผลรวม"],
-  ["add_dkh", "เพิ่มจำนวนลูกเต๋า d/kh (2 แต้ม)"],
+  ["add_dkh", "เพิ่มจำนวนลูกเต๋า d/kh (3 แต้ม)"],
   ["floor", "เพิ่มค่าทอยลูกเต๋าต่ำสุด"],
   ["selected_die", "เพิ่มคะแนนลูกเต๋าที่ถูกเลือก"],
   ["cap", "เพิ่มค่าทอยลูกเต๋าสูงสุด"],
@@ -47,7 +47,7 @@ export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
       draft.selected_die +
       draft.cap +
       draft.self_heal_stamina +
-      draft.add_dkh * 2
+      draft.add_dkh * 3
     );
   }, [draft]);
 
@@ -58,7 +58,7 @@ export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
       originalBuild.selected_die +
       originalBuild.cap +
       originalBuild.self_heal_stamina +
-      originalBuild.add_dkh * 2
+      originalBuild.add_dkh * 3
     );
   }, [originalBuild]);
 
@@ -80,7 +80,7 @@ export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
   };
 
   const changeValue = (key, amount) => {
-    const cost = key === "add_dkh" ? 2 : 1;
+    const cost = key === "add_dkh" ? 3 : 1;
 
     setDraft((prev) => {
       if (amount > 0 && remaining < cost) return prev;
