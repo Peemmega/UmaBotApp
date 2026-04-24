@@ -6,19 +6,21 @@ export default function LoadingScreen({ onFinished }) {
   const [hide, setHide] = useState(false);
 
   useEffect(() => {
+    // เริ่ม fade
     const fadeTimer = setTimeout(() => {
       setHide(true);
-    }, 2200);
+    }, 2000);
 
+    // รอ fade เสร็จค่อย remove
     const removeTimer = setTimeout(() => {
       onFinished?.();
-    }, 2900);
+    }, 2700); // ต้องมากกว่า transition (650ms)
 
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(removeTimer);
     };
-  }, [onFinished]);
+  }, []);
 
   return (
     <div className={`loading-screen ${hide ? "hide" : ""}`}>

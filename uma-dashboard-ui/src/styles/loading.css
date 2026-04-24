@@ -2,14 +2,16 @@
   position: fixed;
   inset: 0;
   z-index: 99999;
-  width: 100vw;
-  height: 100vh;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #f7fff2 0%, #eaffdc 100%);
+
+  background: linear-gradient(180deg, #f7fff2, #eaffdc);
+
   opacity: 1;
   visibility: visible;
+
   transition: opacity 650ms ease, visibility 650ms ease;
 }
 
@@ -95,18 +97,6 @@
   }
 }
 
-
-@keyframes loadingFadeOut {
-  from {
-    opacity: 1;
-    visibility: visible;
-  }
-  to {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
-}
 
 @keyframes loadingMove {
   0% {
