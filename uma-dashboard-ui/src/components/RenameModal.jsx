@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { playSound } from "../utils/soundManager";
+const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 export default function RenameModal({ currentName, onClose, onSave }) {
   const [name, setName] = useState(currentName || "");
@@ -11,12 +12,36 @@ export default function RenameModal({ currentName, onClose, onSave }) {
     setTimeout(onClose, 180);
   };
 
-  const saveName = () => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
+const saveName = async () => {
+  const trimmed = name.trim();
+  if (!trimmed) return;
 
-    playSound("save");
-    onSave(trimmed);
+    try {
+      playSound("click");
+
+      const res = await fetch(`${BOT_API_BASE}/player/username/update`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: Number(userId),
+          username: trimmed,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.detail || "Update name failed");
+      }
+
+      playSound("save");
+      onSave(data.username);
+    } catch (err) {
+      console.error(err);
+      alert(String(err));
+    }
   };
 
   return (
@@ -44,13 +69,26 @@ export default function RenameModal({ currentName, onClose, onSave }) {
 
         <div className="rename-footer">
           <button className="white-btn" onClick={closeModal}>
-            Cancel
+            ยกเลิก
           </button>
           <button className="green-btn" onClick={saveName}>
-            Save
+            บันทึก
           </button>
         </div>
       </div>
+
+      <RenameModal
+        userId={userId}
+        currentName={player?.username || username}
+        onClose={() => setIsRenameOpen(false)}
+        onSave={(newName) => {
+          setPlayer((prev) => ({
+            ...prev,
+            username: newName,
+          }));
+          setIsRenameOpen(false);
+        }}
+      />
     </div>
   );
 }
