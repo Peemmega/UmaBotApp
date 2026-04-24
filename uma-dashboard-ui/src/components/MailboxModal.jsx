@@ -16,7 +16,7 @@ const rewardIconMap = {
   aptitude: aptitudeIcon,
 };
 
-export default function MailboxModal({ userId, onClose }) {
+export default function MailboxModal({ userId, onClose, onMailChanged }) {
   const [mails, setMails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
@@ -68,6 +68,8 @@ export default function MailboxModal({ userId, onClose }) {
           mail.id === mailId ? { ...mail, is_read: true } : mail
         )
       );
+      
+      onMailChanged?.();
     } catch (err) {
       console.error(err);
     }

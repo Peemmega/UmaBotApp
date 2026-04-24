@@ -32,20 +32,28 @@ export default function DashboardPage({
   const [isMailboxOpen, setIsMailboxOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  const loadUnreadCount = async () => {
+  try {
+      const res = await fetch(`https://umadndbot-production.up.railway.app/mailbox/${userId}`);
+      const data = await res.json();
+
+      const unread = data.filter((m) => !m.is_read).length;
+      setUnreadCount(unread);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchUnread = async () => {
-      try {
-        const res = await fetch(`https://umadndbot-production.up.railway.app/mailbox/${userId}`);
-        const data = await res.json();
+    if (!userId) return;
 
-        const unread = data.filter((m) => !m.is_read).length;
-        setUnreadCount(unread);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+    loadUnreadCount();
 
-    if (userId) fetchUnread();
+    const interval = setInterval(() => {
+      loadUnreadCount();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [userId]);
 
   return (
@@ -243,7 +251,11 @@ export default function DashboardPage({
     {isMailboxOpen && (
       <MailboxModal
         userId={userId}
-        onClose={() => setIsMailboxOpen(false)}
+        onClose={() => {
+          setIsMailboxOpen(false);
+          loadUnreadCount();
+        }}
+        onMailChanged={loadUnreadCount}
       />
     )}
     </div>
