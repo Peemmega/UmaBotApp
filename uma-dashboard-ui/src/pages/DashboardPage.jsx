@@ -14,6 +14,9 @@ import bgImage from "../assets/bg/profile-bg.png";
 import MailboxModal from "../components/MailboxModal";
 import mailIcon from "../assets/icons/mail_icon.png";
 import discordIcon from "../assets/icons/discord_icon.png";
+import editIcon from "../assets/icons/change_icon.png";
+import RenameModal from "../components/RenameModal";
+
 
 import { playSound } from "../utils/soundManager";
 
@@ -31,6 +34,7 @@ export default function DashboardPage({
   const [isEditStatsOpen, setIsEditStatsOpen] = useState(false);
   const [isMailboxOpen, setIsMailboxOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isRenameOpen, setIsRenameOpen] = useState(false);
 
   const loadUnreadCount = async () => {
   try {
@@ -129,7 +133,20 @@ export default function DashboardPage({
             </div>
 
             <div className="profile-info">
-              <div className="profile-name">{player?.username || username}</div>
+              <div className="profile-name-row">
+                <div className="profile-name">{player?.username || username}</div>
+
+                <button
+                  className="rename-btn"
+                  onClick={() => {
+                    playSound("open");
+                    setIsRenameOpen(true);
+                  }}
+                >
+                  <img src={editIcon} alt="edit" />
+                </button>
+              </div>
+
               <div className="profile-id">Discord ID: {userId}</div>
 
               <div className="profile-resources">
@@ -256,6 +273,20 @@ export default function DashboardPage({
           loadUnreadCount();
         }}
         onMailChanged={loadUnreadCount}
+      />
+    )}
+
+    {isRenameOpen && (
+      <RenameModal
+        currentName={player?.username || username}
+        onClose={() => setIsRenameOpen(false)}
+        onSave={(newName) => {
+          setPlayer((prev) => ({
+            ...prev,
+            username: newName,
+          }));
+          setIsRenameOpen(false);
+        }}
       />
     )}
     </div>

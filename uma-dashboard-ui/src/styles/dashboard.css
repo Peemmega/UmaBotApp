@@ -708,3 +708,156 @@ body {
 .danger-btn:hover {
   box-shadow: 0 0 16px rgba(180, 60, 40, 0.5);
 }
+
+
+.profile-name-row {
+  position: relative;
+}
+
+.rename-btn {
+  position: absolute;
+  right: 6px;
+  top: 12px;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 999px;
+  background: white;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.16);
+  transition: transform 0.18s ease;
+}
+
+.rename-btn:hover {
+  transform: scale(1.1);
+}
+
+.rename-btn img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.rename-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(6px);
+  animation: fadeIn 180ms ease;
+}
+
+.rename-modal {
+  width: min(92vw, 560px);
+  overflow: hidden;
+  border-radius: 26px;
+  background: #f3f3f3;
+  border: 3px solid white;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+  animation: mailboxPopIn 260ms ease;
+}
+
+.rename-backdrop.closing {
+  animation: fadeOut 180ms ease forwards;
+}
+
+.rename-modal.closing {
+  animation: mailboxPopOut 180ms ease forwards;
+}
+
+.rename-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(#8dd62c, #68b900);
+  color: white;
+  padding: 18px 24px;
+}
+
+.rename-header h2 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.rename-close-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(80, 120, 30, 0.75);
+  color: white;
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.rename-body {
+  padding: 28px;
+  text-align: center;
+}
+
+.rename-label {
+  color: #7c3f15;
+  font-size: 20px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.rename-input {
+  width: 100%;
+  border: 3px solid #d6d3d1;
+  border-radius: 18px;
+  padding: 16px 18px;
+  color: #7c3f15;
+  background: white;
+  font-size: 24px;
+  font-weight: 900;
+  text-align: center;
+  outline: none;
+}
+
+.rename-input:focus {
+  border-color: #8dd62c;
+  box-shadow: 0 0 0 4px rgba(141, 214, 44, 0.2);
+}
+
+.rename-counter {
+  margin-top: 8px;
+  color: #9a7a62;
+  font-weight: 800;
+}
+
+.rename-footer {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  padding: 18px;
+  background: #f3f3f3;
+}
+
+.rename-secondary-btn,
+.rename-save-btn {
+  min-width: 140px;
+  border-radius: 16px;
+  padding: 12px 22px;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.rename-secondary-btn {
+  border: 2px solid #aaa;
+  background: white;
+  color: #7c3f15;
+}
+
+.rename-save-btn {
+  border: none;
+  background: linear-gradient(#8dd62c, #68b900);
+  color: white;
+}
