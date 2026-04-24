@@ -130,19 +130,9 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="stats-modal stats-modal-wide" onClick={(e) => e.stopPropagation()}>
-        <div className="stats-modal-header">
-          {/* <h3>อัปเดต Stats</h3> */}
-          <button className="modal-close-btn" onClick={onClose}>
-            ✕
-          </button>
-        </div>
-
         <div className="edit-stats-grid">
           {STAT_KEYS.map(([key, label]) => (
             <div className="edit-stat-card" key={key}>
-              {/* <div className="edit-stat-label">{label}</div> */}
-              {/* <div className="edit-stat-current">เดิม: {player?.[key] ?? 0}</div> */}
-
               <div className="edit-stat-controls">
                 <button
                   className="stat-adjust-btn minus"
