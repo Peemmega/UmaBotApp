@@ -68,6 +68,14 @@ export default function App() {
     loadStats();
   }, [username, userId]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAppReady(true);
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const avatarUrl = useMemo(() => {
     if (!userId || !avatarHash) return null;
     return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png`;
