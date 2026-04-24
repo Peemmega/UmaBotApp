@@ -716,6 +716,7 @@ body {
 
 .rename-btn {
   position: absolute;
+  right: 6px;
   top: -6px;
   width: 60px;
   height: 60px;
