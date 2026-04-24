@@ -10,23 +10,10 @@ import coinIcon from "../assets/icons/umaCoin.png";
 import statIcon from "../assets/icons/statsPoint.png";
 import skillIcon from "../assets/icons/skillPoint.png";
 import bgImage from "../assets/bg/profile-bg.png";
-import clickSound from "../assets/sounds/click.mp3";
-import closeSound from "../assets/sounds/close.mp3";
-
 import MailboxModal from "../components/MailboxModal";
 import mailIcon from "../assets/icons/mail_icon.png";
 
-const openAudio = new Audio(clickSound);
-const closeAudio = new Audio(closeSound);
-
-const playOpen = () => {
-  openAudio.currentTime = 0;
-  openAudio.play().catch(() => {});
-};
-const playClose = () => {
-  closeAudio.currentTime = 0;
-  closeAudio.play().catch(() => {});
-};
+import { playSound } from "../utils/soundManager";
 
 export default function DashboardPage({
   username,
@@ -63,14 +50,20 @@ export default function DashboardPage({
           <div className="dashboard-actions">
             <button
               className="mail-btn"
-              onClick={() => setIsMailboxOpen((prev) => !prev)}
+              onClick={() => {
+                playSound("open");
+                setIsMailboxOpen((prev) => !prev)
+              }}
             >
               <img src={mailIcon} alt="mail" className="mail-btn-icon" />
               <span>Mail</span>
             </button>
 
             <button
-              onClick={() => (window.location.href = "/")}
+              onClick={() => {
+                playSound("close");
+                (window.location.href = "/")
+              }}
               className="danger-btn"
             >
               Logout
@@ -130,9 +123,10 @@ export default function DashboardPage({
                 className={`update-stats-btn ${isEditStatsOpen ? "active" : ""}`}
                 onClick={() => {
                   if (isEditStatsOpen) {
-                    playClose();
+                    playSound("close");
+
                   } else {
-                    playOpen(); 
+                    playSound("open");
                   }
                   setIsEditStatsOpen((prev) => !prev);
                 }}

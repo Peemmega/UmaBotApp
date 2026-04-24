@@ -2,17 +2,7 @@ import React, { useMemo, useState } from "react";
 import clickSound from "../assets/sounds/click.mp3";
 import closeSound from "../assets/sounds/close.mp3";
 
-const openAudio = new Audio(clickSound);
-const closeAudio = new Audio(closeSound);
-
-const playAdded = () => {
-  openAudio.currentTime = 0;
-  openAudio.play().catch(() => {});
-};
-const playReduced = () => {
-  closeAudio.currentTime = 0;
-  closeAudio.play().catch(() => {});
-};
+import { playSound } from "../utils/soundManager";
 
 const STAT_KEYS = [
   ["speed", "Speed"],
@@ -137,7 +127,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
                 <button
                   className="stat-adjust-btn minus"
                   onClick={() => {
-                    playReduced(); 
+                    playSound("close"); 
                     decreaseStat(key)}}
                   disabled={(draftStats[key] ?? 0) <= 1 || saving}
                 >
@@ -149,7 +139,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
                 <button
                   className="stat-adjust-btn plus"
                   onClick={() => {
-                    playAdded(); 
+                    playSound("click"); 
                     increaseStat(key)
                   }}
                   disabled={draftPoints <= 0 || saving}
@@ -173,14 +163,14 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
 
         <div className="edit-stats-actions">
           <button className="secondary-btn" onClick={() => {
-              playReduced(); 
+              playSound("close"); 
               resetDraft()
             }}
             disabled={saving}>
             รีเซ็ต
           </button>
           <button className="save-stats-btn" onClick={() => {
-              playAdded(); 
+              playSound("click"); 
               saveStats()
             }} disabled={saving}>
             {saving ? "Saving..." : "บันทึก"}

@@ -6,6 +6,7 @@ import skillIcon from "../assets/mail/skill_pt_mail_icon.png";
 import aptitudeIcon from "../assets/mail/aptitude_mail_icon.png";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
+import { playSound } from "../utils/soundManager";
 
 const rewardIconMap = {
   uma_coin: moneyIcon,
@@ -19,6 +20,16 @@ export default function MailboxModal({ userId, onClose }) {
   const [mails, setMails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [closing, setClosing] = useState(false);
+
+  const closeModal = () => {
+    playSound("close");
+    setClosing(true);
+
+    setTimeout(() => {
+      onClose();
+    }, 180);
+  };
 
   const loadMailbox = async () => {
     try {
@@ -62,11 +73,24 @@ export default function MailboxModal({ userId, onClose }) {
   };
 
   return (
-    <div className="mailbox-backdrop" onClick={onClose}>
+    <div
+    className={`mailbox-backdrop ${closing ? "closing" : ""}`}
+    onClick={closeModal}
+  >
+    <div
+      className={`mailbox-modal ${closing ? "closing" : ""}`}
+      onClick={(e) => e.stopPropagation()}
+    >
       <div className="mailbox-modal" onClick={(e) => e.stopPropagation()}>
         <div className="mailbox-header">
           <h2>Mailbox</h2>
-          <button className="mailbox-close-btn" onClick={onClose}>
+          <button
+            className="mailbox-close-btn"
+            onClick={() => {
+              playSound("close");
+              closeModal();
+            }}
+          >
             ✕
           </button>
         </div>
@@ -96,7 +120,10 @@ export default function MailboxModal({ userId, onClose }) {
                 <div
                   key={mail.id}
                   className={`mail-item ${mail.is_read ? "read" : "unread"}`}
-                  onClick={() => markRead(mail.id)}
+                  onClick={() => {
+                    playSound("click");
+                    markRead(mail.id);
+                  }}
                 >
                   <img src={icon} alt="reward" className="mail-item-icon" />
 
@@ -123,11 +150,18 @@ export default function MailboxModal({ userId, onClose }) {
         </div>
 
         <div className="mailbox-footer">
-          <button className="mailbox-secondary-btn" onClick={onClose}>
+          <button
+            className="mailbox-secondary-btn"
+            onClick={() => {
+              playSound("close");
+              closeModal();
+            }}
+          >
             Close
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 }
