@@ -13,6 +13,9 @@ import bgImage from "../assets/bg/profile-bg.png";
 import clickSound from "../assets/sounds/click.mp3";
 import closeSound from "../assets/sounds/close.mp3";
 
+import MailboxModal from "../components/MailboxModal";
+import mailIcon from "../assets/icons/mail_icon.png";
+
 const openAudio = new Audio(clickSound);
 const closeAudio = new Audio(closeSound);
 
@@ -37,7 +40,7 @@ export default function DashboardPage({
   error,
 }) {
   const [isEditStatsOpen, setIsEditStatsOpen] = useState(false);
-  
+  const [isMailboxOpen, setIsMailboxOpen] = useState(false);
   return (
 <div
     className="dashboard-page"
@@ -54,11 +57,18 @@ export default function DashboardPage({
       <div className="dashboard-shell">
         <div className="dashboard-topbar">
           <div>
-            <div className="dashboard-eyebrow">Player Dashboard</div>
             <h1 className="dashboard-title">Uma musume RP</h1>
           </div>
 
           <div className="dashboard-actions">
+            <button
+              className="mail-btn"
+              onClick={() => setIsMailboxOpen((prev) => !prev)}
+            >
+              <img src={mailIcon} alt="mail" className="mail-btn-icon" />
+              <span>Mail</span>
+            </button>
+
             <button
               onClick={() => (window.location.href = "/")}
               className="danger-btn"
@@ -205,6 +215,12 @@ export default function DashboardPage({
 
       
     </div>
+    {isMailboxOpen && (
+      <MailboxModal
+        userId={userId}
+        onClose={() => setIsMailboxOpen(false)}
+      />
+    )}
     </div>
   );
 }
