@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import moneyIcon from "../assets/mail/money_mail_icon.png";
 import statsIcon from "../assets/mail/stats_mail_icon.png";
 import skillIcon from "../assets/mail/skill_pt_mail_icon.png";
 import aptitudeIcon from "../assets/mail/aptitude_mail_icon.png";
+import { playSound } from "../utils/soundManager";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
-import { playSound } from "../utils/soundManager";
 
 const rewardIconMap = {
   uma_coin: moneyIcon,
@@ -21,14 +21,12 @@ export default function MailboxModal({ userId, onClose }) {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [closing, setClosing] = useState(false);
+  const [activeTab, setActiveTab] = useState("list");
 
   const closeModal = () => {
     playSound("close");
     setClosing(true);
-
-    setTimeout(() => {
-      onClose();
-    }, 180);
+    setTimeout(onClose, 180);
   };
 
   const loadMailbox = async () => {
@@ -39,9 +37,7 @@ export default function MailboxModal({ userId, onClose }) {
       const res = await fetch(`${BOT_API_BASE}/mailbox/${userId}`);
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data?.detail || "Cannot load mailbox");
-      }
+      if (!res.ok) throw new Error(data?.detail || "Cannot load mailbox");
 
       setMails(data);
     } catch (err) {
@@ -58,6 +54,8 @@ export default function MailboxModal({ userId, onClose }) {
 
   const markRead = async (mailId) => {
     try {
+      playSound("click");
+
       await fetch(`${BOT_API_BASE}/mailbox/${mailId}/read`, {
         method: "POST",
       });
@@ -72,48 +70,68 @@ export default function MailboxModal({ userId, onClose }) {
     }
   };
 
+  const visibleMails = useMemo(() => {
+    if (activeTab === "history") {
+      return mails.filter((mail) => mail.is_read);
+    }
+
+    return mails.filter((mail) => !mail.is_read);
+  }, [mails, activeTab]);
+
   return (
     <div
-    className={`mailbox-backdrop ${closing ? "closing" : ""}`}
-    onClick={closeModal}
-  >
-    <div
-      className={`mailbox-modal ${closing ? "closing" : ""}`}
-      onClick={(e) => e.stopPropagation()}
+      className={`mailbox-backdrop ${closing ? "closing" : ""}`}
+      onClick={closeModal}
     >
-      <div className="mailbox-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`mailbox-modal ${closing ? "closing" : ""}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="mailbox-header">
           <h2>Mailbox</h2>
-          <button
-            className="mailbox-close-btn"
-            onClick={() => {
-              playSound("close");
-              closeModal();
-            }}
-          >
+          <button className="mailbox-close-btn" onClick={closeModal}>
             ✕
           </button>
         </div>
 
         <div className="mailbox-tabs">
-          <button className="mailbox-tab active">List</button>
-          <button className="mailbox-tab">History</button>
+          <button
+            className={`mailbox-tab ${activeTab === "list" ? "active" : ""}`}
+            onClick={() => {
+              playSound("click");
+              setActiveTab("list");
+            }}
+          >
+            List
+          </button>
+
+          <button
+            className={`mailbox-tab ${activeTab === "history" ? "active" : ""}`}
+            onClick={() => {
+              playSound("click");
+              setActiveTab("history");
+            }}
+          >
+            History
+          </button>
         </div>
 
         <div className="mailbox-list">
           {loading && <div className="mailbox-empty">Loading mail...</div>}
 
-          {!loading && message && (
-            <div className="mailbox-empty">{message}</div>
-          )}
+          {!loading && message && <div className="mailbox-empty">{message}</div>}
 
-          {!loading && !message && mails.length === 0 && (
-            <div className="mailbox-empty">ยังไม่มีข้อความ</div>
+          {!loading && !message && visibleMails.length === 0 && (
+            <div className="mailbox-empty">
+              {activeTab === "list"
+                ? "ยังไม่มีข้อความใหม่"
+                : "ยังไม่มีประวัติข้อความ"}
+            </div>
           )}
 
           {!loading &&
             !message &&
-            mails.map((mail) => {
+            visibleMails.map((mail) => {
               const icon = rewardIconMap[mail.reward_type] || statsIcon;
 
               return (
@@ -121,8 +139,7 @@ export default function MailboxModal({ userId, onClose }) {
                   key={mail.id}
                   className={`mail-item ${mail.is_read ? "read" : "unread"}`}
                   onClick={() => {
-                    playSound("click");
-                    markRead(mail.id);
+                    if (!mail.is_read) markRead(mail.id);
                   }}
                 >
                   <img src={icon} alt="reward" className="mail-item-icon" />
@@ -150,18 +167,11 @@ export default function MailboxModal({ userId, onClose }) {
         </div>
 
         <div className="mailbox-footer">
-          <button
-            className="mailbox-secondary-btn"
-            onClick={() => {
-              playSound("close");
-              closeModal();
-            }}
-          >
+          <button className="mailbox-secondary-btn" onClick={closeModal}>
             Close
           </button>
         </div>
       </div>
-    </div>
     </div>
   );
 }
