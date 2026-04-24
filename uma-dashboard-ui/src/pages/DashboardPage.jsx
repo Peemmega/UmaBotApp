@@ -61,7 +61,7 @@ export default function DashboardPage({
       <div className="dashboard-shell">
         <div className="dashboard-topbar">
           <div>
-            <h1 className="dashboard-title">Uma musume RP</h1>
+            <h1 className="dashboard-title">Tracen Academy RP</h1>
           </div>
 
           <div className="dashboard-actions">
