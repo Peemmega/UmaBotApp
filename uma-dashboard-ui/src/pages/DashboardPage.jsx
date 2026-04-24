@@ -28,6 +28,24 @@ export default function DashboardPage({
 }) {
   const [isEditStatsOpen, setIsEditStatsOpen] = useState(false);
   const [isMailboxOpen, setIsMailboxOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch(`https://umadndbot-production.up.railway.app/mailbox/${userId}`);
+        const data = await res.json();
+
+        const unread = data.filter((m) => !m.is_read).length;
+        setUnreadCount(unread);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    if (userId) fetchUnread();
+  }, [userId]);
+
   return (
 <div
     className="dashboard-page"
@@ -48,15 +66,11 @@ export default function DashboardPage({
           </div>
 
           <div className="dashboard-actions">
-            <button
-              className="mail-btn"
-              onClick={() => {
-                playSound("open");
-                setIsMailboxOpen((prev) => !prev)
-              }}
-            >
-              <img src={mailIcon} alt="mail" className="mail-btn-icon" />
-              <span>Mail</span>
+            <button className="mail-btn" onClick={() => setShowMail(true)}>
+              <img src={mailIcon} className="mail-icon" />
+              Mail
+
+              {unreadCount > 0 && <span className="mail-dot" />}
             </button>
 
             <button
