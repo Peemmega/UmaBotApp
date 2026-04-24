@@ -243,18 +243,19 @@ export default function DashboardPage({
           </div>
         </section>
 
-                <ZonePanel
-          player={player}
-          onSaved={(updatedZone) => {
-            setPlayer((prev) => ({
-              ...prev,
-              zone: {
-                ...(prev?.zone || {}),
-                ...updatedZone,
-              },
-            }));
-          }}
-        />
+         <ZonePanel
+            userId={userId}
+            player={player}
+            onSaved={(updatedZone) => {
+              setPlayer((prev) => ({
+                ...prev,
+                zone: {
+                  ...(prev?.zone || {}),
+                  ...updatedZone,
+                },
+              }));
+            }}
+          />
       </div>
 
       {isMailboxOpen && (

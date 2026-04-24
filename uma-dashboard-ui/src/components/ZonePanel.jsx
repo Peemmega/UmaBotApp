@@ -45,6 +45,7 @@ export default function ZonePanel({ player, onSaved }) {
 
       {isEditOpen && (
         <ZoneEditModal
+          userId={userId}
           player={player}
           zone={zone}
           onClose={() => setIsEditOpen(false)}

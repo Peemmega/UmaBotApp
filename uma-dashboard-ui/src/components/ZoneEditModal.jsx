@@ -26,7 +26,7 @@ const normalizeBuild = (build = {}) => ({
   self_heal_stamina: build.self_heal_stamina ?? 0,
 });
 
-export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
+export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }) {
   const [closing, setClosing] = useState(false);
   const [zoneName, setZoneName] = useState(zone?.name || "ชื่อ Zone");
   const [imageUrl, setImageUrl] = useState(zone?.image_url || "");
@@ -62,7 +62,7 @@ export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
     );
   }, [originalBuild]);
 
-  const totalPool = (zone?.points ?? 0) + originalUsedPoints;
+  const totalPool = 5;
   const remaining = totalPool - usedPoints;
 
   const closeModal = () => {
@@ -105,7 +105,7 @@ export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
       playSound("click");
 
       const payload = {
-        user_id: String(player?.user_id),
+        user_id: String(userId),
         name: zoneName.trim(),
         image_url: imageUrl,
         points: remaining,
@@ -212,7 +212,7 @@ export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
                 <button
                   className="zone-adjust-btn plus"
                   onClick={() => changeValue(key, 1)}
-                  disabled={remaining < (key === "add_dkh" ? 2 : 1) || saving}
+                  disabled={remaining < (key === "add_dkh" ? 3 : 1) || saving}
                 >
                   <img src={plusIcon} />
                 </button>
