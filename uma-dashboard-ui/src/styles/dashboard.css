@@ -716,15 +716,13 @@ body {
 
 .rename-btn {
   position: absolute;
-  right: 6px;
-  top: 12px;
-  width: 52px;
-  height: 52px;
+  top: -6px;
+  width: 60px;
+  height: 60px;
   border: none;
   border-radius: 999px;
-  background: white;
+  background: rgba(255, 255, 255, 0);
   cursor: pointer;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.16);
   transition: transform 0.18s ease;
 }
 
