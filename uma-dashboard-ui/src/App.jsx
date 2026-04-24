@@ -37,8 +37,11 @@ export default function App() {
       try {
         setLoading(true);
         setError("");
+        
+        const playerUrl = `${BOT_API_BASE}/player/${userId}?username=${encodeURIComponent(username)}`;
+        const res = await fetch(playerUrl);
 
-        const res = await fetch(`${BOT_API_BASE}/player/${userId}`);
+        // const res = await fetch(`${BOT_API_BASE}/player/${userId}`);
         if (!res.ok) throw new Error(`player API failed: ${res.status}`);
 
         const data = await res.json();
