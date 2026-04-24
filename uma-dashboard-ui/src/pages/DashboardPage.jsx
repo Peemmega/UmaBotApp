@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "../styles/dashboard.css";
+import "../styles/mailbox.css";
+
 import { mainStats, aptitudeRows } from "../data/dashboardConfig";
 import StatCell from "../components/StatCell";
 import AptitudeItem from "../components/AptitudeItem";
 import ResourcePill from "../components/ResourcePill";
 import EditStatsModal from "../components/EditStatsModal";
-
 import coinIcon from "../assets/icons/umaCoin.png";
 import statIcon from "../assets/icons/statsPoint.png";
 import skillIcon from "../assets/icons/skillPoint.png";
