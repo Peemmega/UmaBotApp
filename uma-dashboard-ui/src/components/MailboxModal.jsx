@@ -120,9 +120,9 @@ export default function MailboxModal({ userId, onClose }) {
 
           {!loading && !message && visibleMails.length === 0 && (
             <div className="mailbox-empty">
-              <div>
-                <div style={{ fontSize: 42 }}>📭</div>
-                <div>{activeTab === "list" ? "ยังไม่มีข้อความใหม่" : "ยังไม่มีประวัติข้อความ"}</div>
+              <div className="mailbox-empty-icon">📭</div>
+              <div className="mailbox-empty-text">
+                {activeTab === "list" ? "ยังไม่มีข้อความใหม่" : "ยังไม่มีประวัติข้อความ"}
               </div>
             </div>
           )}
