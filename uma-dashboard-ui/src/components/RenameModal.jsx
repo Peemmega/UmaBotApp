@@ -23,12 +23,12 @@ export default function RenameModal({ currentName, onClose, onSave }) {
     <div className={`rename-backdrop ${closing ? "closing" : ""}`} onClick={closeModal}>
       <div className={`rename-modal ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
         <div className="rename-header">
-          <h2>Change Name</h2>
+          <h2>เปลี่ยนชื่อผู้ใช้</h2>
           <button className="rename-close-btn" onClick={closeModal}>×</button>
         </div>
 
         <div className="rename-body">
-          <div className="rename-label">ชื่อที่แสดงบน Profile</div>
+          <div className="rename-label">ชื่อที่แสดงบน Profile และการแข่ง</div>
 
           <input
             className="rename-input"

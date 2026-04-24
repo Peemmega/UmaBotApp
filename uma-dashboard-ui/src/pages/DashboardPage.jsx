@@ -86,7 +86,7 @@ export default function DashboardPage({
               onClick={() => playSound("click")}
             >
               <img src={discordIcon} className="discord-btn-icon" />
-              Join Discord
+              เข้า Discord
             </a>
 
             <button
@@ -97,7 +97,7 @@ export default function DashboardPage({
               }}
             >
               <img src={mailIcon} className="mail-icon" />
-              Mail
+              จดหมาย
 
               {unreadCount > 0 && (
                 <span className="mail-badge">{unreadCount}</span>
@@ -111,7 +111,7 @@ export default function DashboardPage({
               }}
               className="danger-btn"
             >
-              Logout
+              ออกจากระบบ
             </button>
           </div>
         </div>
@@ -120,7 +120,7 @@ export default function DashboardPage({
 
         <section className="profile-card">
           <div className="profile-banner">
-            <h2>Profile</h2>
+            <h2>โปรไฟล์</h2>
           </div>
 
           <div className="profile-body">
@@ -175,7 +175,7 @@ export default function DashboardPage({
             <div></div>
 
             <div className="main-stats-header">
-              <div className="section-title">Main Stats</div>
+              <div className="section-title">ค่า stats พื้นฐาน</div>
 
               <button
                 className={`update-stats-btn ${isEditStatsOpen ? "active" : ""}`}
@@ -223,7 +223,7 @@ export default function DashboardPage({
 
         <section className="sheet-card">
           <div className="main-stats-header">
-            <div className="section-title">Aptitude / Attitude</div>
+            <div className="section-title">ค่าความถนัด</div>
           </div>
           <div className="aptitude-table">
             {aptitudeRows.map((row) => (
