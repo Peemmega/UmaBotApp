@@ -89,9 +89,6 @@ export default function MailboxModal({ userId, onClose }) {
       >
         <div className="mailbox-header">
           <h2>Mailbox</h2>
-          <button className="mailbox-close-btn" onClick={closeModal}>
-            ✕
-          </button>
         </div>
 
         <div className="mailbox-tabs">
