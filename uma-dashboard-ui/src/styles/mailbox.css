@@ -78,6 +78,7 @@
   padding: 14px 18px 18px;
   display: grid;
   gap: 12px;
+  text-align: left;
 }
 
 .mail-item {
@@ -102,14 +103,14 @@
 .mail-item-body h3 {
   margin: 0;
   color: #8a542e;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 900;
 }
 
 .mail-item-body p {
   margin: 8px 0;
   color: #7c4a27;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
 }
 
@@ -124,6 +125,7 @@
 
 .mail-reward {
   color: #4e9650;
+  font-size: 16px;
 }
 
 .mailbox-footer {
@@ -143,6 +145,24 @@
   font-size: 18px;
   font-weight: 900;
   cursor: pointer;
+}
+
+.mailbox-empty {
+  min-height: 180px; 
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-direction: column; 
+
+  gap: 12px;
+
+  padding: 30px 0; 
+
+  color: #9a7a62;
+  font-size: 20px;
+  font-weight: 900;
 }
 
 @media (max-width: 640px) {
