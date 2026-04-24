@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import icon from "../assets/icons/uma-icon.png";
+import icon from "../assets/icons/uma-icon.gif";
 import "../styles/loading.css";
 
 export default function LoadingScreen() {
