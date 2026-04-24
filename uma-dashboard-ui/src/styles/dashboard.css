@@ -86,6 +86,29 @@
   padding: 16px;
 }
 
+.discord-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 10px 18px;
+  background: #5865f2;
+  color: white;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 8px 18px rgba(88, 101, 242, 0.28);
+}
+
+.discord-btn:hover {
+  transform: translateY(-1px);
+}
+
+.discord-btn-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
 /* PROFILE */
 
 .profile-card {

@@ -12,6 +12,7 @@ import skillIcon from "../assets/icons/skillPoint.png";
 import bgImage from "../assets/bg/profile-bg.png";
 import MailboxModal from "../components/MailboxModal";
 import mailIcon from "../assets/icons/mail_icon.png";
+import discordIcon from "../assets/icons/discord_icon.png";
 
 import { playSound } from "../utils/soundManager";
 
@@ -64,6 +65,17 @@ export default function DashboardPage({
           </div>
 
           <div className="dashboard-actions">
+            <a
+              className="discord-btn"
+              href="https://discord.gg/75R2E9PU"
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => playSound("click")}
+            >
+              <img src={discordIcon} className="discord-btn-icon" />
+              Join Discord
+            </a>
+
             <button
               className="mail-btn"
               onClick={() => {
