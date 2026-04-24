@@ -160,7 +160,9 @@ export default function DashboardPage({
         </section>
 
         <section className="sheet-card">
-          <div className="section-title">Aptitude / Attitude</div>
+          <div className="main-stats-header">
+            <div className="section-title">Aptitude / Attitude</div>
+          </div>
           <div className="aptitude-table">
             {aptitudeRows.map((row) => (
               <div className="aptitude-row" key={row.title}>
@@ -180,7 +182,10 @@ export default function DashboardPage({
         </section>
 
         <section className="sheet-card">
-          <div className="section-title">Zone</div>
+          <div className="main-stats-header">
+            <div className="section-title">Zone</div>
+          </div>
+          
           <div className="zone-grid">
             <div className="zone-info-box">
               <div className="zone-label">Zone Name</div>
