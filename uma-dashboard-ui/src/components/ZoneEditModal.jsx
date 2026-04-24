@@ -9,50 +9,60 @@ import editIcon from "../assets/icons/change_icon.png";
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const ZONE_FIELDS = [
-  ["total_bonus", "เพิ่มแต้มผลรวม"],
-  ["dice_bonus", "เพิ่มจำนวนลูกเต๋า d/kh (2 แต้ม)"],
-  ["min_bonus", "เพิ่มค่าทอยลูกเต๋าต่ำสุด"],
-  ["selected_bonus", "เพิ่มคะแนนลูกเต๋าที่ถูกเลือก"],
-  ["max_bonus", "เพิ่มค่าทอยลูกเต๋าสูงสุด"],
-  ["stamina_recover", "ฟื้นฟู Stamina"],
+  ["flat", "เพิ่มแต้มผลรวม"],
+  ["add_dkh", "เพิ่มจำนวนลูกเต๋า d/kh (2 แต้ม)"],
+  ["floor", "เพิ่มค่าทอยลูกเต๋าต่ำสุด"],
+  ["selected_die", "เพิ่มคะแนนลูกเต๋าที่ถูกเลือก"],
+  ["cap", "เพิ่มค่าทอยลูกเต๋าสูงสุด"],
+  ["self_heal_stamina", "ฟื้นฟู Stamina"],
 ];
+
+const normalizeBuild = (build = {}) => ({
+  flat: build.flat ?? 0,
+  add_dkh: build.add_dkh ?? 0,
+  floor: build.floor ?? 0,
+  selected_die: build.selected_die ?? 0,
+  cap: build.cap ?? 0,
+  self_heal_stamina: build.self_heal_stamina ?? 0,
+});
 
 export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
   const [closing, setClosing] = useState(false);
   const [zoneName, setZoneName] = useState(zone?.name || "ชื่อ Zone");
-
-  const [draft, setDraft] = useState({
-    total_bonus: zone?.total_bonus ?? 0,
-    dice_bonus: zone?.dice_bonus ?? 0,
-    min_bonus: zone?.min_bonus ?? 0,
-    selected_bonus: zone?.selected_bonus ?? 0,
-    max_bonus: zone?.max_bonus ?? 0,
-    stamina_recover: zone?.stamina_recover ?? 0,
-  });
-
+  const [imageUrl, setImageUrl] = useState(zone?.image_url || "");
+  const [editingName, setEditingName] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const originalBuild = useMemo(
+    () => normalizeBuild(zone?.build),
+    [zone]
+  );
+
+  const [draft, setDraft] = useState(originalBuild);
 
   const usedPoints = useMemo(() => {
     return (
-      draft.total_bonus +
-      draft.min_bonus +
-      draft.selected_bonus +
-      draft.max_bonus +
-      draft.stamina_recover +
-      draft.dice_bonus * 2
+      draft.flat +
+      draft.floor +
+      draft.selected_die +
+      draft.cap +
+      draft.self_heal_stamina +
+      draft.add_dkh * 2
     );
   }, [draft]);
 
-  const zonePoints = player?.zone?.points ?? 0;
-  const originalUsed =
-    (zone?.total_bonus ?? 0) +
-    (zone?.min_bonus ?? 0) +
-    (zone?.selected_bonus ?? 0) +
-    (zone?.max_bonus ?? 0) +
-    (zone?.stamina_recover ?? 0) +
-    (zone?.dice_bonus ?? 0) * 2;
+  const originalUsedPoints = useMemo(() => {
+    return (
+      originalBuild.flat +
+      originalBuild.floor +
+      originalBuild.selected_die +
+      originalBuild.cap +
+      originalBuild.self_heal_stamina +
+      originalBuild.add_dkh * 2
+    );
+  }, [originalBuild]);
 
-  const totalPool = zonePoints + originalUsed;
+  const totalPool = (zone?.points ?? 0) + originalUsedPoints;
   const remaining = totalPool - usedPoints;
 
   const closeModal = () => {
@@ -61,31 +71,32 @@ export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
     setTimeout(onClose, 180);
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const localUrl = URL.createObjectURL(file);
+    setImageUrl(localUrl);
+  };
+
   const changeValue = (key, amount) => {
-    const cost = key === "dice_bonus" ? 2 : 1;
+    const cost = key === "add_dkh" ? 2 : 1;
 
     setDraft((prev) => {
       if (amount > 0 && remaining < cost) return prev;
 
-      const nextValue = Math.max(0, (prev[key] ?? 0) + amount);
-
       return {
         ...prev,
-        [key]: nextValue,
+        [key]: Math.max(0, (prev[key] ?? 0) + amount),
       };
     });
   };
 
   const resetDraft = () => {
     playSound("click");
-    setDraft({
-      total_bonus: zone?.total_bonus ?? 0,
-      dice_bonus: zone?.dice_bonus ?? 0,
-      min_bonus: zone?.min_bonus ?? 0,
-      selected_bonus: zone?.selected_bonus ?? 0,
-      max_bonus: zone?.max_bonus ?? 0,
-      stamina_recover: zone?.stamina_recover ?? 0,
-    });
+    setDraft(originalBuild);
+    setZoneName(zone?.name || "ชื่อ Zone");
+    setImageUrl(zone?.image_url || "");
   };
 
   const saveZone = async () => {
@@ -96,8 +107,9 @@ export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
       const payload = {
         user_id: String(player?.user_id),
         name: zoneName.trim(),
+        image_url: imageUrl,
         points: remaining,
-        ...draft,
+        build: draft,
       };
 
       const res = await fetch(`${BOT_API_BASE}/player/zone/update`, {
@@ -115,7 +127,15 @@ export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
       }
 
       playSound("save");
-      onSaved?.(data.zone || payload);
+
+      onSaved?.(
+        data.zone || {
+          name: payload.name,
+          image_url: payload.image_url,
+          points: payload.points,
+          build: payload.build,
+        }
+      );
     } catch (err) {
       console.error(err);
       alert(String(err));
@@ -130,27 +150,40 @@ export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
         <div className="zone-edit-banner">zone</div>
 
         <div className="zone-edit-body">
-          <button className="zone-edit-image-btn">
-            <img src={editIcon} />
-          </button>
-
           <div className="zone-edit-image-frame">
-            {zone?.image_url ? (
-              <img src={zone.image_url} className="zone-edit-main-image" />
+            {imageUrl ? (
+              <img src={imageUrl} className="zone-edit-main-image" />
             ) : (
               <div className="zone-image-placeholder">Zone Image</div>
             )}
+
+            <label className="zone-edit-image-btn">
+              <img src={editIcon} alt="edit image" />
+              <input type="file" accept="image/*" hidden onChange={handleImageUpload} />
+            </label>
           </div>
 
           <div className="zone-edit-name-wrap">
-            <input
-              value={zoneName}
-              onChange={(e) => setZoneName(e.target.value)}
-              className="zone-edit-name-input"
-              maxLength={32}
-            />
-            <button className="zone-name-edit-small">
-              <img src={editIcon} />
+            {editingName ? (
+              <input
+                value={zoneName}
+                onChange={(e) => setZoneName(e.target.value)}
+                className="zone-edit-name-input"
+                maxLength={32}
+                autoFocus
+              />
+            ) : (
+              <div className="zone-edit-name-display">{zoneName}</div>
+            )}
+
+            <button
+              className="zone-name-edit-small"
+              onClick={() => {
+                playSound("click");
+                setEditingName((prev) => !prev);
+              }}
+            >
+              <img src={editIcon} alt="edit name" />
             </button>
           </div>
 
@@ -179,7 +212,7 @@ export default function ZoneEditModal({ player, zone, onClose, onSaved }) {
                 <button
                   className="zone-adjust-btn plus"
                   onClick={() => changeValue(key, 1)}
-                  disabled={remaining < (key === "dice_bonus" ? 2 : 1) || saving}
+                  disabled={remaining < (key === "add_dkh" ? 2 : 1) || saving}
                 >
                   <img src={plusIcon} />
                 </button>
