@@ -80,7 +80,7 @@ body {
 
 .profile-banner h2 {
   margin: 0;
-  font-size: clamp(38px, 6vw, 64px);
+  font-size: clamp(20px,6vw,42px);
   font-weight: 800;
   color: white;
 }
@@ -112,7 +112,7 @@ body {
 }
 
 .profile-name {
-  font-size: clamp(42px, 6vw, 72px);
+  font-size: clamp(20px,6vw,40px);
   font-weight: 900;
   color: #84461b;
   line-height: 1;
@@ -185,7 +185,7 @@ body {
 
 .section-title {
   text-align: center;
-  font-size: clamp(28px, 4vw, 40px);
+  font-size: clamp(20px,4vw,32px);
   font-weight: 900;
   color: #1f2937;
 }
@@ -273,7 +273,7 @@ body {
 }
 
 .stat-value {
-  font-size: clamp(38px, 5vw, 54px);
+  font-size: clamp(24px,5vw,30px);
   font-weight: 900;
   color: #7c3f15;
 }
@@ -492,7 +492,7 @@ body {
   }
 
   .profile-name {
-    font-size: 38px;
+    font-size: 20px;
   }
 
   .dashboard-actions {
