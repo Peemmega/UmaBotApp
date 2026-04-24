@@ -20,14 +20,6 @@ export default function App() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowIntro(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
     if (!username || !userId) return;
 
     const cacheKey = `player:${userId}`;
