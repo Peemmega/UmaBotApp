@@ -797,6 +797,8 @@
   border-radius: 50%;
 }
 
+
+
 .mailbox-modal {
   width: min(94vw, 760px);
   max-height: 88vh;

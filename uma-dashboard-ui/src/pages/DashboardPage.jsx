@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/dashboard.css";
 import { mainStats, aptitudeRows } from "../data/dashboardConfig";
 import StatCell from "../components/StatCell";
@@ -57,8 +57,6 @@ export default function DashboardPage({
         backgroundAttachment: "fixed",
     }}
     >
-
-    <div className="dashboard-page">
       <div className="dashboard-shell">
         <div className="dashboard-topbar">
           <div>
@@ -66,11 +64,19 @@ export default function DashboardPage({
           </div>
 
           <div className="dashboard-actions">
-            <button className="mail-btn" onClick={() => setShowMail(true)}>
+            <button
+              className="mail-btn"
+              onClick={() => {
+                playSound("open");
+                setIsMailboxOpen(true);
+              }}
+            >
               <img src={mailIcon} className="mail-icon" />
               Mail
 
-              {unreadCount > 0 && <span className="mail-dot" />}
+              {unreadCount > 0 && (
+                <span className="mail-badge">{unreadCount}</span>
+              )}
             </button>
 
             <button
@@ -221,8 +227,6 @@ export default function DashboardPage({
         </section>
       </div>
 
-      
-    </div>
     {isMailboxOpen && (
       <MailboxModal
         userId={userId}
