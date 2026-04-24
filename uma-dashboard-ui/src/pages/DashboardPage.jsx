@@ -16,7 +16,7 @@ import mailIcon from "../assets/icons/mail_icon.png";
 import discordIcon from "../assets/icons/discord_icon.png";
 import editIcon from "../assets/icons/change_icon.png";
 import RenameModal from "../components/RenameModal";
-
+import ZonePanel from "../components/ZonePanel";
 
 import { playSound } from "../utils/soundManager";
 
@@ -243,54 +243,45 @@ export default function DashboardPage({
           </div>
         </section>
 
-        <section className="sheet-card">
-          <div className="main-stats-header">
-            <div className="section-title">Zone</div>
-          </div>
-          
-          <div className="zone-grid">
-            <div className="zone-info-box">
-              <div className="zone-label">Zone Name</div>
-              <div className="zone-value">{player?.zone?.name || "Default Zone"}</div>
-            </div>
-            <div className="zone-info-box">
-              <div className="zone-label">Zone Points</div>
-              <div className="zone-value">{player?.zone?.points ?? 0}</div>
-            </div>
-            <div className="zone-info-box">
-              <div className="zone-label">Players</div>
-              <div className="zone-value">{statsSummary?.total_players ?? "-"}</div>
-            </div>
-          </div>
-        </section>
+                <ZonePanel
+          player={player}
+          onSaved={(updatedZone) => {
+            setPlayer((prev) => ({
+              ...prev,
+              zone: {
+                ...(prev?.zone || {}),
+                ...updatedZone,
+              },
+            }));
+          }}
+        />
       </div>
 
-    {isMailboxOpen && (
-      <MailboxModal
-        userId={userId}
-        onClose={() => {
-          setIsMailboxOpen(false);
-          loadUnreadCount();
-        }}
-        onMailChanged={loadUnreadCount}
-      />
-    )}
+      {isMailboxOpen && (
+        <MailboxModal
+          userId={userId}
+          onClose={() => {
+            setIsMailboxOpen(false);
+            loadUnreadCount();
+          }}
+          onMailChanged={loadUnreadCount}
+        />
+      )}
 
-
-    {isRenameOpen && (
-      <RenameModal
-        userId={userId}
-        currentName={player?.username || username}
-        onClose={() => setIsRenameOpen(false)}
-        onSave={(newName) => {
-          setPlayer((prev) => ({
-            ...prev,
-            username: newName,
-          }));
-          setIsRenameOpen(false);
-        }}
-      />
-    )}
+      {isRenameOpen && (
+        <RenameModal
+          userId={userId}
+          currentName={player?.username || username}
+          onClose={() => setIsRenameOpen(false)}
+          onSave={(newName) => {
+            setPlayer((prev) => ({
+              ...prev,
+              username: newName,
+            }));
+            setIsRenameOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

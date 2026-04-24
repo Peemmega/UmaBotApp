@@ -839,6 +839,301 @@ body {
   background: #f3f3f3;
 }
 
+.zone-card {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 28px;
+  background: #f5f5f5;
+  border: 2px solid rgba(141, 214, 44, 0.45);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
+  color: #7c4a4a;
+}
+
+.zone-banner,
+.zone-edit-banner {
+  background: linear-gradient(#92dc52, #75c832);
+  color: white;
+  text-align: center;
+  font-size: 44px;
+  font-weight: 900;
+  padding: 12px;
+  text-transform: lowercase;
+}
+
+.zone-content {
+  position: relative;
+  padding: 20px 48px 34px;
+}
+
+.zone-edit-btn {
+  position: absolute;
+  top: 28px;
+  right: 28px;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 999px;
+  background: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+  transition: transform 0.18s ease;
+}
+
+.zone-edit-btn:hover {
+  transform: scale(1.1);
+}
+
+.zone-edit-btn img,
+.zone-name-edit-small img,
+.zone-reset-btn img,
+.zone-adjust-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.zone-image-frame,
+.zone-edit-image-frame {
+  width: min(100%, 620px);
+  height: 220px;
+  margin: 0 auto 18px;
+  overflow: hidden;
+  background: #ddd;
+}
+
+.zone-main-image,
+.zone-edit-main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.zone-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #9a7a62;
+  font-weight: 900;
+  background: linear-gradient(135deg, #ddd, #f7f7f7);
+}
+
+.zone-name-row h3 {
+  margin: 0;
+  color: #815758;
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.zone-divider {
+  height: 5px;
+  border-radius: 999px;
+  background: #b79ba3;
+  margin: 8px 0 18px;
+}
+
+.zone-summary {
+  color: #815758;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.65;
+}
+
+.zone-edit-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(6px);
+  animation: fadeIn 180ms ease;
+}
+
+.zone-edit-backdrop.closing {
+  animation: fadeOut 180ms ease forwards;
+}
+
+.zone-edit-modal {
+  width: min(94vw, 640px);
+  max-height: 92vh;
+  overflow-y: auto;
+  border-radius: 10px;
+  background: white;
+  border: 2px solid #8dd62c;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  animation: mailboxPopIn 260ms ease;
+}
+
+.zone-edit-modal.closing {
+  animation: mailboxPopOut 180ms ease forwards;
+}
+
+.zone-edit-body {
+  position: relative;
+  padding: 18px 48px 28px;
+}
+
+.zone-edit-image-btn {
+  position: absolute;
+  top: 32px;
+  right: 28px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 999px;
+  background: white;
+  cursor: pointer;
+}
+
+.zone-edit-name-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.zone-edit-name-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  color: #815758;
+  font-size: 32px;
+  font-weight: 900;
+  background: transparent;
+  padding: 4px 52px 4px 0;
+}
+
+.zone-name-edit-small {
+  position: absolute;
+  right: 0;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 999px;
+  background: white;
+  cursor: pointer;
+}
+
+.zone-point-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #815758;
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+.zone-point-line strong {
+  font-size: 28px;
+  color: #7c3f15;
+}
+
+.zone-edit-list {
+  display: grid;
+  gap: 10px;
+}
+
+.zone-edit-row {
+  display: grid;
+  grid-template-columns: 1fr 36px 32px 36px;
+  align-items: center;
+  gap: 8px;
+  color: #815758;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.zone-adjust-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.zone-adjust-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.zone-edit-value {
+  text-align: center;
+  font-size: 22px;
+  color: #815758;
+}
+
+.zone-edit-actions {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 46px;
+  gap: 14px;
+  align-items: center;
+}
+
+.zone-cancel-btn,
+.zone-save-btn {
+  border-radius: 10px;
+  padding: 14px 22px;
+  font-size: 24px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.zone-cancel-btn {
+  background: white;
+  border: 2px solid #9b5757;
+  color: #815758;
+}
+
+.zone-save-btn {
+  border: none;
+  background: linear-gradient(#92dc52, #75c832);
+  color: white;
+}
+
+.zone-reset-btn {
+  width: 46px;
+  height: 46px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .zone-content,
+  .zone-edit-body {
+    padding: 16px 18px 26px;
+  }
+
+  .zone-banner,
+  .zone-edit-banner {
+    font-size: 36px;
+  }
+
+  .zone-image-frame,
+  .zone-edit-image-frame {
+    height: 160px;
+  }
+
+  .zone-name-row h3,
+  .zone-edit-name-input {
+    font-size: 26px;
+  }
+
+  .zone-summary,
+  .zone-edit-row {
+    font-size: 17px;
+  }
+
+  .zone-edit-row {
+    grid-template-columns: 1fr 32px 28px 32px;
+  }
+}
+
 .white-btn,
 .green-btn {
   min-width: 140px;
