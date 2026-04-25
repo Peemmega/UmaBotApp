@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "../styles/raceCalendar.css";
+import { raceImageMap } from "../data/raceSchedule";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
@@ -102,7 +103,10 @@ export default function RaceCalendar() {
         ) : (
           eventsThisMonth.map((event) => (
             <div className="race-item" key={`${event.id}-${event.date}`}>
-              <img src={event.thumbnail || event.image} alt={event.name} />
+              <img
+                src={raceImageMap[event.id] || fallbackRaceImg}
+                alt={event.name}
+                />
 
               <div className="race-info">
                 <h4>{event.name}</h4>
