@@ -176,11 +176,13 @@ body {
 
 /* SECTION */
 .sheet-card {
-  background: #ececec;
-  color: #27272a;
-  padding: 18px;
+  width: 100%;
+  overflow: hidden;
   border-radius: 28px;
-  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  background: #f5f5f5;
+  border: 2px solid rgba(141, 214, 44, 0.45);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
+  color: #7c4a4a;
 }
 
 .section-title {
@@ -839,16 +841,6 @@ body {
   background: #f3f3f3;
 }
 
-.zone-card {
-  width: 100%;
-  overflow: hidden;
-  border-radius: 28px;
-  background: #f5f5f5;
-  border: 2px solid rgba(141, 214, 44, 0.45);
-  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
-  color: #7c4a4a;
-}
-
 .zone-banner,
 .zone-edit-banner {
   background: linear-gradient(#92dc52, #75c832);
@@ -1146,6 +1138,16 @@ body {
   width: 38px;
   height: 38px;
   padding: 0;
+}
+
+.zone-adjust-btn {
+  background: white;
+  border: none;
+}
+
+.zone-adjust-btn img {
+  background: transparent;
+  border-radius: 8px;
 }
 
 .zone-cancel-btn,

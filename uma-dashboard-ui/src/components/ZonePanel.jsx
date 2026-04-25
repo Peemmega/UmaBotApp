@@ -40,7 +40,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
     return lines.length ? lines : ["Zone ทำงาน แต่ยังไม่มีค่าที่อัปไว้"];
   };
   return (
-    <section className="zone-card">
+    <section className="sheet-card">
       <div className="zone-banner">zone</div>
 
       <div className="zone-content">
