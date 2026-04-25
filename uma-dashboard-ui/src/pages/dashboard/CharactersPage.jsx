@@ -89,7 +89,7 @@ export default function CharactersPage() {
       <div className="characters-grid">
         {filteredCharacters.map((character) => (
           <article className="character-card" key={character.id}>
-            <div className="character-image-wrap">
+            <div className="character-image-frame">
               {character.image ? (
                 <img src={character.image} alt={character.name} />
               ) : (
