@@ -81,7 +81,7 @@ export default function ProfilePage({
             </div>
           </section>
 
-          <section className="sheet-card main-stats-card">
+          <section className="sheet-card main-stats-card padding_container">
             <div className="section-header-row">
               <div></div>
 
@@ -132,7 +132,7 @@ export default function ProfilePage({
             )}
           </section>
 
-          <section className="sheet-card">
+          <section className="sheet-card padding_container">
             <div className="main-stats-header">
               <div className="section-title">ค่าความถนัด</div>
             </div>

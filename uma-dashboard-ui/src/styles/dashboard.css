@@ -93,6 +93,10 @@ body {
   color: white;
 }
 
+.padding_container {
+  padding: 18px;
+}
+
 .profile-body {
   display: grid;
   grid-template-columns: 220px 1fr;
