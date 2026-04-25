@@ -10,7 +10,11 @@
   position: absolute;
   width: 46px;
   height: 46px;
-  opacity: 0;
+  opacity: 0.15;
+
+  /* 👇 เพิ่มอันนี้ */
+  filter: hue-rotate(90deg) saturate(1.4) brightness(1.1);
+
   animation: horseshoeFloat 8s ease-in-out infinite;
 }
 
