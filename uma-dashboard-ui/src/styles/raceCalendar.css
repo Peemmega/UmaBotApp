@@ -131,18 +131,17 @@
 .race-info span {
   grid-area: detail;
   text-align: center;
-  font-size: 16px;
 }
 
 .race-info p {
   margin: 0;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 900;
 }
 
 .race-info span {
   align-self: end;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 900;
 }
 
