@@ -852,8 +852,8 @@ body {
 
 .dashboard-layout {
   display: grid;
-  grid-template-columns: 240px minmax(0,980px) 420px;
-  gap: 28px;
+  grid-template-columns: 320px minmax(0,980px) 420px;
+  gap: 40px;
   align-items: start;
   justify-content: center;
 }
@@ -1339,11 +1339,11 @@ body {
   flex-direction: column;
   gap: 14px;
   position: sticky;
-  top: 20px;
+  top: 10px;
 }
 
 .sidebar-btn {
-  width: 220px;
+  width: 100%;
   padding: 14px 20px;
   border: none;
   border-radius: 16px;
