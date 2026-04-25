@@ -1,0 +1,38 @@
+.horseshoe-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.horseshoe {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  opacity: 0;
+  animation: horseshoeFloat 8s ease-in-out infinite;
+}
+
+@keyframes horseshoeFloat {
+  0% {
+    transform: translateY(40px) rotate(-10deg) scale(var(--scale));
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.18;
+  }
+  80% {
+    opacity: 0.18;
+  }
+  100% {
+    transform: translateY(-80px) rotate(18deg) scale(var(--scale));
+    opacity: 0;
+  }
+}
+
+.dashboard-page,
+.login-page {
+  position: relative;
+  z-index: 1;
+}
