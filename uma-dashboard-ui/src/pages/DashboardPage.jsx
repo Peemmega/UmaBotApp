@@ -73,54 +73,7 @@ export default function DashboardPage({
         backgroundAttachment: "fixed",
     }}
     >
-      <div className="dashboard-layout">
-
-        <div className="dashboard-shell">
-          {/* <div className="dashboard-topbar">
-            <div>
-              <h1 className="dashboard-title">Tracen Academy RP</h1>
-            </div>
-
-            <div className="dashboard-actions">
-              <a
-                className="discord-btn"
-                href="https://discord.gg/75R2E9PU"
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => playSound("click")}
-              >
-                <img src={discordIcon} className="discord-btn-icon" />
-                เข้า Discord
-              </a>
-
-              <button
-                className="mail-btn"
-                onClick={() => {
-                  playSound("open");
-                  setIsMailboxOpen(true);
-                }}
-              >
-                <img src={mailIcon} className="mail-icon" />
-                จดหมาย
-
-                {unreadCount > 0 && (
-                  <span className="mail-badge">{unreadCount}</span>
-                )}
-              </button>
-
-              <button
-                onClick={() => {
-                  playSound("close");
-                  (window.location.href = "/")
-                }}
-                className="danger-btn"
-              >
-                ออกจากระบบ
-              </button>
-            </div>
-          </div> */}
-
-          <TopBar
+      <TopBar
             unreadCount={unreadCount}
             onMailClick={() => setIsMailboxOpen(true)}
             onLogout={() => {
@@ -128,6 +81,8 @@ export default function DashboardPage({
             }}
           />
 
+      <div className="dashboard-layout">
+        <div className="dashboard-shell">
           {error ? <div className="error-box">{error}</div> : null}
 
           <section className="profile-card">
