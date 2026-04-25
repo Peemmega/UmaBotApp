@@ -6,7 +6,7 @@ const characters = [
     id: 1,
     name: "Oguri Cap",
     jpName: "オグリキャップ",
-    type: "Stayer",
+    type: "Trainee",
     rarity: "★★★",
     image: "",
   },
@@ -14,7 +14,7 @@ const characters = [
     id: 2,
     name: "Special Week",
     jpName: "スペシャルウィーク",
-    type: "All-Rounder",
+    type: "Trainee",
     rarity: "★★★",
     image: "",
   },
@@ -22,13 +22,21 @@ const characters = [
     id: 3,
     name: "Tokai Teio",
     jpName: "トウカイテイオー",
-    type: "Speed",
+    type: "Trainee",
+    rarity: "★★★",
+    image: "",
+  },
+  {
+    id: 4,
+    name: "Rose Garden",
+    jpName: "ローズ・ガーデン",
+    type: "Trainee",
     rarity: "★★★",
     image: "",
   },
 ];
 
-const filters = ["All", "Speed", "Stayer", "Mile", "All-Rounder"];
+const filters = ["All", "Trainee", "Trainer"];
 
 export default function CharactersPage() {
   const [search, setSearch] = useState("");
