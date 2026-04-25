@@ -850,6 +850,44 @@ body {
   background: #f3f3f3;
 }
 
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 980px) 360px;
+  gap: 28px;
+  align-items: start;
+  justify-content: center;
+}
+
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 980px) 360px;
+  gap: 28px;
+  align-items: start;
+}
+
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (max-width: 1200px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .race-calendar-side {
+    position: static;
+  }
+}
+
+/* Zone CSS */
 .zone-banner,
 .zone-edit-banner {
   background: linear-gradient(#92dc52, #75c832);
@@ -1240,3 +1278,4 @@ body {
   background: linear-gradient(#8dd62c, #68b900);
   color: white;
 }
+
