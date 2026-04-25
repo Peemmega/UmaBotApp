@@ -30,7 +30,7 @@ export default function ProfilePage({
           {error ? <div className="error-box">{error}</div> : null}
 
           <section className="profile-card">
-            <div className="profile-banner">
+            <div className="title-banner">
               <h2>Profile</h2>
             </div>
 
