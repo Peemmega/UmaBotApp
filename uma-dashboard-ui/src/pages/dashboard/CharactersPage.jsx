@@ -1,14 +1,110 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
+import "../../styles/charactersPage.css";
+
+const characters = [
+  {
+    id: 1,
+    name: "Oguri Cap",
+    jpName: "オグリキャップ",
+    type: "Stayer",
+    rarity: "★★★",
+    image: "",
+  },
+  {
+    id: 2,
+    name: "Special Week",
+    jpName: "スペシャルウィーク",
+    type: "All-Rounder",
+    rarity: "★★★",
+    image: "",
+  },
+  {
+    id: 3,
+    name: "Tokai Teio",
+    jpName: "トウカイテイオー",
+    type: "Speed",
+    rarity: "★★★",
+    image: "",
+  },
+];
+
+const filters = ["All", "Speed", "Stayer", "Mile", "All-Rounder"];
 
 export default function CharactersPage() {
+  const [search, setSearch] = useState("");
+  const [activeFilter, setActiveFilter] = useState("All");
+
+  const filteredCharacters = useMemo(() => {
+    return characters.filter((character) => {
+      const matchSearch =
+        character.name.toLowerCase().includes(search.toLowerCase()) ||
+        character.jpName.includes(search);
+
+      const matchFilter =
+        activeFilter === "All" || character.type === activeFilter;
+
+      return matchSearch && matchFilter;
+    });
+  }, [search, activeFilter]);
+
   return (
-    <section className="sheet-card">
-      <div className="title-banner">
-            <h2>Characters</h2>
+    <section className="characters-page">
+      <div className="characters-hero">
+        <div>
+          <p className="characters-kicker">Tracen Academy</p>
+          <h2>Characters</h2>
+          <p>เลือกดูข้อมูลตัวละคร / นักแข่งของเซิร์ฟเวอร์</p>
+        </div>
       </div>
 
-      <div className="padding-content">
-        <p className="page-placeholder">หน้านี้ไว้ใส่ระบบ Characters</p>
+      <div className="characters-toolbar">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search character..."
+          className="characters-search"
+        />
+
+        <div className="characters-filters">
+          {filters.map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              className={`character-filter-btn ${
+                activeFilter === filter ? "active" : ""
+              }`}
+              onClick={() => setActiveFilter(filter)}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="characters-grid">
+        {filteredCharacters.map((character) => (
+          <article className="character-card" key={character.id}>
+            <div className="character-image-wrap">
+              {character.image ? (
+                <img src={character.image} alt={character.name} />
+              ) : (
+                <div className="character-placeholder">🏇</div>
+              )}
+
+              <span className="character-rarity">{character.rarity}</span>
+            </div>
+
+            <div className="character-info">
+              <h3>{character.name}</h3>
+              <p>{character.jpName}</p>
+
+              <div className="character-bottom">
+                <span>{character.type}</span>
+                <button type="button">View</button>
+              </div>
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   );
