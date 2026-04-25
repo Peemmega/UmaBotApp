@@ -1,7 +1,9 @@
 .race-calendar-side {
-  align-self: start;  
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   position: sticky;
-  top: 110px;          
+  top: 24px;
 }
 
 .race-calendar-card {
@@ -10,9 +12,6 @@
   border-radius: 16px;
   background: white;
   color: #7c3f15;
-}
-.race-calendar-card {
-  margin-top: 0;
 }
 
 .race-calendar-header {

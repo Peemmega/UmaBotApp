@@ -853,8 +853,9 @@ body {
 .dashboard-layout {
   display: grid;
   grid-template-columns: minmax(0, 980px) 360px;
-  align-items: start;
   gap: 28px;
+  align-items: start;
+  justify-content: center;
 }
 
 .dashboard-main {
