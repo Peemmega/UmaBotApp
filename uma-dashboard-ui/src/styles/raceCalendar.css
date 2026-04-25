@@ -131,6 +131,7 @@
 .race-info span {
   grid-area: detail;
   text-align: center;
+  font-size: 16px;
 }
 
 .race-info p {
