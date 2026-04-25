@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from "react";
 import "../../styles/charactersPage.css";
 import rose_garden_img from "../../assets/character/rose_garden.png"
+import special_week_img from "../../assets/character/special_week.png"
+import john_musume_img from "../../assets/character/john_musume.png"
 
 const characters = [
   {
@@ -8,21 +10,21 @@ const characters = [
     name: "Oguri Cap",
     jpName: "オグリキャップ",
     type: "Trainee",
-    image: "",
+    image: john_musume_img,
   },
   {
     id: 2,
     name: "Special Week",
     jpName: "スペシャルウィーク",
     type: "Trainee",
-    image: "",
+    image: special_week_img,
   },
   {
     id: 3,
     name: "Tokai Teio",
     jpName: "トウカイテイオー",
     type: "Trainee",
-    image: "",
+    image: john_musume_img,
   },
   {
     id: 4,
@@ -93,7 +95,7 @@ export default function CharactersPage() {
               {character.image ? (
                 <img src={character.image} alt={character.name} />
               ) : (
-                <div className="character-placeholder">🏇</div>
+                <img src={special_week_img} alt={character.name} />
               )}
             </div>
 
