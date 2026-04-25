@@ -7,7 +7,9 @@ export default function QAPage() {
             <h2>Q&A</h2>
       </div>
 
-      <p className="page-placeholder">หน้านี้ไว้ใส่คำถามและคำตอบ</p>
+      <div className="padding-content">
+        <p className="page-placeholder">หน้านี้ไว้ใส่คำถามและคำตอบ</p>
+      </div>
     </section>
   );
 }

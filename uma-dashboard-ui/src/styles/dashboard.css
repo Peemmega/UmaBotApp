@@ -895,7 +895,7 @@ body {
   text-transform: lowercase;
 }
 
-.zone-content {
+.padding-content {
   position: relative;
   padding: 20px 48px 34px;
 }
@@ -1223,7 +1223,7 @@ body {
 }
 
 @media (max-width: 640px) {
-  .zone-content,
+  .padding-content,
   .zone-edit-body {
     padding: 16px 18px 26px;
   }

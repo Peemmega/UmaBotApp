@@ -7,7 +7,9 @@ export default function CharactersPage() {
             <h2>Characters</h2>
       </div>
 
-      <p className="page-placeholder">หน้านี้ไว้ใส่ระบบ Characters</p>
+      <div className="padding-content">
+        <p className="page-placeholder">หน้านี้ไว้ใส่ระบบ Characters</p>
+      </div>
     </section>
   );
 }

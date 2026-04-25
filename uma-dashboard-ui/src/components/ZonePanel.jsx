@@ -45,7 +45,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
         <h2>Zone</h2>
       </div>
 
-      <div className="zone-content">
+      <div className="padding-content">
         <button
           className="zone-edit-btn"
           onClick={() => {
