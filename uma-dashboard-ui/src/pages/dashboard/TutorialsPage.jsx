@@ -3,8 +3,8 @@ import React from "react";
 export default function TutorialsPage() {
   return (
     <section className="sheet-card">
-      <div className="main-stats-header">
-        <div className="section-title">Tutorials</div>
+      <div className="title-banner">
+            <h2>Tutorials</h2>
       </div>
 
       <p className="page-placeholder">
