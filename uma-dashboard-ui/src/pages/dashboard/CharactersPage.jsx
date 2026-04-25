@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import "../../styles/charactersPage.css";
+import rose_garden_img from "../../assets/character/rose_garden.png"
 
 const characters = [
   {
@@ -7,7 +8,6 @@ const characters = [
     name: "Oguri Cap",
     jpName: "オグリキャップ",
     type: "Trainee",
-    rarity: "★★★",
     image: "",
   },
   {
@@ -15,7 +15,6 @@ const characters = [
     name: "Special Week",
     jpName: "スペシャルウィーク",
     type: "Trainee",
-    rarity: "★★★",
     image: "",
   },
   {
@@ -23,7 +22,6 @@ const characters = [
     name: "Tokai Teio",
     jpName: "トウカイテイオー",
     type: "Trainee",
-    rarity: "★★★",
     image: "",
   },
   {
@@ -31,8 +29,7 @@ const characters = [
     name: "Rose Garden",
     jpName: "ローズ・ガーデン",
     type: "Trainee",
-    rarity: "★★★",
-    image: "",
+    image: rose_garden_img,
   },
 ];
 
@@ -98,8 +95,6 @@ export default function CharactersPage() {
               ) : (
                 <div className="character-placeholder">🏇</div>
               )}
-
-              <span className="character-rarity">{character.rarity}</span>
             </div>
 
             <div className="character-info">
