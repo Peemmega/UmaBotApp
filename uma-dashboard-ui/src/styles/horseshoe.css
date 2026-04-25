@@ -20,7 +20,7 @@
 
 @keyframes horseshoeFloat {
   0% {
-    transform: translateY(40px) rotate(-10deg) scale(var(--scale));
+    transform: translateY(40px) rotate(-30deg) scale(var(--scale));
     opacity: 0;
   }
   20% {
@@ -30,7 +30,7 @@
     opacity: 0.18;
   }
   100% {
-    transform: translateY(-80px) rotate(18deg) scale(var(--scale));
+    transform: translateY(-80px) rotate(30deg) scale(var(--scale));
     opacity: 0;
   }
 }
