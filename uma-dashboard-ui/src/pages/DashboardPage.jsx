@@ -83,7 +83,13 @@ export default function DashboardPage({
           />
 
       <div className="dashboard-layout">
-        <div className="something"></div>
+        <aside className="sidebar">
+          <button className="sidebar-btn active">Profile</button>
+          <button className="sidebar-btn">Tutorials</button>
+          <button className="sidebar-btn">Skills</button>
+          <button className="sidebar-btn">Characters</button>
+          <button className="sidebar-btn">Q&A</button>
+        </aside>
 
         <div className="dashboard-shell">
           {/* <div className="dashboard-topbar">

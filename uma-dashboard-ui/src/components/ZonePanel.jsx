@@ -41,7 +41,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
   };
   return (
     <section className="sheet-card">
-      <div className="zone-banner">zone</div>
+      <div className="zone-banner">Zone</div>
 
       <div className="zone-content">
         <button
