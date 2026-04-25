@@ -2,9 +2,9 @@ import React from "react";
 
 const menuItems = [
   { key: "profile", label: "Profile" },
+  { key: "characters", label: "Characters" },
   { key: "tutorials", label: "Tutorials" },
   { key: "skills", label: "Skills" },
-  { key: "characters", label: "Characters" },
   { key: "qa", label: "Q&A" },
 ];
 
