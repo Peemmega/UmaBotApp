@@ -101,7 +101,7 @@ export default function CharactersPage() {
 
             <div className="character-info">
               <h3>{character.name}</h3>
-              <p>{character.jpName}</p>
+              {/* <p>{character.jpName}</p> */}
 
               <div className="character-bottom">
                 <span>{character.type}</span>
