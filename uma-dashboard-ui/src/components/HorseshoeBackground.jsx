@@ -4,11 +4,11 @@ import "../styles/horseshoe.css";
 
 export default function HorseshoeBackground() {
   const items = useMemo(() => {
-    return Array.from({ length: 8 }, (_, i) => ({
+    return Array.from({ length: 12 }, (_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
-      delay: `${Math.random() * 4}s`,
+      delay: `${Math.random() * 3}s`,
       scale: 0.6 + Math.random(),
     }));
   }, []);

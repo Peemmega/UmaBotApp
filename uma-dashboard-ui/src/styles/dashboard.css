@@ -16,6 +16,14 @@ body {
   overflow-x: hidden;
 }
 
+body {
+  background-image: url("../assets/bg/profile-bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 /* PAGE */
 .dashboard-page {
   min-height: 100vh;
