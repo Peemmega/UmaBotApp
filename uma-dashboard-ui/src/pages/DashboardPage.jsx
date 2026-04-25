@@ -18,6 +18,7 @@ import editIcon from "../assets/icons/change_icon.png";
 import RenameModal from "../components/RenameModal";
 import ZonePanel from "../components/ZonePanel";
 import RaceCalendar from "../components/RaceCalendar";
+import TopBar from "../components/TopBar";
 
 import { playSound } from "../utils/soundManager";
 
@@ -75,7 +76,7 @@ export default function DashboardPage({
       <div className="dashboard-layout">
 
         <div className="dashboard-shell">
-          <div className="dashboard-topbar">
+          {/* <div className="dashboard-topbar">
             <div>
               <h1 className="dashboard-title">Tracen Academy RP</h1>
             </div>
@@ -117,7 +118,15 @@ export default function DashboardPage({
                 ออกจากระบบ
               </button>
             </div>
-          </div>
+          </div> */}
+
+          <TopBar
+            unreadCount={unreadCount}
+            onMailClick={() => setIsMailboxOpen(true)}
+            onLogout={() => {
+              window.location.href = "/";
+            }}
+          />
 
           {error ? <div className="error-box">{error}</div> : null}
 
