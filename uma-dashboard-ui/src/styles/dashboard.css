@@ -858,17 +858,6 @@ body {
   justify-content: center;
 }
 
-.dashboard-shell {
-  margin-top: 0;
-}
-
-.race-calendar-side {
-  margin-top: 0;
-  align-self: start;
-  position: sticky;
-  top: 110px;
-}
-
 .dashboard-main {
   display: flex;
   flex-direction: column;
