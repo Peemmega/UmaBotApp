@@ -10,8 +10,8 @@
   position: absolute;
   width: 60px;
   height: 60px;
-  opacity: 0.15;
 
+  opacity: 0.15;
   animation: horseshoeFloat 8s ease-in-out infinite;
 }
 
