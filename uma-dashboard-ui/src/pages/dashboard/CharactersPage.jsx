@@ -58,7 +58,7 @@ export default function CharactersPage() {
     <section className="characters-page">
       <div className="characters-hero">
         <div>
-          <p className="characters-kicker">Tracen Academy</p>
+          {/* <p className="characters-kicker">Tracen Academy</p> */}
           <h2>Characters</h2>
           <p>เลือกดูข้อมูลตัวละคร / นักแข่งของเซิร์ฟเวอร์</p>
         </div>
