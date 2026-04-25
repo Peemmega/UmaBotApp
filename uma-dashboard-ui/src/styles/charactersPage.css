@@ -101,7 +101,7 @@
 }
 
 .character-image-frame {
-  height: 300px;
+  height: 320px;
   background: linear-gradient(180deg, #ecfccb, #f7fee7);
   overflow: hidden;
   position: relative;
