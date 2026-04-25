@@ -20,8 +20,8 @@
     transform: translateY(40px) rotate(-30deg) scale(var(--scale));
     opacity: 0;
   }
-  20% {
-    opacity: 0.18;
+  40% {
+    opacity: 0.8;
   }
   80% {
     opacity: 0.18;
