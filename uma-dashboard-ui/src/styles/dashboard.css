@@ -1344,38 +1344,6 @@ body {
 
 .sidebar-btn {
   width: 100%;
-  padding: 14px 20px;
-  border: none;
-  border-radius: 16px;
-  background: #e5e7eb;
-  color: #7c3f15;
-  font-size: 20px;
-  font-weight: 900;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.sidebar-btn:hover {
-  transform: scale(1.05);
-  background: #d1d5db;
-}
-
-.sidebar-btn.active {
-  background: linear-gradient(#8dd62c, #68b900);
-  color: white;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-}
-
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  position: sticky;
-  top: 24px;
-}
-
-.sidebar-btn {
-  width: 220px;
   padding: 16px 20px;
   border: none;
   border-radius: 14px;
