@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "../styles/raceCalendar.css";
-import { raceImageMap } from "../ultils/raceSchedule";
+import { raceImageMap } from "../ultils/raceSchedule.js";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
