@@ -81,8 +81,9 @@ export default function DashboardPage({
               window.location.href = "/";
             }}
           />
-          
+
       <div className="dashboard-layout">
+        <div className="something"></div>
 
         <div className="dashboard-shell">
           {/* <div className="dashboard-topbar">
