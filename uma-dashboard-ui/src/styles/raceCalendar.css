@@ -1,10 +1,9 @@
 .race-calendar-side {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  align-self: start;
   position: sticky;
-  top: 24px;
-}
+  top: 110px;
+};
+
 
 .race-calendar-card {
   overflow: hidden;
