@@ -853,22 +853,14 @@ body {
 .dashboard-layout {
   display: grid;
   grid-template-columns: minmax(0, 980px) 360px;
-  gap: 28px;
   align-items: start;
-  justify-content: center;
+  gap: 28px;
 }
 
 .dashboard-main {
   display: flex;
   flex-direction: column;
   gap: 24px;
-}
-
-.dashboard-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 980px) 360px;
-  gap: 28px;
-  align-items: start;
 }
 
 .dashboard-main {
