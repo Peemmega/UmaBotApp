@@ -252,6 +252,13 @@
   animation: backdropFade 0.2s ease;
 }
 
+.inline-icon {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin: 0 4px;
+}
+
 @keyframes backdropFade {
   from {
     opacity: 0;

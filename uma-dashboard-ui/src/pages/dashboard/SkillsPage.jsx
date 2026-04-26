@@ -12,6 +12,7 @@ import icon_decrease from "../../assets/skill_icon/DecreaseVelocity.webp";
 import icon_reduce_sta from "../../assets/skill_icon/ReduceSTA.webp";
 import icon_lookup from "../../assets/skill_icon/LookUp.webp";
 import icon_blind from "../../assets/skill_icon/Blind.webp";
+import staminaIcon from "../../assets/icons/Stamina.webp";
 
 import witIcon from "../../assets/icons/Wit.webp";
 
@@ -92,7 +93,35 @@ export default function SkillsPage({ userId, username }) {
     });
   }, [skills, search, activeTag]);
 
-  
+  function formatText(text) {
+    if (!text) return "";
+
+    return text
+      .replace(/<:Stamina:\d+>/g, "Stamina") 
+      .replace(/<:Speed:\d+>/g, "Speed")
+      .replace(/<:Power:\d+>/g, "Power");
+  }
+
+  function renderTextWithIcons(text) {
+    if (!text) return null;
+
+    const parts = text.split(/(<:Stamina:\d+>)/g);
+
+    return parts.map((part, index) => {
+      if (part.match(/<:Stamina:\d+>/)) {
+        return (
+          <img
+            key={index}
+            src={staminaIcon}
+            alt="stamina"
+            className="inline-icon"
+          />
+        );
+      }
+      return part;
+    });
+  }
+
   return (
     <section className="skills-page">
       <div className="skills-hero">
@@ -170,7 +199,7 @@ export default function SkillsPage({ userId, username }) {
                   <strong>ผลของสกิล</strong>
                   <ul>
                     {skill.effects.map((effect, index) => (
-                      <li key={index}>{effect}</li>
+                      <li key={index}>{renderTextWithIcons(effect)}</li>
                     ))}
                   </ul>
                 </div>
