@@ -10,7 +10,7 @@ import statIcon from "../../assets/icons/statsPoint.webp";
 import skillIcon from "../../assets/icons/skillPoint.webp";
 import editIcon from "../../assets/icons/change_icon.webp";
 import { playSound } from "../../utils/soundManager";
-
+import { getSkillIcon } from "../../utils/getSkillIcon";
 
 export default function ProfilePage({
   username,

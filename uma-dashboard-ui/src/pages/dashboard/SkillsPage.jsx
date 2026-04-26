@@ -13,6 +13,7 @@ import icon_reduce_sta from "../../assets/skill_icon/ReduceSTA.webp";
 import icon_lookup from "../../assets/skill_icon/LookUp.webp";
 import icon_blind from "../../assets/skill_icon/Blind.webp";
 import staminaIcon from "../../assets/icons/Stamina.webp";
+import { getSkillIcon } from "../../utils/getSkillIcon";
 
 import witIcon from "../../assets/icons/Wit.webp";
 
@@ -269,26 +270,5 @@ export default function SkillsPage({ userId, username }) {
         </div>
       )}
     </section>
-  );
-}
-
-function getSkillIcon(icon) {
-  const iconMap = {
-    Concentration: icon_concentration,
-    Acceleration: icon_acceleration,
-    Velocity: icon_velocity,
-    Recovery: icon_recovery,
-    DecreaseVelocity: icon_decrease,
-    ReduceSTA: icon_reduce_sta,
-    LookUp: icon_lookup,
-    Blind: icon_blind,
-  };
-
-  const src = iconMap[icon];
-
-  return src ? (
-    <img src={src} alt={icon} className="skill-icon-img" />
-  ) : (
-    <span>✨</span>
   );
 }
