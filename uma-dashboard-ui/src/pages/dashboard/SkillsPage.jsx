@@ -65,17 +65,6 @@ export default function SkillsPage({ userId, username }) {
     }
   };
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.detail || "ติดตั้งสกิลไม่สำเร็จ");
-      return;
-    }
-
-    alert(data.message);
-    setSelectedSkill(null);
-  };
-
   const filteredSkills = useMemo(() => {
     return skills.filter((skill) => {
       const q = search.toLowerCase();
