@@ -19,6 +19,7 @@ export default function SkillsPage() {
   const [tags, setTags] = useState([{ value: "all", label: "ทั้งหมด" }]);
   const [activeTag, setActiveTag] = useState("all");
   const [search, setSearch] = useState("");
+  const [selectedSkill, setSelectedSkill] = useState(null);
 
   useEffect(() => {
     fetch(`${BOT_API_BASE}/skills/tags`)
@@ -47,6 +48,43 @@ export default function SkillsPage() {
       return matchSearch && matchTag;
     });
   }, [skills, search, activeTag]);
+
+  {selectedSkill && (
+    <div className="skill-equip-backdrop" onClick={() => setSelectedSkill(null)}>
+      <div className="skill-equip-modal" onClick={(e) => e.stopPropagation()}>
+        <button
+          className="skill-equip-close"
+          onClick={() => setSelectedSkill(null)}
+        >
+          ×
+        </button>
+
+        <div className="skill-equip-title">
+          <span>{selectedSkill.id}</span>
+          <h3>{selectedSkill.name}</h3>
+        </div>
+
+        <p className="skill-equip-desc">
+          เลือกช่องที่ต้องการติดตั้งสกิลนี้
+        </p>
+
+        <div className="skill-equip-buttons">
+          {[1, 2, 3].map((slot) => (
+            <button
+              key={slot}
+              type="button"
+              onClick={() => {
+                console.log("equip", selectedSkill.id, "slot", slot);
+                setSelectedSkill(null);
+              }}
+            >
+              ใส่ในช่อง {slot}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
 
   return (
     <section className="skills-page">
@@ -86,7 +124,7 @@ export default function SkillsPage() {
 
       <div className="skills-grid">
         {filteredSkills.map((skill) => (
-          <article className="skill-card" key={skill.id}>
+          <article className="skill-card" key={skill.id} onClick={() => setSelectedSkill(skill)}>
             <div className="skill-top-row">
               <div className="skill-id">{skill.id}</div>
               <h3>{skill.name}</h3>

@@ -219,6 +219,117 @@
   font-weight: 900;
 }
 
+.skill-card {
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.skill-card:hover {
+  transform: scale(1.025);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
+  border-color: #84cc16;
+}
+
+.skill-card:active {
+  transform: scale(0.99);
+}
+
+.skill-equip-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(6px);
+}
+
+.skill-equip-modal {
+  position: relative;
+  width: min(92vw, 620px);
+  border-radius: 24px;
+  background: white;
+  border: 3px solid #9ade5a;
+  padding: 28px;
+  color: #6b4a2f;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+}
+
+.skill-equip-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 999px;
+  background: #8f2f29;
+  color: white;
+  font-size: 26px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.skill-equip-title {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.skill-equip-title span {
+  color: #a8dc4f;
+  font-size: 30px;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.skill-equip-title h3 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 1000;
+}
+
+.skill-equip-desc {
+  margin: 0 0 22px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.skill-equip-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.skill-equip-buttons button {
+  border: none;
+  border-radius: 14px;
+  padding: 18px;
+  background: linear-gradient(#92dc52, #75c832);
+  color: white;
+  font-size: 26px;
+  font-weight: 1000;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.skill-equip-buttons button:hover {
+  transform: scale(1.06);
+  box-shadow: 0 10px 22px rgba(132, 204, 22, 0.45);
+}
+
+@media (max-width: 640px) {
+  .skill-equip-buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 720px) {
   .skill-main-row {
     grid-template-columns: 1fr;
