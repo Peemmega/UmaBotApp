@@ -109,7 +109,7 @@
 }
 
 .skill-id {
-  color: #a8dc4f;
+  color: #7ead2d;
   font-size: 30px;
   font-weight: 1000;
   text-transform: uppercase;
@@ -162,7 +162,7 @@
 .skill-meta-row span {
   min-height: 48px;
   border-radius: 10px;
-  background: #a8dc4f;
+  background: #7ead2d;
   color: white;
   display: flex;
   align-items: center;
@@ -188,7 +188,7 @@
 
 .skill-effects strong {
   display: block;
-  color: #a8dc4f;
+  color: #7ead2d;
   font-size: 22px;
   font-weight: 1000;
   margin-bottom: 2px;
