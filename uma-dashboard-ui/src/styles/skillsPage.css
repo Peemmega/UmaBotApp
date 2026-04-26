@@ -162,7 +162,7 @@
 .skill-meta-row span {
   min-height: 48px;
   border-radius: 10px;
-  background: #7ead2d;
+  background: linear-gradient(rgb(146, 220, 82), rgb(117, 200, 50));
   color: white;
   display: flex;
   align-items: center;
