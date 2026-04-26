@@ -118,7 +118,7 @@ export default function SkillsPage({ userId, username }) {
                 activeTag === tag.value ? "active" : ""
               }`}
               onClick={() => {
-                playSound("click"); // 🔥 เพิ่ม
+                playSound("click");
                 setActiveTag(tag.value);
               }}
             >
@@ -191,7 +191,10 @@ export default function SkillsPage({ userId, username }) {
           <div className="skill-equip-modal" onClick={(e) => e.stopPropagation()}>
             <button
               className="skill-equip-close"
-              onClick={() => setSelectedSkill(null)}
+              onClick={() => {
+                playSound("close");
+                setSelectedSkill(null);
+              }}
             >
               ×
             </button>
