@@ -1,37 +1,55 @@
 import React, { useMemo, useState } from "react";
 import "../../styles/charactersPage.css";
-import rose_garden_img from "../../assets/character/rose_garden.png"
-import special_week_img from "../../assets/character/special_week.png"
-import john_musume_img from "../../assets/character/john_musume.png"
+import rose_garden_img from "../../assets/character/uma/rose_garden.png"
+import special_week_img from "../../assets/character/uma/special_week.png"
+import john_musume_img from "../../assets/character/uma/john_musume.png"
+
+import spica_img from "../../assets/character/trainer/spica.png"
+import kaguya_img from "../../assets/character/trainer/kaguya.png"
+import gelbert_img from "../../assets/character/trainer/gelbert.png"
 
 const characters = [
   {
     id: 1,
     name: "Oguri Cap",
-    jpName: "オグリキャップ",
     type: "Trainee",
     image: john_musume_img,
   },
   {
     id: 2,
     name: "Special Week",
-    jpName: "スペシャルウィーク",
     type: "Trainee",
     image: special_week_img,
   },
   {
     id: 3,
     name: "Tokai Teio",
-    jpName: "トウカイテイオー",
     type: "Trainee",
     image: john_musume_img,
   },
   {
     id: 4,
     name: "Rose Garden",
-    jpName: "ローズ・ガーデン",
     type: "Trainee",
     image: rose_garden_img,
+  },
+  {
+    id: 5,
+    name: "Trainer Spica",
+    type: "Trainer",
+    image: spica_img,
+  },
+  {
+    id: 6,
+    name: "Ince Seiji",
+    type: "Trainer",
+    image: kaguya_img,
+  },
+  {
+    id: 7,
+    name: "Yataio Galeberg",
+    type: "Trainer",
+    image: gelbert_img,
   },
 ];
 
