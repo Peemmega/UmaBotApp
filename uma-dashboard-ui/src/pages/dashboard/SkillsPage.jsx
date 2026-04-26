@@ -14,7 +14,7 @@ import icon_blind from "../../assets/skill_icon/Blind.webp";
 
 import witIcon from "../../assets/icons/Wit.webp";
 
-export default function SkillsPage() {
+export default function SkillsPage({ userId, username }) {
   const [skills, setSkills] = useState([]);
   const [tags, setTags] = useState([{ value: "all", label: "ทั้งหมด" }]);
   const [activeTag, setActiveTag] = useState("all");
@@ -33,6 +33,49 @@ export default function SkillsPage() {
       .catch(console.error);
   }, []);
 
+  const equipSkill = async (slot) => {
+    if (!selectedSkill) return;
+
+    try {
+      const res = await fetch(`${BOT_API_BASE}/player/skill/equip`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: String(userId),
+          username: username || "Unknown",
+          slot,
+          skill_id: selectedSkill.id,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.detail || "ติดตั้งสกิลไม่สำเร็จ");
+        return;
+      }
+
+      alert(data.message);
+      setSelectedSkill(null);
+    } catch (err) {
+      console.error(err);
+      alert("เชื่อมต่อ server ไม่ได้");
+    }
+  };
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.detail || "ติดตั้งสกิลไม่สำเร็จ");
+      return;
+    }
+
+    alert(data.message);
+    setSelectedSkill(null);
+  };
+
   const filteredSkills = useMemo(() => {
     return skills.filter((skill) => {
       const q = search.toLowerCase();
@@ -40,7 +83,7 @@ export default function SkillsPage() {
       const matchSearch =
         skill.name.toLowerCase().includes(q) ||
         skill.id.toLowerCase().includes(q) ||
-        skill.tags.some((tag) => tag.toLowerCase().includes(q));
+        skill.tags?.some((tag) => tag.toLowerCase().includes(q))
 
       const matchTag =
         activeTag === "all" || skill.tags.includes(activeTag);
@@ -159,7 +202,7 @@ export default function SkillsPage() {
                   type="button"
                   onClick={() => {
                     console.log("equip", selectedSkill.id, "slot", slot);
-                    setSelectedSkill(null);
+                    equipSkill(slot);
                   }}
                 >
                   ใส่ในช่อง {slot}

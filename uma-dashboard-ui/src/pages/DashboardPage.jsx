@@ -52,7 +52,11 @@ export default function DashboardPage({
         return <TutorialsPage />;
 
       case "skills":
-        return <SkillsPage />;
+        return 
+        <SkillsPage
+          userId={userId}
+          username={player?.username || username}
+        />;
 
       case "characters":
         return <CharactersPage />;
