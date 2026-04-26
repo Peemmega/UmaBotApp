@@ -182,18 +182,22 @@ export default function ProfilePage({
                     {!skill ? (
                       <div className="profile-skill-empty">ว่าง</div>
                     ) : (
-                      <>
-                        <div className="profile-skill-name">
-                          {skill.id} - {skill.name}
+                      <div className="profile-skill-content">
+                        <div className="profile-skill-icon-box">
+                          {getSkillIcon(skill.icon)}
                         </div>
 
-                        <div className="profile-skill-meta">
-                          <span>CD {skill.cooldown}</span>
-                          <span>Cost {skill.cost}</span>
-                        </div>
+                        <div className="profile-skill-info">
+                          <div className="profile-skill-name">
+                            {skill.id} - {skill.name}
+                          </div>
 
-                        <p>{skill.trigger}</p>
-                      </>
+                          <div className="profile-skill-meta">
+                            <span>CD {skill.cooldown}</span>
+                            <span>Cost {skill.cost}</span>
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
                 );
