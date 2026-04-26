@@ -117,7 +117,10 @@ export default function SkillsPage({ userId, username }) {
               className={`skill-filter-btn ${
                 activeTag === tag.value ? "active" : ""
               }`}
-              onClick={() => setActiveTag(tag.value)}
+              onClick={() => {
+                playSound("click"); // 🔥 เพิ่ม
+                setActiveTag(tag.value);
+              }}
             >
               {tag.label}
             </button>
@@ -131,7 +134,14 @@ export default function SkillsPage({ userId, username }) {
 
       <div className="skills-grid">
         {filteredSkills.map((skill) => (
-          <article className="skill-card" key={skill.id} onClick={() => setSelectedSkill(skill)}>
+          <article
+            className="skill-card"
+            key={skill.id}
+            onClick={() => {
+              playSound("open"); // 🔥 เพิ่ม
+              setSelectedSkill(skill);
+            }}
+          >
             <div className="skill-top-row">
               <div className="skill-id">{skill.id}</div>
               <h3>{skill.name}</h3>
