@@ -1375,3 +1375,60 @@ body {
   font-weight: 800;
   text-align: center;
 }
+
+.profile-skill-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.profile-skill-slot {
+  background: white;
+  border: 2px solid #a3e635;
+  border-radius: 18px;
+  padding: 16px;
+  color: #7c3f15;
+}
+
+.profile-skill-slot-title {
+  color: #84cc16;
+  font-size: 18px;
+  font-weight: 1000;
+}
+
+.profile-skill-name {
+  margin-top: 8px;
+  font-size: 20px;
+  font-weight: 1000;
+}
+
+.profile-skill-meta {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.profile-skill-meta span {
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #ecfccb;
+  color: #3f6212;
+  font-weight: 900;
+}
+
+.profile-skill-empty {
+  margin-top: 12px;
+  padding: 20px;
+  border-radius: 14px;
+  background: #f4f4f5;
+  text-align: center;
+  font-weight: 900;
+  color: #9a7a62;
+}
+
+@media (max-width: 900px) {
+  .profile-skill-slots {
+    grid-template-columns: 1fr;
+  }
+}

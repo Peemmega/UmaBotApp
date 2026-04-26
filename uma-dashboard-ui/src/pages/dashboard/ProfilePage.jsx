@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { mainStats, aptitudeRows } from "../../data/dashboardConfig";
 import StatCell from "../../components/StatCell";
 import AptitudeItem from "../../components/AptitudeItem";
@@ -11,6 +11,7 @@ import skillIcon from "../../assets/icons/skillPoint.webp";
 import editIcon from "../../assets/icons/change_icon.webp";
 import { playSound } from "../../utils/soundManager";
 
+
 export default function ProfilePage({
   username,
   userId,
@@ -22,6 +23,17 @@ export default function ProfilePage({
   setIsEditStatsOpen,
   setIsRenameOpen,
 }) {
+
+  const [equippedSkills, setEquippedSkills] = useState({});
+  useEffect(() => {
+    if (!userId) return;
+
+    fetch(`https://umadndbot-production.up.railway.app/player/${userId}/skills`)
+      .then((res) => res.json())
+      .then((data) => setEquippedSkills(data))
+      .catch(console.error);
+  }, [userId]);
+
   return (
     <>
       {error ? <div className="error-box">{error}</div> : null}
@@ -151,6 +163,41 @@ export default function ProfilePage({
                   </div>
                 </div>
               ))}
+            </div>
+          </section>
+
+          <section className="sheet-card profile-skills-card">
+            <div className="main-stats-header">
+              <div className="section-title">Equipped Skills</div>
+            </div>
+
+            <div className="profile-skill-slots">
+              {[1, 2, 3].map((slot) => {
+                const skill = equippedSkills[`slot_${slot}`];
+
+                return (
+                  <div className="profile-skill-slot" key={slot}>
+                    <div className="profile-skill-slot-title">Slot {slot}</div>
+
+                    {!skill ? (
+                      <div className="profile-skill-empty">ว่าง</div>
+                    ) : (
+                      <>
+                        <div className="profile-skill-name">
+                          {skill.id} - {skill.name}
+                        </div>
+
+                        <div className="profile-skill-meta">
+                          <span>CD {skill.cooldown}</span>
+                          <span>Cost {skill.cost}</span>
+                        </div>
+
+                        <p>{skill.trigger}</p>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </section>
 
