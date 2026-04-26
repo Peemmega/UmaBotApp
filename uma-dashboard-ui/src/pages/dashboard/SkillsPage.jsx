@@ -3,6 +3,17 @@ import "../../styles/skillsPage.css";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
+import icon_concentration from "../../assets/skill_icon/Concentration.webp";
+import icon_acceleration from "../../assets/skill_icon/Acceleration.webp";
+import icon_velocity from "../../assets/skill_icon/Velocity.webp";
+import icon_recovery from "../../assets/skill_icon/Recovery.webp";
+import icon_decrease from "../../assets/skill_icon/DecreaseVelocity.webp";
+import icon_reduce_sta from "../../assets/skill_icon/ReduceSTA.webp";
+import icon_lookup from "../../assets/skill_icon/LookUp.webp";
+import icon_blind from "../../assets/skill_icon/Blind.webp";
+
+import witIcon from "../../assets/icons/Wit.webp";
+
 export default function SkillsPage() {
   const [skills, setSkills] = useState([]);
   const [tags, setTags] = useState([{ value: "all", label: "ทั้งหมด" }]);
@@ -76,46 +87,45 @@ export default function SkillsPage() {
       <div className="skills-grid">
         {filteredSkills.map((skill) => (
           <article className="skill-card" key={skill.id}>
-            <div className="skill-card-header">
-              <div>
-                <div className="skill-id">{skill.id}</div>
-                <h3>{skill.name}</h3>
-              </div>
+            <div className="skill-top-row">
+              <div className="skill-id">{skill.id}</div>
+              <h3>{skill.name}</h3>
+            </div>
 
-              <div className={`skill-icon ${skill.icon}`}>
+            <div className="skill-main-row">
+              <div className="skill-icon-box">
                 {getSkillIcon(skill.icon)}
               </div>
-            </div>
 
-            <div className="skill-meta">
-              <span>⏱️ CD {skill.cooldown}</span>
-              <span>🧠 Cost {skill.cost}</span>
-              <span>{skill.active_roll ? "Active Roll" : "Instant"}</span>
-            </div>
+              <div className="skill-content">
+                <div className="skill-meta-row">
+                  <span>CD&nbsp; {skill.cooldown}</span>
+                  <span className="skill-cost">
+                    <img src={witIcon} alt="cost" />
+                    {skill.cost}
+                  </span>
+                  <span>{skill.target}</span>
+                </div>
 
-            <div className="skill-section">
-              <strong>เป้าหมาย</strong>
-              <p>{skill.target}</p>
-            </div>
+                <div className="skill-trigger">
+                  <strong>เงื่อนไข:</strong> {skill.trigger}
+                </div>
 
-            <div className="skill-section">
-              <strong>เงื่อนไข</strong>
-              <p>{skill.trigger}</p>
-            </div>
+                <div className="skill-effects">
+                  <strong>ผลของสกิล</strong>
+                  <ul>
+                    {skill.effects.map((effect, index) => (
+                      <li key={index}>{effect}</li>
+                    ))}
+                  </ul>
+                </div>
 
-            <div className="skill-section">
-              <strong>ผล</strong>
-              <ul>
-                {skill.effects.map((effect, index) => (
-                  <li key={index}>{effect}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="skill-tags">
-              {skill.tags.map((tag) => (
-                <span key={tag}>{tag}</span>
-              ))}
+                <div className="skill-tags">
+                  {skill.tags.map((tag) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
+                </div>
+              </div>
             </div>
           </article>
         ))}
@@ -123,15 +133,6 @@ export default function SkillsPage() {
     </section>
   );
 }
-
-import icon_concentration from "../../assets/skill_icon/Concentration.webp";
-import icon_acceleration from "../../assets/skill_icon/Acceleration.webp";
-import icon_velocity from "../../assets/skill_icon/Velocity.webp";
-import icon_recovery from "../../assets/skill_icon/Recovery.webp";
-import icon_decrease from "../../assets/skill_icon/DecreaseVelocity.webp";
-import icon_reduce_sta from "../../assets/skill_icon/ReduceSTA.webp";
-import icon_lookup from "../../assets/skill_icon/LookUp.webp";
-import icon_blind from "../../assets/skill_icon/Blind.webp";
 
 function getSkillIcon(icon) {
   const iconMap = {
