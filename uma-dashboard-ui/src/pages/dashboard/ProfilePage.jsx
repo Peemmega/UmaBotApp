@@ -171,7 +171,7 @@ export default function ProfilePage({
               <div className="section-title">Equipped Skills</div>
             </div>
 
-            <div className="profile-skill-slots padding_container">
+            <div className="profile-skill-slots">
               {[1, 2, 3].map((slot) => {
                 const skill = equippedSkills[`slot_${slot}`];
 
