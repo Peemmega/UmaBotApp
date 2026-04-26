@@ -20,6 +20,15 @@ export default function SkillsPage({ userId, username }) {
   const [activeTag, setActiveTag] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedSkill, setSelectedSkill] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+      setToast(null);
+    }, 3000);
+  };
 
   useEffect(() => {
     fetch(`${BOT_API_BASE}/skills/tags`)
@@ -53,15 +62,15 @@ export default function SkillsPage({ userId, username }) {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.detail || "ติดตั้งสกิลไม่สำเร็จ");
+        showToast(data.detail || "ติดตั้งสกิลไม่สำเร็จ", "error");
         return;
       }
 
-      alert(data.message);
+      showToast(data.message || "ติดตั้งสกิลสำเร็จ", "success");
       setSelectedSkill(null);
     } catch (err) {
       console.error(err);
-      alert("เชื่อมต่อ server ไม่ได้");
+      showToast("เชื่อมต่อ server ไม่ได้", "error");
     }
   };
 
@@ -202,6 +211,19 @@ export default function SkillsPage({ userId, username }) {
         </div>
       )}
 
+      {toast && (
+        <div className={`skill-toast ${toast.type}`}>
+          <div className="skill-toast-icon">
+            {toast.type === "success" ? "✓" : "!"}
+          </div>
+          <div>
+            <strong>
+              {toast.type === "success" ? "สำเร็จ" : "เกิดข้อผิดพลาด"}
+            </strong>
+            <p>{toast.message}</p>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
