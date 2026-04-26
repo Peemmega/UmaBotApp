@@ -61,7 +61,6 @@
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  font-size: 14px;
 }
 
 .skill-filter-btn {
@@ -72,6 +71,7 @@
   color: #7c3f15;
   font-weight: 900;
   cursor: pointer;
+  font-size: 16px;
 }
 
 .skill-filter-btn.active {
