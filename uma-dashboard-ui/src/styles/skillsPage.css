@@ -245,10 +245,21 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(0, 0, 0, 0.42);
+
+  background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(6px);
+
+  animation: backdropFade 0.2s ease;
 }
 
+@keyframes backdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 .skill-equip-modal {
   position: relative;
   width: min(92vw, 620px);
@@ -258,7 +269,27 @@
   padding: 28px;
   color: #6b4a2f;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+
+  animation: equipPop 0.32s cubic-bezier(0.22, 1.4, 0.4, 1);
 }
+
+@keyframes equipPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.75) translateY(40px);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.05) translateY(-6px); /* 🔥 เด้งขึ้น */
+  }
+
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+
 
 .skill-equip-close {
   position: absolute;

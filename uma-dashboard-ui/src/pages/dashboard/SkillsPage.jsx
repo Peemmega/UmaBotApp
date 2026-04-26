@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import "../../styles/skillsPage.css";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
+import { playSound } from "../utils/soundManager";
 
 import icon_concentration from "../../assets/skill_icon/Concentration.webp";
 import icon_acceleration from "../../assets/skill_icon/Acceleration.webp";
@@ -67,6 +68,7 @@ export default function SkillsPage({ userId, username }) {
       }
 
       showToast(data.message || "ติดตั้งสกิลสำเร็จ", "success");
+      playSound("open");
       setSelectedSkill(null);
     } catch (err) {
       console.error(err);
@@ -199,7 +201,7 @@ export default function SkillsPage({ userId, username }) {
                   key={slot}
                   type="button"
                   onClick={() => {
-                    console.log("equip", selectedSkill.id, "slot", slot);
+                    playSound("open");
                     equipSkill(slot);
                   }}
                 >
