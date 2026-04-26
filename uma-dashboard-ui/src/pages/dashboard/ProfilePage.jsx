@@ -166,7 +166,7 @@ export default function ProfilePage({
             </div>
           </section>
 
-          <section className="sheet-card profile-skills-card">
+          <section className="sheet-card padding_container">
             <div className="main-stats-header">
               <div className="section-title">Equipped Skills</div>
             </div>
