@@ -49,43 +49,7 @@ export default function SkillsPage() {
     });
   }, [skills, search, activeTag]);
 
-  {selectedSkill && (
-    <div className="skill-equip-backdrop" onClick={() => setSelectedSkill(null)}>
-      <div className="skill-equip-modal" onClick={(e) => e.stopPropagation()}>
-        <button
-          className="skill-equip-close"
-          onClick={() => setSelectedSkill(null)}
-        >
-          ×
-        </button>
-
-        <div className="skill-equip-title">
-          <span>{selectedSkill.id}</span>
-          <h3>{selectedSkill.name}</h3>
-        </div>
-
-        <p className="skill-equip-desc">
-          เลือกช่องที่ต้องการติดตั้งสกิลนี้
-        </p>
-
-        <div className="skill-equip-buttons">
-          {[1, 2, 3].map((slot) => (
-            <button
-              key={slot}
-              type="button"
-              onClick={() => {
-                console.log("equip", selectedSkill.id, "slot", slot);
-                setSelectedSkill(null);
-              }}
-            >
-              ใส่ในช่อง {slot}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  )}
-
+  
   return (
     <section className="skills-page">
       <div className="skills-hero">
@@ -168,6 +132,44 @@ export default function SkillsPage() {
           </article>
         ))}
       </div>
+
+      {selectedSkill && (
+        <div className="skill-equip-backdrop" onClick={() => setSelectedSkill(null)}>
+          <div className="skill-equip-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="skill-equip-close"
+              onClick={() => setSelectedSkill(null)}
+            >
+              ×
+            </button>
+
+            <div className="skill-equip-title">
+              <span>{selectedSkill.id}</span>
+              <h3>{selectedSkill.name}</h3>
+            </div>
+
+            <p className="skill-equip-desc">
+              เลือกช่องที่ต้องการติดตั้งสกิลนี้
+            </p>
+
+            <div className="skill-equip-buttons">
+              {[1, 2, 3].map((slot) => (
+                <button
+                  key={slot}
+                  type="button"
+                  onClick={() => {
+                    console.log("equip", selectedSkill.id, "slot", slot);
+                    setSelectedSkill(null);
+                  }}
+                >
+                  ใส่ในช่อง {slot}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
     </section>
   );
 }
