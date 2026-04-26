@@ -75,7 +75,7 @@ export default function SkillsPage({ userId, username }) {
         skill.tags?.some((tag) => tag.toLowerCase().includes(q))
 
       const matchTag =
-        activeTag === "all" || skill.tags.includes(activeTag);
+        activeTag === "all" || skill.tags?.includes(activeTag);
 
       return matchSearch && matchTag;
     });
