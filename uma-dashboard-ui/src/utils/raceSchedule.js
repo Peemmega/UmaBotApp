@@ -1,16 +1,16 @@
-import ArimaKinen from "../assets/race_thumnail/ArimaKinen.png";
-import Debut from "../assets/race_thumnail/Debut.png";
-import JapanCup from "../assets/race_thumnail/JapanCup.png";
-import JapaneseDerby from "../assets/race_thumnail/JapaneseDerby.png";
-import MileChampionship from "../assets/race_thumnail/MileChampionship.png";
-import NHK from "../assets/race_thumnail/NHK.png";
-import OkaSho from "../assets/race_thumnail/OkaSho.png";
-import OsakaHai from "../assets/race_thumnail/OsakaHai.png";
-import SatsukiSho from "../assets/race_thumnail/SatsukiSho.png";
-import SteelBallRun from "../assets/race_thumnail/SteelBallRun.png";
-import TakarazukaKinen from "../assets/race_thumnail/TakarazukaKinen.png";
-import TennoShoAutumn from "../assets/race_thumnail/TennoShoAutumn.png";
-import TennoShoSpring from "../assets/race_thumnail/TennoShoSpring.png";
+import ArimaKinen from "../assets/race_thumnail/ArimaKinen.webp";
+import Debut from "../assets/race_thumnail/Debut.webp";
+import JapanCup from "../assets/race_thumnail/JapanCup.webp";
+import JapaneseDerby from "../assets/race_thumnail/JapaneseDerby.webp";
+import MileChampionship from "../assets/race_thumnail/MileChampionship.webp";
+import NHK from "../assets/race_thumnail/NHK.webp";
+import OkaSho from "../assets/race_thumnail/OkaSho.webp";
+import OsakaHai from "../assets/race_thumnail/OsakaHai.webp";
+import SatsukiSho from "../assets/race_thumnail/SatsukiSho.webp";
+import SteelBallRun from "../assets/race_thumnail/SteelBallRun.webp";
+import TakarazukaKinen from "../assets/race_thumnail/TakarazukaKinen.webp";
+import TennoShoAutumn from "../assets/race_thumnail/TennoShoAutumn.webp";
+import TennoShoSpring from "../assets/race_thumnail/TennoShoSpring.webp";
 
 export const raceImageMap = {
   ArimaKinen,

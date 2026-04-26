@@ -1,5 +1,5 @@
-import bgImage from "../assets/bg/profile-bg.png";
-import discordIcon from "../assets/icons/discord_icon.png";
+import bgImage from "../assets/bg/profile-bg.webp";
+import discordIcon from "../assets/icons/discord_icon.webp";
 import { playSound } from "../utils/soundManager";
 import "../styles/login.css";
 

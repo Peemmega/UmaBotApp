@@ -73,7 +73,7 @@ export default function App() {
 
   const avatarUrl = useMemo(() => {
     if (!userId || !avatarHash) return null;
-    return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png`;
+    return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.webp`;
   }, [userId, avatarHash]);
 
   return (

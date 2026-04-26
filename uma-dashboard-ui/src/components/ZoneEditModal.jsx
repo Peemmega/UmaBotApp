@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { playSound } from "../utils/soundManager";
 
-import plusIcon from "../assets/icons/add.png";
-import minusIcon from "../assets/icons/reduce.png";
-import resetIcon from "../assets/icons/reset.png";
-import editIcon from "../assets/icons/change_icon.png";
+import plusIcon from "../assets/icons/add.webp";
+import minusIcon from "../assets/icons/reduce.webp";
+import resetIcon from "../assets/icons/reset.webp";
+import editIcon from "../assets/icons/change_icon.webp";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import horseshoe from "../assets/icons/horseshoe.png";
+import horseshoe from "../assets/icons/horseshoe.webp";
 import "../styles/horseshoe.css";
 
 export default function HorseshoeBackground() {

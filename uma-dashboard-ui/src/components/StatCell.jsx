@@ -1,11 +1,11 @@
 import React from "react";
 import { getGradeImage, statLetter } from "../utils/grade";
 
-import speedIcon from "../assets/icons/Speed.png";
-import staminaIcon from "../assets/icons/Stamina.png";
-import powerIcon from "../assets/icons/Power.png";
-import gutIcon from "../assets/icons/Gut.png";
-import witIcon from "../assets/icons/Wit.png";
+import speedIcon from "../assets/icons/Speed.webp";
+import staminaIcon from "../assets/icons/Stamina.webp";
+import powerIcon from "../assets/icons/Power.webp";
+import gutIcon from "../assets/icons/Gut.webp";
+import witIcon from "../assets/icons/Wit.webp";
 
 const statIcons = {
   speed: speedIcon,

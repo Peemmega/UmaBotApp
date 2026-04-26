@@ -5,10 +5,10 @@ import AptitudeItem from "../../components/AptitudeItem";
 import ResourcePill from "../../components/ResourcePill";
 import EditStatsModal from "../../components/EditStatsModal";
 import ZonePanel from "../../components/ZonePanel";
-import coinIcon from "../../assets/icons/umaCoin.png";
-import statIcon from "../../assets/icons/statsPoint.png";
-import skillIcon from "../../assets/icons/skillPoint.png";
-import editIcon from "../../assets/icons/change_icon.png";
+import coinIcon from "../../assets/icons/umaCoin.webp";
+import statIcon from "../../assets/icons/statsPoint.webp";
+import skillIcon from "../../assets/icons/skillPoint.webp";
+import editIcon from "../../assets/icons/change_icon.webp";
 import { playSound } from "../../utils/soundManager";
 
 export default function ProfilePage({

@@ -1,6 +1,6 @@
 import React from "react";
-import discordIcon from "../assets/icons/discord_icon.png";
-import mailIcon from "../assets/icons/mail_icon.png";
+import discordIcon from "../assets/icons/discord_icon.webp";
+import mailIcon from "../assets/icons/mail_icon.webp";
 import { playSound } from "../utils/soundManager";
 
 export default function TopBar({

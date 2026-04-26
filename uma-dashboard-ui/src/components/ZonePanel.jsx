@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ZoneEditModal from "./ZoneEditModal";
-import editIcon from "../assets/icons/change_icon.png";
+import editIcon from "../assets/icons/change_icon.webp";
 import { playSound } from "../utils/soundManager";
 
 export default function ZonePanel({ userId, player, onSaved }) {

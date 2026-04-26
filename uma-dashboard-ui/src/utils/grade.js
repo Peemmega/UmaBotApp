@@ -1,11 +1,11 @@
-import gradeA from "../assets/grades/A.png";
-import gradeB from "../assets/grades/B.png";
-import gradeC from "../assets/grades/C.png";
-import gradeD from "../assets/grades/D.png";
-import gradeE from "../assets/grades/E.png";
-import gradeF from "../assets/grades/F.png";
-import gradeG from "../assets/grades/G.png";
-import gradeS from "../assets/grades/S.png";
+import gradeA from "../assets/grades/A.webp";
+import gradeB from "../assets/grades/B.webp";
+import gradeC from "../assets/grades/C.webp";
+import gradeD from "../assets/grades/D.webp";
+import gradeE from "../assets/grades/E.webp";
+import gradeF from "../assets/grades/F.webp";
+import gradeG from "../assets/grades/G.webp";
+import gradeS from "../assets/grades/S.webp";
 
 export function statLetter(value = 0) {
   const v = Number(value) || 0;

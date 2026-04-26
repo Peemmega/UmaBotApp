@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from "react";
 import "../../styles/charactersPage.css";
-import rose_garden_img from "../../assets/character/uma/rose_garden.png"
-import special_week_img from "../../assets/character/uma/special_week.png"
-import john_musume_img from "../../assets/character/uma/john_musume.png"
+import rose_garden_img from "../../assets/character/uma/rose_garden.webp"
+import special_week_img from "../../assets/character/uma/special_week.webp"
+import john_musume_img from "../../assets/character/uma/john_musume.webp"
 
-import spica_img from "../../assets/character/trainer/spica.png"
-import kaguya_img from "../../assets/character/trainer/kaguya.png"
-import gelbert_img from "../../assets/character/trainer/gelbert.png"
+import spica_img from "../../assets/character/trainer/spica.webp"
+import kaguya_img from "../../assets/character/trainer/kaguya.webp"
+import gelbert_img from "../../assets/character/trainer/gelbert.webp"
 
 const characters = [
   {
