@@ -86,8 +86,9 @@
 
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: 16px;
+  text-align: left;
 }
 
 .skill-card {
@@ -152,7 +153,7 @@
 
 .skill-meta-row {
   display: grid;
-  grid-template-columns: 130px 130px 130px;
+  grid-template-columns: 130px 130px auto;
   gap: 14px;
   margin-bottom: 14px;
 }
