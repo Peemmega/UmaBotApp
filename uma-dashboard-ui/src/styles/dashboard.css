@@ -1447,3 +1447,19 @@ body {
   font-weight: 900;
   color: #9a7a62;
 }
+
+.profile-skill-slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.profile-skill-slot {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .profile-skill-slots {
+    grid-template-columns: 1fr;
+  }
+}
