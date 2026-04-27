@@ -47,7 +47,7 @@
   border-radius: 999px;
   padding: 14px 20px;
   color: #7c3f15;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 900;
   outline: none;
 }
@@ -71,7 +71,7 @@
   color: #7c3f15;
   font-weight: 900;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 12px;
 }
 
 .skill-filter-btn.active {
