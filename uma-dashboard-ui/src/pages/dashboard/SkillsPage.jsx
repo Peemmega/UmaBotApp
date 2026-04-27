@@ -132,7 +132,7 @@ export default function SkillsPage({ userId, username }) {
           {/* <p>รายการสกิลทั้งหมดจาก UmaDnDBot</p> */}
         </div>
 
-        <div className="skills-toolbar padding-content">
+        <div className="skills-toolbar">
           <input
             className="skills-search"
             value={search}
