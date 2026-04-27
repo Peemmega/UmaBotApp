@@ -134,7 +134,10 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
                 <div className="edit-stat-controls">
                   <button
                     className={`stat-adjust-btn ${value <= 1 ? "disabled" : ""}`}
-                    onClick={() => decreaseStat(key)}
+                    onClick={() => {
+                        playSound("close"); 
+                        increaseStat(key)
+                      }}
                     disabled={value <= 1 || saving}
                   >
                     <img src={minusIcon} alt="minus" />
@@ -144,7 +147,11 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
 
                   <button
                     className="stat-adjust-btn plus"
-                    onClick={() => increaseStat(key)}
+                    onClick={() => 
+                      {
+                        playSound("click"); 
+                        increaseStat(key)
+                      }}
                     disabled={draftPoints <= 0 || saving}
                   >
                     <img src={plusIcon} alt="plus" />

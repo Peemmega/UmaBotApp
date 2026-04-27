@@ -39,6 +39,8 @@ export default function DashboardPage({
   showRaw,
   setShowRaw,
   error,
+  loading,
+  onLogout,
 }) {
   const [isEditStatsOpen, setIsEditStatsOpen] = useState(false);
   const [isMailboxOpen, setIsMailboxOpen] = useState(false);
@@ -122,9 +124,7 @@ export default function DashboardPage({
       <TopBar
             unreadCount={unreadCount}
             onMailClick={() => setIsMailboxOpen(true)}
-            onLogout={() => {
-              window.location.href = "/";
-            }}
+            onLogout={onLogout}
           />
 
 
