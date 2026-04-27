@@ -74,37 +74,38 @@ export default function CharactersPage() {
 
   return (
     <section className="characters-page">
-      <div className="characters-hero">
+      <div className="title-banner">
         <div>
-          {/* <p className="characters-kicker">Tracen Academy</p> */}
           <h2>Characters</h2>
           <p>เลือกดูข้อมูลตัวละคร / นักแข่งของเซิร์ฟเวอร์</p>
         </div>
-      </div>
 
-      <div className="characters-toolbar">
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search character..."
-          className="characters-search"
-        />
+        <div className="characters-toolbar">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search character..."
+            className="characters-search"
+          />
 
-        <div className="characters-filters">
-          {filters.map((filter) => (
-            <button
-              key={filter}
-              type="button"
-              className={`character-filter-btn ${
-                activeFilter === filter ? "active" : ""
-              }`}
-              onClick={() => setActiveFilter(filter)}
-            >
-              {filter}
-            </button>
-          ))}
+          <div className="characters-filters">
+            {filters.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                className={`character-filter-btn ${
+                  activeFilter === filter ? "active" : ""
+                }`}
+                onClick={() => setActiveFilter(filter)}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
+
+      
 
       <div className="characters-grid">
         {filteredCharacters.map((character) => (

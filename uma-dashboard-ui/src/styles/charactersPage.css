@@ -40,7 +40,7 @@
 
 .characters-toolbar {
   padding: 16px;
-  border-radius: 22px;
+  border-radius: 0px 0px 18px 18px;
   background: white;
   display: flex;
   flex-direction: column;
