@@ -439,7 +439,7 @@ body {
   }
 
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 5fr;
   }
 
   .stat-cell {
@@ -1610,7 +1610,7 @@ html {
 }
 
 .grade-image {
-  height: 32px;
+  height: 40px;
   width: auto;
 }
 
