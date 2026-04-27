@@ -136,7 +136,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
                     className={`stat-adjust-btn ${value <= 1 ? "disabled" : ""}`}
                     onClick={() => {
                         playSound("close"); 
-                        increaseStat(key)
+                        decreaseStat(key)
                       }}
                     disabled={value <= 1 || saving}
                   >
