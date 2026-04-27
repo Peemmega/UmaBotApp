@@ -2,6 +2,8 @@ import React, { useMemo, useState } from "react";
 import "../../styles/charactersPage.css";
 import rose_garden_img from "../../assets/character/uma/rose_garden.webp"
 import special_week_img from "../../assets/character/uma/special_week.webp"
+import calstone_light_o_img from "../../assets/character/uma/calstone_light_o.webp"
+
 import john_musume_img from "../../assets/character/uma/john_musume.webp"
 
 import spica_img from "../../assets/character/trainer/spica.webp"
@@ -9,44 +11,50 @@ import kaguya_img from "../../assets/character/trainer/kaguya.webp"
 import gelbert_img from "../../assets/character/trainer/gelbert.webp"
 
 const characters = [
-  {
-    id: 1,
-    name: "Oguri Cap",
-    type: "Trainee",
-    image: john_musume_img,
-  },
-  {
-    id: 2,
-    name: "Special Week",
-    type: "Trainee",
-    image: special_week_img,
-  },
-  {
-    id: 3,
-    name: "Tokai Teio",
-    type: "Trainee",
-    image: john_musume_img,
-  },
+  // {
+  //   id: 1,
+  //   name: "Oguri Cap",
+  //   type: "Trainee",
+  //   image: john_musume_img,
+  // },
+  // {
+  //   id: 2,
+  //   name: "Special Week",
+  //   type: "Trainee",
+  //   image: special_week_img,
+  // },
+  // {
+  //   id: 3,
+  //   name: "Tokai Teio",
+  //   type: "Trainee",
+  //   image: john_musume_img,
+  // },
   {
     id: 4,
+    name: "Calston Light O",
+    type: "Trainee",
+    image: calstone_light_o_img,
+  },
+  {
+    id: 5,
     name: "Rose Garden",
     type: "Trainee",
     image: rose_garden_img,
   },
   {
-    id: 5,
+    id: 101,
     name: "Trainer Spica",
     type: "Trainer",
     image: spica_img,
   },
   {
-    id: 6,
+    id: 102,
     name: "Ince Seiji",
     type: "Trainer",
     image: kaguya_img,
   },
   {
-    id: 7,
+    id: 103,
     name: "Yataio Galeberg",
     type: "Trainer",
     image: gelbert_img,
