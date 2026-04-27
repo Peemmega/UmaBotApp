@@ -160,15 +160,6 @@ export default function App() {
     window.location.href = "/";
   };
 
-  if (showIntro) {
-    return (
-      <>
-        <HorseshoeBackground />
-        <LoadingScreen onFinished={() => setShowIntro(false)} />
-      </>
-    );
-  }
-
   return (
     <>
       <HorseshoeBackground />
@@ -189,6 +180,10 @@ export default function App() {
           loading={loading}
           onLogout={handleLogout}
         />
+      )}
+
+      {showIntro && (
+        <LoadingScreen onFinished={() => setShowIntro(false)} />
       )}
     </>
   );
