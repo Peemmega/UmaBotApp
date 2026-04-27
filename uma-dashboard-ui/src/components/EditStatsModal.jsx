@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from "react";
 import clickSound from "../assets/sounds/click.mp3";
 import closeSound from "../assets/sounds/close.mp3";
+import plusIcon from "../assets/icons/add.webp";
+import minusIcon from "../assets/icons/reduce.webp";
 
 import { playSound } from "../utils/soundManager";
 
@@ -66,15 +68,16 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
   };
 
   const resetDraft = () => {
-    setDraftStats({
-      speed: player?.speed ?? 0,
-      stamina: player?.stamina ?? 0,
-      power: player?.power ?? 0,
-      gut: player?.gut ?? 0,
-      wit: player?.wit ?? 0,
-    });
-    setMessage("");
-  };
+  setDraftStats({
+    speed: 1,
+    stamina: 1,
+    power: 1,
+    gut: 1,
+    wit: 1,
+  });
+
+  setMessage("");
+};
 
   const saveStats = async () => {
     try {
@@ -121,34 +124,35 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="stats-modal stats-modal-wide" onClick={(e) => e.stopPropagation()}>
         <div className="edit-stats-grid">
-          {STAT_KEYS.map(([key, label]) => (
-            <div className="edit-stat-card" key={key}>
-              <div className="edit-stat-controls">
-                <button
-                  className="stat-adjust-btn minus"
-                  onClick={() => {
-                    playSound("close"); 
-                    decreaseStat(key)}}
-                  disabled={(draftStats[key] ?? 0) <= 1 || saving}
-                >
-                  -
-                </button>
+          {STAT_KEYS.map(([key, label]) => {
+            const value = draftStats[key] ?? 1;
 
-                <div className="edit-stat-value">{draftStats[key]}</div>
+            return (
+              <div className="edit-stat-card" key={key}>
+                <div className="edit-stat-label">{label}</div>
 
-                <button
-                  className="stat-adjust-btn plus"
-                  onClick={() => {
-                    playSound("click"); 
-                    increaseStat(key)
-                  }}
-                  disabled={draftPoints <= 0 || saving}
-                >
-                  +
-                </button>
+                <div className="edit-stat-controls">
+                  <button
+                    className={`stat-adjust-btn ${value <= 1 ? "disabled" : ""}`}
+                    onClick={() => decreaseStat(key)}
+                    disabled={value <= 1 || saving}
+                  >
+                    <img src={minusIcon} alt="minus" />
+                  </button>
+
+                  <div className="stat-value">{value}</div>
+
+                  <button
+                    className="stat-adjust-btn plus"
+                    onClick={() => increaseStat(key)}
+                    disabled={draftPoints <= 0 || saving}
+                  >
+                    <img src={plusIcon} alt="plus" />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="edit-stats-points-box">

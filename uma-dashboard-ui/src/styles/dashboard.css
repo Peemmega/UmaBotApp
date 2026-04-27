@@ -610,36 +610,58 @@ body {
 }
 
 .stat-adjust-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
-  font-size: 22px;
-  font-weight: 900;
-  color: white;
+
+  display: grid;
+  place-items: center;
+
+  background: white;
+  border: 2px solid #e5e7eb;
+
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: all 0.15s ease;
 }
 
+.stat-adjust-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+/* ปุ่ม + */
 .stat-adjust-btn.plus {
-  background: #84cc16;
+  background: linear-gradient(#b7e08a, #92dc52);
+  border-color: #84cc16;
 }
 
-.stat-adjust-btn.plus:hover:not(:disabled) {
-  background: #65a30d;
+/* hover */
+.stat-adjust-btn:hover {
+  transform: scale(1.08);
 }
 
-.stat-adjust-btn.minus {
-  background: #f59e0b;
-}
-
-.stat-adjust-btn.minus:hover:not(:disabled) {
-  background: #d97706;
-}
-
-.stat-adjust-btn:disabled {
-  opacity: 0.45;
+/* disabled */
+.stat-adjust-btn:disabled,
+.stat-adjust-btn.disabled {
+  opacity: 0.35;
   cursor: not-allowed;
+  filter: grayscale(0.6);
+  transform: none;
+}
+
+.stat-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 900;
+  min-width: 24px;
+  text-align: center;
 }
 
 .secondary-btn,

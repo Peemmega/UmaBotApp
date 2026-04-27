@@ -94,9 +94,9 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
 
   const resetDraft = () => {
     playSound("click");
-    setDraft(originalBuild);
-    setZoneName(zone?.name || "ชื่อ Zone");
-    setImageUrl(zone?.image_url || "");
+    setDraft(normalizeBuild({}));
+    // setZoneName("ชื่อ Zone");
+    // setImageUrl("");
   };
 
   const saveZone = async () => {
