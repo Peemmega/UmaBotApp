@@ -74,10 +74,12 @@ export default function CharactersPage() {
 
   return (
     <section className="characters-page">
-      <div className="title-banner">
-        <div>
-          <h2>Characters</h2>
-          <p>เลือกดูข้อมูลตัวละคร / นักแข่งของเซิร์ฟเวอร์</p>
+      <div className="sheet-card">
+        <div className="title-banner">
+          <div>
+            <h2>Characters</h2>
+            <p>เลือกดูข้อมูลตัวละคร / นักแข่งของเซิร์ฟเวอร์</p>
+          </div>
         </div>
 
         <div className="characters-toolbar">
