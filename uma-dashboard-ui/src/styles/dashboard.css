@@ -608,9 +608,14 @@ body {
   width: 42px;
   height: 42px;
 
-  place-items: center;
-  justify-items: center;
-  background-color: #00000000;
+  border: none;
+  background: transparent;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -618,12 +623,9 @@ body {
 .stat-adjust-btn img {
   width: 42px;
   height: 42px;
-}
-
-/* ปุ่ม + */
-.stat-adjust-btn.plus {
-  background: linear-gradient(#b7e08a, #92dc52);
-  border-color: #84cc16;
+  display: block;
+  object-fit: contain;
+  margin: 0;
 }
 
 /* hover */
