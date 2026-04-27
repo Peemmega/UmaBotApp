@@ -1,4 +1,5 @@
 import React from "react";
+import { playSound } from "../utils/soundManager";
 
 const menuItems = [
   { key: "profile", label: "Profile" },
@@ -16,7 +17,10 @@ export default function DashboardSidebar({ activePage, onChangePage }) {
           key={item.key}
           type="button"
           className={`sidebar-btn ${activePage === item.key ? "active" : ""}`}
-          onClick={() => onChangePage(item.key)}
+          onClick={() => {
+            playSound("click");
+            onChangePage(item.key);
+          }}
         >
           {item.label}
         </button>

@@ -1522,10 +1522,6 @@ html {
   gap: 20px;
 }
 
-.sidebar {
-  top: 92px;
-}
-
 .sidebar-btn {
   font-size: clamp(18px, 1.15vw, 22px);
   padding: 13px 18px;
