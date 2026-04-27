@@ -169,6 +169,7 @@
 
 .character-info h3 {
   margin-top: 0px;
+  margin-bottom: 0px;
   font-size: 18px;
   font-weight: 1000;
   color: #9a7a62;
@@ -182,7 +183,7 @@
 
 .character-bottom {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 
