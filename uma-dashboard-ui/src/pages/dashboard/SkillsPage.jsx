@@ -176,15 +176,14 @@ export default function SkillsPage({ userId, username }) {
             }}
           >
             <div className="skill-top-row">
+              <div className="skill-icon-box">
+                {getSkillIcon(skill.icon)}
+              </div>
               <div className="skill-id">{skill.id}</div>
               <h3>{skill.name}</h3>
             </div>
 
             <div className="skill-main-row">
-              <div className="skill-icon-box">
-                {getSkillIcon(skill.icon)}
-              </div>
-
               <div className="skill-content">
                 <div className="skill-meta-row">
                   <span>CD&nbsp; {skill.cooldown}</span>
