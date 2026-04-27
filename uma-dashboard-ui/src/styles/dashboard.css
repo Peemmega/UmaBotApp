@@ -281,13 +281,6 @@ body {
   padding: 14px 8px;
 }
 
-.grade-image {
-  width: clamp(48px, 6vw, 64px);
-  width: auto;  
-  object-fit: contain; 
-}
-
-
 /* APTITUDE */
 .aptitude-table {
   display: grid;
@@ -621,8 +614,8 @@ body {
 }
 
 .stat-adjust-btn img {
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
   display: block;
   object-fit: contain;
   margin: 0;
@@ -1617,7 +1610,7 @@ html {
 }
 
 .grade-image {
-  height: 52px;
+  height: 32px;
   width: auto;
 }
 
@@ -1643,7 +1636,7 @@ html {
 }
 
 .aptitude-grade-image {
-  height: 42px;
+  height: 30px;
 }
 
 .update-stats-btn {
