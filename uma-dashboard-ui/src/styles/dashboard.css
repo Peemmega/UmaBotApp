@@ -1393,9 +1393,9 @@ body {
 .profile-skill-slot-title {
   text-align: center;
   color: #84cc16;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 1000;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .profile-skill-content {
@@ -1443,7 +1443,7 @@ body {
   padding: 5px 10px;
   background: #ecfccb;
   color: #3f6212;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 900;
 }
 
@@ -1457,7 +1457,7 @@ body {
 .profile-skill-slots {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 8px;
 }
 
 .profile-skill-slot {
