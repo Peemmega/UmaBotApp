@@ -127,7 +127,7 @@ export default function SkillsPage({ userId, username }) {
     <section className="skills-page">
       <div className="skills-hero">
         {/* <p className="skills-kicker">Tracen Academy</p> */}
-        <h2>ายการ Skills ทั้งหมด</h2>
+        <h2>รายการ Skills ทั้งหมด</h2>
         {/* <p>รายการสกิลทั้งหมดจาก UmaDnDBot</p> */}
       </div>
 
