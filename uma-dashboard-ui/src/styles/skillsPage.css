@@ -132,8 +132,8 @@
 }
 
 .skill-icon-box {
-  width: 96px;
-  height: 96px;
+  width: 30px;
+  height: 30px;
   border-radius: 10px;
   display: grid;
   place-items: center;
