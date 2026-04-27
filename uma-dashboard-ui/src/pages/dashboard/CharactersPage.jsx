@@ -126,7 +126,7 @@ export default function CharactersPage() {
 
               <div className="character-bottom">
                 <span>{character.type}</span>
-                <button type="button">View</button>
+                {/* <button type="button">View</button> */}
               </div>
             </div>
           </article>

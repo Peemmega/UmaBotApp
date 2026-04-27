@@ -88,8 +88,8 @@
 
 .characters-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .character-card {
@@ -101,7 +101,7 @@
 }
 
 .character-image-frame {
-  height: 320px;
+  height: 180px;
   background: linear-gradient(180deg, #ecfccb, #f7fee7);
   overflow: hidden;
   position: relative;
@@ -131,7 +131,7 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 80px;
+  height: 0px;
   background: linear-gradient(to top, white, transparent);
 }
 
@@ -164,12 +164,12 @@
 }
 
 .character-info {
-  padding: 16px;
+  padding-bottom: 5px;
 }
 
 .character-info h3 {
-  margin-bottom: 5px;
-  font-size: 24px;
+  margin-top: 0px;
+  font-size: 18px;
   font-weight: 1000;
   color: #9a7a62;
 }
@@ -188,16 +188,17 @@
 
 .character-bottom span {
   border-radius: 999px;
-  padding: 6px 12px;
+  padding: 1px 30px;
   background: #ecfccb;
   color: #3f6212;
   font-weight: 900;
+  font-size: 14px;
 }
 
 .character-bottom button {
   border: none;
   border-radius: 999px;
-  padding: 8px 16px;
+  padding: 6px 16px;
   background: linear-gradient(#92dc52, #75c832);
   color: white;
   font-weight: 900;
