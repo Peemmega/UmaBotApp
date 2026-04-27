@@ -1477,3 +1477,214 @@ body {
   }
 }
 
+/* ===== Responsive Scale Fix ===== */
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.dashboard-page {
+  padding-top: 96px;
+  padding-left: clamp(10px, 1.2vw, 18px);
+  padding-right: clamp(10px, 1.2vw, 18px);
+}
+
+.topbar {
+  height: 76px;
+  padding: 0 clamp(20px, 3vw, 42px);
+}
+
+.dashboard-title,
+.topbar-title {
+  font-size: clamp(32px, 2.7vw, 48px);
+}
+
+.dashboard-layout {
+  width: min(100%, 1500px);
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns:
+    clamp(220px, 16vw, 280px)
+    minmax(0, 780px)
+    clamp(300px, 22vw, 360px);
+
+  gap: clamp(22px, 2vw, 34px);
+  align-items: start;
+  justify-content: center;
+}
+
+.dashboard-shell {
+  width: 100%;
+  max-width: 780px;
+  gap: 20px;
+}
+
+.sidebar {
+  top: 92px;
+}
+
+.sidebar-btn {
+  font-size: clamp(18px, 1.15vw, 22px);
+  padding: 13px 18px;
+}
+
+.profile-card {
+  border-radius: 24px;
+}
+
+.title-banner {
+  padding: 14px 22px;
+}
+
+.title-banner h2 {
+  font-size: clamp(28px, 2.6vw, 38px);
+}
+
+.profile-body {
+  grid-template-columns: 180px 1fr;
+  gap: 22px;
+  padding: 22px;
+}
+
+.profile-avatar {
+  width: 150px;
+  height: 150px;
+}
+
+.profile-name {
+  font-size: clamp(26px, 2.4vw, 36px);
+}
+
+.profile-resources {
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.resource-pill {
+  min-height: 62px;
+  padding: 6px 16px;
+}
+
+.resource-label {
+  font-size: 14px;
+}
+
+.resource-value {
+  font-size: 20px;
+}
+
+.resource-icon {
+  width: 44px;
+  height: 44px;
+}
+
+.sheet-card {
+  border-radius: 22px;
+}
+
+.padding_container {
+  padding: 14px;
+}
+
+.section-title {
+  font-size: clamp(24px, 2vw, 30px);
+}
+
+.main-stats-header {
+  margin-bottom: 16px;
+}
+
+.stats-grid {
+  border-radius: 14px;
+}
+
+.stat-cell {
+  min-height: 116px;
+}
+
+.stat-header {
+  min-height: 36px;
+  font-size: clamp(15px, 1.2vw, 20px);
+}
+
+.stat-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.stat-body {
+  gap: 10px;
+  padding: 10px 6px;
+}
+
+.grade-image {
+  height: 52px;
+  width: auto;
+}
+
+.stat-value {
+  font-size: 24px;
+}
+
+.aptitude-row {
+  grid-template-columns: 110px 1fr;
+}
+
+.aptitude-row-title {
+  font-size: 22px;
+}
+
+.aptitude-name {
+  font-size: 20px;
+}
+
+.aptitude-item {
+  min-height: 56px;
+  padding: 10px 14px;
+}
+
+.aptitude-grade-image {
+  height: 42px;
+}
+
+.update-stats-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.race-calendar-side {
+  width: 100%;
+}
+
+@media (max-width: 1280px) {
+  .dashboard-layout {
+    grid-template-columns: 220px minmax(0, 780px);
+    max-width: 1060px;
+  }
+
+  .race-calendar-side {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-page {
+    padding-top: 138px;
+  }
+
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+    max-width: 720px;
+  }
+
+  .sidebar {
+    position: static;
+  }
+
+  .profile-body {
+    grid-template-columns: 1fr;
+  }
+}
