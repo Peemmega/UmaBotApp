@@ -125,38 +125,41 @@ export default function SkillsPage({ userId, username }) {
 
   return (
     <section className="skills-page">
-      <div className="skills-hero">
-        {/* <p className="skills-kicker">Tracen Academy</p> */}
-        <h2>รายการ Skills ทั้งหมด</h2>
-        {/* <p>รายการสกิลทั้งหมดจาก UmaDnDBot</p> */}
-      </div>
+      <div className="sheet-card">
+        <div className="title-banner">
+          {/* <p className="skills-kicker">Tracen Academy</p> */}
+          <h2>รายการ Skills ทั้งหมด</h2>
+          {/* <p>รายการสกิลทั้งหมดจาก UmaDnDBot</p> */}
+        </div>
 
-      <div className="skills-toolbar">
-        <input
-          className="skills-search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search skill name / id / tag..."
-        />
+        <div className="skills-toolbar">
+          <input
+            className="skills-search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search skill name / id / tag..."
+          />
 
-        <div className="skills-filter-row">
-          {tags.map((tag) => (
-            <button
-              key={tag.value}
-              type="button"
-              className={`skill-filter-btn ${
-                activeTag === tag.value ? "active" : ""
-              }`}
-              onClick={() => {
-                playSound("click");
-                setActiveTag(tag.value);
-              }}
-            >
-              {tag.label}
-            </button>
-          ))}
+          <div className="skills-filter-row">
+            {tags.map((tag) => (
+              <button
+                key={tag.value}
+                type="button"
+                className={`skill-filter-btn ${
+                  activeTag === tag.value ? "active" : ""
+                }`}
+                onClick={() => {
+                  playSound("click");
+                  setActiveTag(tag.value);
+                }}
+              >
+                {tag.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
+      
 
       <div className="skills-count">
         พบ {filteredSkills.length} สกิล
