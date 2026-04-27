@@ -287,11 +287,6 @@ body {
   object-fit: contain; 
 }
 
-.stat-value {
-  font-size: clamp(24px,5vw,30px);
-  font-weight: 900;
-  color: #7c3f15;
-}
 
 /* APTITUDE */
 .aptitude-table {
@@ -617,18 +612,18 @@ body {
   display: grid;
   place-items: center;
 
-  background: white;
+  background: rgba(255, 255, 255, 0);
   border: 2px solid #e5e7eb;
 
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  /* box-shadow: 0 6px 12px rgba(0,0,0,0.15); */
 
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .stat-adjust-btn img {
-  width: 20px;
-  height: 20px;
+  width: 42px;
+  height: 42px;
 }
 
 /* ปุ่ม + */
@@ -658,9 +653,10 @@ body {
 }
 
 .stat-value {
-  font-size: 20px;
+  font-size: clamp(24px,5vw,30px);
   font-weight: 900;
   min-width: 24px;
+  color: #7c3f15;
   text-align: center;
 }
 
