@@ -5,6 +5,7 @@ const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 import { playSound } from "../../utils/soundManager";
 
 import witIcon from "../../assets/icons/Wit.webp";
+import staminaIcon from "../../assets/icons/Stamina.webp";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 
 export default function SkillsPage({ userId, username }) {
