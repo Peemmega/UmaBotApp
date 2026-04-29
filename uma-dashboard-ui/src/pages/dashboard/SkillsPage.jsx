@@ -4,17 +4,6 @@ import "../../styles/skillsPage.css";
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 import { playSound } from "../../utils/soundManager";
 
-import icon_concentration from "../../assets/skill_icon/Concentration.webp";
-import icon_acceleration from "../../assets/skill_icon/Acceleration.webp";
-import icon_velocity from "../../assets/skill_icon/Velocity.webp";
-import icon_recovery from "../../assets/skill_icon/Recovery.webp";
-import icon_decrease from "../../assets/skill_icon/DecreaseVelocity.webp";
-import icon_reduce_sta from "../../assets/skill_icon/ReduceSTA.webp";
-import icon_lookup from "../../assets/skill_icon/LookUp.webp";
-import icon_blind from "../../assets/skill_icon/Blind.webp";
-import staminaIcon from "../../assets/icons/Stamina.webp";
-import { getSkillIcon } from "../../utils/getSkillIcon";
-
 import witIcon from "../../assets/icons/Wit.webp";
 
 export default function SkillsPage({ userId, username }) {
