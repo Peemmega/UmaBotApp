@@ -153,7 +153,6 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
   return (
     <div className={`zone-edit-backdrop ${closing ? "closing" : ""}`} onClick={closeModal}>
       <div className={`zone-edit-modal ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
-        {/* <div className="zone-edit-banner">Zone Manager</div> */}
         <div className="title-banner">
             <h2>Zone Manager</h2>
         </div>
