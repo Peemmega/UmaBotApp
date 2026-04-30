@@ -6,13 +6,15 @@ import { playSound } from "../utils/soundManager";
 export default function ZonePanel({ userId, player, onSaved }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const zone = player?.zone || {};
+
   const ZONE_VALUE = {
     flat: 18,
     add_dkh: 2,
     floor: 5,
     selected_die: 3,
-    cap: 7,
+    cap: 5,
     self_heal_stamina: 1,
+    modify_current_speed: 1,
   };
 
   const getZoneEffectLines = (build = {}) => {
@@ -24,6 +26,8 @@ export default function ZonePanel({ userId, player, onSaved }) {
       cap: (build.cap ?? 0) * ZONE_VALUE.cap,
       self_heal_stamina:
         (build.self_heal_stamina ?? 0) * ZONE_VALUE.self_heal_stamina,
+      modify_current_speed:
+        (build.modify_current_speed ?? 0) * ZONE_VALUE.modify_current_speed,
     };
 
     const lines = [];
@@ -35,6 +39,9 @@ export default function ZonePanel({ userId, player, onSaved }) {
     if (effects.cap) lines.push(`📈 เพิ่มแต้มสูงสุด +${effects.cap}`);
     if (effects.self_heal_stamina) {
       lines.push(`❤️ ฟื้นฟู STA ตัวเอง +${effects.self_heal_stamina}`);
+    };
+    if (effects.modify_current_speed) {
+      lines.push(`👟 เพิ่มอัตราเร่ง ${effects.modify_current_speed} ระดับ`);
     }
 
     return lines.length ? lines : ["Zone ทำงาน แต่ยังไม่มีค่าที่อัปไว้"];

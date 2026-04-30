@@ -5,4 +5,5 @@ export const zoneBuildMeta = {
   selected_die: { label: "Selected Die", icon: "🎯", format: (v) => `+${v} selected die` },
   cap: { label: "Roll Cap", icon: "📈", format: (v) => `Cap +${v}` },
   self_heal_stamina: { label: "Stamina Heal", icon: "💚", format: (v) => `Heal ${v} STA` },
+  modify_current_speed: { label: "Accelerator", icon: "👟", format: (v) => `Boost accelerator x${v}` },
 };
