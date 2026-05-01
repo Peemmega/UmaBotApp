@@ -14,7 +14,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
     selected_die: 3,
     cap: 5,
     self_heal_stamina: 1,
-    modify_current_speed: 0.75,
+    modify_current_speed: 0.5,
   };
 
   const getZoneEffectLines = (build = {}) => {
