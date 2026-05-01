@@ -172,7 +172,7 @@ export default function ProfilePage({
             </div>
 
             <div className="profile-skill-slots">
-              {[1, 2, 3].map((slot) => {
+              {[1, 2, 3, 4].map((slot) => {
                 const skill = equippedSkills[`slot_${slot}`];
 
                 return (
