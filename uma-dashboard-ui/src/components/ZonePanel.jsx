@@ -12,7 +12,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
     add_dkh: 2,
     floor: 5,
     selected_die: 3,
-    cap: 5,
+    cap: 7,
     self_heal_stamina: 1,
     modify_current_speed: 0.5,
   };
