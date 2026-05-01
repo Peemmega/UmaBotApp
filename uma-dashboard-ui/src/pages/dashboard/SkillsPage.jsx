@@ -232,7 +232,7 @@ export default function SkillsPage({ userId, username }) {
             </p>
 
             <div className="skill-equip-buttons">
-              {[1, 2, 3].map((slot) => (
+              {[1, 2, 3, 4].map((slot) => (
                 <button
                   key={slot}
                   type="button"
