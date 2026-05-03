@@ -495,7 +495,7 @@ body {
 }
 
 .stat-value {
-  font-size: clamp(24px,5vw,30px);
+  font-size: clamp(20px,5vw,24px);
   font-weight: 900;
   min-width: 24px;
   color: #7c3f15;
