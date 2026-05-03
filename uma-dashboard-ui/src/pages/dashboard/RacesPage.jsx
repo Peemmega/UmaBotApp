@@ -210,7 +210,7 @@ export default function RacesPage({ userId }) {
                 <p>{selectedRace.path?.join(" ➜ ")}</p>
               </div>
 
-              <div className="zone-edit-actions">
+              <div className="race-room-actions">
                 <button
                   className="zone-cancel-btn"
                   onClick={() => setSelectedRace(null)}
