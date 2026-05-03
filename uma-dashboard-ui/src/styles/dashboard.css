@@ -95,7 +95,7 @@ body {
 
 .title-banner h3 {
   margin: 0;
-  font-size: clamp(16px,6vw,28px);
+  font-size: clamp(16px,6vw,20px);
   font-weight: 600;
   color: white;
 }
