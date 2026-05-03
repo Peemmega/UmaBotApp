@@ -179,8 +179,8 @@ export default function RacesPage({ userId }) {
             <div className="zone-edit-body">
               <div className="race-room-header">
                 <div>
-                  <h2>🏟️ {selectedRace.name}</h2>
-                  <p>เตรียมตัวเข้าสู่สนามแข่ง 🏇</p>
+                  <h2>{selectedRace.name}</h2>
+                  <p>ข้อมูลสนามแข่ง</p>
                 </div>
 
                 <img
@@ -193,12 +193,12 @@ export default function RacesPage({ userId }) {
 
               <div className="race-room-info-grid">
                 <div className="race-room-info-card">
-                  <span>⏱️ เทิร์น</span>
+                  <span>จำนวนเทิร์น</span>
                   <strong>{selectedRace.turn}</strong>
                 </div>
 
                 <div className="race-room-info-card">
-                  <span>📌 ประเภท</span>
+                  <span>ประเภท</span>
                   <strong>
                     {selectedRace.track} / {selectedRace.distance}
                   </strong>
@@ -206,7 +206,7 @@ export default function RacesPage({ userId }) {
               </div>
 
               <div className="race-room-path-card">
-                <span>🗺️ เส้นทาง</span>
+                <span>เส้นทาง</span>
                 <p>{selectedRace.path?.join(" ➜ ")}</p>
               </div>
 
