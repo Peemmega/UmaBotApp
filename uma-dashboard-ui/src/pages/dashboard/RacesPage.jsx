@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "../../styles/skillsPage.css";
 import { playSound } from "../../utils/soundManager";
+import { raceImageMap } from "../../utils/raceSchedule.js";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
@@ -20,21 +21,23 @@ export default function RacesPage() {
   useEffect(() => {
     fetch(`${BOT_API_BASE}/races`)
       .then((res) => res.json())
-      .then((data) => setRaces(data))
+      .then((data) => setRaces(Array.isArray(data) ? data : []))
       .catch(console.error);
   }, []);
 
   const filteredRaces = useMemo(() => {
     return races.filter((race) => {
       const q = search.toLowerCase();
+      const raceDistance = race.distance?.toLowerCase() || "";
 
       const matchSearch =
         race.name?.toLowerCase().includes(q) ||
         race.id?.toLowerCase().includes(q) ||
-        race.track?.toLowerCase().includes(q);
+        race.track?.toLowerCase().includes(q) ||
+        raceDistance.includes(q);
 
       const matchDistance =
-        activeDistance === "all" || race.distance === activeDistance;
+        activeDistance === "all" || raceDistance === activeDistance;
 
       return matchSearch && matchDistance;
     });
@@ -75,46 +78,48 @@ export default function RacesPage() {
         </div>
       </div>
 
-      <div className="skills-count">
-        พบ {filteredRaces.length} สนาม
-      </div>
+      <div className="skills-count">พบ {filteredRaces.length} สนาม</div>
 
       <div className="skills-grid">
-        {filteredRaces.map((race) => (
-          <article className="skill-card" key={`${race.date}-${race.id}`}>
-            <div className="skill-top-row">
-              <div className="skill-icon-box">
-                {race.thumbnail || race.image ? (
-                  <img
-                    src={race.thumbnail || race.image}
-                    alt={race.name}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      borderRadius: "14px",
-                    }}
-                  />
-                ) : (
-                  "🏟️"
-                )}
+        {filteredRaces.map((race) => {
+          const raceImg = raceImageMap[race.id];
+
+          return (
+            <article className="skill-card" key={race.id}>
+              <div className="skill-top-row">
+                <div className="skill-icon-box">
+                  {raceImg ? (
+                    <img
+                      src={raceImg}
+                      alt={race.name}
+                      className="race-card-img"
+                    />
+                  ) : (
+                    "🏟️"
+                  )}
+                </div>
+
+                <div className="skill-id">{race.id}</div>
+                <h3>{race.name}</h3>
               </div>
 
-              <div className="skill-id">{race.id}</div>
-              <h3>{race.name}</h3>
-            </div>
+              <div className="skill-main-row">
+                <div className="skill-content">
+                  <div className="skill-meta-row">
+                    <span>{race.distance}</span>
+                    <span>{race.track}</span>
+                    <span>{race.turn} Turns</span>
+                  </div>
 
-            <div className="skill-main-row">
-              <div className="skill-content">
-                <div className="skill-meta-row">
-                  <span>{race.distance}</span>
-                  <span>{race.track}</span>
-                  <span>{race.date} {race.time}</span>
+                  <div className="skill-trigger">
+                    <strong>Path:</strong>{" "}
+                    {race.path?.length ? race.path.join(" / ") : "-"}
+                  </div>
                 </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </section>
   );
