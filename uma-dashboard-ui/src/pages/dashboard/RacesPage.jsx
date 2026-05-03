@@ -98,7 +98,7 @@ export default function RacesPage() {
                   )}
               </div>
 
-              <div className="skill-id">{race.name}</div>
+              <div className="race-id">{race.name}</div>
 
 
               <div className="skill-main-row">
@@ -109,10 +109,10 @@ export default function RacesPage() {
                     <span>{race.turn} Turns</span>
                   </div>
 
-                  <div className="skill-trigger">
+                  {/* <div className="skill-trigger">
                     <strong>Path:</strong>{" "}
                     {race.path?.length ? race.path.join(" / ") : "-"}
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </article>
