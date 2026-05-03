@@ -93,6 +93,13 @@ body {
   color: white;
 }
 
+.title-banner h3 {
+  margin: 0;
+  font-size: clamp(16px,6vw,28px);
+  font-weight: 600;
+  color: white;
+}
+
 .padding_container {
   padding: 18px;
 }
@@ -1073,7 +1080,7 @@ body {
   background: white;
   border: 2px solid #a3e635;
   border-radius: 18px;
-  padding: 14px 16px;
+  padding: 8px 16px 16px 16px;
   color: #7c3f15;
 }
 
@@ -1127,7 +1134,7 @@ body {
 
 .profile-skill-meta span {
   border-radius: 999px;
-  padding: 5px 10px;
+  padding: 1px 10px;
   background: #ecfccb;
   color: #3f6212;
   font-size: 12px;
@@ -1235,7 +1242,7 @@ body {
 .zone-name-row h3 {
   margin: 0;
   color: #815758;
-  font-size: 34px;
+  font-size: 24px;
   font-weight: 900;
 }
 
@@ -1248,7 +1255,7 @@ body {
 
 .zone-summary {
   color: #815758;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 900;
   line-height: 1.65;
 }
