@@ -164,41 +164,68 @@ export default function RacesPage({ userId }) {
       </div>
 
       {selectedRace && (
-        <div className="skill-equip-backdrop" onClick={() => setSelectedRace(null)}>
-          <div className="race-detail-modal" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="skill-equip-close"
-              onClick={() => setSelectedRace(null)}
-            >
-              ×
-            </button>
+        <div
+          className="zone-edit-backdrop"
+          onClick={() => setSelectedRace(null)}
+        >
+          <div
+            className="zone-edit-modal race-room-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="title-banner">
+              <h2>Race Lobby</h2>
+            </div>
 
-            <div className="race-detail-header">
-              <div>
-                <h2>🏟️ {selectedRace.name}</h2>
-                <p>เตรียมตัวเข้าสู่สนามแข่ง 🏇</p>
+            <div className="zone-edit-body">
+              <div className="race-room-header">
+                <div>
+                  <h2>🏟️ {selectedRace.name}</h2>
+                  <p>เตรียมตัวเข้าสู่สนามแข่ง 🏇</p>
+                </div>
+
+                <img
+                  src={raceImageMap[selectedRace.id]}
+                  alt={selectedRace.name}
+                />
               </div>
 
-              <img
-                src={raceImageMap[selectedRace.id]}
-                alt={selectedRace.name}
-              />
+              <div className="zone-divider" />
+
+              <div className="race-room-info-grid">
+                <div className="race-room-info-card">
+                  <span>⏱️ เทิร์น</span>
+                  <strong>{selectedRace.turn}</strong>
+                </div>
+
+                <div className="race-room-info-card">
+                  <span>📌 ประเภท</span>
+                  <strong>
+                    {selectedRace.track} / {selectedRace.distance}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="race-room-path-card">
+                <span>🗺️ เส้นทาง</span>
+                <p>{selectedRace.path?.join(" ➜ ")}</p>
+              </div>
+
+              <div className="zone-edit-actions">
+                <button
+                  className="zone-cancel-btn"
+                  onClick={() => setSelectedRace(null)}
+                >
+                  ยกเลิก
+                </button>
+
+                <button
+                  className="zone-save-btn"
+                  onClick={createRaceRoom}
+                >
+                  สร้างห้อง
+                </button>
+              </div>
             </div>
-
-            <div className="race-detail-info">
-              <h3>⏱️ เทิร์น</h3>
-              <p>{selectedRace.turn}</p>
-
-              <h3>🗺️ เส้นทาง</h3>
-              <p>{selectedRace.path?.join(" ➜ ")}</p>
-
-              <h3>📌 ประเภท</h3>
-              <p>{selectedRace.track} / {selectedRace.distance}</p>
-            </div>
-
-            <button className="create-room-btn" onClick={createRaceRoom}>
-              สร้างห้อง
-            </button>
           </div>
         </div>
       )}
