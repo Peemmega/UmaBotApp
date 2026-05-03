@@ -86,8 +86,7 @@ export default function RacesPage() {
 
           return (
             <article className="skill-card" key={race.id}>
-              <div className="skill-top-row">
-                <div className="race-stage-icon-box">
+              <div className="race-stage-icon-box">
                   {raceImg ? (
                     <img
                       src={raceImg}
@@ -97,10 +96,10 @@ export default function RacesPage() {
                   ) : (
                     "🏟️"
                   )}
-                </div>
-
-                <div className="skill-id">{race.name}</div>
               </div>
+
+              <div className="skill-id">{race.name}</div>
+
 
               <div className="skill-main-row">
                 <div className="skill-content">

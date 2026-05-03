@@ -135,9 +135,9 @@
 
 
 .race-stage-icon-box {
-  width: 30px;
-  height: 30px;
-  border-radius: 10px;
+  width: 80px;
+  height: 40px;
+  border-radius: 5px;
   display: grid;
   place-items: center;
   background: none;
