@@ -126,7 +126,7 @@ export default function SkillsPage({ userId, username }) {
 
         <div className="skills-toolbar">
           <input
-            className="skills-search"
+            className="search-bar"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search skill name / id / tag..."

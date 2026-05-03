@@ -95,7 +95,7 @@ export default function CharactersPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search character..."
-            className="characters-search"
+            className="search-bar"
           />
 
           <div className="characters-filters">

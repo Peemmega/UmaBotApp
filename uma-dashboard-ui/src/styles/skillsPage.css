@@ -41,7 +41,7 @@
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.16);
 }
 
-.skills-search {
+.search-bar {
   width: 100%;
   border: 3px solid #d9f99d;
   border-radius: 999px;
@@ -52,7 +52,7 @@
   outline: none;
 }
 
-.skills-search:focus {
+.search-bar:focus {
   border-color: #84cc16;
   box-shadow: 0 0 0 4px rgba(132, 204, 22, 0.22);
 }

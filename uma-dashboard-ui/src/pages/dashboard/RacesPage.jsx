@@ -100,7 +100,7 @@ export default function RacesPage({ userId }) {
 
         <div className="skills-toolbar">
           <input
-            className="skills-search"
+            className="search-bar"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search race name / id / track..."
