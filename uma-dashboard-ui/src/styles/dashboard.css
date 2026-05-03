@@ -104,14 +104,6 @@ body {
   padding: 18px;
 }
 
-.profile-body {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 28px;
-  padding: 28px;
-  background: #ececec;
-}
-
 .profile-avatar-wrap {
   display: flex;
   align-items: center;
@@ -152,45 +144,6 @@ body {
   color: rgba(66, 33, 11, 0.65);
   font-size: 14px;
   word-break: break-all;
-}
-
-.profile-resources {
-  margin-top: 24px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-
-/* RESOURCE */
-.resource-pill {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  min-height: 78px;
-  background: linear-gradient(180deg, #fafafa 0%, #ececec 100%);
-  border: 2px solid #cfc9d6;
-  border-radius: 999px;
-  padding: 8px 22px;
-}
-
-.resource-label {
-  font-size: clamp(12px, 2vw, 18px);
-  color: #7c3f15;
-  font-weight: 900;
-}
-
-.resource-value {
-  font-size: 24px;
-  font-weight: 900;
-  color: #7c3f15;
-}
-
-.resource-icon {
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
-  flex-shrink: 0;
 }
 
 /* SECTION */
@@ -601,8 +554,8 @@ body {
   position: absolute;
   right: 6px;
   top: -6px;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 100%;
   border: none;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0);
@@ -849,8 +802,8 @@ body {
 .profile-body {
   display: grid;
   grid-template-columns: 180px 1fr;
-  gap: 22px;
-  padding: 22px;
+  gap: 50px;
+  padding: 20px;
   background: #ececec;
 }
 
@@ -879,7 +832,7 @@ body {
 }
 
 .profile-resources {
-  margin-top: 18px;
+  margin-top: 8px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
@@ -887,24 +840,24 @@ body {
 
 .resource-pill {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
   gap: 12px;
   min-height: 62px;
   background: linear-gradient(180deg, #fafafa 0%, #ececec 100%);
   border: 2px solid #cfc9d6;
   border-radius: 999px;
-  padding: 6px 16px;
+  padding: 3px 20px;
 }
 
 .resource-label {
-  font-size: 14px;
+  font-size: 18px;
   color: #7c3f15;
   font-weight: 900;
 }
 
 .resource-value {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 900;
   color: #7c3f15;
 }
