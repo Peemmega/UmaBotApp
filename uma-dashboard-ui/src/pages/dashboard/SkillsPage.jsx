@@ -250,8 +250,8 @@ export default function SkillsPage({ userId, username }) {
       )}
 
       {toast && (
-        <div className={`skill-toast ${toast.type}`}>
-          <div className="skill-toast-icon">
+        <div className={`toast ${toast.type}`}>
+          <div className="toast-icon">
             {toast.type === "success" ? "✓" : "!"}
           </div>
           <div>

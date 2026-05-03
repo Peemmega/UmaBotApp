@@ -26,6 +26,16 @@ export default function RacesPage({ userId }) {
       .catch(console.error);
   }, []);
 
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+
+    setTimeout(() => {
+      setToast(null);
+    }, 3000);
+  };
+
   const filteredRaces = useMemo(() => {
     return races.filter((race) => {
       const q = search.toLowerCase();
@@ -59,7 +69,12 @@ export default function RacesPage({ userId }) {
     });
 
     const data = await res.json();
-    alert(data.message);
+    if (!res.ok || !data.success) {
+      showToast(data.message || "สร้างห้องไม่สำเร็จ", "error");
+      return;
+    }
+
+    showToast(data.message || "สร้างห้องสำเร็จ", "success");
   };
 
   return (
@@ -183,6 +198,20 @@ export default function RacesPage({ userId }) {
             <button className="create-room-btn" onClick={createRaceRoom}>
               สร้างห้อง
             </button>
+          </div>
+        </div>
+      )}
+
+      {toast && (
+        <div className={`toast ${toast.type}`}>
+          <div className="toast-icon">
+            {toast.type === "success" ? "✓" : "!"}
+          </div>
+          <div>
+            <strong>
+              {toast.type === "success" ? "สำเร็จ" : "เกิดข้อผิดพลาด"}
+            </strong>
+            <p>{toast.message}</p>
           </div>
         </div>
       )}
