@@ -289,12 +289,6 @@ body {
   color: #7c3f15;
 }
 
-.aptitude-grade-image {
-  height: 48px;
-  width: auto;
-  object-fit: contain;
-}
-
 /* ZONE */
 .zone-grid {
   display: grid;
@@ -957,6 +951,12 @@ body {
 }
 
 .aptitude-grade-image {
+  height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+
+.grade-image {
   height: 30px;
   width: auto;
   object-fit: contain;
