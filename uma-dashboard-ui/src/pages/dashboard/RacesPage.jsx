@@ -14,6 +14,13 @@ const DISTANCE_FILTERS = [
   { value: "long", label: "Long" },
 ];
 
+const PATH_ICON = {
+  1: "➡️",
+  2: "⤵️",
+  3: "↗️",
+  4: "↘️",
+};
+
 export default function RacesPage({ userId }) {
   const [races, setRaces] = useState([]);
   const [activeDistance, setActiveDistance] = useState("all");
@@ -76,6 +83,12 @@ export default function RacesPage({ userId }) {
     }
 
     showToast(data.message || "สร้างห้องสำเร็จ", "success");
+  };
+
+  const formatPath = (path = []) => {
+    return path
+      .map((p) => PATH_ICON[p] || p)
+      .join(" ");
   };
 
   return (
@@ -207,7 +220,7 @@ export default function RacesPage({ userId }) {
 
               <div className="race-room-path-card">
                 <span>เส้นทาง</span>
-                <p>{selectedRace.path?.join(" ➜ ")}</p>
+                <p>{formatPath(selectedRace.path)}</p>
               </div>
 
               <div className="race-room-actions">
