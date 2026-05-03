@@ -6,10 +6,10 @@ const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const DISTANCE_FILTERS = [
   { value: "all", label: "ทั้งหมด" },
-  { value: "Sprint", label: "Sprint" },
-  { value: "Mile", label: "Mile" },
-  { value: "Medium", label: "Medium" },
-  { value: "Long", label: "Long" },
+  { value: "sprint", label: "Sprint" },
+  { value: "mile", label: "Mile" },
+  { value: "medium", label: "Medium" },
+  { value: "long", label: "Long" },
 ];
 
 export default function RacesPage() {
@@ -18,7 +18,7 @@ export default function RacesPage() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch(`${BOT_API_BASE}/race/calendar`)
+    fetch(`${BOT_API_BASE}/races`)
       .then((res) => res.json())
       .then((data) => setRaces(data))
       .catch(console.error);
