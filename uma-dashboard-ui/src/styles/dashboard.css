@@ -164,15 +164,6 @@ body {
   color: #1f2937;
 }
 
-/* MAIN STATS */
-.main-stats-header {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 18px;
-}
-
 .update-stats-btn {
   position: absolute;
   right: 0;
@@ -743,7 +734,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 /* CARDS — merged */
@@ -1015,7 +1006,8 @@ body {
 .profile-skill-slots {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  padding: 0px 30px;
+  gap: 10px 10px;
 }
 
 .profile-skill-slot {
@@ -1023,7 +1015,7 @@ body {
   background: white;
   border: 2px solid #a3e635;
   border-radius: 18px;
-  padding: 8px 16px 16px 16px;
+  padding: 10px 16px 10px;
   color: #7c3f15;
 }
 
