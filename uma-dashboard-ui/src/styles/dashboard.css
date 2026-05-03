@@ -803,7 +803,7 @@ body {
   display: grid;
   grid-template-columns: 180px 1fr;
   gap: 50px;
-  padding: 20px;
+  padding: 20px 40px;
   background: #ececec;
 }
 
@@ -843,7 +843,7 @@ body {
   justify-content: right;
   align-items: center;
   gap: 12px;
-  min-height: 62px;
+  min-height: 46px;
   background: linear-gradient(180deg, #fafafa 0%, #ececec 100%);
   border: 2px solid #cfc9d6;
   border-radius: 999px;
