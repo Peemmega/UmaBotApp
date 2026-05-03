@@ -840,7 +840,7 @@ body {
 
 .resource-pill {
   display: flex;
-  justify-content: left;
+  justify-content: right;
   align-items: center;
   gap: 12px;
   min-height: 62px;
@@ -863,8 +863,8 @@ body {
 }
 
 .resource-icon {
-  width: 44px;
-  height: 44px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -1570,8 +1570,8 @@ body {
     font-size: 14px;
   }
   .resource-icon {
-    width: 44px;
-    height: 44px;
+    width: 30px;
+    height: 30px;
   }
 }
 
