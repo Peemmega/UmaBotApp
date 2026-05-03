@@ -201,15 +201,6 @@ body {
   overflow: hidden;
 }
 
-.stat-cell {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  min-height: 150px;
-  background: #efefef;
-  border-right: 2px dashed rgba(124, 198, 30, 0.65);
-}
-
 .stat-cell:last-child {
   border-right: none;
 }
@@ -883,7 +874,7 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  min-height: 116px;
+  min-height: 100px;
   background: #efefef;
   border-right: 2px dashed rgba(124, 198, 30, 0.65);
 }
@@ -957,7 +948,7 @@ body {
 }
 
 .grade-image {
-  height: 30px;
+  height: 35px;
   width: auto;
   object-fit: contain;
 }
