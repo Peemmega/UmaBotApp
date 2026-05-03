@@ -86,7 +86,7 @@ export default function CharactersPage() {
         <div className="title-banner">
           <div>
             <h2>Characters</h2>
-            <h2>เลือกดูข้อมูลตัวละคร / นักแข่งของเซิร์ฟเวอร์</h2>
+            <h3>เลือกดูข้อมูลตัวละคร / นักแข่งของเซิร์ฟเวอร์</h3>
           </div>
         </div>
 
