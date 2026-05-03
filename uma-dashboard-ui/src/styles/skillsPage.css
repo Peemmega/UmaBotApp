@@ -63,7 +63,7 @@
   flex-wrap: wrap;
 }
 
-.skill-filter-btn {
+.filter-btn {
   border: none;
   border-radius: 999px;
   padding: 9px 16px;
@@ -74,7 +74,7 @@
   font-size: 12px;
 }
 
-.skill-filter-btn.active {
+.filter-btn.active {
   background: linear-gradient(#92dc52, #75c832);
   color: white;
 }

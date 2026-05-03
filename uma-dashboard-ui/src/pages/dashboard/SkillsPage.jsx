@@ -137,7 +137,7 @@ export default function SkillsPage({ userId, username }) {
               <button
                 key={tag.value}
                 type="button"
-                className={`skill-filter-btn ${
+                className={`filter-btn ${
                   activeTag === tag.value ? "active" : ""
                 }`}
                 onClick={() => {

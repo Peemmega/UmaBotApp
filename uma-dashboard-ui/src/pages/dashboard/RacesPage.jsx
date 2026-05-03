@@ -111,7 +111,7 @@ export default function RacesPage({ userId }) {
               <button
                 key={filter.value}
                 type="button"
-                className={`skill-filter-btn ${
+                className={`filter-btn ${
                   activeDistance === filter.value ? "active" : ""
                 }`}
                 onClick={() => {

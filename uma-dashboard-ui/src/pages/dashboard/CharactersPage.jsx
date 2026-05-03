@@ -103,7 +103,7 @@ export default function CharactersPage() {
               <button
                 key={filter}
                 type="button"
-                className={`character-filter-btn ${
+                className={`filter-btn ${
                   activeFilter === filter ? "active" : ""
                 }`}
                 onClick={() => setActiveFilter(filter)}
