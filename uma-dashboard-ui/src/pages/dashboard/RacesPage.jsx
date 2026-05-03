@@ -85,7 +85,7 @@ export default function RacesPage() {
           const raceImg = raceImageMap[race.id];
 
           return (
-            <article className="skill-card" key={race.id}>
+            <article className="race-card" key={race.id}>
               <div className="race-stage-icon-box">
                   {raceImg ? (
                     <img
