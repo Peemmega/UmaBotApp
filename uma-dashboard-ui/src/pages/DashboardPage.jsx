@@ -2,27 +2,12 @@ import React, { useEffect, useState } from "react";
 import "../styles/dashboard.css";
 import "../styles/mailbox.css";
 
-import { mainStats, aptitudeRows } from "../data/dashboardConfig";
-import StatCell from "../components/StatCell";
-import AptitudeItem from "../components/AptitudeItem";
-import ResourcePill from "../components/ResourcePill";
-import EditStatsModal from "../components/EditStatsModal";
-import coinIcon from "../assets/icons/umaCoin.webp";
-import statIcon from "../assets/icons/statsPoint.webp";
-import skillIcon from "../assets/icons/skillPoint.webp";
-import bgImage from "../assets/bg/profile-bg.webp";
 import MailboxModal from "../components/MailboxModal";
-import mailIcon from "../assets/icons/mail_icon.webp";
-import discordIcon from "../assets/icons/discord_icon.webp";
-import editIcon from "../assets/icons/change_icon.webp";
 import RenameModal from "../components/RenameModal";
-import ZonePanel from "../components/ZonePanel";
 import RaceCalendar from "../components/RaceCalendar";
 import TopBar from "../components/TopBar";
-
-import { playSound } from "../utils/soundManager";
-
 import DashboardSidebar from "../components/DashboardSidebar";
+
 import ProfilePage from "./dashboard/ProfilePage";
 import TutorialsPage from "./dashboard/TutorialsPage";
 import SkillsPage from "./dashboard/SkillsPage";
@@ -30,24 +15,41 @@ import CharactersPage from "./dashboard/CharactersPage";
 import QAPage from "./dashboard/QAPage";
 import RacesPage from "./dashboard/RacesPage";
 
+const VALID_PAGES = [
+  "profile",
+  "characters",
+  "races",
+  "skills",
+  "tutorials",
+  "qa",
+];
+
+function getPageFromPath() {
+  const page = window.location.pathname.split("/").pop();
+  return VALID_PAGES.includes(page) ? page : "profile";
+}
+
 export default function DashboardPage({
   username,
   userId,
   avatarUrl,
   player,
   setPlayer,
-  statsSummary,
-  showRaw,
-  setShowRaw,
   error,
-  loading,
   onLogout,
 }) {
   const [isEditStatsOpen, setIsEditStatsOpen] = useState(false);
   const [isMailboxOpen, setIsMailboxOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
-  const [activePage, setActivePage] = useState("profile");
+  const [activePage, setActivePage] = useState(getPageFromPath);
+
+  const changePage = (page) => {
+    if (!VALID_PAGES.includes(page)) return;
+
+    setActivePage(page);
+    window.history.pushState({}, "", `/dashboard/${page}`);
+  };
 
   const renderMiddlePage = () => {
     switch (activePage) {
@@ -65,10 +67,11 @@ export default function DashboardPage({
       case "characters":
         return <CharactersPage />;
 
-      case "qa":
-        return <QAPage />;
       case "races":
         return <RacesPage userId={userId} />;
+
+      case "qa":
+        return <QAPage />;
 
       case "profile":
       default:
@@ -89,16 +92,30 @@ export default function DashboardPage({
   };
 
   const loadUnreadCount = async () => {
-  try {
-      const res = await fetch(`https://umadndbot-production.up.railway.app/mailbox/${userId}`);
-      const data = await res.json();
+    try {
+      const res = await fetch(
+        `https://umadndbot-production.up.railway.app/mailbox/${userId}`
+      );
 
+      const data = await res.json();
       const unread = data.filter((m) => !m.is_read).length;
       setUnreadCount(unread);
     } catch (err) {
       console.error(err);
     }
   };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setActivePage(getPageFromPath());
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   useEffect(() => {
     if (!userId) return;
@@ -113,36 +130,31 @@ export default function DashboardPage({
   }, [userId]);
 
   return (
-<div
-    className="dashboard-page"
-    style={{
-        // backgroundImage: `url(${bgImage})`,
+    <div
+      className="dashboard-page"
+      style={{
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         backgroundAttachment: "fixed",
-    }}
+      }}
     >
-
       <TopBar
-            unreadCount={unreadCount}
-            onMailClick={() => setIsMailboxOpen(true)}
-            onLogout={onLogout}
-          />
-
+        unreadCount={unreadCount}
+        onMailClick={() => setIsMailboxOpen(true)}
+        onLogout={onLogout}
+      />
 
       <div className="dashboard-layout">
-          <DashboardSidebar
-            activePage={activePage}
-            onChangePage={setActivePage}
-          />
+        <DashboardSidebar
+          activePage={activePage}
+          onChangePage={changePage}
+        />
 
-          <div className="dashboard-shell">
-            {renderMiddlePage()}
-          </div>
+        <div className="dashboard-shell">{renderMiddlePage()}</div>
 
-          <RaceCalendar />
-      </div>  
+        <RaceCalendar />
+      </div>
 
       {isMailboxOpen && (
         <MailboxModal

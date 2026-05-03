@@ -77,7 +77,7 @@ export default function App() {
         avatarHash: queryAvatarHash || "",
       });
 
-      window.history.replaceState({}, document.title, "/dashboard");
+      window.history.replaceState({}, document.title, "/dashboard/profile");
       return;
     }
 
