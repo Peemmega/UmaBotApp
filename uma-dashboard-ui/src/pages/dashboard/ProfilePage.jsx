@@ -177,7 +177,7 @@ export default function ProfilePage({
 
                 return (
                   <div className="profile-skill-slot" key={slot}>
-                    <div className="profile-skill-slot-title">Slot {slot}</div>
+                    {/* <div className="profile-skill-slot-title">Slot {slot}</div> */}
 
                     {!skill ? (
                       <div className="profile-skill-empty">ว่าง</div>
