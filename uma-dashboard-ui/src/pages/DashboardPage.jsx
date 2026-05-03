@@ -68,7 +68,7 @@ export default function DashboardPage({
       case "qa":
         return <QAPage />;
       case "races":
-        return <RacesPage />;
+        return <RacesPage userId={userId} />;
 
       case "profile":
       default:

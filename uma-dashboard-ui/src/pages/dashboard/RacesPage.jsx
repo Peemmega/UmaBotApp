@@ -13,10 +13,11 @@ const DISTANCE_FILTERS = [
   { value: "long", label: "Long" },
 ];
 
-export default function RacesPage() {
+export default function RacesPage({ userId }) {
   const [races, setRaces] = useState([]);
   const [activeDistance, setActiveDistance] = useState("all");
   const [search, setSearch] = useState("");
+  const [selectedRace, setSelectedRace] = useState(null);
 
   useEffect(() => {
     fetch(`${BOT_API_BASE}/races`)
@@ -42,6 +43,24 @@ export default function RacesPage() {
       return matchSearch && matchDistance;
     });
   }, [races, search, activeDistance]);
+
+  const createRaceRoom = async () => {
+    if (!selectedRace) return;
+
+    const res = await fetch(`${BOT_API_BASE}/race/room/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: String(userId),
+        race_id: selectedRace.id,
+      }),
+    });
+
+    const data = await res.json();
+    alert(data.message);
+  };
 
   return (
     <section className="skills-page">
@@ -85,7 +104,15 @@ export default function RacesPage() {
           const raceImg = raceImageMap[race.id];
 
           return (
-            <article className="race-card" key={race.id}>
+            <article
+              className="race-card"
+              key={race.id}
+              onClick={() => {
+                playSound("open");
+                setSelectedRace(race);
+              }}
+            >
+
               <div className="race-stage-icon-box">
                   {raceImg ? (
                     <img
@@ -119,6 +146,47 @@ export default function RacesPage() {
           );
         })}
       </div>
+
+      {selectedRace && (
+        <div className="skill-equip-backdrop" onClick={() => setSelectedRace(null)}>
+          <div className="race-detail-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="skill-equip-close"
+              onClick={() => setSelectedRace(null)}
+            >
+              ×
+            </button>
+
+            <div className="race-detail-header">
+              <div>
+                <h2>🏟️ {selectedRace.name}</h2>
+                <p>เตรียมตัวเข้าสู่สนามแข่ง 🏇</p>
+              </div>
+
+              <img
+                src={raceImageMap[selectedRace.id]}
+                alt={selectedRace.name}
+              />
+            </div>
+
+            <div className="race-detail-info">
+              <h3>⏱️ เทิร์น</h3>
+              <p>{selectedRace.turn}</p>
+
+              <h3>🗺️ เส้นทาง</h3>
+              <p>{selectedRace.path?.join(" ➜ ")}</p>
+
+              <h3>📌 ประเภท</h3>
+              <p>{selectedRace.track} / {selectedRace.distance}</p>
+            </div>
+
+            <button className="create-room-btn" onClick={createRaceRoom}>
+              สร้างห้อง
+            </button>
+          </div>
+        </div>
+      )}
+
     </section>
   );
 }
