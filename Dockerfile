@@ -4,7 +4,7 @@ WORKDIR /app/frontend
 
 COPY uma-dashboard-ui/package*.json ./
 
-# ใช้ npm ci ถ้ามี package-lock.json ddd
+# ใช้ npm ci ถ้ามี package-lock.json
 RUN npm ci
 
 COPY uma-dashboard-ui/ ./
