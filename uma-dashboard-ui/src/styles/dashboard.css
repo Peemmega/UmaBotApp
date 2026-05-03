@@ -418,7 +418,7 @@ body {
   background: white;
   border: 2px solid #d6d3d1;
   border-radius: 18px;
-  padding: 16px;
+  padding: 4px 16px;
   text-align: center;
 }
 
@@ -435,11 +435,10 @@ body {
 }
 
 .edit-stat-controls {
-  margin-top: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 4px;
 }
 
 .edit-stat-value {
