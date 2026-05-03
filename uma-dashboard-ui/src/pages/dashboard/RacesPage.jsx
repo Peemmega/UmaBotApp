@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import "../../styles/skillsPage.css";
 import { playSound } from "../../utils/soundManager";
 import { raceImageMap } from "../../utils/raceSchedule.js";
+import Toast from "../../components/Toast";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
@@ -203,17 +204,11 @@ export default function RacesPage({ userId }) {
       )}
 
       {toast && (
-        <div className={`toast ${toast.type}`}>
-          <div className="toast-icon">
-            {toast.type === "success" ? "✓" : "!"}
-          </div>
-          <div>
-            <strong>
-              {toast.type === "success" ? "สำเร็จ" : "เกิดข้อผิดพลาด"}
-            </strong>
-            <p>{toast.message}</p>
-          </div>
-        </div>
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
 
     </section>

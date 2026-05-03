@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "../../styles/skillsPage.css";
+import Toast from "../../components/Toast";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 import { playSound } from "../../utils/soundManager";
@@ -250,18 +251,13 @@ export default function SkillsPage({ userId, username }) {
       )}
 
       {toast && (
-        <div className={`toast ${toast.type}`}>
-          <div className="toast-icon">
-            {toast.type === "success" ? "✓" : "!"}
-          </div>
-          <div>
-            <strong>
-              {toast.type === "success" ? "สำเร็จ" : "เกิดข้อผิดพลาด"}
-            </strong>
-            <p>{toast.message}</p>
-          </div>
-        </div>
-      )}
+              <Toast
+                message={toast.message}
+                type={toast.type}
+                onClose={() => setToast(null)}
+              />
+            )}
+            
     </section>
   );
 }
