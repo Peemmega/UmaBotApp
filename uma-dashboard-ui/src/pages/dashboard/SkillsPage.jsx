@@ -199,11 +199,11 @@ export default function SkillsPage({ userId, username }) {
                   </ul>
                 </div>
 
-                <div className="skill-tags">
+                {/* <div className="skill-tags">
                   {skill.tags.map((tag) => (
                     <span key={tag}>{tag}</span>
                   ))}
-                </div>
+                </div> */}
               </div>
             </div>
           </article>
