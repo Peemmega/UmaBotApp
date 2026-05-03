@@ -4,8 +4,9 @@ import { playSound } from "../utils/soundManager";
 const menuItems = [
   { key: "profile", label: "Profile" },
   { key: "characters", label: "Characters" },
-  { key: "tutorials", label: "Tutorials" },
+  { key: "races", label: "Races" },
   { key: "skills", label: "Skills" },
+  { key: "tutorials", label: "Tutorials" },
   { key: "qa", label: "Q&A" },
 ];
 

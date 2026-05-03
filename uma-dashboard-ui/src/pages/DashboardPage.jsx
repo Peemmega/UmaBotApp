@@ -28,6 +28,7 @@ import TutorialsPage from "./dashboard/TutorialsPage";
 import SkillsPage from "./dashboard/SkillsPage";
 import CharactersPage from "./dashboard/CharactersPage";
 import QAPage from "./dashboard/QAPage";
+import RacesPage from "./dashboard/RacesPage";
 
 export default function DashboardPage({
   username,
@@ -66,6 +67,8 @@ export default function DashboardPage({
 
       case "qa":
         return <QAPage />;
+      case "races":
+        return <RacesPage />;
 
       case "profile":
       default:

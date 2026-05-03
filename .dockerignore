@@ -1,0 +1,9 @@
+node_modules
+uma-dashboard-ui/node_modules
+__pycache__
+*.pyc
+.git
+.env
+dist
+uma-dashboard-ui/dist
+.venv
