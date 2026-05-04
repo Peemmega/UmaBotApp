@@ -1,5 +1,6 @@
 import React from "react";
 import { playSound } from "../utils/soundManager";
+import "../styles/dashboard.css";
 
 const menuItems = [
   { key: "profile", label: "Profile", icon: "👤" },
