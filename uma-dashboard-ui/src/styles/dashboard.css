@@ -962,15 +962,6 @@ body {
   background: linear-gradient(135deg, #ef4444, #b91c1c);
 }
 
-/* SIDEBAR */
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  position: sticky;
-  top: 10px;
-}
-
 
 .page-placeholder {
   color: #7c3f15;
@@ -1546,29 +1537,3 @@ html {
   text-size-adjust: 100%;
 }
 
-.sidebar {
-  width: 270px;
-  padding: 18px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 14px 32px rgba(78, 52, 34, 0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.sidebar-icon {
-  width: 26px;
-  font-size: 22px;
-  text-align: center;
-}
-
-.sidebar-label {
-  flex: 1;
-  text-align: left;
-}
-
-.sidebar-arrow {
-  font-size: 30px;
-  line-height: 1;
-}
