@@ -9,7 +9,7 @@ import witIcon from "../../assets/icons/Wit.webp";
 import staminaIcon from "../../assets/icons/Stamina.webp";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 
-export default function SkillsPage({ userId, username }) {
+export default function SkillsPage({ userId, username, onSkillEquipped }) {
   const [skills, setSkills] = useState([]);
   const [tags, setTags] = useState([{ value: "all", label: "ทั้งหมด" }]);
   const [activeTag, setActiveTag] = useState("all");
@@ -37,38 +37,41 @@ export default function SkillsPage({ userId, username }) {
       .catch(console.error);
   }, []);
 
-  const equipSkill = async (slot) => {
-    if (!selectedSkill) return;
+    const equipSkill = async (slot) => {
+      if (!selectedSkill) return;
 
-    try {
-      const res = await fetch(`${BOT_API_BASE}/player/skill/equip`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: String(userId),
-          username: username || "Unknown",
-          slot,
-          skill_id: selectedSkill.id,
-        }),
-      });
+      try {
+        const res = await fetch(`${BOT_API_BASE}/player/skill/equip`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: String(userId),
+            username: username || "Unknown",
+            slot,
+            skill_id: selectedSkill.id,
+          }),
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (!res.ok) {
-        showToast(data.detail || "ติดตั้งสกิลไม่สำเร็จ", "error");
-        return;
+        if (!res.ok) {
+          showToast(data.detail || "ติดตั้งสกิลไม่สำเร็จ", "error");
+          return;
+        }
+
+        showToast(data.message || "ติดตั้งสกิลสำเร็จ", "success");
+        playSound("open");
+
+        onSkillEquipped?.(); // ✅ เพิ่มตรงนี้
+
+        setSelectedSkill(null);
+      } catch (err) {
+        console.error(err);
+        showToast("เชื่อมต่อ server ไม่ได้", "error");
       }
-
-      showToast(data.message || "ติดตั้งสกิลสำเร็จ", "success");
-      playSound("open");
-      setSelectedSkill(null);
-    } catch (err) {
-      console.error(err);
-      showToast("เชื่อมต่อ server ไม่ได้", "error");
-    }
-  };
+    };
 
   const filteredSkills = useMemo(() => {
     return skills.filter((skill) => {
