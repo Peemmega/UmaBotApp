@@ -675,7 +675,7 @@ body {
     clamp(220px, 16vw, 280px)
     minmax(0, 900px)
     clamp(300px, 22vw, 360px);
-  gap: clamp(8px, 2vw, 12px);
+  gap: clamp(16px,2vw,50px);
   align-items: start;
   justify-content: center;
 }
