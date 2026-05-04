@@ -6,7 +6,7 @@ import MailboxModal from "../components/MailboxModal";
 import RenameModal from "../components/RenameModal";
 import RaceCalendar from "../components/RaceCalendar";
 import TopBar from "../components/TopBar";
-import DashboardSidebar from "../components/DashboardSidebar";
+import Sidebar from "../components/Sidebar";
 
 import ProfilePage from "./dashboard/ProfilePage";
 import TutorialsPage from "./dashboard/TutorialsPage";
@@ -146,7 +146,7 @@ export default function DashboardPage({
       />
 
       <div className="dashboard-layout">
-        <DashboardSidebar
+        <Sidebar
           activePage={activePage}
           onChangePage={changePage}
         />

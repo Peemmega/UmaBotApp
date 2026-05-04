@@ -51,7 +51,7 @@
 
 .sidebar {
   width: 100%;
-  padding: 18px;
+  padding: 0px;
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.94);
   box-shadow: 0 14px 32px rgba(78, 52, 34, 0.12);
@@ -80,7 +80,7 @@
   width: 100%;
   padding: 6px 18px;
   border: none;
-  border-radius: 14px;
+  border-radius: 8px;
   background: white;
   color: #7c3f15;
   font-size: clamp(18px, 1.15vw, 22px);
