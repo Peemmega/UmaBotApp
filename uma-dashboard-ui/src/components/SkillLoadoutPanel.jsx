@@ -1,24 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 const API_BASE = "https://umadndbot-production.up.railway.app";
+import { getSkillIcon } from "../../utils/getSkillIcon";
 
-function getSkillIconSrc(icon) {
-  if (!icon) return "/assets/skill_icons/default.png";
-
-  if (icon.startsWith("http://") || icon.startsWith("https://")) {
-    return icon;
-  }
-
-  if (icon.startsWith("/")) {
-    return icon;
-  }
-
-  if (icon.startsWith("assets/")) {
-    return `/${icon}`;
-  }
-
-  return `/assets/skill_icons/${icon}`;
-}
 
 export default function SkillLoadoutPanel({ userId, username, player }) {
   const [skills, setSkills] = useState({});
