@@ -153,7 +153,10 @@ export default function DashboardPage({
 
         <div className="dashboard-shell">{renderMiddlePage()}</div>
 
-        <RaceCalendar />
+        <div>
+          <RaceCalendar />
+
+        </div>
       </div>
 
       {isMailboxOpen && (
