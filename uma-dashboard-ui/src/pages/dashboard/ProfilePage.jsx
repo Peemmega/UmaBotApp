@@ -38,7 +38,7 @@ export default function ProfilePage({
     <>
       {error ? <div className="error-box">{error}</div> : null}
 
-      <div className="dashboard-shell">
+      <div className="dashboard-shell sheet-card">
           {error ? <div className="error-box">{error}</div> : null}
 
           <section className="profile-card">
