@@ -44,6 +44,7 @@ export default function DashboardPage({
   const [unreadCount, setUnreadCount] = useState(0);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [activePage, setActivePage] = useState(getPageFromPath);
+  const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
 
   const changePage = (page) => {
     if (!VALID_PAGES.includes(page)) return;
@@ -62,6 +63,7 @@ export default function DashboardPage({
           <SkillsPage
             userId={userId}
             username={player?.username || username}
+            onSkillEquipped={() => setSkillLoadoutVersion((v) => v + 1)}
           />
         );
 

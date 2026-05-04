@@ -240,6 +240,7 @@ export default function SkillsPage({ userId, username }) {
                   onClick={() => {
                     playSound("open");
                     equipSkill(slot);
+                    onSkillEquipped?.();
                   }}
                 >
                   ใส่ในช่อง {slot}

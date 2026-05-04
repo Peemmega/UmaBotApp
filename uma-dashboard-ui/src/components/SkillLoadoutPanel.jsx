@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 const API_BASE = "https://umadndbot-production.up.railway.app";
 import { getSkillIcon } from "../utils/getSkillIcon";
 
-export default function SkillLoadoutPanel({ userId, username, player }) {
+export default function SkillLoadoutPanel({ userId, username, player, refreshKey }) {
   const [skills, setSkills] = useState({});
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function SkillLoadoutPanel({ userId, username, player }) {
     };
 
     loadSkills();
-  }, [userId]);
+  }, [userId, refreshKey]);
 
   const slots = ["slot_1", "slot_2", "slot_3", "slot_4"];
 

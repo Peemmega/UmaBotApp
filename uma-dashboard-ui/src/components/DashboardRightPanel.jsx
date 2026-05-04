@@ -11,10 +11,11 @@ export default function DashboardRightPanel({
   return (
     <aside className="dashboard-shell">
       <SkillLoadoutPanel
-          userId={userId}
-          username={username}
-          player={player}
-        />
+        userId={userId}
+        username={player?.username || username}
+        player={player}
+        refreshKey={skillLoadoutVersion}
+      />
 
       <RaceCalendar />
     </aside>
