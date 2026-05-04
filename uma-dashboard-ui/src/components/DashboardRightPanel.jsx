@@ -9,7 +9,7 @@ export default function DashboardRightPanel({
   player,
 }) {
   return (
-    <aside className="dashboard-shelll">
+    <aside className="dashboard-shell">
       <SkillLoadoutPanel
           userId={userId}
           username={username}

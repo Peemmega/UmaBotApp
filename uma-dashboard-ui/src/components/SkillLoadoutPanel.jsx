@@ -2,6 +2,24 @@ import React, { useEffect, useState } from "react";
 
 const API_BASE = "https://umadndbot-production.up.railway.app";
 
+function getSkillIconSrc(icon) {
+  if (!icon) return "/assets/skill_icons/default.png";
+
+  if (icon.startsWith("http://") || icon.startsWith("https://")) {
+    return icon;
+  }
+
+  if (icon.startsWith("/")) {
+    return icon;
+  }
+
+  if (icon.startsWith("assets/")) {
+    return `/${icon}`;
+  }
+
+  return `/assets/skill_icons/${icon}`;
+}
+
 export default function SkillLoadoutPanel({ userId, username, player }) {
   const [skills, setSkills] = useState({});
 
@@ -37,27 +55,28 @@ export default function SkillLoadoutPanel({ userId, username, player }) {
 
               {skill ? (
                 <>
-                  {skill.icon && (
                     <img
-                      src={skill.icon}
-                      alt={skill.name}
-                      className="skill-loadout-icon"
+                    src={getSkillIconSrc(skill.icon)}
+                    alt={skill.name}
+                    className="skill-loadout-icon"
+                    onError={(e) => {
+                        e.currentTarget.src = "/assets/skill_icons/default.png";
+                    }}
                     />
-                  )}
 
-                  <span className="skill-loadout-name">
+                    <span className="skill-loadout-name">
                     {skill.name}
-                  </span>
+                    </span>
 
-                  <span className="skill-loadout-cd">
+                    <span className="skill-loadout-cd">
                     CD {skill.cooldown ?? 0}
-                  </span>
+                    </span>
                 </>
-              ) : (
-                <span className="skill-loadout-empty">
-                  ยังไม่ได้ติดตั้งสกิล
-                </span>
-              )}
+                    ) : (
+                    <span className="skill-loadout-empty">
+                        ยังไม่ได้ติดตั้งสกิล
+                    </span>
+                )}
             </div>
           );
         })}
