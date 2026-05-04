@@ -46,7 +46,7 @@ export default function SkillLoadoutPanel({ userId, username, player }) {
                         e.currentTarget.src = "/assets/skill_icons/default.png";
                     }}
                     /> */}
-                    <div className="skill-loadout-icon">
+                    <div className="skill-icon-box">
                       {getSkillIcon(skill.icon)}
                     </div>
 
@@ -68,13 +68,13 @@ export default function SkillLoadoutPanel({ userId, username, player }) {
         })}
       </div>
 
-      <div className="skill-point-box">
+      {/* <div className="skill-point-box">
         <span className="sp-circle">SP</span>
         <div>
           <div className="sp-label">Skill Point</div>
           <div className="sp-value">{player?.skill_point ?? 0}</div>
         </div>
-      </div>
+      </div> */}
     </section>
   );
 }
