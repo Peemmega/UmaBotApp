@@ -167,45 +167,6 @@ export default function ProfilePage({
             </div>
           </section>
 
-          <section className="sheet-card padding_container">
-            <div className="main-stats-header">
-              <div className="section-title">Equipped Skills</div>
-            </div>
-
-            <div className="profile-skill-slots">
-              {[1, 2, 3, 4].map((slot) => {
-                const skill = equippedSkills[`slot_${slot}`];
-
-                return (
-                  <div className="profile-skill-slot" key={slot}>
-                    {/* <div className="profile-skill-slot-title">Slot {slot}</div> */}
-
-                    {!skill ? (
-                      <div className="profile-skill-empty">ว่าง</div>
-                    ) : (
-                      <div className="profile-skill-content">
-                        <div className="profile-skill-icon-box">
-                          {getSkillIcon(skill.icon)}
-                        </div>
-
-                        <div className="profile-skill-info">
-                          <div className="profile-skill-name">
-                            {skill.id} - {skill.name}
-                          </div>
-
-                          <div className="profile-skill-meta">
-                            <span>CD {skill.cooldown}</span>
-                            <span>Cost {skill.cost}</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
           <ZonePanel
               userId={userId}
               player={player}

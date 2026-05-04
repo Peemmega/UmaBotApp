@@ -9,14 +9,12 @@ export default function DashboardRightPanel({
   player,
 }) {
   return (
-    <aside className="dashboard-right-panel">
-      {activePage === "skills" && (
-        <SkillLoadoutPanel
+    <aside className="dashboard-shelll">
+      <SkillLoadoutPanel
           userId={userId}
           username={username}
           player={player}
         />
-      )}
 
       <RaceCalendar />
     </aside>
