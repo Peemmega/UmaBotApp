@@ -38,14 +38,17 @@ export default function SkillLoadoutPanel({ userId, username, player }) {
 
               {skill ? (
                 <>
-                    <img
-                    src={getSkillIconSrc(skill.icon)}
+                    {/* <img
+                    src={getSkillIcon(skill.icon)}
                     alt={skill.name}
                     className="skill-loadout-icon"
                     onError={(e) => {
                         e.currentTarget.src = "/assets/skill_icons/default.png";
                     }}
-                    />
+                    /> */}
+                    <div className="skill-loadout-icon">
+                      {getSkillIcon(skill.icon)}
+                    </div>
 
                     <span className="skill-loadout-name">
                     {skill.name}
