@@ -172,7 +172,7 @@
 
 .content-meta-row {
   display: grid;
-  grid-template-columns: 80px 80px auto;
+  grid-template-columns: 60px 60px auto;
   gap: 8px;
   margin-bottom: 5px;
 }
@@ -199,7 +199,6 @@
 }
 
 .skill-trigger {
-  margin-bottom: 5px;
   color: #6b4a2f;
   font-size: 14px;
   font-weight: 800;
@@ -208,9 +207,8 @@
 .skill-effects strong {
   display: block;
   color: #7ead2d;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 1000;
-  margin-bottom: 2px;
 }
 
 .skill-effects ul {
