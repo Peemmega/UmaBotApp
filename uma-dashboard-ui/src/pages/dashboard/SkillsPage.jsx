@@ -177,7 +177,7 @@ export default function SkillsPage({ userId, username }) {
 
             <div className="skill-main-row">
               <div className="skill-content">
-                <div className="skill-meta-row">
+                <div className="content-meta-row">
                   <span>CD&nbsp; {skill.cooldown}</span>
                   <span className="skill-cost">
                     <img src={witIcon} alt="cost" />

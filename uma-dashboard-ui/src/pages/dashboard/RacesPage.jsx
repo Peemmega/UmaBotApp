@@ -159,7 +159,7 @@ export default function RacesPage({ userId }) {
 
               <div className="skill-main-row">
                 <div className="skill-content">
-                  <div className="skill-meta-row">
+                  <div className="content-meta-row">
                     <span>{race.distance}</span>
                     <span>{race.track}</span>
                     <span>{race.turn} Turns</span>

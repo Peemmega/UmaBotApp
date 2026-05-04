@@ -170,18 +170,18 @@
   min-width: 0;
 }
 
-.skill-meta-row {
+.content-meta-row {
   display: grid;
   grid-template-columns: 80px 80px auto;
   gap: 8px;
   margin-bottom: 5px;
 }
 
-.skill-meta-row span {
+.content-meta-row span {
   min-height: 32px;
   border-radius: 10px;
-  background: linear-gradient(rgb(146, 220, 82), rgb(117, 200, 50));
-  color: white;
+  background: #d9f99d;
+  color: #2a940e;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -479,7 +479,7 @@
     grid-template-columns: 1fr;
   }
 
-  .skill-meta-row {
+  .content-meta-row {
     grid-template-columns: 1fr;
   }
 
