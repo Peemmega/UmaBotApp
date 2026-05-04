@@ -38,7 +38,8 @@ export default function ProfilePage({
     <>
       {error ? <div className="error-box">{error}</div> : null}
 
-      <div className="dashboard-shell container-card">
+      <div className="dashboard-shell">
+        {/* container-card */}
           {error ? <div className="error-box">{error}</div> : null}
 
           <section className="profile-card">
