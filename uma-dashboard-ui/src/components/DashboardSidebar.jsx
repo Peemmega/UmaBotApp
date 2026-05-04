@@ -12,21 +12,26 @@ const menuItems = [
 
 export default function DashboardSidebar({ activePage, onChangePage }) {
   return (
-    <aside className="side-menu">
-      {menuItems.map((item) => (
-        <button
-          key={item.key}
-          className={`side-menu-item ${activePage === item.key ? "active" : ""}`}
-          onClick={() => {
-            playSound("click");
-            onChangePage(item.key);
-          }}
-        >
-          <span className="side-menu-icon">{item.icon}</span>
-          <span>{item.label}</span>
-          {activePage === item.key && <span className="side-menu-arrow">›</span>}
-        </button>
-      ))}
+    <aside className="sidebar">
+      {menuItems.map((item) => {
+        const isActive = activePage === item.key;
+
+        return (
+          <button
+            key={item.key}
+            type="button"
+            className={`sidebar-btn ${isActive ? "active" : ""}`}
+            onClick={() => {
+              playSound("click");
+              onChangePage(item.key);
+            }}
+          >
+            <span className="sidebar-icon">{item.icon}</span>
+            <span className="sidebar-label">{item.label}</span>
+            {isActive && <span className="sidebar-arrow">›</span>}
+          </button>
+        );
+      })}
     </aside>
   );
 }
