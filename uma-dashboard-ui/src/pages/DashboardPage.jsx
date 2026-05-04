@@ -14,6 +14,7 @@ import SkillsPage from "./dashboard/SkillsPage";
 import CharactersPage from "./dashboard/CharactersPage";
 import QAPage from "./dashboard/QAPage";
 import RacesPage from "./dashboard/RacesPage";
+import DashboardRightPanel from "../components/DashboardRightPanel";
 
 const VALID_PAGES = [
   "profile",
@@ -153,10 +154,12 @@ export default function DashboardPage({
 
         <div className="dashboard-shell">{renderMiddlePage()}</div>
 
-        <div>
-          <RaceCalendar />
-
-        </div>
+        <DashboardRightPanel
+          activePage={activePage}
+          userId={userId}
+          username={player?.username || username}
+          player={player}
+        />        
       </div>
 
       {isMailboxOpen && (
