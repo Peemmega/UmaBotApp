@@ -1568,3 +1568,57 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
+
+.sidebar {
+  width: 270px;
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 14px 32px rgba(78, 52, 34, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-btn {
+  height: 58px;
+  border: 0;
+  border-radius: 14px;
+  padding: 0 18px;
+  background: transparent;
+  color: #6f4324;
+  font-size: 18px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.sidebar-btn:hover {
+  background: #f6f1e8;
+  transform: translateX(3px);
+}
+
+.sidebar-btn.active {
+  background: linear-gradient(135deg, #8fd34a, #6fb92f);
+  color: white;
+  box-shadow: 0 10px 22px rgba(111, 185, 47, 0.28);
+}
+
+.sidebar-icon {
+  width: 26px;
+  font-size: 22px;
+  text-align: center;
+}
+
+.sidebar-label {
+  flex: 1;
+  text-align: left;
+}
+
+.sidebar-arrow {
+  font-size: 30px;
+  line-height: 1;
+}
