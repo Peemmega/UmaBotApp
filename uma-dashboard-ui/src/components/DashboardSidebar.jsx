@@ -2,28 +2,29 @@ import React from "react";
 import { playSound } from "../utils/soundManager";
 
 const menuItems = [
-  { key: "profile", label: "Profile" },
-  { key: "characters", label: "Characters" },
-  { key: "races", label: "Races" },
-  { key: "skills", label: "Skills" },
-  { key: "tutorials", label: "Tutorials" },
-  { key: "qa", label: "Q&A" },
+  { key: "profile", label: "Profile", icon: "👤" },
+  { key: "characters", label: "Characters", icon: "🐴" },
+  { key: "races", label: "Races", icon: "🏆" },
+  { key: "skills", label: "Skills", icon: "✨" },
+  { key: "tutorials", label: "Tutorials", icon: "📖" },
+  { key: "qa", label: "Q&A", icon: "❔" },
 ];
 
 export default function DashboardSidebar({ activePage, onChangePage }) {
   return (
-    <aside className="sidebar">
+    <aside className="side-menu">
       {menuItems.map((item) => (
         <button
           key={item.key}
-          type="button"
-          className={`sidebar-btn ${activePage === item.key ? "active" : ""}`}
+          className={`side-menu-item ${activePage === item.key ? "active" : ""}`}
           onClick={() => {
             playSound("click");
             onChangePage(item.key);
           }}
         >
-          {item.label}
+          <span className="side-menu-icon">{item.icon}</span>
+          <span>{item.label}</span>
+          {activePage === item.key && <span className="side-menu-arrow">›</span>}
         </button>
       ))}
     </aside>
