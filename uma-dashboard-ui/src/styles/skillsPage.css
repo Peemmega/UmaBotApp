@@ -1,7 +1,7 @@
 .skills-page {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 8px;
 }
 
 .skills-hero {
@@ -172,7 +172,7 @@
 
 .content-meta-row {
   display: grid;
-  grid-template-columns: 60px 60px auto;
+  grid-template-columns: 65px 60px auto;
   gap: 8px;
   margin-bottom: 5px;
 }
