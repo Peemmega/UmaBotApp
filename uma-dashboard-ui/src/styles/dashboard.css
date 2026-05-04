@@ -142,13 +142,6 @@ body {
   color: #7c4a4a;
 }
 
-.section-title {
-  text-align: center;
-  font-size: clamp(20px,4vw,32px);
-  font-weight: 900;
-  color: #1f2937;
-}
-
 .update-stats-btn {
   position: absolute;
   right: 0;
@@ -831,7 +824,7 @@ body {
 
 .section-title {
   text-align: center;
-  font-size: clamp(24px, 2vw, 30px);
+  font-size: clamp(18px, 2vw, 26px);
   font-weight: 900;
   color: #1f2937;
 }
