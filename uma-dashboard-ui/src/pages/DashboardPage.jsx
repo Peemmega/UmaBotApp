@@ -63,7 +63,9 @@ export default function DashboardPage({
           <SkillsPage
             userId={userId}
             username={player?.username || username}
-            onSkillEquipped={() => setSkillLoadoutVersion((v) => v + 1)}
+            onSkillEquipped={() => {
+              setSkillLoadoutVersion((v) => v + 1);
+            }}
           />
         );
 
@@ -161,7 +163,8 @@ export default function DashboardPage({
           userId={userId}
           username={player?.username || username}
           player={player}
-        />        
+          skillLoadoutVersion={skillLoadoutVersion}
+        />
       </div>
 
       {isMailboxOpen && (

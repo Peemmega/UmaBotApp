@@ -7,9 +7,10 @@ export default function DashboardRightPanel({
   userId,
   username,
   player,
+  skillLoadoutVersion,
 }) {
   return (
-    <aside className="dashboard-shell">
+    <aside className="dashboard-right-panel">
       <SkillLoadoutPanel
         userId={userId}
         username={player?.username || username}
