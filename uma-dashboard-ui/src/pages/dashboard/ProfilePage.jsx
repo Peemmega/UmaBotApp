@@ -98,7 +98,7 @@ export default function ProfilePage({
               <div></div>
 
               <div className="main-stats-header">
-                <div className="section-title">ค่า stats พื้นฐาน</div>
+                <div className="section-title">ค่า Stats พื้นฐาน</div>
 
                 <button
                   className={`update-stats-btn ${isEditStatsOpen ? "active" : ""}`}

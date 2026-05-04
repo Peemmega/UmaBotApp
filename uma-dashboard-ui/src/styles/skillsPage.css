@@ -178,16 +178,16 @@
 }
 
 .content-meta-row span {
-  min-height: 32px;
   border-radius: 10px;
+  text-align: center;
   background: #e3fcc7;
   color: #2a940e;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 5px 8px;
-  gap: 10px;
-  font-size: 14px;
+  gap: 6px;
+  font-size: 12px;
   font-weight: 900;
   line-height: 1;
 }

@@ -107,27 +107,10 @@ body {
   min-width: 0;
 }
 
-.profile-name {
-  font-size: clamp(20px,6vw,40px);
-  font-weight: 900;
-  color: #84461b;
-  line-height: 1;
-  text-align: center;
-  text-shadow:
-    -2px -2px 0 #fff,
-     2px -2px 0 #fff,
-    -2px  2px 0 #fff,
-     2px  2px 0 #fff;
-  border-bottom: 4px solid rgba(255, 255, 255, 0.85);
-  padding-bottom: 10px;
-  word-break: break-word;
-}
-
 .profile-id {
-  margin-top: 10px;
   text-align: center;
   color: rgba(66, 33, 11, 0.65);
-  font-size: 14px;
+  font-size: 12px;
   word-break: break-all;
 }
 
@@ -336,12 +319,12 @@ body {
 
 /* EDIT STATS */
 .edit-stats-points-box {
-  margin-bottom: 16px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   border-radius: 18px;
   background: #f8fafc;
   border: 2px solid #d9f99d;
   padding: 16px;
-  margin-top: 16px;
   text-align: center;
 }
 
@@ -352,7 +335,7 @@ body {
 }
 
 .edit-stats-points-value {
-  font-size: 40px;
+  font-size: 26px;
   font-weight: 900;
   color: #166534;
   line-height: 1.1;
@@ -410,7 +393,6 @@ body {
   display: flex;
   justify-content: center;
   gap: 12px;
-  margin-top: 18px;
 }
 
 .stat-adjust-btn {
@@ -770,7 +752,7 @@ body {
 }
 
 .profile-name {
-  font-size: clamp(26px, 2.4vw, 36px);
+  font-size: clamp(20px, 2.4vw, 24px);
   font-weight: 900;
   color: #84461b;
   line-height: 1;
@@ -780,8 +762,8 @@ body {
      2px -2px 0 #fff,
     -2px  2px 0 #fff,
      2px  2px 0 #fff;
-  border-bottom: 4px solid rgba(255, 255, 255, 0.85);
-  padding-bottom: 10px;
+  border-bottom: 2px solid #835532;
+  padding-bottom: 8px;
   word-break: break-word;
 }
 
@@ -805,13 +787,13 @@ body {
 }
 
 .resource-label {
-  font-size: 18px;
+  font-size: 14px;
   color: #7c3f15;
   font-weight: 900;
 }
 
 .resource-value {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 900;
   color: #7c3f15;
 }
