@@ -131,17 +131,6 @@ body {
   word-break: break-all;
 }
 
-/* SECTION */
-.sheet-card {
-  width: 100%;
-  overflow: hidden;
-  border-radius: 28px;
-  background: #f5f5f5;
-  border: 2px solid rgba(141, 214, 44, 0.45);
-  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
-  color: #7c4a4a;
-}
-
 .update-stats-btn {
   position: absolute;
   right: 0;
@@ -728,11 +717,23 @@ body {
   width: 100%;
   max-width: 100%;
   overflow: hidden;
-  border-radius: 22px;
+  border-radius: 8px;
   background: #f5f5f5;
-  border: 2px solid rgba(141, 214, 44, 0.45);
-  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
+  border: 1.5px solid #adadad73;
+  box-shadow: 0 2px 16px #0000002e;
   color: #7c4a4a;
+}
+
+.container-card {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #f5f5f5;
+  border: 1.5px solid #adadad73;
+  box-shadow: 0 2px 16px #0000002e;
+  color: #7c4a4a;
+  padding: 18px
 }
 
 .title-banner {
