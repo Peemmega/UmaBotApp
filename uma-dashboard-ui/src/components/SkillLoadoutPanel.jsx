@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 const API_BASE = "https://umadndbot-production.up.railway.app";
 import { getSkillIcon } from "../utils/getSkillIcon";
 
-
 export default function SkillLoadoutPanel({ userId, username, player }) {
   const [skills, setSkills] = useState({});
 
