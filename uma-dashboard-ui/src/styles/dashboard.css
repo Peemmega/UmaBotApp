@@ -1353,7 +1353,7 @@ body {
 
 @media (max-width: 900px) {
   .dashboard-page {
-    padding-top: 138px;
+    padding-top: 150px;
   }
   .dashboard-layout {
     grid-template-columns: 1fr;
@@ -1453,7 +1453,7 @@ body {
 
 @media (max-width: 480px) {
   .dashboard-page {
-    padding: 12px 8px 28px;
+    padding: 150px 28px;
   }
   .profile-card,
   .sheet-card {

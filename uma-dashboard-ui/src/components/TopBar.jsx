@@ -21,7 +21,7 @@ export default function TopBar({
           onClick={() => playSound("click")}
         >
           <img src={discordIcon} className="discord-btn-icon" />
-          เข้า Discord
+          Discord
         </a>
 
         <button
