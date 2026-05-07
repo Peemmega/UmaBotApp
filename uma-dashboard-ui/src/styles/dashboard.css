@@ -1358,6 +1358,7 @@ body {
   .dashboard-layout {
     grid-template-columns: 1fr;
     max-width: 720px;
+    padding-top: 150px 8px;
   }
   .sidebar {
     position: static;
