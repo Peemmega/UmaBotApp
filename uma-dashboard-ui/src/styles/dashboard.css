@@ -1358,11 +1358,16 @@ body {
   .dashboard-layout {
     grid-template-columns: 1fr;
     max-width: 720px;
-    padding-top: 150px 8px;
+    padding-top: 150px 0px;
   }
   .sidebar {
     position: static;
   }
+
+  .stats-grid {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+  }
+
   .profile-body {
     grid-template-columns: 1fr;
     padding: 22px 16px;
