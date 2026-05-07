@@ -133,15 +133,6 @@ body {
   background: linear-gradient(135deg, #ef4444, #b91c1c);
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  background: #efefef;
-  border: 2px solid #7cc61e;
-  border-radius: 18px;
-  overflow: hidden;
-}
-
 .stat-cell:last-child {
   border-right: none;
 }
@@ -1364,10 +1355,6 @@ body {
     position: static;
   }
 
-  .stats-grid {
-    grid-template-columns: repeat(3,minmax(0,1fr));
-  }
-
   .profile-body {
     grid-template-columns: 1fr;
     padding: 22px 16px;
@@ -1454,6 +1441,10 @@ body {
   }
   .zone-edit-row {
     grid-template-columns: 1fr 32px 28px 32px;
+  }
+
+   .stats-grid {
+    grid-template-columns: repeat(3,minmax(0,1fr));
   }
 }
 
