@@ -474,13 +474,13 @@
 }
 
 @media (max-width: 720px) {
-  .skill-main-row {
+  /* .skill-main-row {
     grid-template-columns: 1fr;
   }
 
   .content-meta-row {
     grid-template-columns: 1fr;
-  }
+  } */
 
   .skill-card h3,
   .skill-id {
@@ -583,5 +583,12 @@
 
   .race-room-info-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .skills-grid {
+    grid-template-columns: repeat(1,minmax(0,1fr));
   }
 }
