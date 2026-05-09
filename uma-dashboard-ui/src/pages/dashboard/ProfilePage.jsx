@@ -146,9 +146,10 @@ export default function ProfilePage({
           </section>
 
           <section className="sheet-card padding_container">
-            <div className="main-stats-header">
-              <div className="section-title">ค่าความถนัด</div>
+            <div className="title-banner">
+                <h2>ค่าความถนัด</h2>
             </div>
+
             <div className="aptitude-table">
               {aptitudeRows.map((row) => (
                 <div className="aptitude-row" key={row.title}>
