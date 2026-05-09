@@ -40,13 +40,13 @@
 }
 
 .loading-icon {
-  width: clamp(60px, 14vw, 100px);
-  height: clamp(60px, 14vw, 100px);
+  width: clamp(100px, 14vw, 160px);
+  height: clamp(100px, 14vw, 160px);
   object-fit: contain;
 }
 
 .loading-title {
-  margin-top: 20px;
+  margin-top: 5px;
   font-size: clamp(18px, 5vw, 34px);
   font-weight: 900;
   color: #7c3f15;
