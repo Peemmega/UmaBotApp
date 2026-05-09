@@ -108,7 +108,7 @@
   }
   .sidebar-btn {
     text-align: center;
-    font-size: clamp(12px,1.15vw,22px);
+    font-size: clamp(12.5px,1.15vw,22px);
     padding: 8px 0px
   }
 }

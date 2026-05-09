@@ -145,7 +145,7 @@
 .character-info h3 {
   margin-top: 0px;
   margin-bottom: 0px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 1000;
   color: #9a7a62;
 }
@@ -168,7 +168,7 @@
   background: #ecfccb;
   color: #3f6212;
   font-weight: 900;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .character-bottom button {
@@ -188,10 +188,6 @@
 }
 
 @media (max-width: 560px) {
-  .characters-grid {
-    grid-template-columns: 1fr;
-  }
-
   .character-image-wrap {
     height: 220px;
   }
