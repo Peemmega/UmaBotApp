@@ -100,3 +100,13 @@
   background: linear-gradient(#92dc52, #75c832);
   color: white;
 }
+
+@media (max-width: 900px) {
+  .sidebar {
+    grid-template-columns: repeat(6,minmax(0,1fr))
+  }
+  .sidebar-btn {
+    text-align: center;
+    font-size: clamp(12px,1.15vw,22px)
+  }
+}

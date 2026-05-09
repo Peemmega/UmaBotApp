@@ -89,14 +89,6 @@ body {
   justify-content: center;
 }
 
-.profile-avatar {
-  width: 190px;
-  height: 190px;
-  object-fit: cover;
-  border-radius: 999px;
-  border: 7px solid #f1d754;
-}
-
 .profile-info {
   min-width: 0;
 }
@@ -1444,8 +1436,8 @@ body {
     font-size: 24px;
   }
   .profile-avatar {
-    width: 150px;
-    height: 150px;
+    width: 120px;
+    height: 120px;
   }
   .profile-name {
     font-size: 20px;

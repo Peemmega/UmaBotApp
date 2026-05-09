@@ -29,7 +29,7 @@ export default function Sidebar({ activePage, onChangePage }) {
           >
             <span className="sidebar-icon">{item.icon} </span>
             <span className="sidebar-label">{item.label}</span>
-            {isActive && <span className="sidebar-arrow"> ◉</span>}
+            {/* {isActive && <span className="sidebar-arrow"> ◉</span>} */}
           </button>
         );
       })}
