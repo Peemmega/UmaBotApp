@@ -18,7 +18,7 @@ import DashboardRightPanel from "../components/DashboardRightPanel";
 
 const VALID_PAGES = [
   "profile",
-  "characters",
+  "chars",
   "races",
   "skills",
   "tutorials",
@@ -69,7 +69,7 @@ export default function DashboardPage({
           />
         );
 
-      case "characters":
+      case "chars":
         return <CharactersPage />;
 
       case "races":

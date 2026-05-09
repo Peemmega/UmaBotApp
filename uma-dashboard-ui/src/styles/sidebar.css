@@ -103,10 +103,12 @@
 
 @media (max-width: 900px) {
   .sidebar {
+    display: grid;
     grid-template-columns: repeat(6,minmax(0,1fr))
   }
   .sidebar-btn {
     text-align: center;
-    font-size: clamp(12px,1.15vw,22px)
+    font-size: clamp(12px,1.15vw,22px);
+    padding: 8px 0px
   }
 }
