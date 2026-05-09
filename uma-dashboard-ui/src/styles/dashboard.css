@@ -638,7 +638,7 @@ body {
     clamp(220px, 16vw, 280px)
     minmax(0, 900px)
     clamp(300px, 22vw, 360px);
-  gap: clamp(16px,2vw,50px);
+  gap: clamp(8px,2vw,50px);
   align-items: start;
   justify-content: center;
 }
@@ -1372,9 +1372,13 @@ body {
   }
   .aptitude-row-items,
   .aptitude-row:first-child .aptitude-row-items {
-    grid-template-columns: 1fr;
+    /* grid-template-columns: 1fr; */
     max-width: none;
   }
+  .aptitude-row-items {
+    grid-template-columns: repeat(2,minmax(0,1fr))
+  }
+
   .zone-grid {
     grid-template-columns: 1fr;
   }
