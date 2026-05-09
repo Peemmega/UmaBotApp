@@ -40,22 +40,22 @@
 }
 
 .loading-icon {
-  width: clamp(90px, 14vw, 180px);
-  height: clamp(90px, 14vw, 180px);
+  width: clamp(60px, 14vw, 100px);
+  height: clamp(60px, 14vw, 100px);
   object-fit: contain;
 }
 
 .loading-title {
   margin-top: 20px;
-  font-size: clamp(28px, 5vw, 64px);
+  font-size: clamp(18px, 5vw, 34px);
   font-weight: 900;
   color: #7c3f15;
 }
 
 .loading-bar {
-  width: min(70vw, 720px);
-  height: 16px;
-  margin-top: 28px;
+  width: min(70vw, 500px);
+  height: 12px;
+  margin-top: 16px;
   overflow: hidden;
   border-radius: 999px;
   background: #e5e7eb;
@@ -73,7 +73,7 @@
 .loading-text {
   margin-top: 14px;
   color: #84461b;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 900;
 }
 
