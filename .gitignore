@@ -4,3 +4,10 @@ __pycache__/
 .venv/
 dist/
 .env
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/.idea/
+*.apk
+*.aab

@@ -4,8 +4,8 @@ const config = {
   appName: "UmaDnD",
   webDir: "uma-dashboard-ui/dist",
   server: {
-    androidScheme: "https",
-  },
+    androidScheme: "https"
+  }
 };
 
 module.exports = config;
