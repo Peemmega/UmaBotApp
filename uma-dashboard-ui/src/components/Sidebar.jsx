@@ -4,7 +4,7 @@ import "../styles/sidebar.css";
 
 const menuItems = [
   { key: "profile", label: "Profile", icon: "👤" },
-  { key: "characters", label: "Characters", icon: "🐴" },
+  { key: "chars", label: "Chars", icon: "🐴" },
   { key: "races", label: "Races", icon: "🏆" },
   { key: "skills", label: "Skills", icon: "✨" },
   { key: "tutorials", label: "Tutorials", icon: "📖" },
