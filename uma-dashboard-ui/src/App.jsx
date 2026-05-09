@@ -135,7 +135,7 @@ export default function App() {
 
     const loadStats = async () => {
       try {
-        const res = await fetch(`${APP_BASE}/api/bot-stats`);
+        const res = await fetch(`${APP_BASE}/api/bot-stats/`);
         if (!res.ok) return;
 
         const data = await res.json();

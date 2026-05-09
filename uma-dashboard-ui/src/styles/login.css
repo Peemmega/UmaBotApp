@@ -16,7 +16,7 @@
 }
 
 .login-card {
-  width: min(92vw, 720px);
+  width: min(92vw, 600px);
   overflow: hidden;
   border-radius: 30px;
   background: #f3f3f3;

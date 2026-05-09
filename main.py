@@ -12,7 +12,6 @@ import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from urllib.parse import urlencode
-
 load_dotenv()
 
 app = FastAPI()
@@ -21,10 +20,11 @@ app = FastAPI()
 # เพิ่ม URL ของ Railway ของคุณลงใน list นี้เมื่อ deploy แล้ว
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://umabotapp-production-c99a.up.railway.app",
-    ],
+    allow_origins=["*"],
+    # allow_origins=[
+    #     "http://localhost:5173",
+    #     "https://umabotapp-production-c99a.up.railway.app",
+    # ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -67,7 +67,7 @@ def callback(code: str):
     target_url = f"{FRONTEND_URL}/dashboard?username={user_data['username']}&id={user_data['id']}&avatar={user_data['avatar']}"
     return RedirectResponse(target_url)
 
-@app.get("/api/bot-stats")
+@app.get("/api/bot-stats/")
 def get_bot_stats():
     try:
         conn = get_db_connection()
