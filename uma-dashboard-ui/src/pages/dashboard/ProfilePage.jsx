@@ -145,26 +145,28 @@ export default function ProfilePage({
             )}
           </section>
 
-          <section className="sheet-card padding_container">
+          <section className="sheet-card">
             <div className="title-banner">
-                <h2>ค่าความถนัด</h2>
+              <h2>ค่าความถนัด</h2>
             </div>
 
-            <div className="aptitude-table">
-              {aptitudeRows.map((row) => (
-                <div className="aptitude-row" key={row.title}>
-                  <div className="aptitude-row-title">{row.title}</div>
-                  <div className="aptitude-row-items">
-                    {row.items.map((item) => (
-                      <AptitudeItem
-                        key={item.key}
-                        label={item.label}
-                        value={player?.[item.key]}
-                      />
-                    ))}
+            <div className="padding-content">
+              <div className="aptitude-table">
+                {aptitudeRows.map((row) => (
+                  <div className="aptitude-row" key={row.title}>
+                    <div className="aptitude-row-title">{row.title}</div>
+                    <div className="aptitude-row-items">
+                      {row.items.map((item) => (
+                        <AptitudeItem
+                          key={item.key}
+                          label={item.label}
+                          value={player?.[item.key]}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </section>
 
