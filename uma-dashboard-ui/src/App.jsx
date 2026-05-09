@@ -120,8 +120,14 @@ export default function App() {
         setPlayer(data);
         sessionStorage.setItem(cacheKey, JSON.stringify(data));
       } catch (err) {
-        console.error(err);
-        setError(String(err));
+        console.error("PLAYER LOAD ERROR:", err);
+
+        setError(
+          `URL: ${playerUrl}\n\n` +
+          `USERNAME: ${username}\n` +
+          `USER ID: ${userId}\n\n` +
+          `ERROR: ${String(err)}`
+        );
       } finally {
         setLoading(false);
       }
@@ -135,7 +141,13 @@ export default function App() {
         const data = await res.json();
         setStatsSummary(data);
       } catch (err) {
-        console.error("stats load error:", err);
+        console.error("STATS LOAD ERROR:", err);
+
+        setError(
+          `STATS API ERROR\n\n` +
+          `URL: ${APP_BASE}/api/bot-stats\n\n` +
+          `ERROR: ${String(err)}`
+        );
       }
     };
 
