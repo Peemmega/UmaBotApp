@@ -2,6 +2,8 @@ import bgImage from "../assets/bg/profile-bg.webp";
 import discordIcon from "../assets/icons/discord_icon.webp";
 import { playSound } from "../utils/soundManager";
 import "../styles/login.css";
+import { Capacitor } from "@capacitor/core";
+import { loginWithDiscordApp } from "../services/discordAuth";
 
 export default function LoginPage({ appBase }) {
   return (
@@ -35,7 +37,14 @@ export default function LoginPage({ appBase }) {
             <button
               onClick={() => {
                 playSound("click");
-                window.location.href = `${appBase}/login`;
+
+                if (Capacitor.isNativePlatform()) {
+                  // Android App
+                  loginWithDiscordApp();
+                } else {
+                  // Web Browser
+                  window.location.href = `${appBase}/login`;
+                }
               }}
               className="login-button"
             >

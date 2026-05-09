@@ -1,7 +1,7 @@
 import { Browser } from "@capacitor/browser";
 import { App } from "@capacitor/app";
 
-const DISCORD_CLIENT_ID = "YOUR_CLIENT_ID";
+const DISCORD_CLIENT_ID = "1493569100566364291";
 const API_BASE = "https://your-api.up.railway.app";
 
 const REDIRECT_URI = "umadnd://callback";
