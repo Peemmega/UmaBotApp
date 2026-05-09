@@ -1,5 +1,7 @@
 import os
 import requests
+import httpx
+
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse, JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,6 +11,7 @@ import uvicorn
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from urllib.parse import urlencode
 
 load_dotenv()
 
@@ -76,6 +79,56 @@ def get_bot_stats():
         return {"total_players": row["total_players"] if row else 0}
     except Exception as e:
         return {"error": str(e)}
+
+
+MOBILE_REDIRECT_URI = "https://umabotapp-production-c99a.up.railway.app/callback/mobile"
+
+async def exchange_discord_code_and_get_user(code: str, redirect_uri: str):
+    async with httpx.AsyncClient() as client:
+        token_res = await client.post(
+            "https://discord.com/api/oauth2/token",
+            data={
+                "client_id": CLIENT_ID,
+                "client_secret": CLIENT_SECRET,
+                "grant_type": "authorization_code",
+                "code": code,
+                "redirect_uri": redirect_uri,
+            },
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+        )
+
+        token_res.raise_for_status()
+        token_data = token_res.json()
+
+        access_token = token_data["access_token"]
+
+        user_res = await client.get(
+            "https://discord.com/api/users/@me",
+            headers={
+                "Authorization": f"Bearer {access_token}"
+            },
+        )
+
+        user_res.raise_for_status()
+        return user_res.json()
+
+
+@app.get("/callback/mobile")
+async def discord_mobile_callback(code: str):
+    user = await exchange_discord_code_and_get_user(
+        code,
+        redirect_uri=MOBILE_REDIRECT_URI,
+    )
+
+    params = urlencode({
+        "username": user["username"],
+        "id": user["id"],
+        "avatar": user.get("avatar") or "",
+    })
+
+    return RedirectResponse(f"umadnd://callback?{params}")
 
 # --- 4. Serve Frontend (เฉพาะเมื่อ Deploy ขึ้น Railway) ---
 

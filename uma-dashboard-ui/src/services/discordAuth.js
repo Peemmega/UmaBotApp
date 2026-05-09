@@ -2,9 +2,9 @@ import { Browser } from "@capacitor/browser";
 import { App } from "@capacitor/app";
 
 const DISCORD_CLIENT_ID = "1493569100566364291";
-const API_BASE = "https://your-api.up.railway.app";
 
-const REDIRECT_URI = "umadnd://callback";
+const REDIRECT_URI =
+  "https://umabotapp-production-c99a.up.railway.app/callback/mobile";
 
 export async function loginWithDiscordApp() {
   const url =
@@ -22,24 +22,16 @@ export function setupDiscordDeepLink() {
     const url = new URL(event.url);
 
     if (url.protocol === "umadnd:" && url.hostname === "callback") {
-      const code = url.searchParams.get("code");
+      await Browser.close();
 
-      if (code) {
-        await Browser.close();
+      const username = url.searchParams.get("username");
+      const id = url.searchParams.get("id");
+      const avatar = url.searchParams.get("avatar") || "";
 
-        const res = await fetch(
-          `${API_BASE}/callback/mobile?code=${code}`
-        );
-
-        const data = await res.json();
-
-        localStorage.setItem("user", JSON.stringify(data));
-
-        window.location.href =
-          `/dashboard?username=${data.username}` +
-          `&id=${data.id}` +
-          `&avatar=${data.avatar}`;
-      }
+      window.location.href =
+        `/dashboard?username=${username}` +
+        `&id=${id}` +
+        `&avatar=${avatar}`;
     }
   });
 }
