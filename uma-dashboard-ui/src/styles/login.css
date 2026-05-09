@@ -27,9 +27,9 @@
 .login-header {
   background: linear-gradient(#8dd62c, #68b900);
   color: white;
-  font-size: clamp(34px, 5vw, 54px);
+  font-size: clamp(20px, 5vw, 24px);
   font-weight: 900;
-  padding: 26px 20px;
+  padding: 16px 20px;
 }
 
 .login-body {
@@ -47,9 +47,9 @@
 }
 
 .login-title {
-  margin: 20px 0 0;
+  margin: 20px 0 20px;
   color: #7c3f15;
-  font-size: clamp(34px, 6vw, 58px);
+  font-size: clamp(20px, 6vw, 28px);
   font-weight: 900;
   line-height: 1.05;
 }

@@ -21,12 +21,12 @@ export default function LoginPage({ appBase }) {
             <div className="login-badge">Tracen Academy RP</div>
 
             <h1 className="login-title">
-              เชื่อมต่อกับ <span>Discord Account</span> ของคุณ
+              เชื่อมต่อกับ <span><h1>Discord Account</h1></span> ของคุณ
             </h1>
 
-            <p className="login-subtitle">
+            {/* <p className="login-subtitle">
               เข้าสู่ระบบเพื่อดูโปรไฟล์ อัพเกรดค่าสเตตัส Aptitude และ Mailbox ของคุณ
-            </p>
+            </p> */}
 
             {/* <div className="login-features">
               <div className="login-feature">📊 Profile & Stats</div>

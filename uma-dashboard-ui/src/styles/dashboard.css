@@ -635,10 +635,6 @@ body {
   padding-bottom: 48px;
 }
 
-.login-page {
-  padding-top: 110px;
-}
-
 /* LAYOUT */
 .dashboard-layout {
   width: min(100%, 1500px);
@@ -1410,8 +1406,7 @@ body {
     flex-wrap: wrap;
     justify-content: center;
   }
-  .dashboard-page,
-  .login-page {
+  .dashboard-page {
     padding-top: 150px;
   }
 }
