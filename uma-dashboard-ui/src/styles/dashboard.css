@@ -1350,7 +1350,21 @@ body {
     max-width: none;
   }
   .aptitude-row-items {
-    grid-template-columns: repeat(2,minmax(0,1fr))
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 4px
+  }
+
+  .aptitude-table {
+    gap: 14px;
+  }
+  .aptitude-row-title {
+    font-size: 18px;
+  }
+  .aptitude-name {
+    font-size: 16px;
+  }
+  .aptitude-grade-image{
+    height: 24px;
   }
 
   .zone-grid {
@@ -1371,8 +1385,8 @@ body {
   }
 
   .aptitude-item {   
-    padding: 8px 18px;
-    min-height: 50px;
+    padding: 4px 14px;
+    min-height: 42px;
   }
 }
 
