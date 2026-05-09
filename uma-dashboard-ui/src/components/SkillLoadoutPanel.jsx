@@ -26,7 +26,7 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
 
   return (
     <section className="skill-loadout-card">
-      <div className="skill-loadout-header">✨ Skill Loadout</div>
+      <div className="title-banner">✨ Skill Loadout</div>
 
       <div className="skill-loadout-list">
         {slots.map((slotKey, index) => {
