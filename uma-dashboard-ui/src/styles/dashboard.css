@@ -1347,23 +1347,21 @@ body {
 
   .profile-body {
     grid-template-columns: 1fr;
-    padding: 22px 16px;
-    gap: 20px;
+    padding: 10px 16px;
+    gap: 8px;
   }
 
   .title-banner {
     padding: 8px 16px;
   }
 
-  .profile-resources {
-    grid-template-columns: 1fr;
-  }
   .resource-pill {
     border-radius: 22px;
   }
   .main-stats-header {
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
+    margin-bottom: 8px;
   }
   .update-stats-btn {
     position: static;
@@ -1423,7 +1421,7 @@ body {
     padding: 16px 18px 26px;
   }
   .zone-edit-banner {
-    font-size: 36px;
+    font-size: 20px;
   }
   .zone-image-frame,
   .zone-edit-image-frame {
@@ -1431,7 +1429,7 @@ body {
   }
   .zone-name-row h3,
   .zone-edit-name-input {
-    font-size: 26px;
+    font-size: 18px;
   }
   .zone-summary,
   .zone-edit-row {
