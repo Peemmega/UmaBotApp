@@ -8,10 +8,9 @@ export default function ZonePanel({ userId, player, onSaved }) {
   const zone = player?.zone || {};
 
   const ZONE_VALUE = {
-    flat: 35,
+    flat: 25,
     add_dkh: 2,
     floor: 7,
-    selected_die: 5,
     cap: 7,
     self_heal_stamina: 1,
     modify_current_speed: 0.5,
@@ -22,7 +21,6 @@ export default function ZonePanel({ userId, player, onSaved }) {
       flat: (build.flat ?? 0) * ZONE_VALUE.flat,
       add_dkh: (build.add_dkh ?? 0) * ZONE_VALUE.add_dkh,
       floor: (build.floor ?? 0) * ZONE_VALUE.floor,
-      selected_die: (build.selected_die ?? 0) * ZONE_VALUE.selected_die,
       cap: (build.cap ?? 0) * ZONE_VALUE.cap,
       self_heal_stamina:
         (build.self_heal_stamina ?? 0) * ZONE_VALUE.self_heal_stamina,
@@ -35,7 +33,6 @@ export default function ZonePanel({ userId, player, onSaved }) {
     if (effects.flat) lines.push(`✨ เพิ่มผลรวม +${effects.flat}`);
     if (effects.add_dkh) lines.push(`🎲 เพิ่มลูกเต๋า d/kh +${effects.add_dkh}`);
     if (effects.floor) lines.push(`🧱 เพิ่มแต้มขั้นต่ำ +${effects.floor}`);
-    if (effects.selected_die) lines.push(`🎯 เพิ่มแต้มลูกที่เลือก +${effects.selected_die}`);
     if (effects.cap) lines.push(`📈 เพิ่มแต้มสูงสุด +${effects.cap}`);
     if (effects.self_heal_stamina) {
       lines.push(`❤️ ฟื้นฟู STA ตัวเอง +${effects.self_heal_stamina}`);

@@ -12,7 +12,6 @@ const ZONE_FIELDS = [
   ["flat", "เพิ่มแต้มผลรวม"],
   ["add_dkh", "เพิ่มจำนวนลูกเต๋า d/kh (3 แต้ม)"],
   ["floor", "เพิ่มค่าทอยลูกเต๋าต่ำสุด"],
-  ["selected_die", "เพิ่มคะแนนลูกเต๋าที่ถูกเลือก"],
   ["cap", "เพิ่มค่าทอยลูกเต๋าสูงสุด"],
   ["self_heal_stamina", "ฟื้นฟู Stamina"],
   ["modify_current_speed", "เพิ่มอัตราเร่ง"],
@@ -22,7 +21,6 @@ const normalizeBuild = (build = {}) => ({
   flat: build.flat ?? 0,
   add_dkh: build.add_dkh ?? 0,
   floor: build.floor ?? 0,
-  selected_die: build.selected_die ?? 0,
   cap: build.cap ?? 0,
   self_heal_stamina: build.self_heal_stamina ?? 0,
   modify_current_speed: build.modify_current_speed ?? 0,
@@ -46,7 +44,6 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
     return (
       draft.flat +
       draft.floor +
-      draft.selected_die +
       draft.cap +
       draft.self_heal_stamina +
       draft.modify_current_speed +
@@ -58,7 +55,6 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
     return (
       originalBuild.flat +
       originalBuild.floor +
-      originalBuild.selected_die +
       originalBuild.cap +
       originalBuild.self_heal_stamina +
       originalBuild.modify_current_speed +
