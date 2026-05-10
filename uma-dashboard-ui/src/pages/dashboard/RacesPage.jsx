@@ -165,10 +165,7 @@ export default function RacesPage({ userId }) {
                     <span>{race.turn} Turns</span>
                   </div>
 
-                  {/* <div className="skill-trigger">
-                    <strong>Path:</strong>{" "}
-                    {race.path?.length ? race.path.join(" / ") : "-"}
-                  </div> */}
+                
                 </div>
               </div>
             </article>
