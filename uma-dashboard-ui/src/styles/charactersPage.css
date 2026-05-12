@@ -1,12 +1,12 @@
 .characters-page {
   display: flex;
   flex-direction: column;
-  gap: var(--uma-space-4);
+  gap: var(--uma-space-5);
 }
 
 .characters-toolbar {
-  padding: var(--uma-space-5);
-  border-radius: 0 0 var(--uma-radius-lg) var(--uma-radius-lg);
+  padding: var(--uma-space-4) var(--uma-space-5) var(--uma-space-5);
+  border-radius: 0 0 var(--uma-radius-md) var(--uma-radius-md);
   background:
     radial-gradient(circle at 0 0, rgba(87, 199, 255, 0.16), transparent 38%),
     rgba(255, 255, 255, 0.64);
@@ -27,18 +27,18 @@
 .characters-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--uma-space-4);
+  gap: var(--uma-space-5);
 }
 
 .character-card {
   position: relative;
-  border-radius: var(--uma-radius-lg);
+  border-radius: var(--uma-radius-sm);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 247, 251, 0.93)),
     white;
   border: 1px solid rgba(255, 111, 174, 0.22);
   overflow: hidden;
-  box-shadow: var(--uma-shadow-soft);
+  box-shadow: 0 12px 26px rgba(59, 41, 66, 0.1);
   transition:
     transform var(--uma-duration-base) var(--uma-ease-pop),
     box-shadow var(--uma-duration-base) ease,
@@ -54,7 +54,7 @@
   overflow: hidden;
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.82);
-  border-radius: var(--uma-radius-md);
+  border-radius: var(--uma-radius-xs);
 }
 
 .character-image-frame img {
@@ -66,7 +66,7 @@
 }
 
 .character-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-5px);
   border-color: rgba(255, 111, 174, 0.42);
   box-shadow: var(--uma-shadow-pop);
 }
@@ -120,7 +120,7 @@
 
 .character-info h3 {
   margin: 0 0 var(--uma-space-2);
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 1000;
   color: var(--uma-ink);
   line-height: 1.1;

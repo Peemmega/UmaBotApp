@@ -41,11 +41,11 @@
   --uma-gradient-training: linear-gradient(135deg, #92dc52 0%, #75c832 100%);
   --uma-gradient-panel: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 247, 251, 0.92));
 
-  --uma-radius-xs: 8px;
-  --uma-radius-sm: 12px;
-  --uma-radius-md: 16px;
-  --uma-radius-lg: 20px;
-  --uma-radius-xl: 28px;
+  --uma-radius-xs: 6px;
+  --uma-radius-sm: 9px;
+  --uma-radius-md: 12px;
+  --uma-radius-lg: 16px;
+  --uma-radius-xl: 20px;
   --uma-radius-pill: 999px;
 
   --uma-space-1: 4px;
@@ -56,9 +56,9 @@
   --uma-space-6: 24px;
   --uma-space-8: 32px;
 
-  --uma-shadow-soft: 0 8px 18px rgba(90, 45, 110, 0.12);
-  --uma-shadow-card: 0 12px 30px rgba(90, 45, 110, 0.16);
-  --uma-shadow-pop: 0 20px 50px rgba(90, 45, 110, 0.24);
+  --uma-shadow-soft: 0 7px 18px rgba(59, 41, 66, 0.1);
+  --uma-shadow-card: 0 16px 34px rgba(59, 41, 66, 0.14), 0 1px 0 rgba(255, 255, 255, 0.72) inset;
+  --uma-shadow-pop: 0 24px 60px rgba(59, 41, 66, 0.22), 0 1px 0 rgba(255, 255, 255, 0.78) inset;
   --uma-focus-ring: 0 0 0 4px rgba(255, 111, 174, 0.22);
 
   --uma-duration-fast: 120ms;
@@ -163,10 +163,10 @@ code {
 }
 
 .ui-game-card {
-  border: 1px solid var(--uma-border);
-  border-radius: var(--uma-radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.66);
+  border-radius: var(--uma-radius-md);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 248, 252, 0.92)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 250, 253, 0.9)),
     var(--uma-surface);
   color: var(--uma-ink);
   box-shadow: var(--uma-shadow-card);
@@ -178,21 +178,21 @@ code {
   align-items: center;
   justify-content: space-between;
   gap: var(--uma-space-3);
-  padding: var(--uma-space-5) var(--uma-space-5) 0;
+  padding: var(--uma-space-5) var(--uma-space-5) var(--uma-space-3);
   text-align: left;
 }
 
 .ui-section-header-title {
   margin: 0;
   color: var(--uma-ink);
-  font-size: clamp(20px, 2vw, 28px);
+  font-size: clamp(22px, 2.1vw, 30px);
   font-weight: 1000;
-  line-height: 1.05;
+  line-height: 1;
 }
 
 .ui-section-header-kicker {
-  color: var(--uma-pink);
-  font-size: 12px;
+  color: var(--uma-violet);
+  font-size: 11px;
   font-weight: 1000;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -200,7 +200,7 @@ code {
 
 .ui-button {
   border: none;
-  border-radius: var(--uma-radius-pill);
+  border-radius: var(--uma-radius-sm);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -327,7 +327,7 @@ code {
 .ui-search-input {
   width: 100%;
   border: 2px solid var(--uma-border-strong);
-  border-radius: var(--uma-radius-pill);
+  border-radius: var(--uma-radius-sm);
   background:
     linear-gradient(180deg, #ffffff, #fffafd),
     var(--uma-surface);
@@ -353,7 +353,7 @@ code {
 
 .filter-btn {
   border: 1px solid transparent;
-  border-radius: var(--uma-radius-pill);
+  border-radius: var(--uma-radius-sm);
   min-height: 36px;
   padding: 8px 14px;
   background: rgba(255, 255, 255, 0.86);

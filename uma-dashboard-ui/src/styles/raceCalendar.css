@@ -8,12 +8,12 @@
 .race-calendar-card {
   overflow: hidden;
   border: 1px solid rgba(87, 199, 255, 0.24);
-  border-radius: var(--uma-radius-lg);
+  border-radius: var(--uma-radius-md);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 253, 255, 0.94)),
     white;
   color: var(--uma-ink);
-  box-shadow: var(--uma-shadow-card);
+  box-shadow: 0 10px 24px rgba(59, 41, 66, 0.1);
 }
 
 .race-calendar-header {
@@ -87,7 +87,7 @@
 
 .race-list-title {
   border: 1px solid rgba(123, 79, 145, 0.12);
-  border-radius: var(--uma-radius-pill);
+  border-radius: var(--uma-radius-xs);
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.78);
   color: var(--uma-muted);
@@ -116,10 +116,10 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 253, 248, 0.94)),
     white;
   border: 1px solid rgba(117, 200, 50, 0.26);
-  border-radius: var(--uma-radius-md);
+  border-radius: var(--uma-radius-sm);
   padding: 10px;
   color: var(--uma-ink);
-  box-shadow: var(--uma-shadow-soft);
+  box-shadow: 0 8px 18px rgba(59, 41, 66, 0.08);
 }
 
 .race-item img {
@@ -166,7 +166,7 @@
 .race-empty {
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid rgba(123, 79, 145, 0.12);
-  border-radius: var(--uma-radius-md);
+  border-radius: var(--uma-radius-sm);
   padding: 18px;
   color: var(--uma-muted);
   text-align: center;

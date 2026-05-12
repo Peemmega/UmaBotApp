@@ -27,20 +27,19 @@
 .app-shell::before {
   z-index: -2;
   background:
-    radial-gradient(circle at 9% 12%, rgba(255, 111, 174, 0.28), transparent 30%),
-    radial-gradient(circle at 80% 8%, rgba(87, 199, 255, 0.22), transparent 28%),
-    radial-gradient(circle at 72% 92%, rgba(72, 215, 164, 0.22), transparent 32%),
-    linear-gradient(135deg, rgba(255, 247, 251, 0.94), rgba(236, 252, 203, 0.72));
+    radial-gradient(circle at 10% 7%, rgba(255, 111, 174, 0.24), transparent 27%),
+    radial-gradient(circle at 80% 9%, rgba(87, 199, 255, 0.18), transparent 26%),
+    linear-gradient(115deg, rgba(255, 247, 251, 0.96), rgba(244, 253, 255, 0.84) 48%, rgba(240, 252, 221, 0.72));
 }
 
 .app-shell::after {
   z-index: -1;
-  opacity: 0.48;
+  opacity: 0.62;
   background:
-    linear-gradient(115deg, transparent 0 49%, rgba(255, 255, 255, 0.42) 49% 49.7%, transparent 49.7%),
-    repeating-linear-gradient(115deg, transparent 0 42px, rgba(255, 255, 255, 0.18) 42px 44px, transparent 44px 96px),
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.1) 0 1px, transparent 1px 34px);
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 78%);
+    linear-gradient(118deg, transparent 0 43%, rgba(255, 255, 255, 0.58) 43% 43.45%, transparent 43.45%),
+    linear-gradient(118deg, transparent 0 58%, rgba(87, 199, 255, 0.13) 58% 58.7%, transparent 58.7%),
+    repeating-linear-gradient(118deg, transparent 0 44px, rgba(255, 255, 255, 0.18) 44px 46px, transparent 46px 112px);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.88), transparent 82%);
 }
 
 .app-shell-layout,
@@ -49,21 +48,36 @@
   margin: 0 auto;
   display: grid;
   grid-template-columns:
-    clamp(220px, 16vw, 280px)
-    minmax(0, 900px)
-    clamp(300px, 22vw, 360px);
-  gap: clamp(var(--uma-space-2), 2vw, 50px);
+    clamp(190px, 14vw, 238px)
+    minmax(0, 940px)
+    clamp(270px, 20vw, 330px);
+  gap: clamp(var(--uma-space-4), 2vw, 34px);
   align-items: start;
   justify-content: center;
 }
 
 .app-shell-main,
 .dashboard-shell {
+  position: relative;
   width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: var(--uma-space-5);
+}
+
+.app-shell-main::before,
+.dashboard-shell::before {
+  content: "";
+  position: absolute;
+  inset: -18px -18px auto;
+  height: min(46vh, 520px);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent),
+    radial-gradient(circle at 50% 0, rgba(255, 255, 255, 0.54), transparent 68%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .topbar {
@@ -79,12 +93,12 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--uma-space-5);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.74);
+  border-bottom: 1px solid rgba(123, 79, 145, 0.12);
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.96), rgba(255, 247, 251, 0.9)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.94), rgba(255, 247, 251, 0.86)),
     rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(18px);
-  box-shadow: 0 14px 34px rgba(90, 45, 110, 0.14);
+  box-shadow: 0 12px 30px rgba(59, 41, 66, 0.12);
 }
 
 .topbar-brand {
@@ -98,7 +112,7 @@
   position: relative;
   width: 46px;
   height: 46px;
-  border-radius: 16px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
   background: var(--uma-gradient-primary);
@@ -114,7 +128,7 @@
   position: absolute;
   inset: 5px;
   border: 1px solid rgba(255, 255, 255, 0.54);
-  border-radius: 12px;
+  border-radius: 8px;
 }
 
 .topbar-brand-mark span {
@@ -162,14 +176,14 @@
 .discord-btn,
 .mail-btn,
 .danger-btn {
-  min-height: 44px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   gap: var(--uma-space-2);
   border: none;
-  border-radius: var(--uma-radius-pill);
-  padding: 10px 18px;
-  font-size: 16px;
+  border-radius: var(--uma-radius-sm);
+  padding: 9px 15px;
+  font-size: 14px;
   font-weight: 900;
   cursor: pointer;
   text-decoration: none;
@@ -237,22 +251,24 @@
   position: sticky;
   top: calc(76px + var(--uma-space-5));
   width: 100%;
-  padding: var(--uma-space-2);
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: var(--uma-radius-lg);
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: var(--uma-shadow-card);
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: var(--uma-radius-md);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 249, 253, 0.7)),
+    rgba(255, 255, 255, 0.74);
+  box-shadow: 0 14px 30px rgba(59, 41, 66, 0.11);
   backdrop-filter: blur(14px);
   display: flex;
   flex-direction: column;
-  gap: var(--uma-space-2);
+  gap: 6px;
   overflow: hidden;
 }
 
 .game-nav-icon,
 .sidebar-icon {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -268,19 +284,19 @@
 .sidebar-btn {
   position: relative;
   width: 100%;
-  min-height: 48px;
-  padding: 8px 18px 8px 16px;
+  min-height: 42px;
+  padding: 7px 12px 7px 12px;
   border: none;
-  border-radius: var(--uma-radius-sm);
+  border-radius: var(--uma-radius-xs);
   background: transparent;
-  color: #7c3f15;
-  font-size: clamp(16px, 1.1vw, 20px);
-  font-weight: 900;
+  color: rgba(59, 41, 66, 0.76);
+  font-size: 14px;
+  font-weight: 950;
   text-align: left;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: var(--uma-space-3);
+  gap: 10px;
   transition:
     transform var(--uma-duration-base) var(--uma-ease-pop),
     box-shadow var(--uma-duration-base) ease,
@@ -289,33 +305,34 @@
 
 .game-nav-active-bar {
   position: absolute;
-  left: 6px;
-  top: 11px;
-  bottom: 11px;
-  width: 4px;
-  border-radius: var(--uma-radius-pill);
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 999px 999px 0;
   background: transparent;
 }
 
 .game-nav-btn:hover,
 .sidebar-btn:hover {
-  background: rgba(255, 240, 246, 0.92);
-  transform: translateX(3px);
-  box-shadow: var(--uma-shadow-soft);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--uma-ink);
+  transform: translateX(2px);
+  box-shadow: 0 8px 16px rgba(59, 41, 66, 0.08);
 }
 
 .game-nav-btn.active,
 .sidebar-btn.active {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent),
-    var(--uma-gradient-primary);
-  color: #ffffff;
-  box-shadow: 0 12px 24px rgba(255, 111, 174, 0.26);
+    linear-gradient(90deg, rgba(255, 111, 174, 0.16), rgba(255, 255, 255, 0.88)),
+    rgba(255, 255, 255, 0.82);
+  color: var(--uma-ink);
+  box-shadow: 0 10px 20px rgba(255, 111, 174, 0.12), inset 0 0 0 1px rgba(255, 111, 174, 0.18);
 }
 
 .game-nav-btn.active .game-nav-active-bar,
 .sidebar-btn.active .game-nav-active-bar {
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--uma-pink);
 }
 
 .right-rail,
@@ -323,22 +340,22 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: calc(var(--uma-space-4) + 2px);
+  gap: var(--uma-space-3);
   position: sticky;
   top: calc(76px + var(--uma-space-5));
 }
 
 .right-rail-heading {
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: var(--uma-radius-pill);
-  padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(123, 79, 145, 0.08);
+  border-radius: var(--uma-radius-xs);
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.54);
   color: var(--uma-muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 1000;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  box-shadow: var(--uma-shadow-soft);
+  box-shadow: none;
 }
 
 @media (max-width: 1280px) {
