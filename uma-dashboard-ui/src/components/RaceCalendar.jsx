@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "../styles/raceCalendar.css";
-import { raceImageMap } from "../utils/raceSchedule.js";
+import { raceImageMap, fallbackRaceImg } from "../utils/raceSchedule.js";
+import { Button } from "./ui";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
@@ -63,9 +64,25 @@ export default function RaceCalendar() {
     <aside className="race-calendar-side">
       <section className="race-calendar-card">
         <div className="race-calendar-header">
-          <button onClick={() => changeMonth(-1)}>‹</button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="race-calendar-nav-button"
+            onClick={() => changeMonth(-1)}
+            aria-label="Previous month"
+          >
+            ‹
+          </Button>
           <h3>{monthNames[month]}</h3>
-          <button onClick={() => changeMonth(1)}>›</button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="race-calendar-nav-button"
+            onClick={() => changeMonth(1)}
+            aria-label="Next month"
+          >
+            ›
+          </Button>
         </div>
 
         <div className="race-weekdays">

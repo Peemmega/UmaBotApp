@@ -12,6 +12,8 @@ import TakarazukaKinen from "../assets/race_thumnail/TakarazukaKinen.webp";
 import TennoShoAutumn from "../assets/race_thumnail/TennoShoAutumn.webp";
 import TennoShoSpring from "../assets/race_thumnail/TennoShoSpring.webp";
 
+export const fallbackRaceImg = Debut;
+
 export const raceImageMap = {
   ArimaKinen,
   Debut,

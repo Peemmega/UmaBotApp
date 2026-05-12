@@ -1,14 +1,13 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import "../../styles/charactersPage.css";
 import rose_garden_img from "../../assets/character/uma/rose_garden.webp"
 import special_week_img from "../../assets/character/uma/special_week.webp"
 import calstone_light_o_img from "../../assets/character/uma/calstone_light_o.webp"
 
-import john_musume_img from "../../assets/character/uma/john_musume.webp"
-
 import spica_img from "../../assets/character/trainer/spica.webp"
 import kaguya_img from "../../assets/character/trainer/kaguya.webp"
 import gelbert_img from "../../assets/character/trainer/gelbert.webp"
+import { FilterTabs, SearchInput } from "../../components/ui";
 
 const characters = [
   // {
@@ -71,7 +70,7 @@ export default function CharactersPage() {
     return characters.filter((character) => {
       const matchSearch =
         character.name.toLowerCase().includes(search.toLowerCase()) ||
-        character.jpName.includes(search);
+        character.jpName?.includes(search);
 
       const matchFilter =
         activeFilter === "All" || character.type === activeFilter;
@@ -90,27 +89,18 @@ export default function CharactersPage() {
         </div>
 
         <div className="characters-toolbar">
-          <input
+          <SearchInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search character..."
-            className="search-bar"
           />
 
-          <div className="characters-filters">
-            {filters.map((filter) => (
-              <button
-                key={filter}
-                type="button"
-                className={`filter-btn ${
-                  activeFilter === filter ? "active" : ""
-                }`}
-                onClick={() => setActiveFilter(filter)}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
+          <FilterTabs
+            items={filters}
+            value={activeFilter}
+            onChange={setActiveFilter}
+            className="characters-filters"
+          />
         </div>
       </div>
 
