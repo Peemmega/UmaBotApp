@@ -672,11 +672,11 @@
 
 .race-card-img {
   display: block;
-  width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center center;
-
+  padding: 8px;
+  
   border-radius: var(--uma-radius-xs);
   filter: saturate(1.06) contrast(1.02);
   transition: transform 320ms ease, filter 320ms ease;
