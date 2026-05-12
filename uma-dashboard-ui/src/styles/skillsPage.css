@@ -1,122 +1,83 @@
 .skills-page {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.skills-hero {
-  border-radius: 28px;
-  padding: 14px;
-  background: linear-gradient(135deg, #92dc52, #5fcf7a);
-  color: white;
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
-}
-
-.skills-kicker {
-  margin: 0;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.skills-hero h2 {
-  margin: 6px 0;
-  font-size: clamp(24px,7vw,32px);
-  font-weight: 1000;
-}
-
-.skills-hero p {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 800;
+  gap: var(--uma-space-4);
 }
 
 .skills-toolbar {
-  padding: 16px;
-  border-radius: 0px 0px 18px 18px;
-  background: white;
+  padding: var(--uma-space-5);
+  border-radius: 0 0 var(--uma-radius-lg) var(--uma-radius-lg);
+  background:
+    radial-gradient(circle at 0 0, rgba(255, 212, 90, 0.18), transparent 38%),
+    rgba(255, 255, 255, 0.62);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.16);
-}
-
-.search-bar {
-  width: 100%;
-  border: 3px solid #d9f99d;
-  border-radius: 999px;
-  padding: 6px 20px;
-  color: #bbff4d;
-  font-size: 16px;
-  font-weight: 900;
-  outline: none;
-}
-
-.search-bar:focus {
-  border-color: #84cc16;
-  box-shadow: 0 0 0 4px rgba(132, 204, 22, 0.22);
+  gap: var(--uma-space-4);
+  border-top: 1px solid rgba(123, 79, 145, 0.08);
 }
 
 .skills-filter-row {
   display: flex;
-  gap: 5px;
+  gap: var(--uma-space-2);
   flex-wrap: wrap;
 }
 
-.filter-btn {
-  border: none;
-  border-radius: 999px;
-  padding: 9px 16px;
-  background: #eef2f7;
-  color: #7c3f15;
-  font-weight: 900;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.filter-btn.active {
-  background: linear-gradient(#92dc52, #75c832);
-  color: white;
+.page-control-card {
+  overflow: hidden;
 }
 
 .skills-count {
-  color: #7c3f15;
-  font-size: 18px;
-  font-weight: 900;
+  align-self: flex-start;
+  border: 1px solid rgba(123, 79, 145, 0.12);
+  border-radius: var(--uma-radius-pill);
+  padding: 7px 13px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--uma-muted);
+  font-size: 13px;
+  font-weight: 1000;
 }
 
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: var(--uma-space-4);
   text-align: left;
 }
 
 .skill-card {
-  border-radius: 10px;
-  background: white;
-  border: 2px solid #9ade5a;
-  padding: 10px 30px 5px 30px;
-  color: #6b4a2f;
-  box-shadow: none;
+  position: relative;
+  min-height: 100%;
+  border-radius: var(--uma-radius-md);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 253, 248, 0.95)),
+    white;
+  border: 1px solid rgba(117, 200, 50, 0.38);
+  padding: var(--uma-space-4);
+  color: var(--uma-ink);
+  box-shadow: var(--uma-shadow-soft);
+  overflow: hidden;
 }
 
 .skill-card h3 {
   margin: 0;
-  color: #6b4a2f;
-  font-size: 18px;
-  font-weight: 900;
+  color: var(--uma-ink);
+  font-size: clamp(16px, 1.7vw, 20px);
+  font-weight: 1000;
   line-height: 1.1;
 }
 
 .race-card {
+  position: relative;
   text-align: center;
-  border-radius: 10px;
-  background: white;
-  border: 2px solid #9ade5a;
-  padding: 10px 30px 15px;
-  color: #6b4a2f;
-  box-shadow: none;
+  border-radius: var(--uma-radius-md);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 253, 255, 0.94)),
+    white;
+  border: 1px solid rgba(87, 199, 255, 0.34);
+  padding: var(--uma-space-3);
+  color: var(--uma-ink);
+  box-shadow: var(--uma-shadow-soft);
+  overflow: hidden;
 }
 
 .race-card h3 {
@@ -129,15 +90,14 @@
 
 .skill-top-row {
   display: flex;
-  align-items: baseline;
-  place-items: center;
-  gap: 8px;
-  margin-bottom: 5px;
+  align-items: center;
+  gap: var(--uma-space-2);
+  margin-bottom: var(--uma-space-3);
 }
 
 .skill-id {
-  color: #7ead2d;
-  font-size: 18px;
+  color: var(--uma-pink);
+  font-size: 13px;
   font-weight: 1000;
   text-transform: uppercase;
   line-height: 1;
@@ -145,19 +105,19 @@
 
 .skill-main-row {
   display: grid;
-  /* grid-template-columns: 96px 1fr; */
-  gap: 18px;
+  gap: var(--uma-space-3);
   align-items: start;
 }
 
 .skill-icon-box {
-  width: 30px;
-  height: 30px;
-  /* border-radius: 10px; */
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   display: grid;
   place-items: center;
-  background: none;
+  background: rgba(255, 240, 246, 0.82);
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .skill-icon-box img {
@@ -172,16 +132,16 @@
 
 .content-meta-row {
   display: grid;
-  grid-template-columns: 65px 60px auto;
-  gap: 8px;
-  margin-bottom: 5px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--uma-space-2);
+  margin-bottom: var(--uma-space-3);
 }
 
 .content-meta-row span {
-  border-radius: 10px;
+  border-radius: var(--uma-radius-pill);
   text-align: center;
-  background: #e3fcc7;
-  color: #2a940e;
+  background: rgba(236, 252, 203, 0.74);
+  color: #287c15;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -200,25 +160,27 @@
 }
 
 .skill-trigger {
-  color: #6b4a2f;
+  color: var(--uma-muted);
   font-size: 14px;
   font-weight: 800;
+  line-height: 1.35;
 }
 
 .skill-effects strong {
   display: block;
-  color: #7ead2d;
+  color: #4b9c24;
   font-size: 14px;
   font-weight: 1000;
+  margin-top: var(--uma-space-2);
 }
 
 .skill-effects ul {
-  margin: 0 0 14px;
-  padding-left: 26px;
-  color: #6b4a2f;
+  margin: 0;
+  padding-left: 22px;
+  color: var(--uma-ink);
   font-size: 14px;
   font-weight: 800;
-  line-height: 1.25;
+  line-height: 1.35;
 }
 
 .skill-tags {
@@ -246,9 +208,9 @@
 }
 
 .skill-card:hover {
-  transform: scale(1.025);
-  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
-  border-color: #84cc16;
+  transform: translateY(-3px);
+  box-shadow: var(--uma-shadow-pop);
+  border-color: rgba(255, 111, 174, 0.38);
 }
 
 .skill-card:active {
@@ -264,9 +226,9 @@
 }
 
 .race-card:hover {
-  transform: scale(1.025);
-  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
-  border-color: #84cc16;
+  transform: translateY(-3px);
+  box-shadow: var(--uma-shadow-pop);
+  border-color: rgba(87, 199, 255, 0.52);
 }
 
 .race-card:active {
@@ -282,8 +244,8 @@
   justify-content: center;
   padding: 24px;
 
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(6px);
+  background: rgba(42, 25, 50, 0.48);
+  backdrop-filter: blur(10px);
 
   animation: backdropFade 0.2s ease;
 }
@@ -306,12 +268,14 @@
 .skill-equip-modal {
   position: relative;
   width: min(92vw, 620px);
-  border-radius: 24px;
-  background: white;
-  border: 3px solid #9ade5a;
+  border-radius: var(--uma-radius-xl);
+  background:
+    radial-gradient(circle at 0 0, rgba(255, 212, 90, 0.18), transparent 36%),
+    white;
+  border: 1px solid rgba(255, 255, 255, 0.78);
   padding: 28px;
-  color: #6b4a2f;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  color: var(--uma-ink);
+  box-shadow: var(--uma-shadow-pop);
 
   animation: equipPop 0.32s cubic-bezier(0.22, 1.4, 0.4, 1);
 }
@@ -357,7 +321,7 @@
 }
 
 .skill-equip-title span {
-  color: #a8dc4f;
+  color: var(--uma-pink);
   font-size: 30px;
   font-weight: 1000;
   text-transform: uppercase;
@@ -382,15 +346,8 @@
 }
 
 .skill-equip-buttons button {
-  border: none;
-  border-radius: 14px;
-  padding: 18px;
-  background: linear-gradient(#92dc52, #75c832);
-  color: white;
   font-size: 26px;
   font-weight: 1000;
-  cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .skill-equip-buttons button:hover {
@@ -491,18 +448,19 @@
 
 .race-room-modal {
   max-width: 680px;
+  overflow: hidden;
 }
 
 .race-room-header {
   display: grid;
-  grid-template-columns: 1fr 190px;
+  grid-template-columns: 1fr 210px;
   gap: 18px;
   align-items: center;
 }
 
 .race-room-header h2 {
   margin: 0 0 8px;
-  color: #6b4a2f;
+  color: var(--uma-ink);
   font-size: 28px;
   font-weight: 1000;
 }
@@ -515,12 +473,12 @@
 }
 
 .race-room-header img {
-  width: 190px;
-  height: 95px;
+  width: 210px;
+  height: 118px;
   object-fit: cover;
   border-radius: 16px;
-  border: 3px solid #9ade5a;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  box-shadow: var(--uma-shadow-card);
 }
 
 .race-room-info-grid {
@@ -532,10 +490,12 @@
 .race-room-info-card,
 .race-room-path-card {
   border-radius: 18px;
-  background: #f7fee7;
-  border: 2px solid #d9f99d;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(236, 252, 203, 0.6)),
+    #f7fee7;
+  border: 1px solid rgba(117, 200, 50, 0.34);
   padding: 14px 16px;
-  color: #6b4a2f;
+  color: var(--uma-ink);
 }
 
 .race-room-info-card span,
@@ -591,4 +551,54 @@
   .skills-grid {
     grid-template-columns: repeat(1,minmax(0,1fr));
   }
+
+  .content-meta-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.race-stage-icon-box {
+  height: 132px;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(87, 199, 255, 0.18), rgba(72, 215, 164, 0.16)),
+    rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(87, 199, 255, 0.22);
+}
+
+.race-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.race-card-body {
+  padding: var(--uma-space-3) var(--uma-space-1) 0;
+}
+
+.race-id {
+  color: var(--uma-ink);
+  font-size: clamp(16px, 1.6vw, 20px);
+  line-height: 1.15;
+  margin: 0 0 var(--uma-space-3);
+  text-transform: none;
+}
+
+.race-meta-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.page-empty-state {
+  padding: var(--uma-space-8);
+  display: grid;
+  gap: var(--uma-space-2);
+  place-items: center;
+  text-align: center;
+  color: var(--uma-muted);
+}
+
+.page-empty-state strong {
+  color: var(--uma-ink);
+  font-size: 20px;
 }

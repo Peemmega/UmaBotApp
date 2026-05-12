@@ -1,12 +1,20 @@
+import {
+  BookOpen,
+  CircleHelp,
+  Sparkles,
+  Trophy,
+  UserRound,
+  UsersRound,
+} from "lucide-react";
 import { playSound } from "../../utils/soundManager";
 
 export const gameNavItems = [
-  { key: "profile", label: "Profile", icon: "\u{1F464}" },
-  { key: "chars", label: "Chars", icon: "\u{1F434}" },
-  { key: "races", label: "Races", icon: "\u{1F3C6}" },
-  { key: "skills", label: "Skills", icon: "\u2728" },
-  { key: "tutorials", label: "Tutorials", icon: "\u{1F4D6}" },
-  { key: "qa", label: "Q&A", icon: "\u2754" },
+  { key: "profile", label: "Profile", Icon: UserRound },
+  { key: "chars", label: "Chars", Icon: UsersRound },
+  { key: "races", label: "Races", Icon: Trophy },
+  { key: "skills", label: "Skills", Icon: Sparkles },
+  { key: "tutorials", label: "Tutorials", Icon: BookOpen },
+  { key: "qa", label: "Q&A", Icon: CircleHelp },
 ];
 
 export default function GameNav({
@@ -18,6 +26,7 @@ export default function GameNav({
     <nav className="sidebar game-nav" aria-label="Game navigation">
       {items.map((item) => {
         const isActive = activePage === item.key;
+        const Icon = item.Icon;
 
         return (
           <button
@@ -30,7 +39,10 @@ export default function GameNav({
             }}
             aria-current={isActive ? "page" : undefined}
           >
-            <span className="sidebar-icon game-nav-icon">{item.icon}</span>
+            <span className="game-nav-active-bar" aria-hidden="true" />
+            <span className="sidebar-icon game-nav-icon" aria-hidden="true">
+              {Icon ? <Icon size={21} strokeWidth={2.6} /> : item.icon}
+            </span>
             <span className="sidebar-label game-nav-label">{item.label}</span>
           </button>
         );

@@ -5,9 +5,19 @@ import { playSound } from "../../utils/soundManager";
 export default function TopBar({ unreadCount = 0, onMailClick, onLogout }) {
   return (
     <header className="topbar">
-      <h1 className="dashboard-title">Tracen Academy RP</h1>
+      <div className="topbar-brand">
+        <span className="topbar-brand-mark">
+          <span>TA</span>
+        </span>
+        <div>
+          <p className="topbar-kicker">UmaDnD Racing Club</p>
+          <h1 className="dashboard-title">Tracen Academy RP</h1>
+        </div>
+      </div>
 
       <div className="dashboard-actions">
+        <span className="topbar-status">Trainer Desk</span>
+
         <a
           className="discord-btn"
           href="https://discord.gg/75R2E9PU"

@@ -441,13 +441,31 @@ body {
   margin-bottom: 20px;
 }
 
+.profile-section-header {
+  justify-content: center;
+  text-align: center;
+}
+
+.profile-section-header .ui-section-header-kicker {
+  color: var(--uma-violet);
+}
+
+.profile-id .ui-badge {
+  max-width: 100%;
+  white-space: normal;
+  word-break: break-all;
+}
+
 /* CARDS */
 .profile-card {
   width: 100%;
   max-width: 100%;
-  background: #f5f7fb;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 247, 251, 0.92)),
+    #f5f7fb;
   color: #42210b;
-  border-radius: var(--uma-radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  border-radius: var(--uma-radius-xl);
   overflow: hidden;
   box-shadow: var(--uma-shadow-card);
 }
@@ -456,9 +474,11 @@ body {
   width: 100%;
   max-width: 100%;
   overflow: hidden;
-  border-radius: var(--uma-radius-xs);
-  background: #f5f5f5;
-  border: 1.5px solid #adadad73;
+  border-radius: var(--uma-radius-lg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 253, 248, 0.94)),
+    #f5f5f5;
+  border: 1px solid rgba(123, 79, 145, 0.14);
   box-shadow: var(--uma-shadow-soft);
   color: #7c4a4a;
 }
@@ -467,17 +487,21 @@ body {
   width: 100%;
   max-width: 100%;
   overflow: hidden;
-  border-radius: var(--uma-radius-xs);
-  background: #f5f5f5;
-  border: 1.5px solid #adadad73;
+  border-radius: var(--uma-radius-lg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 253, 248, 0.94)),
+    #f5f5f5;
+  border: 1px solid rgba(123, 79, 145, 0.14);
   box-shadow: var(--uma-shadow-soft);
   color: #7c4a4a;
   padding: calc(var(--uma-space-4) + 2px);
 }
 
 .title-banner {
-  background: var(--uma-gradient-training);
-  padding: 14px 22px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent),
+    var(--uma-gradient-training);
+  padding: 16px 22px;
   text-align: center;
 }
 
@@ -495,9 +519,11 @@ body {
 .profile-body {
   display: grid;
   grid-template-columns: 180px 1fr;
-  gap: 50px;
-  padding: 20px 40px;
-  background: #ececec;
+  gap: clamp(var(--uma-space-5), 4vw, 50px);
+  padding: clamp(var(--uma-space-5), 3vw, 34px) clamp(var(--uma-space-5), 4vw, 42px);
+  background:
+    radial-gradient(circle at 0 0, rgba(255, 212, 90, 0.22), transparent 36%),
+    linear-gradient(135deg, rgba(255, 240, 246, 0.92), rgba(236, 252, 203, 0.58));
 }
 
 .profile-avatar {
@@ -505,13 +531,15 @@ body {
   height: 150px;
   object-fit: cover;
   border-radius: 999px;
-  border: 7px solid #f1d754;
+  border: 7px solid rgba(255, 212, 90, 0.94);
+  box-shadow: 0 16px 28px rgba(90, 45, 110, 0.18);
+  background: #ffffff;
 }
 
 .profile-name {
   font-size: clamp(20px, 2.4vw, 24px);
   font-weight: 900;
-  color: #84461b;
+  color: var(--uma-ink);
   line-height: 1;
   text-align: center;
   text-shadow:
@@ -519,28 +547,29 @@ body {
      2px -2px 0 #fff,
     -2px  2px 0 #fff,
      2px  2px 0 #fff;
-  border-bottom: 2px solid #835532;
-  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(123, 79, 145, 0.18);
+  padding: 0 52px 10px;
   word-break: break-word;
 }
 
 .profile-resources {
-  margin-top: 8px;
+  margin-top: var(--uma-space-4);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: var(--uma-space-3);
 }
 
 .resource-pill {
   display: flex;
-  justify-content: right;
+  justify-content: space-between;
   align-items: center;
   gap: 12px;
   min-height: 46px;
-  background: linear-gradient(180deg, #fafafa 0%, #ececec 100%);
-  border: 2px solid #cfc9d6;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(123, 79, 145, 0.16);
   border-radius: 999px;
   padding: 3px 20px;
+  box-shadow: inset 0 -1px 0 rgba(123, 79, 145, 0.08);
 }
 
 .resource-label {
@@ -572,10 +601,11 @@ body {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  background: #efefef;
-  border: 2px solid #7cc61e;
-  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(117, 200, 50, 0.42);
+  border-radius: var(--uma-radius-md);
   overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.62);
 }
 
 .stat-cell {
@@ -583,7 +613,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100px;
-  background: #efefef;
+  background: rgba(255, 255, 255, 0.8);
   border-right: 2px dashed rgba(124, 198, 30, 0.65);
 }
 
@@ -597,7 +627,7 @@ body {
   justify-content: center;
   gap: 6px;
   min-height: 36px;
-  background: linear-gradient(180deg, #8dd62c 0%, #7cc61e 100%);
+  background: var(--uma-gradient-training);
   color: white;
   font-size: clamp(15px, 1.2vw, 20px);
   font-weight: 900;
@@ -636,11 +666,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: white;
-  border: 2px solid #d6d3d1;
-  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(123, 79, 145, 0.16);
+  border-radius: var(--uma-radius-sm);
   padding: 10px 14px;
   min-height: 56px;
+  box-shadow: inset 0 -1px 0 rgba(123, 79, 145, 0.08);
 }
 
 .aptitude-name {
@@ -669,15 +700,24 @@ body {
   border: none;
   border-radius: 999px;
   padding: 8px 16px;
-  background: linear-gradient(135deg, #7bbf59, #4caf50);
+  background: var(--uma-gradient-primary);
   color: white;
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
+  box-shadow: 0 10px 18px rgba(255, 111, 174, 0.18);
+  transition:
+    transform var(--uma-duration-base) var(--uma-ease-pop),
+    box-shadow var(--uma-duration-base) ease;
 }
 
 .update-stats-btn.active {
   background: linear-gradient(135deg, #ef4444, #b91c1c);
+}
+
+.update-stats-btn:hover {
+  transform: translateY(-50%) scale(1.03);
+  box-shadow: var(--uma-shadow-card);
 }
 
 
@@ -889,8 +929,8 @@ body {
   align-items: center;
   justify-content: center;
   padding: 22px;
-  background: rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(6px);
+  background: rgba(42, 25, 50, 0.46);
+  backdrop-filter: blur(10px);
   animation: fadeIn 180ms ease;
 }
 
@@ -902,10 +942,10 @@ body {
   width: min(94vw, 640px);
   max-height: 92vh;
   overflow-y: auto;
-  border-radius: 10px;
-  background: white;
-  border: 2px solid #8dd62c;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  border-radius: var(--uma-radius-lg);
+  background: var(--uma-surface);
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  box-shadow: var(--uma-shadow-pop);
   animation: mailboxPopIn 260ms ease;
 }
 
@@ -1116,6 +1156,9 @@ body {
     position: static;
     transform: none;
   }
+  .update-stats-btn:hover {
+    transform: scale(1.03);
+  }
   .aptitude-row {
     grid-template-columns: 1fr;
     gap: 6px;
@@ -1227,11 +1270,13 @@ html {
 }
 
 .skill-loadout-card {
-  background: #fff;
-  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 247, 251, 0.92)),
+    #fff;
+  border-radius: var(--uma-radius-lg);
   overflow: hidden;
-  border: 1px solid #e4efd4;
-  box-shadow: 0 14px 30px rgba(80, 50, 30, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  box-shadow: var(--uma-shadow-card);
 }
 
 .skill-loadout-header {
@@ -1243,18 +1288,18 @@ html {
 }
 
 .skill-loadout-list {
-  padding: 14px;
+  padding: var(--uma-space-4);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--uma-space-3);
 }
 
 .skill-loadout-item {
   min-height: 54px;
   padding: 8px 10px;
-  border-radius: 14px;
-  background: #fffdf8;
-  border: 1px solid #efe5d6;
+  border-radius: var(--uma-radius-md);
+  background: rgba(255, 253, 248, 0.88);
+  border: 1px solid rgba(123, 79, 145, 0.12);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1264,8 +1309,8 @@ html {
   width: 26px;
   height: 26px;
   border-radius: 999px;
-  background: #f3efe7;
-  color: #6f4324;
+  background: var(--uma-gradient-primary);
+  color: #ffffff;
   font-weight: 900;
   display: grid;
   place-items: center;
@@ -1280,14 +1325,14 @@ html {
 
 .skill-loadout-name {
   flex: 1;
-  color: #6f4324;
+  color: var(--uma-ink);
   font-weight: 800;
   font-size: 14px;
 }
 
 .skill-loadout-cd {
-  background: #eef8df;
-  color: #5fae2f;
+  background: rgba(236, 252, 203, 0.84);
+  color: #4b9c24;
   border-radius: 10px;
   padding: 5px 8px;
   font-size: 12px;
@@ -1295,7 +1340,7 @@ html {
 }
 
 .skill-loadout-empty {
-  color: #9b846f;
+  color: var(--uma-muted);
   font-weight: 700;
 }
 

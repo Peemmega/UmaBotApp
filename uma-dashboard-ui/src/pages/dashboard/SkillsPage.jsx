@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "../../styles/skillsPage.css";
 import Toast from "../../components/Toast";
 
@@ -8,6 +8,7 @@ import { playSound } from "../../utils/soundManager";
 import witIcon from "../../assets/icons/Wit.webp";
 import staminaIcon from "../../assets/icons/Stamina.webp";
 import { getSkillIcon } from "../../utils/getSkillIcon";
+import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 
 export default function SkillsPage({ userId, username, onSkillEquipped }) {
   const [skills, setSkills] = useState([]);
@@ -64,7 +65,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
         showToast(data.message || "ติดตั้งสกิลสำเร็จ", "success");
         playSound("open");
 
-        onSkillEquipped?.(); // ✅ เพิ่มตรงนี้
+        onSkillEquipped?.();
 
         setSelectedSkill(null);
       } catch (err) {
@@ -120,53 +121,51 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
 
   return (
     <section className="skills-page">
-      <div className="sheet-card">
-        <div className="title-banner">
-          {/* <p className="skills-kicker">Tracen Academy</p> */}
-          <h2>รายการ Skills ทั้งหมด</h2>
-          {/* <p>รายการสกิลทั้งหมดจาก UmaDnDBot</p> */}
-        </div>
+      <GameCard className="page-control-card skills-page-card">
+        <SectionHeader
+          title="รายการ Skills ทั้งหมด"
+          kicker="Skill Library"
+          action={<Badge>{filteredSkills.length} สกิล</Badge>}
+        />
 
         <div className="skills-toolbar">
-          <input
-            className="search-bar"
+          <SearchInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search skill name / id / tag..."
           />
 
-          <div className="skills-filter-row">
-            {tags.map((tag) => (
-              <button
-                key={tag.value}
-                type="button"
-                className={`filter-btn ${
-                  activeTag === tag.value ? "active" : ""
-                }`}
-                onClick={() => {
-                  playSound("click");
-                  setActiveTag(tag.value);
-                }}
-              >
-                {tag.label}
-              </button>
-            ))}
-          </div>
+          <FilterTabs
+            items={tags}
+            value={activeTag}
+            onChange={(value) => {
+              playSound("click");
+              setActiveTag(value);
+            }}
+            className="skills-filter-row"
+          />
         </div>
-      </div>
+      </GameCard>
       
 
       <div className="skills-count">
         พบ {filteredSkills.length} สกิล
       </div>
 
-      <div className="skills-grid">
-        {filteredSkills.map((skill) => (
-          <article
+      {filteredSkills.length === 0 ? (
+        <GameCard className="page-empty-state">
+          <strong>No skills found</strong>
+          <span>Try a different keyword or tag.</span>
+        </GameCard>
+      ) : (
+        <div className="skills-grid">
+          {filteredSkills.map((skill) => (
+          <GameCard
+            as="article"
             className="skill-card"
             key={skill.id}
             onClick={() => {
-              playSound("open"); // 🔥 เพิ่ม
+              playSound("open");
               setSelectedSkill(skill);
             }}
           >
@@ -209,14 +208,17 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
                 </div> */}
               </div>
             </div>
-          </article>
-        ))}
-      </div>
+          </GameCard>
+          ))}
+        </div>
+      )}
 
       {selectedSkill && (
         <div className="skill-equip-backdrop" onClick={() => setSelectedSkill(null)}>
           <div className="skill-equip-modal" onClick={(e) => e.stopPropagation()}>
-            <button
+            <Button
+              variant="danger"
+              size="sm"
               className="skill-equip-close"
               onClick={() => {
                 playSound("close");
@@ -224,7 +226,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
               }}
             >
               ×
-            </button>
+            </Button>
 
             <div className="skill-equip-title">
               <span>{selectedSkill.id}</span>
@@ -237,7 +239,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
 
             <div className="skill-equip-buttons">
               {[1, 2, 3, 4].map((slot) => (
-                <button
+                <Button
                   key={slot}
                   type="button"
                   onClick={() => {
@@ -247,7 +249,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
                   }}
                 >
                   ใส่ในช่อง {slot}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { mainStats, aptitudeRows } from "../../data/dashboardConfig";
 import StatCell from "../../components/StatCell";
 import AptitudeItem from "../../components/AptitudeItem";
@@ -10,7 +10,7 @@ import statIcon from "../../assets/icons/statsPoint.webp";
 import skillIcon from "../../assets/icons/skillPoint.webp";
 import editIcon from "../../assets/icons/change_icon.webp";
 import { playSound } from "../../utils/soundManager";
-import { getSkillIcon } from "../../utils/getSkillIcon";
+import { Badge, SectionHeader } from "../../components/ui";
 
 export default function ProfilePage({
   username,
@@ -44,7 +44,7 @@ export default function ProfilePage({
 
           <section className="profile-card">
             <div className="title-banner">
-              <h2>Profile</h2>
+              <h2>Trainer Profile</h2>
             </div>
 
             <div className="profile-body">
@@ -52,7 +52,7 @@ export default function ProfilePage({
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="profile" className="profile-avatar" />
                 ) : (
-                  <div className="profile-avatar placeholder">👤</div>
+                  <div className="profile-avatar placeholder">{"\u{1F464}"}</div>
                 )}
               </div>
 
@@ -71,7 +71,9 @@ export default function ProfilePage({
                   </button>
                 </div>
 
-                <div className="profile-id">Discord ID: {userId}</div>
+                <div className="profile-id">
+                  <Badge>Discord ID: {userId}</Badge>
+                </div>
 
                 <div className="profile-resources">
                   <ResourcePill
@@ -99,7 +101,11 @@ export default function ProfilePage({
               <div></div>
 
               <div className="main-stats-header">
-                <div className="section-title">ค่า Stats พื้นฐาน</div>
+                <SectionHeader
+                  title="ค่า Stats พื้นฐาน"
+                  kicker="Trainer Sheet"
+                  className="profile-section-header"
+                />
 
                 <button
                   className={`update-stats-btn ${isEditStatsOpen ? "active" : ""}`}

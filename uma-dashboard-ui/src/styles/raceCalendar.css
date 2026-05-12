@@ -1,31 +1,37 @@
 .race-calendar-side {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--uma-space-4);
   position: sticky;
 }
 
 .race-calendar-card {
   overflow: hidden;
-  border: 2px solid #8dd62c;
-  border-radius: 16px;
-  background: white;
-  color: #7c3f15;
+  border: 1px solid rgba(87, 199, 255, 0.24);
+  border-radius: var(--uma-radius-lg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 253, 255, 0.94)),
+    white;
+  color: var(--uma-ink);
+  box-shadow: var(--uma-shadow-card);
 }
 
 .race-calendar-header {
   display: grid;
   grid-template-columns: 44px 1fr 44px;
   align-items: center;
-  background: linear-gradient(#92dc52, #75c832);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), transparent),
+    var(--uma-gradient-race);
   color: white;
+  padding: var(--uma-space-2);
 }
 
 .race-calendar-header h3 {
   margin: 0;
   text-align: center;
-  font-size: 28px;
-  font-weight: 900;
+  font-size: 22px;
+  font-weight: 1000;
 }
 
 .race-calendar-header button {
@@ -46,9 +52,9 @@
 
 .race-weekdays {
   padding: 16px 14px 8px;
-  color: #8bbbd0;
-  font-size: 18px;
-  font-weight: 900;
+  color: var(--uma-muted);
+  font-size: 12px;
+  font-weight: 1000;
 }
 
 .race-days {
@@ -57,9 +63,10 @@
 }
 
 .race-day {
-  min-height: 42px;
-  color: #8bbbd0;
-  font-size: 18px;
+  min-height: 38px;
+  border-radius: 12px;
+  color: #7da6b9;
+  font-size: 14px;
   font-weight: 800;
   display: flex;
   flex-direction: column;
@@ -68,7 +75,9 @@
 }
 
 .race-day.has-event {
+  background: rgba(255, 240, 246, 0.86);
   color: #d45c4f;
+  box-shadow: inset 0 0 0 1px rgba(255, 111, 174, 0.18);
 }
 
 .race-day-icon {
@@ -77,13 +86,17 @@
 }
 
 .race-list-title {
-  background: linear-gradient(#92dc52, #75c832);
-  color: white;
-  border-radius: 10px;
-  padding: 8px;
-  text-align: center;
-  font-size: 24px;
-  font-weight: 900;
+  border: 1px solid rgba(123, 79, 145, 0.12);
+  border-radius: var(--uma-radius-pill);
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--uma-muted);
+  text-align: left;
+  font-size: 12px;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: var(--uma-shadow-soft);
 }
 
 .race-list {
@@ -93,23 +106,26 @@
 
 .race-item {
   display: grid;
-  grid-template-columns: 120px 1fr;
+  grid-template-columns: 104px 1fr;
   grid-template-areas:
     "title title"
     "image detail";
   gap: 8px 14px;
 
-  background: white;
-  border: 2px solid #8dd62c;
-  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 253, 248, 0.94)),
+    white;
+  border: 1px solid rgba(117, 200, 50, 0.26);
+  border-radius: var(--uma-radius-md);
   padding: 10px;
-  color: #7c3f15;
+  color: var(--uma-ink);
+  box-shadow: var(--uma-shadow-soft);
 }
 
 .race-item img {
   grid-area: image;
-  width: 120px;
-  height: 68px;
+  width: 104px;
+  height: 66px;
   object-fit: cover;
   border-radius: 8px;
 }
@@ -122,8 +138,9 @@
   grid-area: title;
   margin: 0;
   text-align: left;
-  font-size: 20px;
-  font-weight: 900;
+  font-size: 16px;
+  font-weight: 1000;
+  line-height: 1.15;
 }
 
 .race-info p,
@@ -133,49 +150,25 @@
 }
 
 
-.race-stage-icon-box {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 75px;
-  overflow: hidden; 
-}
-
-.race-stage-icon-box img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-.race-id {
-  color: #7ead2d;
-  font-size: 18px;
-  font-weight: 1000;
-  text-transform: uppercase;
-  line-height: 1;
-  margin: 10px 0 10px 0
-}
-
 .race-info p {
   margin: 0;
-  font-size: 20px;
+  font-size: 14px;
   font-weight: 900;
 }
 
 .race-info span {
   align-self: end;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 900;
+  color: var(--uma-muted);
 }
 
 .race-empty {
-  background: white;
-  border: 2px solid #8dd62c;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(123, 79, 145, 0.12);
+  border-radius: var(--uma-radius-md);
   padding: 18px;
-  color: #7c3f15;
+  color: var(--uma-muted);
   text-align: center;
   font-weight: 900;
 }

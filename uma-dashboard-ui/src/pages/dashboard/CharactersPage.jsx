@@ -7,7 +7,7 @@ import calstone_light_o_img from "../../assets/character/uma/calstone_light_o.we
 import spica_img from "../../assets/character/trainer/spica.webp"
 import kaguya_img from "../../assets/character/trainer/kaguya.webp"
 import gelbert_img from "../../assets/character/trainer/gelbert.webp"
-import { FilterTabs, SearchInput } from "../../components/ui";
+import { Badge, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 
 const characters = [
   // {
@@ -88,12 +88,12 @@ export default function CharactersPage() {
 
   return (
     <section className="characters-page">
-      <div className="sheet-card">
-        <div className="title-banner">
-          <div>
-            <h2>Characters</h2>
-          </div>
-        </div>
+      <GameCard className="page-control-card characters-page-card">
+        <SectionHeader
+          title="Characters"
+          kicker="Stable Roster"
+          action={<Badge>{filteredCharacters.length} entries</Badge>}
+        />
 
         <div className="characters-toolbar">
           <SearchInput
@@ -109,13 +109,19 @@ export default function CharactersPage() {
             className="characters-filters"
           />
         </div>
-      </div>
+      </GameCard>
 
       
 
-      <div className="characters-grid">
-        {filteredCharacters.map((character) => (
-          <article className="character-card" key={character.id}>
+      {filteredCharacters.length === 0 ? (
+        <GameCard className="page-empty-state">
+          <strong>No characters found</strong>
+          <span>Try a different name or roster filter.</span>
+        </GameCard>
+      ) : (
+        <div className="characters-grid">
+          {filteredCharacters.map((character) => (
+          <GameCard as="article" className="character-card" key={character.id}>
             <div className="character-image-frame">
               {character.image ? (
                 <img src={character.image} alt={character.name} />
@@ -129,13 +135,14 @@ export default function CharactersPage() {
               {/* <p>{character.jpName}</p> */}
 
               <div className="character-bottom">
-                <span>{character.type}</span>
+                <Badge>{character.type}</Badge>
                 {/* <button type="button">View</button> */}
               </div>
             </div>
-          </article>
-        ))}
-      </div>
+          </GameCard>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

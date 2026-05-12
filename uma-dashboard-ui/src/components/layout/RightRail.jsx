@@ -9,6 +9,10 @@ export default function RightRail({
 }) {
   return (
     <aside className="dashboard-right-panel right-rail">
+      <div className="right-rail-heading">
+        <span>Live Trainer Desk</span>
+      </div>
+
       <SkillLoadoutPanel
         userId={userId}
         username={player?.username || username}

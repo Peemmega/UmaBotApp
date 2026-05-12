@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "../../styles/skillsPage.css";
 import { playSound } from "../../utils/soundManager";
-import { raceImageMap } from "../../utils/raceSchedule.js";
+import { fallbackRaceImg, raceImageMap } from "../../utils/raceSchedule.js";
 import Toast from "../../components/Toast";
+import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
@@ -15,10 +16,10 @@ const DISTANCE_FILTERS = [
 ];
 
 const PATH_ICON = {
-  1: "➡️",
-  2: "⤵️",
-  3: "↗️",
-  4: "↘️",
+  1: "→",
+  2: "↵",
+  3: "↗",
+  4: "↘",
 };
 
 export default function RacesPage({ userId }) {
@@ -93,47 +94,47 @@ export default function RacesPage({ userId }) {
 
   return (
     <section className="skills-page">
-      <div className="sheet-card">
-        <div className="title-banner">
-          <h2>รายการสนามทั้งหมด</h2>
-        </div>
+      <GameCard className="page-control-card race-page-card">
+        <SectionHeader
+          title="รายการสนามทั้งหมด"
+          kicker="Race Selection"
+          action={<Badge>{filteredRaces.length} สนาม</Badge>}
+        />
 
         <div className="skills-toolbar">
-          <input
-            className="search-bar"
+          <SearchInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search race name / id / track..."
           />
 
-          <div className="skills-filter-row">
-            {DISTANCE_FILTERS.map((filter) => (
-              <button
-                key={filter.value}
-                type="button"
-                className={`filter-btn ${
-                  activeDistance === filter.value ? "active" : ""
-                }`}
-                onClick={() => {
-                  playSound("click");
-                  setActiveDistance(filter.value);
-                }}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
+          <FilterTabs
+            items={DISTANCE_FILTERS}
+            value={activeDistance}
+            onChange={(value) => {
+              playSound("click");
+              setActiveDistance(value);
+            }}
+            className="skills-filter-row"
+          />
         </div>
-      </div>
+      </GameCard>
 
       <div className="skills-count">พบ {filteredRaces.length} สนาม</div>
 
-      <div className="skills-grid">
-        {filteredRaces.map((race) => {
-          const raceImg = raceImageMap[race.id];
+      {filteredRaces.length === 0 ? (
+        <GameCard className="page-empty-state">
+          <strong>No races found</strong>
+          <span>Try another race name, track, or distance filter.</span>
+        </GameCard>
+      ) : (
+        <div className="skills-grid race-grid">
+          {filteredRaces.map((race) => {
+          const raceImg = raceImageMap[race.id] || fallbackRaceImg;
 
           return (
-            <article
+            <GameCard
+              as="article"
               className="race-card"
               key={race.id}
               onClick={() => {
@@ -143,35 +144,32 @@ export default function RacesPage({ userId }) {
             >
 
               <div className="race-stage-icon-box">
-                  {raceImg ? (
-                    <img
-                      src={raceImg}
-                      alt={race.name}
-                      className="race-card-img"
-                    />
-                  ) : (
-                    "🏟️"
-                  )}
+                  <img
+                    src={raceImg}
+                    alt={race.name}
+                    className="race-card-img"
+                  />
               </div>
 
-              <div className="race-id">{race.name}</div>
+              <div className="race-card-body">
+                <div className="race-id">{race.name}</div>
 
 
-              <div className="skill-main-row">
-                <div className="skill-content">
-                  <div className="content-meta-row">
-                    <span>{race.distance}</span>
-                    <span>{race.track}</span>
-                    <span>{race.turn} Turns</span>
+                <div className="skill-main-row">
+                  <div className="skill-content">
+                    <div className="content-meta-row race-meta-row">
+                      <span>{race.distance}</span>
+                      <span>{race.track}</span>
+                      <span>{race.turn} Turns</span>
+                    </div>
                   </div>
-
-                
                 </div>
               </div>
-            </article>
+            </GameCard>
           );
-        })}
-      </div>
+          })}
+        </div>
+      )}
 
       {selectedRace && (
         <div
@@ -194,7 +192,7 @@ export default function RacesPage({ userId }) {
                 </div>
 
                 <img
-                  src={raceImageMap[selectedRace.id]}
+                  src={raceImageMap[selectedRace.id] || fallbackRaceImg}
                   alt={selectedRace.name}
                 />
               </div>
@@ -221,19 +219,21 @@ export default function RacesPage({ userId }) {
               </div>
 
               <div className="race-room-actions">
-                <button
+                <Button
+                  variant="ghost"
                   className="zone-cancel-btn"
                   onClick={() => setSelectedRace(null)}
                 >
                   ยกเลิก
-                </button>
+                </Button>
 
-                <button
+                <Button
+                  variant="primary"
                   className="zone-save-btn"
                   onClick={createRaceRoom}
                 >
                   สร้างห้อง
-                </button>
+                </Button>
               </div>
             </div>
           </div>
