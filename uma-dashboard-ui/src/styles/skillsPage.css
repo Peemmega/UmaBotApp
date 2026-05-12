@@ -8,7 +8,7 @@
   padding: var(--uma-space-4) var(--uma-space-5) var(--uma-space-5);
   border-radius: 0 0 var(--uma-radius-md) var(--uma-radius-md);
   background:
-    radial-gradient(circle at 0 0, rgba(255, 212, 90, 0.18), transparent 38%),
+    radial-gradient(circle at 0 0, rgba(139, 220, 92, 0.18), transparent 38%),
     rgba(255, 255, 255, 0.62);
   display: flex;
   flex-direction: column;
@@ -49,7 +49,7 @@
   min-height: 100%;
   border-radius: var(--uma-radius-sm);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 253, 248, 0.95)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 255, 241, 0.95)),
     white;
   border: 1px solid rgba(117, 200, 50, 0.38);
   padding: var(--uma-space-4);
@@ -85,8 +85,8 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(130deg, rgba(255, 111, 174, 0.15), transparent 32%),
-    linear-gradient(315deg, rgba(87, 199, 255, 0.16), transparent 38%);
+    linear-gradient(130deg, rgba(69, 201, 111, 0.18), transparent 32%),
+    linear-gradient(315deg, rgba(85, 220, 166, 0.18), transparent 38%);
   opacity: 0;
   transition: opacity var(--uma-duration-base) ease;
   pointer-events: none;
@@ -100,7 +100,7 @@
   top: 8px;
   height: 3px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--uma-pink), var(--uma-gold), var(--uma-sky));
+  background: linear-gradient(90deg, var(--uma-primary-dark), var(--uma-mint), var(--uma-gold));
   opacity: 0.68;
 }
 
@@ -120,7 +120,7 @@
 }
 
 .skill-id {
-  color: var(--uma-pink);
+  color: var(--uma-primary-dark);
   font-size: 13px;
   font-weight: 1000;
   text-transform: uppercase;
@@ -139,7 +139,7 @@
   border-radius: 10px;
   display: grid;
   place-items: center;
-  background: rgba(255, 240, 246, 0.82);
+  background: rgba(239, 255, 220, 0.9);
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -234,7 +234,7 @@
 .skill-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--uma-shadow-pop);
-  border-color: rgba(255, 111, 174, 0.38);
+  border-color: rgba(69, 201, 111, 0.42);
 }
 
 .skill-card:active {
@@ -349,7 +349,7 @@
 }
 
 .skill-equip-title span {
-  color: var(--uma-pink);
+  color: var(--uma-primary-dark);
   font-size: 30px;
   font-weight: 1000;
   text-transform: uppercase;
@@ -459,17 +459,89 @@
 }
 
 @media (max-width: 720px) {
-  /* .skill-main-row {
-    grid-template-columns: 1fr;
+  .skills-page {
+    gap: var(--uma-space-3);
   }
 
-  .content-meta-row {
-    grid-template-columns: 1fr;
-  } */
+  .page-control-card .ui-section-header {
+    padding: 14px 14px 8px;
+  }
+
+  .page-control-card .ui-section-header-title {
+    font-size: 20px;
+  }
+
+  .page-control-card .ui-section-header-kicker {
+    font-size: 10px;
+  }
+
+  .skills-toolbar {
+    padding: 10px 12px 12px;
+    gap: 8px;
+  }
+
+  .skills-filter-row {
+    gap: 6px;
+  }
+
+  .skills-filter-row .filter-btn {
+    min-height: 30px;
+    padding: 5px 9px;
+    font-size: 11px;
+  }
+
+  .skills-count {
+    padding: 5px 9px;
+    font-size: 11px;
+  }
+
+  .skills-grid {
+    gap: 10px;
+  }
+
+  .skill-card {
+    padding: 10px;
+  }
+
+  .skill-top-row {
+    gap: 7px;
+    margin-bottom: 7px;
+  }
+
+  .skill-icon-box {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
 
   .skill-card h3,
   .skill-id {
-    font-size: 18px;
+    font-size: 15px;
+  }
+
+  .skill-main-row {
+    gap: 8px;
+  }
+
+  .content-meta-row {
+    gap: 5px;
+    margin-bottom: 7px;
+  }
+
+  .content-meta-row span {
+    min-height: 26px;
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .skill-trigger,
+  .skill-effects ul,
+  .skill-effects strong {
+    font-size: 12px;
+  }
+
+  .skill-effects strong {
+    margin-top: 6px;
   }
 }
 
@@ -581,7 +653,7 @@
   }
 
   .content-meta-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -646,4 +718,88 @@
 .page-empty-state strong {
   color: var(--uma-ink);
   font-size: 20px;
+}
+
+@media (max-width: 640px) {
+  .skills-page {
+    gap: 10px;
+  }
+
+  .race-card {
+    padding: 7px;
+  }
+
+  .race-card::after {
+    left: 9px;
+    right: 9px;
+    top: 6px;
+    height: 2px;
+  }
+
+  .race-stage-icon-box {
+    height: 82px;
+  }
+
+  .race-card-body {
+    padding: 8px 3px 0;
+  }
+
+  .race-id {
+    font-size: 15px;
+    line-height: 1.12;
+    margin-bottom: 7px;
+  }
+
+  .race-meta-row {
+    gap: 4px;
+  }
+
+  .race-meta-row span {
+    min-height: 24px;
+    padding: 4px 4px;
+    font-size: 10.5px;
+  }
+
+  .skill-card {
+    padding: 9px;
+  }
+
+  .skill-card h3 {
+    font-size: 15px;
+  }
+
+  .skill-id {
+    font-size: 12px;
+  }
+
+  .skill-trigger,
+  .skill-effects ul,
+  .skill-effects strong {
+    font-size: 12px;
+  }
+
+  .skill-effects ul {
+    padding-left: 18px;
+    line-height: 1.28;
+  }
+
+  .page-empty-state {
+    padding: var(--uma-space-6);
+  }
+
+  .ui-search-input {
+    min-height: 38px;
+    padding: 7px 11px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 380px) {
+  .race-stage-icon-box {
+    height: 72px;
+  }
+
+  .race-id {
+    font-size: 14px;
+  }
 }
