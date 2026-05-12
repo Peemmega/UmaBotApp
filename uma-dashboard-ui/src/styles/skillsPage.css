@@ -588,17 +588,13 @@
 .race-stage-icon-box {
   position: relative;
   width: 100%;
-  height: 150px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 
-  border-radius: var(--uma-radius-xs);
-  background:
-    linear-gradient(135deg, rgba(87, 199, 255, 0.18), rgba(72, 215, 164, 0.16)),
-    rgba(255, 255, 255, 0.74);
-  border: 1px solid rgba(87, 199, 255, 0.2);
+ 
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.62);
 }
 
