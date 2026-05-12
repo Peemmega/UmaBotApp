@@ -71,7 +71,7 @@
   border-radius: 24px;
   background: white;
   border: 3px solid #a3e635;
-  overflow: hidden; /* 🔥 สำคัญ ทำให้ภาพไม่ล้น */
+  overflow: hidden; /* Keep character art inside the card frame. */
   box-shadow: 0 12px 24px rgba(0,0,0,0.18);
 }
 
@@ -95,9 +95,8 @@
   transform: scale(1.12);
 }
 
-/* ✨ Hover effect */
 .character-card:hover .character-image-frame img {
-  transform: scale(1.15); /* 🔥 ขยาย */
+  transform: scale(1.15);
 }
 
 .character-image-frame::after {

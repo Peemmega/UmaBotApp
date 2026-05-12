@@ -10,6 +10,8 @@ const monthNames = [
   "July", "August", "September", "October", "November", "December",
 ];
 
+const getRaceImage = (raceId) => raceImageMap?.[raceId] || fallbackRaceImg;
+
 export default function RaceCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([]);
@@ -104,7 +106,7 @@ export default function RaceCalendar() {
                 key={index}
                 className={`race-day ${day ? "" : "empty"} ${event ? "has-event" : ""}`}
               >
-                {event && <span className="race-day-icon">🏇</span>}
+                {event && <span className="race-day-icon">{"\u{1F3C7}"}</span>}
                 <span>{day}</span>
               </div>
             );
@@ -121,7 +123,7 @@ export default function RaceCalendar() {
           eventsThisMonth.map((event) => (
             <div className="race-item" key={`${event.id}-${event.date}`}>
               <img
-                src={raceImageMap[event.id] || fallbackRaceImg}
+                src={getRaceImage(event.id)}
                 alt={event.name}
                 />
 

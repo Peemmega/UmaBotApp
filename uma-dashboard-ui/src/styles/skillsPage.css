@@ -324,7 +324,7 @@
 
   60% {
     opacity: 1;
-    transform: scale(1.05) translateY(-6px); /* 🔥 เด้งขึ้น */
+    transform: scale(1.05) translateY(-6px);
   }
 
   100% {

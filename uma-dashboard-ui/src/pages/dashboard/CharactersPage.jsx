@@ -67,10 +67,17 @@ export default function CharactersPage() {
   const [activeFilter, setActiveFilter] = useState("All");
 
   const filteredCharacters = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
     return characters.filter((character) => {
+      const name = character.name?.toLowerCase() || "";
+      const jpName =
+        typeof character.jpName === "string"
+          ? character.jpName.toLowerCase()
+          : "";
+
       const matchSearch =
-        character.name.toLowerCase().includes(search.toLowerCase()) ||
-        character.jpName?.includes(search);
+        query === "" || name.includes(query) || jpName.includes(query);
 
       const matchFilter =
         activeFilter === "All" || character.type === activeFilter;
