@@ -249,7 +249,6 @@
 .game-nav,
 .sidebar {
   position: sticky;
-  top: calc(76px + var(--uma-space-5));
   width: 100%;
   padding: 10px;
   border: 1px solid rgba(255, 255, 255, 0.62);
@@ -342,7 +341,6 @@
   flex-direction: column;
   gap: var(--uma-space-3);
   position: sticky;
-  top: calc(76px + var(--uma-space-5));
 }
 
 .right-rail-heading {
