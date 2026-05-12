@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/dashboard.css";
 import "../styles/mailbox.css";
 
 import MailboxModal from "../components/MailboxModal";
 import RenameModal from "../components/RenameModal";
-import RaceCalendar from "../components/RaceCalendar";
-import TopBar from "../components/TopBar";
-import Sidebar from "../components/Sidebar";
+import { AppShell, GameNav, RightRail, TopBar } from "../components/layout";
 
 import ProfilePage from "./dashboard/ProfilePage";
 import TutorialsPage from "./dashboard/TutorialsPage";
@@ -14,7 +12,6 @@ import SkillsPage from "./dashboard/SkillsPage";
 import CharactersPage from "./dashboard/CharactersPage";
 import QAPage from "./dashboard/QAPage";
 import RacesPage from "./dashboard/RacesPage";
-import DashboardRightPanel from "../components/DashboardRightPanel";
 
 const VALID_PAGES = [
   "profile",
@@ -134,39 +131,8 @@ export default function DashboardPage({
     return () => clearInterval(interval);
   }, [userId]);
 
-  return (
-    <div
-      className="dashboard-page"
-      style={{
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundAttachment: "fixed",
-      }}
-    >
-      <TopBar
-        unreadCount={unreadCount}
-        onMailClick={() => setIsMailboxOpen(true)}
-        onLogout={onLogout}
-      />
-
-      <div className="dashboard-layout">
-        <Sidebar
-          activePage={activePage}
-          onChangePage={changePage}
-        />
-
-        <div className="dashboard-shell">{renderMiddlePage()}</div>
-
-        <DashboardRightPanel
-          activePage={activePage}
-          userId={userId}
-          username={player?.username || username}
-          player={player}
-          skillLoadoutVersion={skillLoadoutVersion}
-        />
-      </div>
-
+  const modals = (
+    <>
       {isMailboxOpen && (
         <MailboxModal
           userId={userId}
@@ -192,6 +158,30 @@ export default function DashboardPage({
           }}
         />
       )}
-    </div>
+    </>
+  );
+
+  return (
+    <AppShell
+      topBar={
+        <TopBar
+          unreadCount={unreadCount}
+          onMailClick={() => setIsMailboxOpen(true)}
+          onLogout={onLogout}
+        />
+      }
+      nav={<GameNav activePage={activePage} onChangePage={changePage} />}
+      rightRail={
+        <RightRail
+          userId={userId}
+          username={player?.username || username}
+          player={player}
+          skillLoadoutVersion={skillLoadoutVersion}
+        />
+      }
+      modals={modals}
+    >
+      {renderMiddlePage()}
+    </AppShell>
   );
 }

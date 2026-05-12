@@ -1,0 +1,307 @@
+.app-shell {
+  min-height: 100vh;
+  width: 100%;
+  color: #ffffff;
+  overflow-x: hidden;
+  padding:
+    calc(76px + var(--uma-space-5))
+    clamp(10px, 1.2vw, 18px)
+    calc(var(--uma-space-8) + var(--uma-space-4));
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.app-shell-layout,
+.dashboard-layout {
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns:
+    clamp(220px, 16vw, 280px)
+    minmax(0, 900px)
+    clamp(300px, 22vw, 360px);
+  gap: clamp(var(--uma-space-2), 2vw, 50px);
+  align-items: start;
+  justify-content: center;
+}
+
+.app-shell-main,
+.dashboard-shell {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--uma-space-5);
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  width: 100%;
+  min-height: 76px;
+  padding: 0 clamp(var(--uma-space-5), 3vw, 42px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--uma-space-5);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--uma-shadow-soft);
+}
+
+.dashboard-title {
+  color: #84461b;
+  margin: 0;
+  font-size: clamp(24px, 5vw, 40px);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--uma-space-3);
+  flex-wrap: wrap;
+}
+
+.discord-btn,
+.mail-btn,
+.danger-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uma-space-2);
+  border: none;
+  border-radius: var(--uma-radius-pill);
+  padding: 10px 18px;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    transform var(--uma-duration-base) var(--uma-ease-pop),
+    box-shadow var(--uma-duration-base) ease;
+}
+
+.discord-btn {
+  background: #5865f2;
+  color: #ffffff;
+}
+
+.mail-btn {
+  position: relative;
+  background: var(--uma-gradient-training);
+  color: #ffffff;
+}
+
+.danger-btn {
+  background: #8f2f29;
+  color: #ffffff;
+}
+
+.discord-btn-icon,
+.mail-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.mail-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--uma-radius-pill);
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mail-btn:hover,
+.danger-btn:hover,
+.discord-btn:hover {
+  transform: scale(1.08);
+  box-shadow: var(--uma-shadow-soft);
+}
+
+.mail-btn:active,
+.danger-btn:active,
+.discord-btn:active {
+  transform: scale(0.95);
+}
+
+.game-nav,
+.sidebar {
+  width: 100%;
+  padding: 0;
+  border-radius: var(--uma-radius-lg);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--uma-shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+.game-nav-icon,
+.sidebar-icon {
+  width: 26px;
+  font-size: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.game-nav-label,
+.sidebar-label {
+  flex: 1;
+  text-align: left;
+}
+
+.game-nav-btn,
+.sidebar-btn {
+  width: 100%;
+  padding: 6px 18px;
+  border: none;
+  border-radius: var(--uma-radius-xs);
+  background: var(--uma-surface);
+  color: #7c3f15;
+  font-size: clamp(18px, 1.15vw, 22px);
+  font-weight: 900;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform var(--uma-duration-base) var(--uma-ease-pop),
+    box-shadow var(--uma-duration-base) ease,
+    background var(--uma-duration-base) ease;
+}
+
+.game-nav-btn:hover,
+.sidebar-btn:hover {
+  transform: scale(1.04);
+  box-shadow: var(--uma-shadow-soft);
+}
+
+.game-nav-btn.active,
+.sidebar-btn.active {
+  background: var(--uma-gradient-training);
+  color: #ffffff;
+}
+
+.right-rail,
+.dashboard-right-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--uma-space-4) + 2px);
+  position: sticky;
+  top: calc(76px + var(--uma-space-5));
+}
+
+@media (max-width: 1280px) {
+  .app-shell-layout,
+  .dashboard-layout {
+    grid-template-columns: 220px minmax(0, 780px);
+    max-width: 1060px;
+  }
+
+  .right-rail,
+  .dashboard-right-panel {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    padding-top: 150px;
+  }
+
+  .app-shell-layout,
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+    max-width: 720px;
+  }
+
+  .game-nav,
+  .sidebar {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .game-nav-btn,
+  .sidebar-btn {
+    text-align: center;
+    font-size: clamp(12.5px, 1.15vw, 22px);
+    padding: var(--uma-space-2) 0;
+  }
+
+  .topbar {
+    height: auto;
+    min-height: 92px;
+    padding: 14px var(--uma-space-4);
+    flex-direction: column;
+  }
+
+  .dashboard-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    padding: 105px var(--uma-space-2) var(--uma-space-8);
+  }
+
+  .topbar {
+    flex-direction: row;
+  }
+
+  .dashboard-title {
+    font-size: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-actions {
+    width: 100%;
+  }
+
+  .discord-btn,
+  .mail-btn,
+  .danger-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 10px var(--uma-space-3);
+    font-size: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discord-btn,
+  .mail-btn,
+  .danger-btn,
+  .game-nav-btn,
+  .sidebar-btn {
+    transition: none;
+  }
+
+  .discord-btn:hover,
+  .mail-btn:hover,
+  .danger-btn:hover,
+  .game-nav-btn:hover,
+  .sidebar-btn:hover {
+    transform: none;
+  }
+}

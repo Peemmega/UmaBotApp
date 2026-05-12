@@ -1,0 +1,49 @@
+import discordIcon from "../../assets/icons/discord_icon.webp";
+import mailIcon from "../../assets/icons/mail_icon.webp";
+import { playSound } from "../../utils/soundManager";
+
+export default function TopBar({ unreadCount = 0, onMailClick, onLogout }) {
+  return (
+    <header className="topbar">
+      <h1 className="dashboard-title">Tracen Academy RP</h1>
+
+      <div className="dashboard-actions">
+        <a
+          className="discord-btn"
+          href="https://discord.gg/75R2E9PU"
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => playSound("click")}
+        >
+          <img src={discordIcon} className="discord-btn-icon" alt="" />
+          Discord
+        </a>
+
+        <button
+          className="mail-btn"
+          type="button"
+          onClick={() => {
+            playSound("open");
+            onMailClick();
+          }}
+        >
+          <img src={mailIcon} className="mail-icon" alt="" />
+          จดหมาย
+
+          {unreadCount > 0 && <span className="mail-badge">{unreadCount}</span>}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            playSound("close");
+            onLogout();
+          }}
+          className="danger-btn"
+        >
+          ออกจากระบบ
+        </button>
+      </div>
+    </header>
+  );
+}
