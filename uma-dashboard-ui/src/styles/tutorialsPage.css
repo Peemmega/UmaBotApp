@@ -56,7 +56,7 @@
 .tutorial-style-card p {
   margin: 0;
   color: #674426;
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 1.6;
 }
@@ -109,9 +109,10 @@
 }
 
 .tutorial-flow-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  position: relative;
 }
 
 .tutorial-flow-card,
@@ -121,7 +122,44 @@
 }
 
 .tutorial-flow-card {
-  min-height: 166px;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-height: auto;
+  padding: 12px 14px;
+}
+
+.tutorial-flow-card::before,
+.tutorial-basic-card::before {
+  content: "";
+  position: absolute;
+  inset-block: 12px;
+  inset-inline-start: 0;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--uma-primary-dark), var(--uma-mint));
+  opacity: 0.72;
+}
+
+.tutorial-flow-marker {
+  display: grid;
+  grid-template-columns: 20px 36px;
+  align-items: center;
+  gap: 6px;
+}
+
+.tutorial-flow-step {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--uma-gradient-primary);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 1000;
+  box-shadow: 0 5px 12px rgba(79, 164, 34, 0.18);
 }
 
 .tutorial-flow-icon {
@@ -129,11 +167,14 @@
   height: 42px;
   display: grid;
   place-items: center;
-  border-radius: 12px;
+  border-radius: 14px;
   background: rgba(236, 252, 203, 0.9);
   border: 1px solid rgba(117, 200, 50, 0.34);
   font-size: 24px;
-  margin-bottom: 10px;
+}
+
+.tutorial-flow-copy {
+  min-width: 0;
 }
 
 .tutorial-flow-card h3,
@@ -150,6 +191,39 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
+}
+
+.tutorial-basics-section {
+  gap: 12px;
+}
+
+.tutorial-basic-card {
+  width: 100%;
+  padding: 14px 16px;
+}
+
+.tutorial-basic-card .tutorial-list {
+  line-height: 1.48;
+}
+
+.tutorial-basic-card .tutorial-list li + li {
+  margin-top: 5px;
+}
+
+.tutorial-basic-card .tutorial-info-table {
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.tutorial-basic-card .tutorial-info-row {
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: 10px;
+  padding: 8px 10px;
+}
+
+.tutorial-basic-card .tutorial-callout {
+  margin-top: 10px;
+  padding: 10px 12px;
 }
 
 .tutorial-style-head {
@@ -337,7 +411,6 @@
 }
 
 @media (max-width: 1120px) {
-  .tutorial-flow-grid,
   .tutorial-style-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -367,17 +440,35 @@
     padding: 13px;
   }
 
-  .tutorial-flow-grid,
   .tutorial-style-grid,
   .tutorial-tip-grid {
     grid-template-columns: 1fr;
   }
 
   .tutorial-flow-card {
-    min-height: auto;
+    grid-template-columns: 50px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .tutorial-flow-marker {
+    grid-template-columns: 18px 32px;
+    gap: 5px;
+  }
+
+  .tutorial-flow-step {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+
+  .tutorial-flow-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 21px;
   }
 
   .tutorial-info-row,
+  .tutorial-basic-card .tutorial-info-row,
   .tutorial-info-table.is-compact .tutorial-info-row {
     grid-template-columns: 1fr;
     gap: 4px;

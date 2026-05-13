@@ -198,18 +198,23 @@ export default function TutorialsPage() {
         <section className="tutorial-section">
           <SectionHeader kicker="Quick Start" title="เกมเล่นยังไง" />
           <div className="tutorial-flow-grid">
-            {quickFlow.map((item) => (
+            {quickFlow.map((item, index) => (
               <GameCard className="tutorial-flow-card" key={item.title}>
-                <div className="tutorial-flow-icon">{item.icon}</div>
-                <h3>{item.title}</h3>
-                <p>{item.text}</p>
+                <div className="tutorial-flow-marker">
+                  <span className="tutorial-flow-step">{index + 1}</span>
+                  <div className="tutorial-flow-icon">{item.icon}</div>
+                </div>
+                <div className="tutorial-flow-copy">
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </div>
               </GameCard>
             ))}
           </div>
         </section>
 
-        <div className="tutorial-grid two-col">
-          <GameCard className="tutorial-card accent-gold">
+        <section className="tutorial-section tutorial-basics-section">
+          <GameCard className="tutorial-card tutorial-basic-card accent-gold">
             <SectionHeader kicker="Win Condition" title="วิธีชนะ" />
             <ul className="tutorial-list">
               <li>คะแนนของผู้เล่นเก็บในค่า score</li>
@@ -222,15 +227,13 @@ export default function TutorialsPage() {
             </Callout>
           </GameCard>
 
-          <GameCard className="tutorial-card">
+          <GameCard className="tutorial-card tutorial-basic-card">
             <SectionHeader kicker="Scoring" title="ระบบคะแนน" />
             <p>คะแนนทอยมาจากลูกเต๋าที่เลือก รวมกับโบนัสจาก stat, Path, Skill และ Zone</p>
             <InfoTable rows={scoreRows} />
           </GameCard>
-        </div>
 
-        <div className="tutorial-grid two-col">
-          <GameCard className="tutorial-card">
+          <GameCard className="tutorial-card tutorial-basic-card">
             <SectionHeader kicker="Dice" title="ระบบเต๋า Gold / White / kh" />
             <p>ทุกครั้งที่ Run ระบบเลือกตารางเต๋าจากสายวิ่ง + Gold/White + Phase ปัจจุบัน</p>
             <InfoTable rows={diceRows} />
@@ -239,7 +242,7 @@ export default function TutorialsPage() {
             </Callout>
           </GameCard>
 
-          <GameCard className="tutorial-card">
+          <GameCard className="tutorial-card tutorial-basic-card">
             <SectionHeader kicker="Phase" title="จังหวะของการแข่งขัน" />
             <p>
               สนามถูกแบ่งเป็น 4 Phase จากจำนวนเทิร์นทั้งหมด เช่น 8 เทิร์นจะประมาณ Phase ละ 2 เทิร์น
@@ -254,7 +257,7 @@ export default function TutorialsPage() {
               Phase มีผลกับตารางเต๋า และเป็นเงื่อนไขของ Skill หลายอัน
             </Callout>
           </GameCard>
-        </div>
+        </section>
 
         <section className="tutorial-section">
           <SectionHeader kicker="Running Style" title="สายการเล่น Front / Pace / Late / End" />
