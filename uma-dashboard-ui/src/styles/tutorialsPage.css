@@ -1,0 +1,167 @@
+.tutorials-page {
+  color: var(--uma-ink);
+}
+
+.tutorials-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--uma-space-5);
+}
+
+.tutorial-hero,
+.tutorial-card {
+  padding: var(--uma-space-5);
+  background:
+    radial-gradient(circle at 0 0, rgba(255, 212, 90, 0.16), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 255, 241, 0.94));
+  border: 1px solid rgba(117, 200, 50, 0.3);
+}
+
+.tutorial-hero p,
+.tutorial-card p {
+  margin: 0;
+  color: #6f4324;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.65;
+}
+
+.tutorial-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--uma-space-5);
+}
+
+.tutorial-grid-steps {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--uma-space-3);
+}
+
+.tutorial-card h3 {
+  margin: 0 0 var(--uma-space-2);
+  color: #6b4a2f;
+  font-size: 17px;
+  font-weight: 1000;
+  line-height: 1.2;
+}
+
+.tutorial-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uma-space-2);
+  margin-top: var(--uma-space-4);
+}
+
+.tutorial-list,
+.tutorial-steps {
+  margin: 0;
+  padding-left: 22px;
+  color: #5d3f2c;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.65;
+}
+
+.tutorial-list li + li,
+.tutorial-steps li + li {
+  margin-top: 8px;
+}
+
+.tutorial-note {
+  color: #8f2f29;
+}
+
+.tutorial-table {
+  display: grid;
+  gap: 10px;
+}
+
+.tutorial-table div {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 10px 12px;
+  border-radius: var(--uma-radius-xs);
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(123, 79, 145, 0.12);
+}
+
+.tutorial-table.compact div {
+  grid-template-columns: 160px 1fr;
+}
+
+.tutorial-table strong {
+  color: #4b9c24;
+  font-size: 14px;
+  font-weight: 1000;
+  word-break: break-word;
+}
+
+.tutorial-table span {
+  color: #5d3f2c;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.tutorial-tip-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--uma-space-3);
+}
+
+.tutorial-tip {
+  min-height: 72px;
+  padding: 14px 16px;
+  border-radius: var(--uma-radius-sm);
+  background: rgba(236, 252, 203, 0.72);
+  border: 1px solid rgba(117, 200, 50, 0.32);
+  color: #35551d;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+@media (max-width: 1100px) {
+  .tutorial-grid-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .tutorials-content {
+    gap: var(--uma-space-3);
+  }
+
+  .tutorial-hero,
+  .tutorial-card {
+    padding: 14px;
+  }
+
+  .tutorial-grid,
+  .tutorial-grid-steps,
+  .tutorial-tip-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .tutorial-table div,
+  .tutorial-table.compact div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .tutorial-hero p,
+  .tutorial-card p,
+  .tutorial-list,
+  .tutorial-steps,
+  .tutorial-tip {
+    font-size: 14px;
+  }
+
+  .tutorial-chip-row .ui-status-chip,
+  .tutorial-chip-row .ui-badge {
+    white-space: normal;
+  }
+}
