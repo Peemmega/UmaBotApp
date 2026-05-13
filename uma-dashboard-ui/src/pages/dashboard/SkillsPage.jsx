@@ -148,10 +148,6 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
       </GameCard>
       
 
-      <div className="skills-count">
-        พบ {filteredSkills.length} สกิล
-      </div>
-
       {filteredSkills.length === 0 ? (
         <GameCard className="page-empty-state">
           <strong>No skills found</strong>

@@ -119,9 +119,7 @@ export default function RacesPage({ userId }) {
           />
         </div>
       </GameCard>
-
-      <div className="skills-count">พบ {filteredRaces.length} สนาม</div>
-
+      
       {filteredRaces.length === 0 ? (
         <GameCard className="page-empty-state">
           <strong>No races found</strong>
