@@ -16,7 +16,7 @@ export default function TopBar({ unreadCount = 0, onMailClick, onLogout }) {
       </div>
 
       <div className="dashboard-actions">
-        <span className="topbar-status">Trainer Desk</span>
+        <span className="topbar-status">Trainee Desk</span>
 
         <a
           className="discord-btn"

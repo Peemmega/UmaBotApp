@@ -44,7 +44,7 @@ export default function ProfilePage({
 
           <section className="profile-card">
             <div className="title-banner">
-              <h2>Trainer Profile</h2>
+              <h2>Trainee Profile</h2>
             </div>
 
             <div className="profile-body">
@@ -103,7 +103,7 @@ export default function ProfilePage({
               <div className="main-stats-header">
                 <SectionHeader
                   title="ค่า Stats พื้นฐาน"
-                  kicker="Trainer Sheet"
+                  kicker="Trainee Sheet"
                   className="profile-section-header"
                 />
 
