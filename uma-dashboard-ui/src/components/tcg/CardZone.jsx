@@ -1,15 +1,17 @@
 import CardBack from "./CardBack";
 import PlayableCard from "./PlayableCard";
 
-const PILE_ZONES = new Set(["deck", "life", "discard"]);
+const PILE_ZONES = new Set(["deck", "life", "discard", "carrot"]);
 
 function getZoneTitle(zone) {
   const titles = {
     deck: "Deck",
     hand: "Hand",
     field: "Field",
+    trainer: "Trainer Zone",
     life: "Life Zone",
     discard: "Discard",
+    carrot: "Carrot Zone",
   };
   return titles[zone] || zone;
 }
@@ -44,7 +46,7 @@ export default function CardZone({
             <PlayableCard
               key={card.instanceId}
               card={card}
-              compact={zone !== "field"}
+              compact={zone !== "field" && zone !== "trainer"}
               hidden={isOpponentHand || isHiddenPile}
               selected={selectedCardId === card.instanceId}
               isDragging={draggingCardId === card.instanceId}

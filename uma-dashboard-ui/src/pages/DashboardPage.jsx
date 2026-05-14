@@ -48,6 +48,12 @@ export default function DashboardPage({
   const changePage = (page) => {
     if (!VALID_PAGES.includes(page)) return;
 
+    if (page === "tcg") {
+      window.history.pushState({}, "", "/tcg");
+      window.dispatchEvent(new Event("uma:navigate"));
+      return;
+    }
+
     setActivePage(page);
     window.history.pushState({}, "", `/dashboard/${page}`);
   };

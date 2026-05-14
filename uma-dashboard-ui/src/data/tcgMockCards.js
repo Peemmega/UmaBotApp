@@ -1,3 +1,65 @@
+const cardAssetModules = {
+  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD01_*.png", {
+    eager: true,
+    query: "?url",
+    import: "default",
+  }),
+  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD02_*.png", {
+    eager: true,
+    query: "?url",
+    import: "default",
+  }),
+  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD03_*.png", {
+    eager: true,
+    query: "?url",
+    import: "default",
+  }),
+  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD04_*.png", {
+    eager: true,
+    query: "?url",
+    import: "default",
+  }),
+  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD05_*.png", {
+    eager: true,
+    query: "?url",
+    import: "default",
+  }),
+  ...import.meta.glob("../assets/tcg/cards/trainers/UMT_001.png", {
+    eager: true,
+    query: "?url",
+    import: "default",
+  }),
+  ...import.meta.glob("../assets/tcg/cards/carrots/UMC_01.png", {
+    eager: true,
+    query: "?url",
+    import: "default",
+  }),
+};
+
+function findAsset(pattern) {
+  const entry = Object.entries(cardAssetModules).find(([path]) =>
+    pattern.test(path)
+  );
+  return entry?.[1] || "";
+}
+
+function findAssets(pattern) {
+  return Object.entries(cardAssetModules)
+    .filter(([path]) => pattern.test(path))
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, url]) => url);
+}
+
+const TRAINEE_IMAGES = {
+  Speed: findAssets(/trainees\/UMTD01_/),
+  Stamina: findAssets(/trainees\/UMTD02_/),
+  Power: findAssets(/trainees\/UMTD03_/),
+  Guts: findAssets(/trainees\/UMTD04_/),
+  Wit: findAssets(/trainees\/UMTD05_/),
+};
+
+const FALLBACK_TRAINEE_IMAGES = findAssets(/trainees\//);
+
 const STYLE_THEMES = {
   Speed: {
     color: "#20b8ff",
@@ -26,6 +88,20 @@ const STYLE_THEMES = {
   },
 };
 
+export const tcgAssets = {
+  cardBack: findAsset(/card-back/i),
+  trainer: findAsset(/trainers\/UMT_001/) || findAsset(/trainers\//),
+  carrot: findAsset(/carrots\/UMC_01/) || findAsset(/carrots\//),
+  cardImage: (style, index) => {
+    const styleImages = TRAINEE_IMAGES[style] || [];
+    return (
+      styleImages[index % styleImages.length] ||
+      FALLBACK_TRAINEE_IMAGES[index % FALLBACK_TRAINEE_IMAGES.length] ||
+      ""
+    );
+  },
+};
+
 const CARD_NAMES = {
   Speed: ["Silent Sprint", "Corner Dash", "Front Runner", "Blue Gear"],
   Stamina: ["Long Climb", "Deep Breath", "Iron Pace", "Green Endurance"],
@@ -48,6 +124,7 @@ function makeCard(style, index) {
     cost,
     power: type === "Trainee" ? 2000 + cost * 1000 + (index % 3) * 500 : 0,
     style,
+    image: tcgAssets.cardImage(style, index),
     text:
       type === "Trainee"
         ? `${style} trainee for sandbox playtesting. Battle logic is not active yet.`
@@ -99,6 +176,36 @@ export const predefinedTcgDecks = [
     "Good base for draw, keyword, and control experiments."
   ),
 ];
+
+export function createTrainerCard(playerId) {
+  return {
+    id: `trainer-${playerId}`,
+    instanceId: `${playerId}-trainer-card`,
+    name: "Trainer",
+    type: "Trainer",
+    cost: 0,
+    power: 0,
+    style: "Wit",
+    status: "active",
+    image: tcgAssets.trainer,
+    text: "Starting trainer card for sandbox playtesting.",
+  };
+}
+
+export function createCarrotCard(playerId, index) {
+  return {
+    id: "carrot-token",
+    instanceId: `${playerId}-carrot-${index}`,
+    name: "Carrot",
+    type: "Carrot",
+    cost: 0,
+    power: 0,
+    style: "Stamina",
+    status: "active",
+    image: tcgAssets.carrot,
+    text: "Resource card for future carrot costs. Tap/rest is available now.",
+  };
+}
 
 export function createDeckInstance(deck, playerId) {
   return deck.cards.map((card, index) => ({

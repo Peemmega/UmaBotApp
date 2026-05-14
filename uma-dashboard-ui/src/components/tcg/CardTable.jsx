@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { RotateCcw, RotateCw, UserRound } from "lucide-react";
+import { Eye, Plus, RotateCcw, RotateCw, UserRound } from "lucide-react";
 import CardZone from "./CardZone";
 import PlayableCard from "./PlayableCard";
+import ZoneViewerModal from "./ZoneViewerModal";
+import { createCarrotCard } from "../../data/tcgMockCards";
 
-const ZONES = ["deck", "hand", "field", "life", "discard"];
+const ZONES = ["deck", "hand", "field", "trainer", "life", "discard", "carrot"];
 
 function drawCards(player, count) {
   const drawn = player.zones.deck.slice(0, count);
@@ -46,6 +48,7 @@ export default function CardTable({
   const [perspective, setPerspective] = useState("player1");
   const [selectedCardId, setSelectedCardId] = useState(null);
   const [dragState, setDragState] = useState(null);
+  const [zoneViewer, setZoneViewer] = useState(null);
   const dragRef = useRef(null);
 
   const selectedCard = useMemo(() => {
@@ -215,6 +218,35 @@ export default function CardTable({
     }));
   };
 
+  const handleAddCarrot = (playerId) => {
+    setPlayers((prev) => {
+      const nextCounter = (prev[playerId].carrotCounter || 0) + 1;
+      return {
+        ...prev,
+        [playerId]: {
+          ...prev[playerId],
+          carrotCounter: nextCounter,
+          zones: {
+            ...prev[playerId].zones,
+            carrot: [
+              ...prev[playerId].zones.carrot,
+              createCarrotCard(playerId, nextCounter),
+            ],
+          },
+        },
+      };
+    });
+  };
+
+  const openZoneViewer = (playerId, zone) => {
+    setZoneViewer({
+      playerId,
+      zone,
+      playerName: players[playerId].name,
+      cards: players[playerId].zones[zone],
+    });
+  };
+
   const playerRows = [
     { id: "player2", orientation: "opponent" },
     { id: "player1", orientation: "local" },
@@ -281,10 +313,27 @@ export default function CardTable({
                   <button type="button" onClick={() => handleDraw(id, 2)}>
                     Draw 2
                   </button>
+                  <button type="button" onClick={() => handleAddCarrot(id)}>
+                    <Plus size={16} />
+                    Add Carrot
+                  </button>
                   <button type="button" onClick={toggleSelectedCard}>
                     <RotateCw size={16} />
                     Tap / Active
                   </button>
+                </div>
+                <div className="tcg-zone-view-buttons">
+                  {ZONES.map((zone) => (
+                    <button
+                      type="button"
+                      key={zone}
+                      onClick={() => openZoneViewer(id, zone)}
+                    >
+                      <Eye size={13} />
+                      <span>{zone}</span>
+                      <strong>{player.zones[zone].length}</strong>
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -317,7 +366,25 @@ export default function CardTable({
                     draggingCardId={dragState?.card.instanceId}
                     onCardPointerDown={handleCardPointerDown}
                   />
+                  <CardZone
+                    playerId={id}
+                    zone="carrot"
+                    cards={player.zones.carrot}
+                    perspective={perspective}
+                    selectedCardId={selectedCardId}
+                    draggingCardId={dragState?.card.instanceId}
+                    onCardPointerDown={handleCardPointerDown}
+                  />
                 </div>
+                <CardZone
+                  playerId={id}
+                  zone="trainer"
+                  cards={player.zones.trainer}
+                  perspective={perspective}
+                  selectedCardId={selectedCardId}
+                  draggingCardId={dragState?.card.instanceId}
+                  onCardPointerDown={handleCardPointerDown}
+                />
                 <CardZone
                   playerId={id}
                   zone="field"
@@ -354,11 +421,18 @@ export default function CardTable({
         >
           <PlayableCard
             card={dragState.card}
-            compact={dragState.zone !== "field"}
+            compact={dragState.zone !== "field" && dragState.zone !== "trainer"}
             hidden={dragState.hidden}
           />
         </div>
       )}
+      <ZoneViewerModal
+        viewer={zoneViewer}
+        perspective={perspective}
+        selectedCardId={selectedCardId}
+        onSelectCard={setSelectedCardId}
+        onClose={() => setZoneViewer(null)}
+      />
     </div>
   );
 }

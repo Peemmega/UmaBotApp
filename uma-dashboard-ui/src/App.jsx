@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
+import CardGamePage from "./pages/dashboard/CardGamePage";
 import LoadingScreen from "./components/LoadingScreen";
 import HorseshoeBackground from "./components/HorseshoeBackground";
 
@@ -48,6 +49,7 @@ function loadLoginSession() {
 
 export default function App() {
   const [showIntro, setShowIntro] = useState(true);
+  const [routePath, setRoutePath] = useState(window.location.pathname);
 
   const [username, setUsername] = useState("");
   const [userId, setUserId] = useState("");
@@ -58,6 +60,20 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [showRaw, setShowRaw] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setRoutePath(window.location.pathname);
+    };
+
+    window.addEventListener("popstate", handleRouteChange);
+    window.addEventListener("uma:navigate", handleRouteChange);
+
+    return () => {
+      window.removeEventListener("popstate", handleRouteChange);
+      window.removeEventListener("uma:navigate", handleRouteChange);
+    };
+  }, []);
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
@@ -172,12 +188,27 @@ export default function App() {
     window.location.href = "/";
   };
 
+  const isTcgRoute =
+    routePath === "/tcg" ||
+    routePath === "/dashboard/tcg" ||
+    routePath === "/dashboard/tcg-fullscreen";
+
+  const handleBackToDashboard = () => {
+    window.history.pushState({}, "", "/dashboard/profile");
+    window.dispatchEvent(new Event("uma:navigate"));
+  };
+
   return (
     <>
-      <HorseshoeBackground />
+      {!isTcgRoute && <HorseshoeBackground />}
 
       {!username ? (
         <LoginPage appBase={APP_BASE} />
+      ) : isTcgRoute ? (
+        <CardGamePage
+          fullscreen
+          onBackToDashboard={handleBackToDashboard}
+        />
       ) : (
         <DashboardPage
           username={username}

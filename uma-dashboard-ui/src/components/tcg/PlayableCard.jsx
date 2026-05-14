@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { tcgStyleThemes } from "../../data/tcgMockCards";
 import CardBack from "./CardBack";
 
@@ -9,9 +10,11 @@ export default function PlayableCard({
   onPointerDown,
   isDragging = false,
 }) {
+  const [imageFailed, setImageFailed] = useState(false);
   if (!card) return null;
 
   const theme = tcgStyleThemes[card.style] || tcgStyleThemes.Speed;
+  const hasImage = card.image && !imageFailed;
 
   return (
     <button
@@ -34,6 +37,20 @@ export default function PlayableCard({
     >
       {hidden ? (
         <CardBack compact={compact} />
+      ) : hasImage ? (
+        <div className="tcg-card-image-wrap">
+          <img
+            className="tcg-card-image"
+            src={card.image}
+            alt={card.name}
+            draggable="false"
+            onError={() => setImageFailed(true)}
+          />
+          <div className="tcg-card-image-meta">
+            <span>{card.type}</span>
+            <strong>{card.cost}</strong>
+          </div>
+        </div>
       ) : (
         <>
           <div className="tcg-card-topline">
