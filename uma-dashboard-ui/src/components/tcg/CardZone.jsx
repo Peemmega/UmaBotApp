@@ -95,11 +95,11 @@ export default function CardZone({
             </div>
           ))
         )}
-        {isPile && cards.length > 1 && (
+        {/* {isPile && cards.length > 1 && (
           <div className="tcg-pile-depth" aria-hidden="true">
             <CardBack compact />
           </div>
-        )}
+        )} */}
       </div>
     </section>
   );

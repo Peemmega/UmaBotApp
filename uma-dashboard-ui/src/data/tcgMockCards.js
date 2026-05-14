@@ -68,8 +68,22 @@ export function createCarrotCard(playerId, index) {
   };
 }
 
+export function shuffleCards(cards) {
+  const shuffled = [...cards];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [
+      shuffled[swapIndex],
+      shuffled[index],
+    ];
+  }
+
+  return shuffled;
+}
+
 export function createDeckInstance(deck, playerId) {
-  return expandDeckList(deck.mainDeck).map((card, index) => ({
+  return shuffleCards(expandDeckList(deck.mainDeck)).map((card, index) => ({
     ...card,
     instanceId: `${playerId}-${deck.id}-${index + 1}`,
     status: "active",

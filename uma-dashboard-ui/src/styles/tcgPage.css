@@ -615,7 +615,7 @@
 .tcg-zone-body.pile {
   display: grid;
   place-items: center;
-  min-height: 92px;
+  /* min-height: 92px; */
   overflow: hidden;
 }
 
@@ -1731,9 +1731,6 @@
   padding: 4px;
 }
 
-.tcg-sim-board .tcg-zone-body.pile {
-  min-height: 72px;
-}
 
 .tcg-sim-board .tcg-zone-field {
   border-color: rgba(141, 255, 161, 0.12);
@@ -1806,16 +1803,12 @@
   min-height: 88px;
 }
 
-.tcg-sim-board .tcg-mini-zone-stack .tcg-zone-body.pile {
-  min-height: 66px;
-}
-
 .tcg-sim-board .tcg-mini-zone-stack .tcg-playable-card.compact,
 .tcg-sim-board .tcg-mini-zone-stack .tcg-pile-depth {
   --card-width: 44px;
-  width: 44px;
+  width: 60px;
   min-width: 44px;
-  height: 62px;
+  height: 80px;
 }
 
 .tcg-sim-board .tcg-playable-card {
