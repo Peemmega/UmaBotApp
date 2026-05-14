@@ -49,6 +49,8 @@ export default function CardTable({
   setPlayers,
   onResetToDeckSelect,
   currentPlayerId = "player1",
+  onlineMode = false,
+  playerSlotLabel = "",
   actionHandlers = null,
 }) {
   const [perspective, setPerspective] = useState("player1");
@@ -59,6 +61,10 @@ export default function CardTable({
   const [zoneViewer, setZoneViewer] = useState(null);
   const [shuffleNotice, setShuffleNotice] = useState({});
   const activePlayerId = currentPlayerId || "player1";
+  const tablePerspective = onlineMode ? activePlayerId : perspective;
+  const opponentPlayerId = activePlayerId === "player1" ? "player2" : "player1";
+  const topPlayerId = onlineMode ? opponentPlayerId : "player2";
+  const bottomPlayerId = onlineMode ? activePlayerId : "player1";
   const dragRef = useRef(null);
 
   const findCardById = useCallback(
@@ -82,6 +88,22 @@ export default function CardTable({
     [findCardById, selectedCardId]
   );
 
+  const findCardLocation = useCallback(
+    (cardId) => {
+      if (!cardId) return null;
+      for (const [playerId, player] of Object.entries(players)) {
+        for (const zone of ZONES) {
+          const found = player.zones[zone].find(
+            (card) => card.instanceId === cardId
+          );
+          if (found) return { playerId, zone, card: found };
+        }
+      }
+      return null;
+    },
+    [players]
+  );
+
   const hoveredCardData = useMemo(
     () => findCardById(hoveredCard?.cardId),
     [findCardById, hoveredCard?.cardId]
@@ -91,6 +113,10 @@ export default function CardTable({
   const previewHidden = hoveredCard?.hidden || false;
 
   const activeTargetCardId = hoveredCard?.cardId || selectedCardId;
+  const activeTargetLocation = useMemo(
+    () => findCardLocation(activeTargetCardId),
+    [activeTargetCardId, findCardLocation]
+  );
 
   const selectCard = useCallback((cardId, hidden = false) => {
     setSelectedCardId(cardId);
@@ -119,6 +145,12 @@ export default function CardTable({
       clientY,
     }) => {
       if (!toPlayerId || !toZone) return;
+      if (
+        onlineMode &&
+        (fromPlayerId !== activePlayerId || toPlayerId !== activePlayerId)
+      ) {
+        return;
+      }
 
       if (actionHandlers?.moveCard) {
         let fieldX;
@@ -199,13 +231,14 @@ export default function CardTable({
         return next;
       });
     },
-    [actionHandlers, setPlayers]
+    [actionHandlers, activePlayerId, onlineMode, setPlayers]
   );
 
   const moveCard = moveCardBetweenZones;
 
   const toggleSelectedCard = useCallback(() => {
     if (!activeTargetCardId) return;
+    if (onlineMode && activeTargetLocation?.playerId !== activePlayerId) return;
 
     if (actionHandlers?.tapCard) {
       actionHandlers.tapCard(activeTargetCardId);
@@ -218,7 +251,14 @@ export default function CardTable({
         status: card.status === "rest" ? "active" : "rest",
       }))
     );
-  }, [actionHandlers, activeTargetCardId, setPlayers]);
+  }, [
+    actionHandlers,
+    activePlayerId,
+    activeTargetCardId,
+    activeTargetLocation?.playerId,
+    onlineMode,
+    setPlayers,
+  ]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -310,6 +350,7 @@ export default function CardTable({
 
   const handleCardPointerDown = (event, payload) => {
     if (event.button !== 0 && event.pointerType === "mouse") return;
+    if (onlineMode && payload.playerId !== activePlayerId) return;
 
     event.preventDefault();
     const nextDrag = {
@@ -435,9 +476,11 @@ export default function CardTable({
         <header className="tcg-rail-header">
           <span>Two Player Sandbox</span>
           <h2>TCG Playtest Board</h2>
+          {playerSlotLabel && <p>{playerSlotLabel}</p>}
         </header>
 
-        <div className="tcg-perspective-toggle" aria-label="Perspective">
+        {!onlineMode && (
+          <div className="tcg-perspective-toggle" aria-label="Perspective">
             {["player1", "player2"].map((playerId, index) => (
               <button
                 type="button"
@@ -449,7 +492,8 @@ export default function CardTable({
                 P{index + 1}
               </button>
             ))}
-        </div>
+          </div>
+        )}
 
         {onResetToDeckSelect && (
           <button
@@ -486,10 +530,10 @@ export default function CardTable({
       <main className="tcg-board-stage">
         <div className="tcg-board tcg-sim-board">
           <PlayerTableArea
-            player={players.player2}
-            playerId="player2"
+            player={players[topPlayerId]}
+            playerId={topPlayerId}
             side="opponent"
-            perspective={perspective}
+            perspective={tablePerspective}
             selectedCardId={selectedCardId}
             hoveredCardId={hoveredCard?.cardId}
             draggingCardId={dragState?.card.instanceId}
@@ -503,10 +547,10 @@ export default function CardTable({
           </div>
 
           <PlayerTableArea
-            player={players.player1}
-            playerId="player1"
+            player={players[bottomPlayerId]}
+            playerId={bottomPlayerId}
             side="local"
-            perspective={perspective}
+            perspective={tablePerspective}
             selectedCardId={selectedCardId}
             hoveredCardId={hoveredCard?.cardId}
             draggingCardId={dragState?.card.instanceId}
@@ -548,7 +592,7 @@ export default function CardTable({
               }
             : null
         }
-        perspective={perspective}
+        perspective={tablePerspective}
         selectedCardId={selectedCardId}
         onSelectCard={selectCard}
         onHoverCard={handleCardHover}
