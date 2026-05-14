@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  PanelsTopLeft,
   CircleHelp,
   Sparkles,
   Trophy,
@@ -12,6 +13,7 @@ export const gameNavItems = [
   { key: "profile", label: "Profile", Icon: UserRound },
   { key: "chars", label: "Chars", Icon: UsersRound },
   { key: "races", label: "Races", Icon: Trophy },
+  { key: "tcg", label: "TCG", Icon: PanelsTopLeft },
   { key: "skills", label: "Skills", Icon: Sparkles },
   { key: "tutorials", label: "Tutorials", Icon: BookOpen },
   { key: "qa", label: "Q&A", Icon: CircleHelp },

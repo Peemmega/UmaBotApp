@@ -12,11 +12,13 @@ import SkillsPage from "./dashboard/SkillsPage";
 import CharactersPage from "./dashboard/CharactersPage";
 import QAPage from "./dashboard/QAPage";
 import RacesPage from "./dashboard/RacesPage";
+import CardGamePage from "./dashboard/CardGamePage";
 
 const VALID_PAGES = [
   "profile",
   "chars",
   "races",
+  "tcg",
   "skills",
   "tutorials",
   "qa",
@@ -71,6 +73,9 @@ export default function DashboardPage({
 
       case "races":
         return <RacesPage userId={userId} />;
+
+      case "tcg":
+        return <CardGamePage />;
 
       case "qa":
         return <QAPage />;
