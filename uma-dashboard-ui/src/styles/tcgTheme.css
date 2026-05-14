@@ -47,6 +47,7 @@
 .tcg-room-card button,
 .tcg-practice-back,
 .tcg-online-leave,
+.tcg-controls-toggle,
 .tcg-draw-buttons button,
 .tcg-zone-view-buttons button,
 .tcg-zone-modal-card-actions button {
@@ -66,6 +67,7 @@
 .tcg-room-card button:hover:not(:disabled),
 .tcg-practice-back:hover:not(:disabled),
 .tcg-online-leave:hover:not(:disabled),
+.tcg-controls-toggle:hover:not(:disabled),
 .tcg-draw-buttons button:hover:not(:disabled),
 .tcg-zone-view-buttons button:hover:not(:disabled),
 .tcg-zone-modal-card-actions button:hover:not(:disabled) {
@@ -106,6 +108,31 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.8),
     0 10px 24px rgba(30, 120, 68, 0.14);
   backdrop-filter: blur(14px);
+}
+
+.tcg-rail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tcg-rail-header p {
+  margin-top: 5px;
+  color: var(--tcg-muted);
+  font-size: 12px;
+  font-weight: 1000;
+}
+
+.tcg-controls-toggle {
+  display: none;
+  min-height: 34px;
+  padding: 7px 11px;
+  flex-shrink: 0;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 1000;
+  cursor: pointer;
 }
 
 .tcg-rail-header span,
@@ -386,45 +413,301 @@
   }
 }
 
+@media (max-width: 1199px) {
+  .tcg-fullscreen-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    width: 100vw;
+    min-height: 100vh;
+  }
+
+  .tcg-controls-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .tcg-control-rail {
+    position: sticky;
+    top: 8px;
+    z-index: 1600;
+    min-height: 0;
+    margin: 8px 56px 6px 8px;
+    padding: 8px;
+    gap: 8px;
+    border-radius: 18px;
+  }
+
+  .tcg-control-rail.controls-closed .tcg-perspective-toggle,
+  .tcg-control-rail.controls-closed .tcg-rail-deck-select,
+  .tcg-control-rail.controls-closed .tcg-floating-controls,
+  .tcg-control-rail.controls-closed .tcg-rules-strip {
+    display: none;
+  }
+
+  .tcg-control-rail .tcg-rules-strip {
+    margin-top: 0;
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: thin;
+  }
+
+  .tcg-control-rail .tcg-rules-strip span:nth-child(n + 3) {
+    display: none;
+  }
+
+  .tcg-floating-controls {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.8fr) minmax(0, 2.2fr) minmax(120px, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .tcg-floating-controls-title,
+  .tcg-floating-controls .tcg-shuffle-notice {
+    margin: 0;
+  }
+
+  .tcg-floating-controls .tcg-draw-buttons {
+    grid-template-columns: repeat(6, minmax(72px, 1fr));
+  }
+
+  .tcg-floating-controls .tcg-zone-view-buttons {
+    grid-template-columns: repeat(3, minmax(52px, 1fr));
+    margin-top: 0;
+  }
+
+  .tcg-board-stage {
+    min-height: 0;
+    padding: 6px 8px 10px;
+    overflow-x: auto;
+  }
+
+  .tcg-sim-board {
+    height: calc(100vh - 154px);
+    min-height: 590px;
+    min-width: 900px;
+    padding: 8px 10px 10px;
+    grid-template-rows: minmax(0, 0.92fr) 18px minmax(0, 1fr);
+  }
+
+  .tcg-table-main-row {
+    grid-template-columns: 74px minmax(0, 1fr) 74px;
+    gap: 7px;
+  }
+
+  .tcg-playfield-cluster {
+    grid-template-rows: minmax(0, 1fr) 62px;
+    gap: 6px;
+  }
+
+  .tcg-sim-board .tcg-mini-zone-stack .tcg-zone {
+    min-height: 72px;
+  }
+
+  .tcg-sim-board .tcg-zone-carrot {
+    min-height: 62px;
+  }
+
+  .tcg-sim-board .tcg-zone-hand {
+    min-height: 82px;
+  }
+
+  .tcg-sim-board .tcg-zone-hand .tcg-zone-body.spread {
+    min-height: 82px;
+    overflow-x: auto;
+    padding: 6px 14px 10px;
+  }
+
+  .tcg-table-area.opponent .tcg-zone-hand {
+    min-height: 68px;
+  }
+
+  .tcg-table-area.opponent .tcg-zone-hand .tcg-zone-body.spread {
+    min-height: 68px;
+    padding-block: 5px;
+  }
+
+  .tcg-sim-board .tcg-playable-card {
+    --card-width: 68px;
+    height: 96px;
+  }
+
+  .tcg-sim-board .tcg-playable-card.compact,
+  .tcg-sim-board .tcg-mini-zone-stack .tcg-playable-card.compact,
+  .tcg-sim-board .tcg-mini-zone-stack .tcg-pile-depth {
+    --card-width: 42px;
+    width: 48px;
+    min-width: 42px;
+    height: 62px;
+  }
+
+  .tcg-card-preview-panel {
+    display: none;
+  }
+}
+
 @media (max-width: 760px) {
   .tcg-fullscreen-layout {
     background:
       radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.62), transparent 28%),
       linear-gradient(180deg, #eefbf2, #cdeed8);
+    display: block;
+    min-height: 100vh;
   }
 
   .tcg-control-rail {
-    margin: 8px;
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    top: auto;
+    z-index: 1800;
+    max-height: min(58vh, 430px);
+    margin: 0;
+    overflow: auto;
     box-shadow: 0 10px 24px rgba(94, 178, 116, 0.14);
   }
 
+  .tcg-control-rail.controls-closed {
+    max-height: 62px;
+    overflow: hidden;
+  }
+
+  .tcg-control-rail.controls-closed .tcg-perspective-toggle,
+  .tcg-control-rail.controls-closed .tcg-rail-deck-select,
+  .tcg-control-rail.controls-closed .tcg-floating-controls,
+  .tcg-control-rail.controls-closed .tcg-rules-strip {
+    display: none;
+  }
+
+  .tcg-rail-header {
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .tcg-rail-header span {
+    display: none;
+  }
+
+  .tcg-rail-header h2 {
+    margin: 0;
+    font-size: 15px;
+  }
+
+  .tcg-rail-header p {
+    margin-top: 2px;
+    font-size: 11px;
+  }
+
+  .tcg-controls-toggle {
+    min-height: 36px;
+    padding-inline: 12px;
+  }
+
+  .tcg-floating-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .tcg-floating-controls-title {
+    display: none;
+  }
+
+  .tcg-floating-controls .tcg-draw-buttons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tcg-floating-controls .tcg-zone-view-buttons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tcg-control-rail .tcg-rules-strip {
+    display: none;
+  }
+
   .tcg-sim-board {
-    min-height: calc(100vh - 72px);
+    height: calc(100vh - 22px);
+    min-height: 560px;
+    min-width: 900px;
     padding: 8px;
+    grid-template-rows: minmax(0, 0.86fr) 16px minmax(0, 1fr);
   }
 
   .tcg-table-main-row {
-    min-width: 680px;
+    min-width: 0;
+    grid-template-columns: 62px minmax(0, 1fr) 62px;
+    gap: 5px;
+  }
+
+  .tcg-board-stage {
+    padding: 6px 6px 92px;
+    overflow-x: auto;
+    min-height: 100vh;
   }
 
   .tcg-sim-board .tcg-zone-hand {
-    min-height: 112px;
-    position: sticky;
-    z-index: 4;
+    min-height: 78px;
   }
 
-  .tcg-table-area.local > .tcg-zone-hand {
-    bottom: 0;
+  .tcg-table-area.opponent .tcg-zone-hand {
+    min-height: 56px;
+  }
+
+  .tcg-table-area.opponent .tcg-zone-hand .tcg-zone-body.spread {
+    min-height: 56px;
+  }
+
+  .tcg-sim-board .tcg-playable-card {
+    --card-width: 58px;
+    height: 82px;
+  }
+
+  .tcg-sim-board .tcg-playable-card.compact,
+  .tcg-sim-board .tcg-mini-zone-stack .tcg-playable-card.compact,
+  .tcg-sim-board .tcg-mini-zone-stack .tcg-pile-depth {
+    --card-width: 36px;
+    width: 40px;
+    min-width: 36px;
+    height: 54px;
+  }
+
+  .tcg-sim-board .tcg-zone-header {
+    min-height: 18px;
+    margin: 3px;
+    padding: 2px 6px;
+    font-size: 9px;
+  }
+
+  .tcg-sim-board .tcg-zone-header strong {
+    min-width: 18px;
+    padding-inline: 4px;
   }
 }
 
 @media (max-width: 480px) {
   .tcg-sim-board .tcg-zone-hand .tcg-zone-body.spread {
-    padding-inline: 14px;
+    padding-inline: 10px;
   }
 
   .tcg-table-player-label {
     max-width: calc(100% - 28px);
     padding: 5px 10px;
+  }
+
+  .tcg-control-rail {
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+  }
+
+  .tcg-floating-controls .tcg-draw-buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tcg-floating-controls .tcg-zone-view-buttons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

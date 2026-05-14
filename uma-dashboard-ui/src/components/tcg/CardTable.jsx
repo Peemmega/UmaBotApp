@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Eye, Plus, RotateCcw, RotateCw, Shuffle, UserRound } from "lucide-react";
+import {
+  Eye,
+  Plus,
+  RotateCcw,
+  RotateCw,
+  Shuffle,
+  SlidersHorizontal,
+  UserRound,
+} from "lucide-react";
 import CardZone from "./CardZone";
 import PlayableCard from "./PlayableCard";
 import ZoneViewerModal from "./ZoneViewerModal";
@@ -60,6 +68,7 @@ export default function CardTable({
   const [dragState, setDragState] = useState(null);
   const [zoneViewer, setZoneViewer] = useState(null);
   const [shuffleNotice, setShuffleNotice] = useState({});
+  const [controlsOpen, setControlsOpen] = useState(false);
   const activePlayerId = currentPlayerId || "player1";
   const tablePerspective = onlineMode ? activePlayerId : perspective;
   const opponentPlayerId = activePlayerId === "player1" ? "player2" : "player1";
@@ -472,11 +481,26 @@ export default function CardTable({
 
   return (
     <div className="tcg-table-page tcg-fullscreen-layout">
-      <aside className="tcg-control-rail">
+      <aside
+        className={`tcg-control-rail ${
+          controlsOpen ? "controls-open" : "controls-closed"
+        }`}
+      >
         <header className="tcg-rail-header">
-          <span>Two Player Sandbox</span>
-          <h2>TCG Playtest Board</h2>
-          {playerSlotLabel && <p>{playerSlotLabel}</p>}
+          <div>
+            <span>Two Player Sandbox</span>
+            <h2>TCG Playtest Board</h2>
+            {playerSlotLabel && <p>{playerSlotLabel}</p>}
+          </div>
+          <button
+            type="button"
+            className="tcg-controls-toggle"
+            aria-expanded={controlsOpen}
+            onClick={() => setControlsOpen((open) => !open)}
+          >
+            <SlidersHorizontal size={16} />
+            Controls
+          </button>
         </header>
 
         {!onlineMode && (
