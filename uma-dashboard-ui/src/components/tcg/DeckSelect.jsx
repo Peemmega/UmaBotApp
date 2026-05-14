@@ -1,5 +1,5 @@
 import { Play } from "lucide-react";
-import { predefinedTcgDecks } from "../../data/tcgMockCards";
+import { predefinedTcgDecks } from "../../data/tcgDecks";
 import DeckPreviewCard from "./DeckPreviewCard";
 
 export default function DeckSelect({

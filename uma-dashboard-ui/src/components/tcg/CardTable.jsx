@@ -4,7 +4,7 @@ import CardZone from "./CardZone";
 import PlayableCard from "./PlayableCard";
 import ZoneViewerModal from "./ZoneViewerModal";
 import CardBack from "./CardBack";
-import { createCarrotCard } from "../../data/tcgMockCards";
+import { createCarrotCard, shuffleCards } from "../../data/tcgRuntime";
 
 const ZONES = ["deck", "hand", "field", "life", "discard", "carrot", "expel"];
 const LEFT_ZONES = ["deck", "life", "discard", "expel"];
@@ -21,20 +21,6 @@ function drawCards(player, count) {
       hand: [...player.zones.hand, ...drawn],
     },
   };
-}
-
-function shuffleCards(cards) {
-  const shuffled = [...cards];
-
-  for (let index = shuffled.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(Math.random() * (index + 1));
-    [shuffled[index], shuffled[swapIndex]] = [
-      shuffled[swapIndex],
-      shuffled[index],
-    ];
-  }
-
-  return shuffled;
 }
 
 function updateCardInPlayers(players, cardId, updater) {

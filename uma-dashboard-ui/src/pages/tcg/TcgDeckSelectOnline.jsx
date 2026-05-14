@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { predefinedTcgDecks } from "../../data/tcgMockCards";
+import { predefinedTcgDecks } from "../../data/tcgDecks";
 import DeckPreviewCard from "../../components/tcg/DeckPreviewCard";
 
 export default function TcgDeckSelectOnline({

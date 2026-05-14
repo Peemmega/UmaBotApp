@@ -3,19 +3,35 @@ import { CARD_DATABASE, getCard } from "./tcgCards";
 const MAX_COPIES_PER_CARD = 4;
 const MAIN_DECK_SIZE = 40;
 
-function hydrateDeck(deck) {
-  const validation = validateDeck(deck);
-  const cards = expandDeckList(deck.mainDeck);
-  const keyCards = Object.keys(deck.mainDeck)
+function buildDeck({
+  id,
+  name,
+  description,
+  style,
+  highlight,
+  tags,
+  trainer,
+  mainDeck,
+}) {
+  const validation = validateDeck({ trainer, mainDeck });
+  const cards = expandDeckList(mainDeck);
+  const keyCards = Object.keys(mainDeck)
     .slice(0, 3)
     .map((cardId) => getCard(cardId)?.name || cardId);
 
   return {
-    ...deck,
+    id,
+    name,
+    description,
+    style,
+    highlight,
+    tags,
+    trainer,
+    mainDeck,
     cards,
     keyCards,
     mainDeckCount: cards.length,
-    trainerCard: getCard(deck.trainer),
+    trainerCard: getCard(trainer),
     validation,
   };
 }
@@ -30,7 +46,10 @@ export function expandDeckList(mainDeck) {
 export function validateDeck(deck) {
   const errors = [];
   const mainDeck = deck.mainDeck || {};
-  const total = Object.values(mainDeck).reduce((sum, quantity) => sum + quantity, 0);
+  const total = Object.values(mainDeck).reduce(
+    (sum, quantity) => sum + quantity,
+    0
+  );
 
   if (total !== MAIN_DECK_SIZE) {
     errors.push(`Main Deck must contain ${MAIN_DECK_SIZE} cards, got ${total}`);
@@ -61,13 +80,13 @@ export function validateDeck(deck) {
   return { valid: errors.length === 0, errors };
 }
 
-const DECKS = [
+const STARTER_DECKS = [
   {
     id: "starter-speed",
     name: "Starter Speed Deck",
-    description: "Basic 40-card starter deck using UMTD01 trainee cards.",
+    description: "Basic 40-card starter deck built for early tempo tests.",
     style: "Speed",
-    highlight: "Simple trainee spread for online board testing.",
+    highlight: "Fast open and simple board transitions.",
     tags: ["Starter", "Tempo", "Low cost"],
     trainer: "UMT-001",
     mainDeck: {
@@ -86,87 +105,87 @@ const DECKS = [
   {
     id: "starter-stamina",
     name: "Starter Stamina Deck",
-    description: "Basic 40-card starter deck using UMBT02 trainee cards.",
+    description: "Basic 40-card starter deck built for slower setup tests.",
     style: "Stamina",
-    highlight: "Uses the newer UMBT01 image set for card database checks.",
+    highlight: "Life zone and longer game flow checks.",
     tags: ["Starter", "Steady", "Board tests"],
     trainer: "UMT-002",
     mainDeck: {
-      "UMBT02-01": 4,
-      "UMBT02-02": 4,
-      "UMBT02-03": 4,
-      "UMBT02-04": 4,
-      "UMBT02-05": 4,
-      "UMBT02-06": 4,
-      "UMBT02-07": 4,
-      "UMBT02-08": 4,
-      "UMBT02-09": 4,
-      "UMBT02-10": 4,
+      "UMTD02-01": 4,
+      "UMTD02-02": 4,
+      "UMTD02-03": 4,
+      "UMTD02-04": 4,
+      "UMTD02-05": 4,
+      "UMTD02-06": 4,
+      "UMTD02-07": 4,
+      "UMTD02-08": 4,
+      "UMTD02-09": 4,
+      "UMTD02-10": 4,
     },
   },
   {
     id: "starter-power",
     name: "Starter Power Deck",
-    description: "Basic 40-card starter deck using UMBT02 trainee cards.",
-    style: "Stamina",
-    highlight: "Uses the newer UMBT01 image set for card database checks.",
-    tags: ["Starter", "Steady", "Board tests"],
+    description: "Basic 40-card starter deck built for field pressure tests.",
+    style: "Power",
+    highlight: "High power trainees and layout checks.",
+    tags: ["Starter", "Power", "Board push"],
     trainer: "UMT-003",
     mainDeck: {
-      "UMBT03-01": 4,
-      "UMBT03-02": 4,
-      "UMBT03-03": 4,
-      "UMBT03-04": 4,
-      "UMBT03-05": 4,
-      "UMBT03-06": 4,
-      "UMBT03-07": 4,
-      "UMBT03-08": 4,
-      "UMBT03-09": 4,
-      "UMBT03-10": 4,
+      "UMTD03-01": 4,
+      "UMTD03-02": 4,
+      "UMTD03-03": 4,
+      "UMTD03-04": 4,
+      "UMTD03-05": 4,
+      "UMTD03-06": 4,
+      "UMTD03-07": 4,
+      "UMTD03-08": 4,
+      "UMTD03-09": 4,
+      "UMTD03-10": 4,
     },
   },
   {
     id: "starter-gut",
     name: "Starter Gut Deck",
-    description: "Basic 40-card starter deck using UMBT02 trainee cards.",
-    style: "Stamina",
-    highlight: "Uses the newer UMBT01 image set for card database checks.",
-    tags: ["Starter", "Steady", "Board tests"],
-    trainer: "UMT-002",
+    description: "Basic 40-card starter deck built for tap/rest tests.",
+    style: "Guts",
+    highlight: "Repeated tap and move interactions.",
+    tags: ["Starter", "Rest synergy", "Pressure"],
+    trainer: "UMT-004",
     mainDeck: {
-      "UMBT04-01": 4,
-      "UMBT04-02": 4,
-      "UMBT04-03": 4,
-      "UMBT04-04": 4,
-      "UMBT04-05": 4,
-      "UMBT04-06": 4,
-      "UMBT04-07": 4,
-      "UMBT04-08": 4,
-      "UMBT04-09": 4,
-      "UMBT04-10": 4,
+      "UMTD04-01": 4,
+      "UMTD04-02": 4,
+      "UMTD04-03": 4,
+      "UMTD04-04": 4,
+      "UMTD04-05": 4,
+      "UMTD04-06": 4,
+      "UMTD04-07": 4,
+      "UMTD04-08": 4,
+      "UMTD04-09": 4,
+      "UMTD04-10": 4,
     },
   },
   {
     id: "starter-wit",
     name: "Starter Wit Deck",
-    description: "Basic 40-card starter deck using UMBT02 trainee cards.",
-    style: "Stamina",
-    highlight: "Uses the newer UMBT01 image set for card database checks.",
-    tags: ["Starter", "Steady", "Board tests"],
-    trainer: "UMT-002",
+    description: "Basic 40-card starter deck built for draw and control tests.",
+    style: "Wit",
+    highlight: "Tricks, draw flow, and future keyword hooks.",
+    tags: ["Starter", "Draw", "Control"],
+    trainer: "UMT-005",
     mainDeck: {
-      "UMBT05-01": 4,
-      "UMBT05-02": 4,
-      "UMBT05-03": 4,
-      "UMBT05-04": 4,
-      "UMBT05-05": 4,
-      "UMBT05-06": 4,
-      "UMBT05-07": 4,
-      "UMBT05-08": 4,
-      "UMBT05-09": 4,
-      "UMBT05-10": 4,
+      "UMTD05-01": 4,
+      "UMTD05-02": 4,
+      "UMTD05-03": 4,
+      "UMTD05-04": 4,
+      "UMTD05-05": 4,
+      "UMTD05-06": 4,
+      "UMTD05-07": 4,
+      "UMTD05-08": 4,
+      "UMTD05-09": 4,
+      "UMTD05-10": 4,
     },
   },
 ];
 
-export const predefinedTcgDecks = DECKS.map(hydrateDeck);
+export const predefinedTcgDecks = STARTER_DECKS.map(buildDeck);

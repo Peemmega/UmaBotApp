@@ -1,9 +1,11 @@
 import { CARD_DATABASE, getCard } from "./tcgCards";
+import { validateDeck } from "./tcgDecks";
 import {
-  expandDeckList,
-  predefinedTcgDecks,
-  validateDeck,
-} from "./tcgDecks";
+  createCarrotCard,
+  createDeckInstance,
+  createTrainerCard,
+  shuffleCards,
+} from "./tcgRuntime";
 
 const STYLE_THEMES = {
   Speed: {
@@ -46,32 +48,5 @@ export const tcgAssets = {
 };
 
 export const tcgStyleThemes = STYLE_THEMES;
-export { CARD_DATABASE, predefinedTcgDecks, validateDeck };
-
-export function createTrainerCard(playerId, trainerId = "UMT-001") {
-  const trainer = getCard(trainerId) || getCard("UMT-001");
-  return {
-    ...trainer,
-    instanceId: `${playerId}-trainer-card`,
-    style: "Wit",
-    status: "active",
-  };
-}
-
-export function createCarrotCard(playerId, index) {
-  const carrot = getCard("UMC-01");
-  return {
-    ...carrot,
-    instanceId: `${playerId}-carrot-${index}`,
-    style: "Stamina",
-    status: "active",
-  };
-}
-
-export function createDeckInstance(deck, playerId) {
-  return expandDeckList(deck.mainDeck).map((card, index) => ({
-    ...card,
-    instanceId: `${playerId}-${deck.id}-${index + 1}`,
-    status: "active",
-  }));
-}
+export { CARD_DATABASE, validateDeck };
+export { createCarrotCard, createDeckInstance, createTrainerCard, shuffleCards };

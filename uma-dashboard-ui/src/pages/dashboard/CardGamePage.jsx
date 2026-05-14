@@ -11,11 +11,8 @@ import {
   startRoom,
 } from "../../api/tcgApi";
 import useTcgSocket from "../../hooks/useTcgSocket";
-import {
-  createDeckInstance,
-  createTrainerCard,
-  predefinedTcgDecks,
-} from "../../data/tcgMockCards";
+import { predefinedTcgDecks } from "../../data/tcgDecks";
+import { createDeckInstance, createTrainerCard } from "../../data/tcgRuntime";
 import TcgDeckSelectOnline from "../tcg/TcgDeckSelectOnline";
 import TcgLobbyPage from "../tcg/TcgLobbyPage";
 import TcgOnlineBoardPage from "../tcg/TcgOnlineBoardPage";
