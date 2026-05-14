@@ -129,7 +129,7 @@ const DECKS = [
     id: "starter-gut",
     name: "Orferve Gut Deck",
     description: "เด็คสาย Gut ที่เล่นแบบดื้อและพลิกสถานการณ์ได้ดี เหมาะกับผู้เล่นที่ชอบเสี่ยงแลกจังหวะ เพื่อกลับมาได้แม้โดนกดดัน",
-    style: "Gut",
+    style: "Guts",
     highlight: "จุดเด่นคือความอึดและการเล่นสวน เมื่อเกมเริ่มตึง เด็คนี้จะมีโอกาสสร้างจังหวะพลิกกลับได้ดี",
     tags: ["Starter", "Comeback", "Resilience"],
     trainer: "UMT-005",
