@@ -1,39 +1,44 @@
 :root {
-  --tcg-bg: #eef9ee;
-  --tcg-bg-lift: #f8fff8;
-  --tcg-green: #7edc92;
-  --tcg-green-strong: #34b963;
-  --tcg-green-soft: #bff3c9;
-  --tcg-mint: #dffbea;
-  --tcg-cool: #dff8f3;
-  --tcg-cool-strong: #6ed8c9;
-  --tcg-panel: rgba(255, 255, 255, 0.72);
-  --tcg-panel-strong: rgba(255, 255, 255, 0.86);
-  --tcg-border: rgba(255, 255, 255, 0.58);
-  --tcg-border-green: rgba(126, 220, 146, 0.42);
-  --tcg-glow: rgba(126, 220, 146, 0.35);
-  --tcg-cool-glow: rgba(110, 216, 201, 0.28);
-  --tcg-text: #245a3c;
-  --tcg-muted: #5e8a70;
+  --tcg-bg: #dff5e7;
+  --tcg-bg-lift: #effbf2;
+  --tcg-playmat: #bfeed0;
+  --tcg-playmat-2: #d7f8ef;
+  --tcg-green: #74cd8b;
+  --tcg-green-strong: #2eaa5c;
+  --tcg-green-soft: #aeeec0;
+  --tcg-mint: #d7f6e2;
+  --tcg-cool: #d2f4ee;
+  --tcg-cool-strong: #55cdbd;
+  --tcg-zone: rgba(116, 205, 139, 0.22);
+  --tcg-zone-strong: rgba(78, 176, 107, 0.32);
+  --tcg-panel: rgba(255, 255, 255, 0.78);
+  --tcg-panel-strong: rgba(255, 255, 255, 0.9);
+  --tcg-border: rgba(71, 168, 98, 0.28);
+  --tcg-border-green: rgba(71, 168, 98, 0.38);
+  --tcg-glow: rgba(76, 184, 105, 0.36);
+  --tcg-cool-glow: rgba(68, 185, 172, 0.28);
+  --tcg-text: #24543a;
+  --tcg-muted: #5f8f72;
   --tcg-label: rgba(255, 255, 255, 0.92);
+  --tcg-shadow: rgba(30, 120, 68, 0.18);
   --tcg-radius-lg: 24px;
   --tcg-radius-md: 18px;
   --tcg-radius-sm: 14px;
-  --tcg-shadow-soft: 0 16px 34px rgba(94, 178, 116, 0.18);
-  --tcg-shadow-lift: 0 18px 42px rgba(94, 178, 116, 0.22);
-  --tcg-shadow-glow: 0 0 0 1px rgba(255, 255, 255, 0.72), 0 0 28px var(--tcg-glow);
-  --tcg-button: linear-gradient(135deg, #95eba4 0%, #5fd47b 54%, #34ba66 100%);
-  --tcg-button-hover: linear-gradient(135deg, #b4f7bf 0%, #74e28f 54%, #43c873 100%);
+  --tcg-shadow-soft: 0 16px 34px rgba(30, 120, 68, 0.16);
+  --tcg-shadow-lift: 0 18px 42px rgba(30, 120, 68, 0.2);
+  --tcg-shadow-glow: 0 0 0 1px rgba(255, 255, 255, 0.62), 0 0 28px var(--tcg-glow);
+  --tcg-button: linear-gradient(135deg, #8ce69d 0%, #55ca75 54%, #2fac62 100%);
+  --tcg-button-hover: linear-gradient(135deg, #a7f1b5 0%, #68d985 54%, #3cbb6d 100%);
 }
 
 .tcg-fullscreen-page {
   background:
-    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.82), transparent 24%),
-    radial-gradient(circle at 82% 18%, rgba(190, 246, 214, 0.8), transparent 24%),
-    linear-gradient(115deg, rgba(255, 255, 255, 0.3) 0 9%, transparent 9% 18%, rgba(255, 255, 255, 0.24) 18% 24%, transparent 24%),
-    linear-gradient(90deg, rgba(126, 220, 146, 0.16) 0 1px, transparent 1px 76px),
-    linear-gradient(0deg, rgba(126, 220, 146, 0.12) 0 1px, transparent 1px 76px),
-    linear-gradient(145deg, #f8fff8 0%, #e9faec 44%, #d7f7df 100%);
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.62), transparent 24%),
+    radial-gradient(circle at 82% 18%, rgba(158, 232, 191, 0.72), transparent 24%),
+    linear-gradient(115deg, rgba(255, 255, 255, 0.22) 0 9%, transparent 9% 18%, rgba(255, 255, 255, 0.18) 18% 24%, transparent 24%),
+    linear-gradient(90deg, rgba(71, 168, 98, 0.18) 0 1px, transparent 1px 76px),
+    linear-gradient(0deg, rgba(71, 168, 98, 0.14) 0 1px, transparent 1px 76px),
+    linear-gradient(145deg, #eefbf2 0%, var(--tcg-bg) 44%, #c9efd5 100%);
 }
 
 .tcg-primary-action,
@@ -51,8 +56,8 @@
   color: #ffffff;
   text-shadow: 0 1px 0 rgba(42, 132, 75, 0.18);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    0 10px 22px rgba(86, 184, 109, 0.24);
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    0 10px 22px rgba(30, 120, 68, 0.2);
 }
 
 .tcg-primary-action:hover:not(:disabled),
@@ -68,8 +73,8 @@
   filter: brightness(1.04) saturate(1.08);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.82),
-    0 14px 30px rgba(86, 184, 109, 0.28),
-    0 0 22px rgba(126, 220, 146, 0.3);
+    0 14px 30px rgba(30, 120, 68, 0.24),
+    0 0 22px rgba(76, 184, 105, 0.34);
 }
 
 .tcg-online-leave {
@@ -82,8 +87,8 @@
   border: 1px solid var(--tcg-border);
   border-radius: var(--tcg-radius-lg);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(242, 255, 244, 0.64)),
-    rgba(255, 255, 255, 0.48);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(224, 249, 232, 0.72)),
+    rgba(215, 246, 226, 0.56);
   color: var(--tcg-text);
   box-shadow: var(--tcg-shadow-soft);
   backdrop-filter: blur(18px) saturate(1.18);
@@ -94,12 +99,12 @@
   border: 1px solid var(--tcg-border);
   border-radius: var(--tcg-radius-md);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(238, 255, 242, 0.66)),
-    rgba(255, 255, 255, 0.52);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(221, 248, 230, 0.74)),
+    rgba(218, 246, 228, 0.58);
   color: var(--tcg-text);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    0 10px 24px rgba(101, 190, 126, 0.14);
+    0 10px 24px rgba(30, 120, 68, 0.14);
   backdrop-filter: blur(14px);
 }
 
@@ -116,7 +121,7 @@
 .tcg-control-rail .tcg-rules-strip span,
 .tcg-floating-controls .tcg-shuffle-notice {
   border: 1px solid rgba(126, 220, 146, 0.22);
-  background: rgba(255, 255, 255, 0.66);
+  background: rgba(246, 255, 248, 0.76);
   color: var(--tcg-muted);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
@@ -124,24 +129,24 @@
 .tcg-board-stage {
   padding: 14px;
   background:
-    radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.7), transparent 18%),
-    radial-gradient(circle at 82% 92%, rgba(191, 243, 201, 0.55), transparent 20%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.34), rgba(203, 245, 215, 0.26));
+    radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.48), transparent 18%),
+    radial-gradient(circle at 82% 92%, rgba(151, 226, 179, 0.5), transparent 20%),
+    linear-gradient(135deg, rgba(212, 245, 224, 0.54), rgba(172, 232, 195, 0.36));
 }
 
 .tcg-sim-board {
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(71, 168, 98, 0.28);
   border-radius: var(--tcg-radius-lg);
   background:
-    linear-gradient(115deg, rgba(255, 255, 255, 0.45) 0 8%, transparent 8% 15%, rgba(255, 255, 255, 0.26) 15% 20%, transparent 20%),
-    radial-gradient(circle at 50% 7%, rgba(255, 255, 255, 0.92), transparent 18%),
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.55), transparent 34%),
-    linear-gradient(180deg, rgba(223, 248, 243, 0.72) 0%, rgba(246, 255, 248, 0.92) 48%, rgba(223, 251, 234, 0.84) 100%),
-    linear-gradient(135deg, #e7faed, #c9f2d3);
+    linear-gradient(115deg, rgba(255, 255, 255, 0.26) 0 8%, transparent 8% 15%, rgba(255, 255, 255, 0.16) 15% 20%, transparent 20%),
+    radial-gradient(circle at 50% 7%, rgba(255, 255, 255, 0.68), transparent 18%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.28), transparent 34%),
+    linear-gradient(180deg, rgba(215, 248, 239, 0.82) 0%, rgba(191, 238, 208, 0.78) 48%, rgba(183, 234, 202, 0.82) 100%),
+    linear-gradient(135deg, var(--tcg-playmat-2), var(--tcg-playmat));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.96),
-    inset 0 0 54px rgba(255, 255, 255, 0.48),
-    0 18px 44px rgba(95, 185, 118, 0.2);
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    inset 0 0 54px rgba(53, 155, 87, 0.16),
+    0 18px 44px rgba(30, 120, 68, 0.18);
   overflow: hidden;
 }
 
@@ -151,11 +156,11 @@
 }
 
 .tcg-table-area.local {
-  background: linear-gradient(180deg, rgba(223, 251, 234, 0.18), rgba(126, 220, 146, 0.18));
+  background: linear-gradient(180deg, rgba(215, 246, 226, 0.24), rgba(100, 205, 129, 0.22));
 }
 
 .tcg-table-area.opponent {
-  background: linear-gradient(180deg, rgba(110, 216, 201, 0.16), rgba(234, 255, 250, 0.16));
+  background: linear-gradient(180deg, rgba(151, 229, 218, 0.22), rgba(215, 248, 239, 0.2));
 }
 
 .tcg-table-player-label {
@@ -170,7 +175,7 @@
   color: #ffffff;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.58),
-    0 8px 22px rgba(86, 184, 109, 0.22);
+    0 8px 22px rgba(30, 120, 68, 0.22);
 }
 
 .tcg-table-area.opponent .tcg-table-player-label {
@@ -187,86 +192,100 @@
   border: 1px solid var(--tcg-border);
   border-radius: var(--tcg-radius-sm);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.36)),
-    rgba(255, 255, 255, 0.34);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.46), rgba(232, 250, 236, 0.3)),
+    var(--tcg-zone);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.76),
-    0 0 0 1px rgba(126, 220, 146, 0.08),
-    0 8px 20px rgba(100, 180, 122, 0.08);
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    inset 0 0 18px rgba(78, 176, 107, 0.12),
+    0 0 0 1px rgba(71, 168, 98, 0.1),
+    0 8px 20px rgba(30, 120, 68, 0.1);
   backdrop-filter: blur(10px);
 }
 
 .tcg-table-area.local .tcg-zone {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.78),
-    0 0 18px rgba(126, 220, 146, 0.15);
+    0 0 20px rgba(76, 184, 105, 0.22);
 }
 
 .tcg-table-area.opponent .tcg-zone {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.78),
-    0 0 18px rgba(110, 216, 201, 0.13);
+    0 0 20px rgba(68, 185, 172, 0.18);
 }
 
 .tcg-sim-board .tcg-zone-header {
   width: max-content;
   min-height: 22px;
   margin: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(71, 168, 98, 0.3);
   border-radius: 999px;
   padding: 3px 8px;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.58);
-  color: var(--tcg-green-strong);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  background: rgba(245, 255, 248, 0.82);
+  color: #247a45;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 4px 12px rgba(30, 120, 68, 0.08);
   backdrop-filter: blur(8px);
 }
 
 .tcg-sim-board .tcg-zone-header strong {
-  background: rgba(126, 220, 146, 0.18);
-  color: #2f9a56;
+  background: rgba(78, 176, 107, 0.22);
+  color: #1f7d43;
 }
 
 .tcg-sim-board .tcg-zone-field {
-  border-color: rgba(255, 255, 255, 0.66);
+  border-color: rgba(71, 168, 98, 0.34);
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0.24)),
-    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.66), transparent 28%),
-    rgba(223, 251, 234, 0.38);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.32), rgba(221, 247, 230, 0.22)),
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.42), transparent 28%),
+    var(--tcg-zone-strong);
 }
 
 .tcg-table-area.opponent .tcg-zone-field {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0.22)),
-    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.62), transparent 28%),
-    rgba(223, 248, 243, 0.42);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(214, 248, 242, 0.22)),
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.4), transparent 28%),
+    rgba(88, 190, 177, 0.24);
 }
 
 .tcg-sim-board .tcg-zone-carrot {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(255, 248, 219, 0.34)),
-    rgba(255, 240, 189, 0.3);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.46), rgba(244, 246, 178, 0.4)),
+    rgba(211, 226, 117, 0.28);
+  border-color: rgba(154, 190, 60, 0.28);
+}
+
+.tcg-sim-board .tcg-zone-discard,
+.tcg-sim-board .tcg-zone-expel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(217, 248, 229, 0.3)),
+    rgba(91, 181, 116, 0.2);
+  border-color: rgba(71, 168, 98, 0.34);
 }
 
 .tcg-sim-board .tcg-zone-hand {
   min-height: 106px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(71, 168, 98, 0.32);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(229, 255, 238, 0.62)),
-    rgba(255, 255, 255, 0.42);
+    linear-gradient(180deg, rgba(246, 255, 248, 0.82), rgba(195, 239, 210, 0.68)),
+    rgba(116, 205, 139, 0.2);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.86),
-    0 0 26px rgba(126, 220, 146, 0.2),
-    0 10px 24px rgba(104, 184, 122, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.76),
+    inset 0 -18px 30px rgba(78, 176, 107, 0.1),
+    0 0 28px rgba(76, 184, 105, 0.26),
+    0 10px 24px rgba(30, 120, 68, 0.14);
 }
 
 .tcg-table-area.opponent .tcg-zone-hand {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(228, 252, 248, 0.6)),
-    rgba(255, 255, 255, 0.38);
+    linear-gradient(180deg, rgba(246, 255, 253, 0.8), rgba(203, 239, 234, 0.66)),
+    rgba(88, 190, 177, 0.18);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.82),
-    0 0 22px rgba(110, 216, 201, 0.16);
+    inset 0 -18px 30px rgba(68, 185, 172, 0.08),
+    0 0 24px rgba(68, 185, 172, 0.2);
 }
 
 .tcg-sim-board .tcg-zone-hand .tcg-zone-body.spread {
@@ -287,25 +306,26 @@
 }
 
 .tcg-playable-card {
-  border-color: rgba(255, 255, 255, 0.78);
+  border-color: rgba(255, 255, 255, 0.86);
   box-shadow:
-    0 8px 20px rgba(98, 178, 117, 0.16),
-    0 0 0 1px rgba(126, 220, 146, 0.12);
+    0 10px 24px rgba(30, 120, 68, 0.2),
+    0 0 0 1px rgba(71, 168, 98, 0.18),
+    0 0 18px rgba(76, 184, 105, 0.14);
 }
 
 .tcg-playable-card.selected {
   box-shadow:
     0 0 0 4px rgba(255, 234, 126, 0.8),
     0 0 28px rgba(255, 230, 110, 0.58),
-    0 10px 22px rgba(98, 178, 117, 0.18);
+    0 10px 22px rgba(30, 120, 68, 0.2);
 }
 
 .tcg-playable-card.hovered:not(.selected),
 .tcg-playable-card:hover:not(.selected) {
   box-shadow:
     0 0 0 3px rgba(255, 255, 255, 0.86),
-    0 0 26px rgba(126, 220, 146, 0.58),
-    0 10px 24px rgba(98, 178, 117, 0.18);
+    0 0 28px rgba(76, 184, 105, 0.62),
+    0 12px 26px rgba(30, 120, 68, 0.22);
 }
 
 .tcg-sim-board .tcg-zone-hand .tcg-playable-card:hover,
@@ -319,18 +339,18 @@
 }
 
 .tcg-center-divider {
-  color: rgba(55, 175, 93, 0.52);
+  color: rgba(36, 122, 69, 0.72);
 }
 
 .tcg-center-divider::before {
-  background: linear-gradient(90deg, transparent, rgba(126, 220, 146, 0.54), rgba(255, 255, 255, 0.74), rgba(110, 216, 201, 0.5), transparent);
+  background: linear-gradient(90deg, transparent, rgba(76, 184, 105, 0.58), rgba(255, 255, 255, 0.68), rgba(68, 185, 172, 0.52), transparent);
 }
 
 .tcg-center-divider span {
-  border: 1px solid rgba(255, 255, 255, 0.64);
+  border: 1px solid rgba(71, 168, 98, 0.26);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.58);
-  color: var(--tcg-green-strong);
+  background: rgba(245, 255, 248, 0.78);
+  color: #247a45;
   backdrop-filter: blur(8px);
 }
 
@@ -338,17 +358,17 @@
 .tcg-zone-modal {
   border: 1px solid var(--tcg-border);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(242, 255, 245, 0.76)),
-    rgba(255, 255, 255, 0.64);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(225, 249, 233, 0.8)),
+    rgba(229, 248, 235, 0.7);
   box-shadow: var(--tcg-shadow-lift);
   backdrop-filter: blur(18px) saturate(1.12);
 }
 
 .tcg-card-preview-frame {
-  border-color: rgba(126, 220, 146, 0.22);
+  border-color: rgba(71, 168, 98, 0.28);
   background:
-    radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.8), transparent 34%),
-    linear-gradient(180deg, #fbfffb, #e4fae9);
+    radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.66), transparent 34%),
+    linear-gradient(180deg, #f3fff6, #d2f3dc);
 }
 
 @media (max-width: 900px) {
@@ -369,8 +389,8 @@
 @media (max-width: 760px) {
   .tcg-fullscreen-layout {
     background:
-      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.82), transparent 28%),
-      linear-gradient(180deg, #f8fff8, #dcf8e4);
+      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.62), transparent 28%),
+      linear-gradient(180deg, #eefbf2, #cdeed8);
   }
 
   .tcg-control-rail {
