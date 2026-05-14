@@ -630,10 +630,10 @@ function PlayerTableArea({
 
   return (
     <section className={`tcg-table-area ${side}`} aria-label={player.name}>
-      <div className="tcg-table-player-label">
+      {/* <div className="tcg-table-player-label">
         <span>{player.name}</span>
         <strong>{player.deckName}</strong>
-      </div>
+      </div> */}
 
       {side === "opponent" && (
         <CardZone zone="hand" cards={player.zones.hand} {...sharedZoneProps} />

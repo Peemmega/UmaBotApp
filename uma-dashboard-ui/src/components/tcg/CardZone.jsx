@@ -1,8 +1,8 @@
-import CardBack from "./CardBack";
 import PlayableCard from "./PlayableCard";
 
 const PILE_ZONES = new Set(["deck", "life", "discard", "expel"]);
 const ALWAYS_HIDDEN_ZONES = new Set(["deck", "life"]);
+const HIDE_HEADER_ZONES = new Set(["field", "carrot"]);
 
 function getZoneTitle(zone) {
   const titles = {
@@ -14,6 +14,7 @@ function getZoneTitle(zone) {
     carrot: "Carrot Zone",
     expel: "Expel",
   };
+
   return titles[zone] || zone;
 }
 
@@ -37,13 +38,16 @@ export default function CardZone({
   const isHiddenCard = isOpponentHand || isHiddenZone || cards[0]?.hidden;
   const visibleCards = isPile ? cards.slice(0, 1) : cards;
   const isFreeField = zone === "field";
+  const hideHeader = HIDE_HEADER_ZONES.has(zone);
 
   return (
     <section className={`tcg-zone tcg-zone-${zone}`} data-zone-id={zoneId}>
-      <header className="tcg-zone-header">
-        <span>{getZoneTitle(zone)}</span>
-        <strong>{cards.length}</strong>
-      </header>
+      {!hideHeader && (
+        <header className="tcg-zone-header">
+          <span>{getZoneTitle(zone)}</span>
+          <strong>{cards.length}</strong>
+        </header>
+      )}
 
       <div
         className={`tcg-zone-body ${
@@ -51,12 +55,16 @@ export default function CardZone({
         }`}
       >
         {cards.length === 0 ? (
-          <div className="tcg-empty-zone">{zone === "expel" ? "Expel" : "Drop"}</div>
+          <div className="tcg-empty-zone">
+            {zone === "expel" ? "Expel" : "Drop"}
+          </div>
         ) : (
           visibleCards.map((card, index) => (
             <div
               key={card.instanceId}
-              className={isFreeField ? "tcg-field-card-slot" : "tcg-zone-card-slot"}
+              className={
+                isFreeField ? "tcg-field-card-slot" : "tcg-zone-card-slot"
+              }
               style={
                 isFreeField
                   ? {
@@ -84,6 +92,7 @@ export default function CardZone({
                 onPointerLeave={() => onCardHoverEnd?.(card.instanceId)}
                 onPointerDown={(event) => {
                   if (!canDragCards) return;
+
                   onCardPointerDown(event, {
                     card,
                     playerId,
@@ -95,11 +104,6 @@ export default function CardZone({
             </div>
           ))
         )}
-        {/* {isPile && cards.length > 1 && (
-          <div className="tcg-pile-depth" aria-hidden="true">
-            <CardBack compact />
-          </div>
-        )} */}
       </div>
     </section>
   );
