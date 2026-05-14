@@ -1,6 +1,6 @@
 const API_BASE =
   import.meta.env.VITE_TCG_API_BASE ||
-  "http://localhost:8081";
+  "https://umatcgserver-production.up.railway.app";
 
 export const TCG_API_BASE = API_BASE.replace(/\/$/, "");
 
