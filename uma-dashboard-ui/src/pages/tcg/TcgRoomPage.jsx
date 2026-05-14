@@ -3,10 +3,13 @@ export default function TcgRoomPage({
   userId,
   onStart,
   onLeave,
+  starting = false,
+  leaving = false,
 }) {
   const players = room.players || {};
   const isHost = room.host_id === String(userId);
   const canStart = Boolean(players.player1 && players.player2);
+  const busy = starting || leaving;
 
   return (
     <div className="tcg-online-shell">
@@ -16,9 +19,11 @@ export default function TcgRoomPage({
           <h2>Room {room.room_code}</h2>
         </div>
         <div className="tcg-online-actions">
-          <button type="button" onClick={onLeave}>Leave Room</button>
-          <button type="button" onClick={onStart} disabled={!isHost || !canStart}>
-            Start Game
+          <button type="button" onClick={onLeave} disabled={busy}>
+            {leaving ? "Leaving..." : "Leave Room"}
+          </button>
+          <button type="button" onClick={onStart} disabled={busy || !isHost || !canStart}>
+            {starting ? "Starting..." : "Start Game"}
           </button>
         </div>
       </header>

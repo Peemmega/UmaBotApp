@@ -58,9 +58,15 @@ export default function CardGamePage({
   const [loadingRooms, setLoadingRooms] = useState(false);
   const [creatingRoom, setCreatingRoom] = useState(false);
   const [joiningRoomId, setJoiningRoomId] = useState("");
+  const [leavingRoom, setLeavingRoom] = useState(false);
+  const [startingRoom, setStartingRoom] = useState(false);
+  const [confirmingDeck, setConfirmingDeck] = useState(false);
   const [onlineError, setOnlineError] = useState("");
   const createRoomRequestRef = useRef(null);
   const joinRoomRequestRef = useRef(null);
+  const leaveRoomRequestRef = useRef(null);
+  const startRoomRequestRef = useRef(null);
+  const confirmDeckRequestRef = useRef(null);
 
   const playerPayload = useMemo(
     () => ({
@@ -152,32 +158,50 @@ export default function CardGamePage({
   };
 
   const handleLeaveRoom = async () => {
+    if (leaveRoomRequestRef.current) return;
+    setLeavingRoom(true);
     if (room) {
       try {
-        await leaveRoom(room.room_id, playerPayload);
+        const request = leaveRoom(room.room_id, playerPayload);
+        leaveRoomRequestRef.current = request;
+        await request;
       } catch {
         // Leaving the screen should still work if the room was already gone.
       }
     }
+    leaveRoomRequestRef.current = null;
+    setLeavingRoom(false);
     setRoom(null);
     refreshRooms();
   };
 
   const handleStartOnlineGame = async () => {
-    if (!room) return;
+    if (!room || startRoomRequestRef.current) return;
     try {
-      setRoom(await startRoom(room.room_id, playerPayload));
+      setStartingRoom(true);
+      const request = startRoom(room.room_id, playerPayload);
+      startRoomRequestRef.current = request;
+      setRoom(await request);
     } catch (err) {
       setOnlineError(String(err.message || err));
+    } finally {
+      startRoomRequestRef.current = null;
+      setStartingRoom(false);
     }
   };
 
   const handleConfirmDeck = async (deckId) => {
-    if (!room) return;
+    if (!room || confirmDeckRequestRef.current) return;
     try {
-      setRoom(await confirmDeck(room.room_id, userId, deckId));
+      setConfirmingDeck(true);
+      const request = confirmDeck(room.room_id, userId, deckId);
+      confirmDeckRequestRef.current = request;
+      setRoom(await request);
     } catch (err) {
       setOnlineError(String(err.message || err));
+    } finally {
+      confirmDeckRequestRef.current = null;
+      setConfirmingDeck(false);
     }
   };
 
@@ -231,6 +255,8 @@ export default function CardGamePage({
             userId={userId}
             onStart={handleStartOnlineGame}
             onLeave={handleLeaveRoom}
+            starting={startingRoom}
+            leaving={leavingRoom}
           />
         </div>
       );
@@ -246,6 +272,8 @@ export default function CardGamePage({
             decks={deckOptions}
             onConfirmDeck={handleConfirmDeck}
             onLeave={handleLeaveRoom}
+            confirming={confirmingDeck}
+            leaving={leavingRoom}
           />
         </div>
       );
@@ -259,6 +287,7 @@ export default function CardGamePage({
             userId={userId}
             sendAction={sendAction}
             onLeave={handleLeaveRoom}
+            leaving={leavingRoom}
           />
         </div>
       );

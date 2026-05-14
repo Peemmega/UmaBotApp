@@ -44,6 +44,11 @@
   font-weight: 1000;
   cursor: pointer;
   box-shadow: 0 10px 24px rgba(19, 78, 39, 0.18);
+  transition:
+    transform var(--uma-duration-base) var(--uma-ease-pop),
+    box-shadow var(--uma-duration-base) ease,
+    filter var(--uma-duration-base) ease,
+    opacity var(--uma-duration-base) ease;
 }
 
 .tcg-page-header {
@@ -109,11 +114,18 @@
 
 .tcg-primary-action:hover:not(:disabled),
 .tcg-secondary-action:hover:not(:disabled) {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: var(--uma-shadow-soft);
 }
 
-.tcg-primary-action:disabled {
+.tcg-primary-action:active:not(:disabled),
+.tcg-secondary-action:active:not(:disabled) {
+  transform: translateY(0);
+  filter: brightness(0.98);
+}
+
+.tcg-primary-action:disabled,
+.tcg-secondary-action:disabled {
   cursor: not-allowed;
   filter: grayscale(0.45);
   opacity: 0.58;
@@ -366,6 +378,18 @@
   font-size: 12px;
   font-weight: 1000;
   cursor: pointer;
+  transition:
+    transform var(--uma-duration-base) var(--uma-ease-pop),
+    background var(--uma-duration-base) ease,
+    color var(--uma-duration-base) ease;
+}
+
+.tcg-perspective-toggle button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.tcg-perspective-toggle button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .tcg-perspective-toggle button.active {
@@ -456,9 +480,27 @@
   font-size: 11px;
   font-weight: 1000;
   cursor: pointer;
+  transition:
+    transform var(--uma-duration-base) var(--uma-ease-pop),
+    box-shadow var(--uma-duration-base) ease,
+    filter var(--uma-duration-base) ease,
+    opacity var(--uma-duration-base) ease;
 }
 
-.tcg-draw-buttons button:disabled {
+.tcg-draw-buttons button:hover:not(:disabled),
+.tcg-zone-view-buttons button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(19, 78, 39, 0.16);
+}
+
+.tcg-draw-buttons button:active:not(:disabled),
+.tcg-zone-view-buttons button:active:not(:disabled) {
+  transform: translateY(0);
+  filter: brightness(0.98);
+}
+
+.tcg-draw-buttons button:disabled,
+.tcg-zone-view-buttons button:disabled {
   cursor: not-allowed;
   opacity: 0.54;
   filter: grayscale(0.35);
@@ -956,6 +998,11 @@
   background: #efffdc;
   color: #22723f;
   cursor: pointer;
+  transition:
+    transform var(--uma-duration-base) var(--uma-ease-pop),
+    box-shadow var(--uma-duration-base) ease,
+    filter var(--uma-duration-base) ease,
+    opacity var(--uma-duration-base) ease;
 }
 
 .tcg-zone-modal-empty {
@@ -1003,11 +1050,30 @@
   font-size: 11px;
   font-weight: 1000;
   cursor: pointer;
+  transition:
+    transform var(--uma-duration-base) var(--uma-ease-pop),
+    background var(--uma-duration-base) ease,
+    color var(--uma-duration-base) ease,
+    box-shadow var(--uma-duration-base) ease,
+    filter var(--uma-duration-base) ease,
+    opacity var(--uma-duration-base) ease;
 }
 
-.tcg-zone-modal-card-actions button:hover {
+.tcg-zone-modal-header button:hover:not(:disabled),
+.tcg-zone-modal-card-actions button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(19, 78, 39, 0.16);
+}
+
+.tcg-zone-modal-card-actions button:hover:not(:disabled) {
   background: var(--uma-gradient-primary);
   color: #ffffff;
+}
+
+.tcg-zone-modal-header button:active:not(:disabled),
+.tcg-zone-modal-card-actions button:active:not(:disabled) {
+  transform: translateY(0);
+  filter: brightness(0.98);
 }
 
 .tcg-online-shell {
@@ -1071,10 +1137,38 @@
   font-size: 13px;
   font-weight: 1000;
   cursor: pointer;
+  transition:
+    transform var(--uma-duration-base) var(--uma-ease-pop),
+    box-shadow var(--uma-duration-base) ease,
+    filter var(--uma-duration-base) ease,
+    opacity var(--uma-duration-base) ease;
+}
+
+.tcg-back-home:hover:not(:disabled),
+.tcg-online-actions button:hover:not(:disabled),
+.tcg-room-card button:hover:not(:disabled),
+.tcg-practice-back:hover:not(:disabled),
+.tcg-online-leave:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--uma-shadow-soft);
+}
+
+.tcg-back-home:active:not(:disabled),
+.tcg-online-actions button:active:not(:disabled),
+.tcg-room-card button:active:not(:disabled),
+.tcg-practice-back:active:not(:disabled),
+.tcg-online-leave:active:not(:disabled) {
+  transform: translateY(0);
+  filter: brightness(0.98);
 }
 
 .tcg-online-actions button:disabled,
-.tcg-room-card button:disabled {
+.tcg-room-card button:disabled,
+.tcg-practice-back:disabled,
+.tcg-online-leave:disabled,
+.tcg-back-home:disabled,
+.tcg-zone-modal-header button:disabled,
+.tcg-zone-modal-card-actions button:disabled {
   cursor: not-allowed;
   filter: grayscale(0.45);
   opacity: 0.56;

@@ -7,6 +7,8 @@ export default function TcgDeckSelectOnline({
   decks,
   onConfirmDeck,
   onLeave,
+  confirming = false,
+  leaving = false,
 }) {
   const [selectedDeckId, setSelectedDeckId] = useState("");
   const deckList = decks || [];
@@ -22,13 +24,15 @@ export default function TcgDeckSelectOnline({
           <h2>Choose Your Deck</h2>
         </div>
         <div className="tcg-online-actions">
-          <button type="button" onClick={onLeave}>Leave Room</button>
+          <button type="button" onClick={onLeave} disabled={confirming || leaving}>
+            {leaving ? "Leaving..." : "Leave Room"}
+          </button>
           <button
             type="button"
-            disabled={!selectedDeckId || youConfirmed}
+            disabled={!selectedDeckId || youConfirmed || confirming || leaving}
             onClick={() => onConfirmDeck(selectedDeckId)}
           >
-            Confirm Deck
+            {confirming ? "Confirming..." : "Confirm Deck"}
           </button>
         </div>
       </header>

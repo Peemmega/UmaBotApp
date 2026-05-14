@@ -31,7 +31,13 @@ function getPlayerSlotForUser(room, userId) {
   return found?.[0] || room.my_player_id || "player1";
 }
 
-export default function TcgOnlineBoardPage({ room, userId, sendAction, onLeave }) {
+export default function TcgOnlineBoardPage({
+  room,
+  userId,
+  sendAction,
+  onLeave,
+  leaving = false,
+}) {
   const players = useMemo(() => hydratePlayers(room.game_state?.players), [room.game_state]);
   const myPlayerId = getPlayerSlotForUser(room, userId);
   const playerSlotLabel = myPlayerId === "player2" ? "You are Player 2" : "You are Player 1";
@@ -47,8 +53,13 @@ export default function TcgOnlineBoardPage({ room, userId, sendAction, onLeave }
 
   return (
     <div>
-      <button type="button" className="tcg-online-leave" onClick={onLeave}>
-        Leave Room
+      <button
+        type="button"
+        className="tcg-online-leave"
+        onClick={onLeave}
+        disabled={leaving}
+      >
+        {leaving ? "Leaving..." : "Leave Room"}
       </button>
       <CardTable
         players={players}
