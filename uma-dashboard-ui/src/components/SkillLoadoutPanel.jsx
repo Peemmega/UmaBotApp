@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-
-const API_BASE =   "https://umadndbot-production-c99a.up.railway.app";
+import { BOT_API_URL } from "../api/config";
 import { getSkillIcon } from "../utils/getSkillIcon";
 
 export default function SkillLoadoutPanel({ userId, username, player, refreshKey }) {
@@ -11,7 +10,7 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
 
     const loadSkills = async () => {
       try {
-        const res = await fetch(`${API_BASE}/player/${userId}/skills`);
+        const res = await fetch(`${BOT_API_URL}/player/${userId}/skills`);
         const data = await res.json();
         setSkills(data);
       } catch (err) {

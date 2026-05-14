@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import "../../styles/skillsPage.css";
+import { BOT_API_URL } from "../../api/config";
 import { playSound } from "../../utils/soundManager";
 import { fallbackRaceImg, raceImageMap } from "../../utils/raceSchedule.js";
 import Toast from "../../components/Toast";
 import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
-
-BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const DISTANCE_FILTERS = [
   { value: "all", label: "ทั้งหมด" },
@@ -29,7 +28,7 @@ export default function RacesPage({ userId }) {
   const [selectedRace, setSelectedRace] = useState(null);
 
   useEffect(() => {
-    fetch(`${BOT_API_BASE}/races`)
+    fetch(`${BOT_API_URL}/races`)
       .then((res) => res.json())
       .then((data) => setRaces(Array.isArray(data) ? data : []))
       .catch(console.error);
@@ -66,7 +65,7 @@ export default function RacesPage({ userId }) {
   const createRaceRoom = async () => {
     if (!selectedRace) return;
 
-    const res = await fetch(`${BOT_API_BASE}/race/room/create`, {
+    const res = await fetch(`${BOT_API_URL}/race/room/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

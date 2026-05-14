@@ -4,9 +4,9 @@ import DashboardPage from "./pages/DashboardPage";
 import CardGamePage from "./pages/dashboard/CardGamePage";
 import LoadingScreen from "./components/LoadingScreen";
 import HorseshoeBackground from "./components/HorseshoeBackground";
+import { BOT_API_URL } from "./api/config";
 
 const APP_BASE = "https://umabotapp-production-c99a.up.railway.app";
-BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const SESSION_KEY = "uma_login";
 const SESSION_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
@@ -125,7 +125,7 @@ export default function App() {
         setLoading(true);
         setError("");
 
-        const playerUrl = `${BOT_API_BASE}/player/${userId}?username=${encodeURIComponent(
+        const playerUrl = `${BOT_API_URL}/player/${userId}?username=${encodeURIComponent(
           username
         )}`;
 

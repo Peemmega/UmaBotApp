@@ -1,12 +1,11 @@
 import React, { useMemo, useState } from "react";
+import { BOT_API_URL } from "../api/config";
 import { playSound } from "../utils/soundManager";
 
 import plusIcon from "../assets/icons/add.webp";
 import minusIcon from "../assets/icons/reduce.webp";
 import resetIcon from "../assets/icons/reset.webp";
 import editIcon from "../assets/icons/change_icon.webp";
-
-BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const ZONE_FIELDS = [
   ["flat", "เพิ่มแต้มผลรวม"],
@@ -118,7 +117,7 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
         build: draft,
       };
 
-      const res = await fetch(`${BOT_API_BASE}/player/zone/update`, {
+      const res = await fetch(`${BOT_API_URL}/player/zone/update`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

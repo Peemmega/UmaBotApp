@@ -1,7 +1,6 @@
 import React, { useState } from "react";
+import { BOT_API_URL } from "../api/config";
 import { playSound } from "../utils/soundManager";
-
-BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 export default function RenameModal({ userId, currentName, onClose, onSave }) {
   const [name, setName] = useState(currentName || "");
@@ -20,7 +19,7 @@ export default function RenameModal({ userId, currentName, onClose, onSave }) {
     try {
       playSound("click");
 
-      const res = await fetch(`${BOT_API_BASE}/player/username/update`, {
+      const res = await fetch(`${BOT_API_URL}/player/username/update`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

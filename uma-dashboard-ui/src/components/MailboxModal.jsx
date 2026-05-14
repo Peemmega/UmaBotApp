@@ -4,9 +4,8 @@ import moneyIcon from "../assets/mail/money_mail_icon.webp";
 import statsIcon from "../assets/mail/stats_mail_icon.webp";
 import skillIcon from "../assets/mail/skill_pt_mail_icon.webp";
 import aptitudeIcon from "../assets/mail/aptitude_mail_icon.webp";
+import { BOT_API_URL } from "../api/config";
 import { playSound } from "../utils/soundManager";
-
-BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const rewardIconMap = {
   uma_coin: moneyIcon,
@@ -37,7 +36,7 @@ export default function MailboxModal({ userId, onClose, onMailChanged }) {
       setLoading(true);
       setMessage("");
 
-      const res = await fetch(`${BOT_API_BASE}/mailbox/${userId}`);
+      const res = await fetch(`${BOT_API_URL}/mailbox/${userId}`);
       const data = await res.json();
 
       if (!res.ok) throw new Error(data?.detail || "Cannot load mailbox");
@@ -59,7 +58,7 @@ export default function MailboxModal({ userId, onClose, onMailChanged }) {
     try {
       playSound("click");
 
-      await fetch(`${BOT_API_BASE}/mailbox/${mailId}/read`, {
+      await fetch(`${BOT_API_URL}/mailbox/${mailId}/read`, {
         method: "POST",
       });
 

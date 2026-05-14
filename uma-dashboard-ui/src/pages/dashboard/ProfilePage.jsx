@@ -9,6 +9,7 @@ import coinIcon from "../../assets/icons/umaCoin.webp";
 import statIcon from "../../assets/icons/statsPoint.webp";
 import skillIcon from "../../assets/icons/skillPoint.webp";
 import editIcon from "../../assets/icons/change_icon.webp";
+import { BOT_API_URL } from "../../api/config";
 import { playSound } from "../../utils/soundManager";
 import { Badge, SectionHeader } from "../../components/ui";
 
@@ -28,7 +29,7 @@ export default function ProfilePage({
   useEffect(() => {
     if (!userId) return;
 
-    fetch(`https://umadndbot-production.up.railway.app/player/${userId}/skills`)
+    fetch(`${BOT_API_URL}/player/${userId}/skills`)
       .then((res) => res.json())
       .then((data) => setEquippedSkills(data))
       .catch(console.error);
