@@ -6,20 +6,67 @@ const API_BASE =
 export const TCG_API_BASE = API_BASE.replace(/\/$/, "");
 
 async function request(path, options = {}) {
-  const res = await fetch(`${TCG_API_BASE}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
-    ...options,
+  const url = `${TCG_API_BASE}${path}`;
+
+  console.log("[TCG API] Request:", {
+    url,
+    method: options.method || "GET",
+    base: TCG_API_BASE,
+    body: options.body ? JSON.parse(options.body) : null,
+  });
+
+  let res;
+
+  try {
+    res = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(options.headers || {}),
+      },
+      ...options,
+    });
+  } catch (err) {
+    console.error("[TCG API] Network error:", {
+      url,
+      message: err.message,
+      error: err,
+    });
+    throw err;
+  }
+
+  const rawText = await res.text();
+
+  let data = {};
+  try {
+    data = rawText ? JSON.parse(rawText) : {};
+  } catch {
+    data = { raw: rawText };
+  }
+
+  console.log("[TCG API] Response:", {
+    url,
+    status: res.status,
+    ok: res.ok,
+    data,
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw new Error(error.detail || `TCG API failed: ${res.status}`);
+    console.error("[TCG API] Failed:", {
+      url,
+      status: res.status,
+      statusText: res.statusText,
+      data,
+    });
+
+    throw new Error(
+      data.detail ||
+      data.message ||
+      data.raw ||
+      `TCG API failed: ${res.status}`
+    );
   }
 
-  return res.json();
+  return data;
 }
 
 export function listRooms() {
@@ -64,8 +111,14 @@ export function confirmDeck(roomId, userId, deckId) {
     body: JSON.stringify({ user_id: userId, deck_id: deckId }),
   });
 }
-
 export function getSocketUrl(roomId, userId) {
-  const wsBase = TCG_API_BASE.replace(/^https:/, "wss:").replace(/^http:/, "ws:");
-  return `${wsBase}/ws/tcg/${roomId}?user_id=${encodeURIComponent(userId)}`;
+  const wsBase = TCG_API_BASE
+    .replace(/^https:/, "wss:")
+    .replace(/^http:/, "ws:");
+
+  const url = `${wsBase}/ws/tcg/${roomId}?user_id=${encodeURIComponent(userId)}`;
+
+  console.log("[TCG WS] URL:", url);
+
+  return url;
 }
