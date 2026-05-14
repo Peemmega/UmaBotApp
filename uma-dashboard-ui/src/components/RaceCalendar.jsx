@@ -3,7 +3,7 @@ import "../styles/raceCalendar.css";
 import { raceImageMap, fallbackRaceImg } from "../utils/raceSchedule.js";
 import { Button } from "./ui";
 
-BOT_API_BASE = "https://umadndbot-production.up.railway.app";
+const BOT_API_BASE =   "https://umadndbot-production-c99a.up.railway.app";
 
 const monthNames = [
   "January", "February", "March", "April", "May", "June",
