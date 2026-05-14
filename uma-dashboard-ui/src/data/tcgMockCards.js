@@ -1,35 +1,35 @@
 const cardAssetModules = {
-  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD01_*.png", {
+  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD01_*.webp", {
     eager: true,
     query: "?url",
     import: "default",
   }),
-  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD02_*.png", {
+  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD02_*.webp", {
     eager: true,
     query: "?url",
     import: "default",
   }),
-  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD03_*.png", {
+  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD03_*.webp", {
     eager: true,
     query: "?url",
     import: "default",
   }),
-  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD04_*.png", {
+  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD04_*.webp", {
     eager: true,
     query: "?url",
     import: "default",
   }),
-  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD05_*.png", {
+  ...import.meta.glob("../assets/tcg/cards/trainees/UMTD05_*.webp", {
     eager: true,
     query: "?url",
     import: "default",
   }),
-  ...import.meta.glob("../assets/tcg/cards/trainers/UMT_001.png", {
+  ...import.meta.glob("../assets/tcg/cards/trainers/UMT_001.webp", {
     eager: true,
     query: "?url",
     import: "default",
   }),
-  ...import.meta.glob("../assets/tcg/cards/carrots/UMC_01.png", {
+  ...import.meta.glob("../assets/tcg/cards/carrots/UMC_01.webp", {
     eager: true,
     query: "?url",
     import: "default",
