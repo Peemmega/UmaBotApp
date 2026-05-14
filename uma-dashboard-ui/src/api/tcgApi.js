@@ -25,6 +25,10 @@ export function listRooms() {
   return request("/tcg/rooms");
 }
 
+export function listTcgDecks() {
+  return request("/tcg/decks");
+}
+
 export function getRoom(roomId, userId) {
   return request(`/tcg/rooms/${roomId}?user_id=${encodeURIComponent(userId)}`);
 }

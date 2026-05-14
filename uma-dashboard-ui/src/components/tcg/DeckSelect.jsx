@@ -1,12 +1,13 @@
 import { Play } from "lucide-react";
-import { predefinedTcgDecks } from "../../data/tcgDecks";
 import DeckPreviewCard from "./DeckPreviewCard";
 
 export default function DeckSelect({
+  decks,
   selections,
   onSelectDeck,
   onStartGame,
 }) {
+  const deckList = decks || [];
   const canStart = Boolean(selections.player1 && selections.player2);
 
   return (
@@ -43,13 +44,13 @@ export default function DeckSelect({
                 <h3>Choose Deck</h3>
               </div>
               <strong>
-                {predefinedTcgDecks.find(
+                {deckList.find(
                   (deck) => deck.id === selections[playerId]
                 )?.name || "Not selected"}
               </strong>
             </div>
             <div className="tcg-deck-grid">
-              {predefinedTcgDecks.map((deck) => (
+              {deckList.map((deck) => (
                 <DeckPreviewCard
                   key={`${playerId}-${deck.id}`}
                   deck={deck}

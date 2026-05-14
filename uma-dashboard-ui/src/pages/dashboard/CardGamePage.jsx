@@ -8,10 +8,11 @@ import {
   joinRoom,
   leaveRoom,
   listRooms,
+  listTcgDecks,
   startRoom,
 } from "../../api/tcgApi";
 import useTcgSocket from "../../hooks/useTcgSocket";
-import { getDeckConfirmIds, predefinedTcgDecks } from "../../data/tcgDecks";
+import { predefinedTcgDecks } from "../../data/tcgDecks";
 import { createDeckInstance, createTrainerCard } from "../../data/tcgRuntime";
 import TcgDeckSelectOnline from "../tcg/TcgDeckSelectOnline";
 import TcgLobbyPage from "../tcg/TcgLobbyPage";
@@ -49,12 +50,9 @@ export default function CardGamePage({
   userId = "",
   avatarUrl = "",
 }) {
-  const deckMap = useMemo(
-    () => new Map(predefinedTcgDecks.map((deck) => [deck.id, deck])),
-    []
-  );
   const [mode, setMode] = useState("online");
   const [selections, setSelections] = useState({ player1: "", player2: "" });
+  const [deckOptions, setDeckOptions] = useState([]);
   const [players, setPlayers] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [room, setRoom] = useState(null);
@@ -100,6 +98,34 @@ export default function CardGamePage({
   useEffect(() => {
     if (mode === "online" && !room) refreshRooms();
   }, [mode, refreshRooms, room]);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadDecks = async () => {
+      try {
+        const data = await listTcgDecks();
+        if (active && Array.isArray(data) && data.length > 0) {
+          setDeckOptions(data);
+        }
+      } catch {
+        if (active) {
+          setDeckOptions(predefinedTcgDecks);
+        }
+      }
+    };
+
+    loadDecks();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const deckMap = useMemo(
+    () => new Map(deckOptions.map((deck) => [deck.id, deck])),
+    [deckOptions]
+  );
 
   useEffect(() => {
     if (!room?.room_id || !userId || socketStatus === "open") return undefined;
@@ -173,28 +199,7 @@ export default function CardGamePage({
   const handleConfirmDeck = async (deckId) => {
     if (!room) return;
     try {
-      const confirmIds = getDeckConfirmIds(deckId);
-      let nextRoom = null;
-      let lastError = null;
-      console.log(deckId);
-      console.log(confirmIds);
-
-      for (const candidateDeckId of confirmIds) {
-        try {
-          nextRoom = await confirmDeck(room.room_id, userId, candidateDeckId);
-          lastError = null;
-          break;
-        } catch (err) {
-          lastError = err;
-          const message = String(err?.message || "").toLowerCase();
-          if (!message.includes("invalid deck") || candidateDeckId === confirmIds.at(-1)) {
-            throw err;
-          }
-        }
-      }
-
-      if (nextRoom) setRoom(nextRoom);
-      if (lastError && !nextRoom) throw lastError;
+      setRoom(await confirmDeck(room.room_id, userId, deckId));
     } catch (err) {
       setOnlineError(String(err.message || err));
     }
@@ -262,6 +267,7 @@ export default function CardGamePage({
           <TcgDeckSelectOnline
             room={room}
             myPlayerId={room.my_player_id}
+            decks={deckOptions}
             onConfirmDeck={handleConfirmDeck}
             onLeave={handleLeaveRoom}
           />
@@ -295,6 +301,7 @@ export default function CardGamePage({
           Online Lobby
         </button>
         <DeckSelect
+          decks={deckOptions}
           selections={selections}
           onSelectDeck={handleSelectDeck}
           onStartGame={handleStartPractice}
