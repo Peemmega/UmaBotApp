@@ -1,7 +1,7 @@
 const TODO_TEXT = "TODO: ใส่ความสามารถจากการ์ดจริงภายหลัง";
 
 export const CARD_DATABASE = {
-  "UMC-01": { id: "UMC-01", name: "UMC 01", type: "Carrot", cost: 0, power: 0, image: "/tcg/cards/carrots/UMC_01.webp", text: TODO_TEXT },
+  "UMC-01": { id: "UMC-01", name: "Carrot", type: "Carrot", cost: 0, power: 0, image: "/tcg/cards/carrots/UMC_01.webp", text: TODO_TEXT },
   "UMBT01-01": { id: "UMBT01-01", name: "Sakura Laurel", type: "Trainee", cost: 6, power: 4000, image: "/tcg/cards/trainees/UMBT01_01.webp", text: TODO_TEXT },
   "UMBT01-02": { id: "UMBT01-02", name: "Sakura Bakushin O", type: "Trainee", cost: 6, power: 4000, image: "/tcg/cards/trainees/UMBT01_02.webp", text: TODO_TEXT },
   "UMBT01-03": { id: "UMBT01-03", name: "Sakura Chiyono O", type: "Trainee", cost: 4, power: 3000, image: "/tcg/cards/trainees/UMBT01_03.webp", text: TODO_TEXT },
