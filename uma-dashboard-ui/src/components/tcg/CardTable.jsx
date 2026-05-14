@@ -245,7 +245,7 @@ export default function CardTable({
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.code !== "Space") return;
+      if (event.code !== "KeyR") return;
       if (
         event.target instanceof HTMLElement &&
         ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(event.target.tagName)
