@@ -3,9 +3,11 @@ import { Eye, Plus, RotateCcw, RotateCw, UserRound } from "lucide-react";
 import CardZone from "./CardZone";
 import PlayableCard from "./PlayableCard";
 import ZoneViewerModal from "./ZoneViewerModal";
+import CardBack from "./CardBack";
 import { createCarrotCard } from "../../data/tcgMockCards";
 
-const ZONES = ["deck", "hand", "field", "trainer", "life", "discard", "carrot"];
+const ZONES = ["deck", "hand", "field", "life", "discard", "carrot", "expel"];
+const LEFT_ZONES = ["deck", "life", "discard", "expel"];
 
 function drawCards(player, count) {
   const drawn = player.zones.deck.slice(0, count);
@@ -47,26 +49,64 @@ export default function CardTable({
 }) {
   const [perspective, setPerspective] = useState("player1");
   const [selectedCardId, setSelectedCardId] = useState(null);
+  const [selectedCardHidden, setSelectedCardHidden] = useState(false);
+  const [hoveredCard, setHoveredCard] = useState(null);
   const [dragState, setDragState] = useState(null);
   const [zoneViewer, setZoneViewer] = useState(null);
   const dragRef = useRef(null);
 
-  const selectedCard = useMemo(() => {
-    for (const player of Object.values(players)) {
-      for (const zone of ZONES) {
-        const found = player.zones[zone].find(
-          (card) => card.instanceId === selectedCardId
-        );
-        if (found) return found;
+  const findCardById = useCallback(
+    (cardId) => {
+      if (!cardId) return null;
+      for (const player of Object.values(players)) {
+        for (const zone of ZONES) {
+          const found = player.zones[zone].find(
+            (card) => card.instanceId === cardId
+          );
+          if (found) return found;
+        }
       }
-    }
-    return null;
-  }, [players, selectedCardId]);
+      return null;
+    },
+    [players]
+  );
+
+  const selectedCard = useMemo(
+    () => findCardById(selectedCardId),
+    [findCardById, selectedCardId]
+  );
+
+  const hoveredCardData = useMemo(
+    () => findCardById(hoveredCard?.cardId),
+    [findCardById, hoveredCard?.cardId]
+  );
+
+  const previewCard = hoveredCardData || selectedCard;
+  const previewHidden = hoveredCardData
+    ? hoveredCard.hidden
+    : selectedCardHidden;
+
+  const activeTargetCardId = hoveredCard?.cardId || selectedCardId;
+
+  const selectCard = useCallback((cardId, hidden = false) => {
+    setSelectedCardId(cardId);
+    setSelectedCardHidden(hidden);
+  }, []);
+
+  const handleCardHover = useCallback((payload) => {
+    setHoveredCard({
+      cardId: payload.card.instanceId,
+      hidden: payload.hidden,
+    });
+  }, []);
+
+  const handleCardHoverEnd = useCallback((cardId) => {
+    setHoveredCard((prev) => (prev?.cardId === cardId ? null : prev));
+  }, []);
 
   const moveCard = useCallback(
-    ({ cardId, fromPlayerId, fromZone, toPlayerId, toZone }) => {
+    ({ cardId, fromPlayerId, fromZone, toPlayerId, toZone, clientX, clientY }) => {
       if (!toPlayerId || !toZone) return;
-      if (fromPlayerId === toPlayerId && fromZone === toZone) return;
 
       setPlayers((prev) => {
         const movingCard = prev[fromPlayerId].zones[fromZone].find(
@@ -75,19 +115,48 @@ export default function CardTable({
         if (!movingCard) return prev;
 
         const next = structuredClone(prev);
+        let nextMovingCard = movingCard;
+
+        if (toZone === "field" && clientX != null && clientY != null) {
+          const zoneElement = document.querySelector(
+            `[data-zone-id="${toPlayerId}:field"] .tcg-zone-body`
+          );
+          const rect = zoneElement?.getBoundingClientRect();
+          if (rect) {
+            nextMovingCard = {
+              ...movingCard,
+              fieldX: Math.max(8, clientX - rect.left - 58),
+              fieldY: Math.max(8, clientY - rect.top - 80),
+            };
+          }
+        } else {
+          nextMovingCard = {
+            ...movingCard,
+            fieldX: undefined,
+            fieldY: undefined,
+          };
+        }
+
+        if (fromPlayerId === toPlayerId && fromZone === toZone) {
+          next[toPlayerId].zones[toZone] = next[toPlayerId].zones[toZone].map(
+            (card) => (card.instanceId === cardId ? nextMovingCard : card)
+          );
+          return next;
+        }
+
         next[fromPlayerId].zones[fromZone] = next[fromPlayerId].zones[
           fromZone
         ].filter((card) => card.instanceId !== cardId);
 
         if (toZone === "deck" || toZone === "life") {
           next[toPlayerId].zones[toZone] = [
-            movingCard,
+            nextMovingCard,
             ...next[toPlayerId].zones[toZone],
           ];
         } else {
           next[toPlayerId].zones[toZone] = [
             ...next[toPlayerId].zones[toZone],
-            movingCard,
+            nextMovingCard,
           ];
         }
 
@@ -98,15 +167,15 @@ export default function CardTable({
   );
 
   const toggleSelectedCard = useCallback(() => {
-    if (!selectedCardId) return;
+    if (!activeTargetCardId) return;
 
     setPlayers((prev) =>
-      updateCardInPlayers(prev, selectedCardId, (card) => ({
+      updateCardInPlayers(prev, activeTargetCardId, (card) => ({
         ...card,
         status: card.status === "rest" ? "active" : "rest",
       }))
     );
-  }, [selectedCardId, setPlayers]);
+  }, [activeTargetCardId, setPlayers]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -174,9 +243,11 @@ export default function CardTable({
           fromZone: current.zone,
           toPlayerId,
           toZone,
+          clientX: event.clientX,
+          clientY: event.clientY,
         });
       } else {
-        setSelectedCardId(current.card.instanceId);
+        selectCard(current.card.instanceId, current.hidden);
       }
 
       dragRef.current = null;
@@ -192,7 +263,7 @@ export default function CardTable({
       window.removeEventListener("pointerup", handlePointerUp);
       window.removeEventListener("pointercancel", handlePointerUp);
     };
-  }, [dragState, moveCard]);
+  }, [dragState, moveCard, selectCard]);
 
   const handleCardPointerDown = (event, payload) => {
     if (event.button !== 0 && event.pointerType === "mouse") return;
@@ -247,6 +318,9 @@ export default function CardTable({
     });
   };
 
+  const visibleSelectedName =
+    previewHidden && previewCard ? "Hidden card" : previewCard?.name || "None";
+
   const playerRows = [
     { id: "player2", orientation: "opponent" },
     { id: "player1", orientation: "local" },
@@ -285,22 +359,24 @@ export default function CardTable({
       </header>
 
       <div className="tcg-rules-strip">
-        <span>Carrot: placeholder</span>
+        <span>Hover then press Space to Tap</span>
+        <span>Carrot: resource sandbox</span>
         <span>Battle: manual sandbox</span>
         <span>Keyword: future logic</span>
-        <span>Selected: {selectedCard?.name || "None"}</span>
+        <span>Preview: {visibleSelectedName}</span>
       </div>
 
       <div className="tcg-board">
-        {playerRows.map(({ id, orientation }) => {
-          const player = players[id];
+        <div className="tcg-board-lanes">
+          {playerRows.map(({ id, orientation }) => {
+            const player = players[id];
 
-          return (
-            <section
-              className={`tcg-player-area ${orientation}`}
-              key={id}
-              aria-label={player.name}
-            >
+            return (
+              <section
+                className={`tcg-player-area ${orientation}`}
+                key={id}
+                aria-label={player.name}
+              >
               <div className="tcg-player-sidebar">
                 <div className="tcg-player-name">
                   <span>{player.name}</span>
@@ -339,31 +415,33 @@ export default function CardTable({
 
               <div className="tcg-player-zones">
                 <div className="tcg-side-zones">
+                  {LEFT_ZONES.map((zone) => (
+                    <CardZone
+                      key={zone}
+                      playerId={id}
+                      zone={zone}
+                      cards={player.zones[zone]}
+                      perspective={perspective}
+                      selectedCardId={selectedCardId}
+                      hoveredCardId={hoveredCard?.cardId}
+                      draggingCardId={dragState?.card.instanceId}
+                      onCardHover={handleCardHover}
+                      onCardHoverEnd={handleCardHoverEnd}
+                      onCardPointerDown={handleCardPointerDown}
+                    />
+                  ))}
+                </div>
+                <div className="tcg-center-zones">
                   <CardZone
                     playerId={id}
-                    zone="deck"
-                    cards={player.zones.deck}
+                    zone="field"
+                    cards={player.zones.field}
                     perspective={perspective}
                     selectedCardId={selectedCardId}
+                    hoveredCardId={hoveredCard?.cardId}
                     draggingCardId={dragState?.card.instanceId}
-                    onCardPointerDown={handleCardPointerDown}
-                  />
-                  <CardZone
-                    playerId={id}
-                    zone="life"
-                    cards={player.zones.life}
-                    perspective={perspective}
-                    selectedCardId={selectedCardId}
-                    draggingCardId={dragState?.card.instanceId}
-                    onCardPointerDown={handleCardPointerDown}
-                  />
-                  <CardZone
-                    playerId={id}
-                    zone="discard"
-                    cards={player.zones.discard}
-                    perspective={perspective}
-                    selectedCardId={selectedCardId}
-                    draggingCardId={dragState?.card.instanceId}
+                    onCardHover={handleCardHover}
+                    onCardHoverEnd={handleCardHoverEnd}
                     onCardPointerDown={handleCardPointerDown}
                   />
                   <CardZone
@@ -372,41 +450,34 @@ export default function CardTable({
                     cards={player.zones.carrot}
                     perspective={perspective}
                     selectedCardId={selectedCardId}
+                    hoveredCardId={hoveredCard?.cardId}
                     draggingCardId={dragState?.card.instanceId}
+                    onCardHover={handleCardHover}
+                    onCardHoverEnd={handleCardHoverEnd}
                     onCardPointerDown={handleCardPointerDown}
                   />
                 </div>
-                <CardZone
-                  playerId={id}
-                  zone="trainer"
-                  cards={player.zones.trainer}
-                  perspective={perspective}
-                  selectedCardId={selectedCardId}
-                  draggingCardId={dragState?.card.instanceId}
-                  onCardPointerDown={handleCardPointerDown}
-                />
-                <CardZone
-                  playerId={id}
-                  zone="field"
-                  cards={player.zones.field}
-                  perspective={perspective}
-                  selectedCardId={selectedCardId}
-                  draggingCardId={dragState?.card.instanceId}
-                  onCardPointerDown={handleCardPointerDown}
-                />
                 <CardZone
                   playerId={id}
                   zone="hand"
                   cards={player.zones.hand}
                   perspective={perspective}
                   selectedCardId={selectedCardId}
+                  hoveredCardId={hoveredCard?.cardId}
                   draggingCardId={dragState?.card.instanceId}
+                  onCardHover={handleCardHover}
+                  onCardHoverEnd={handleCardHoverEnd}
                   onCardPointerDown={handleCardPointerDown}
                 />
               </div>
-            </section>
-          );
-        })}
+              </section>
+            );
+          })}
+        </div>
+        <CardPreviewPanel
+          card={previewCard}
+          hidden={previewHidden}
+        />
       </div>
 
       {dragState && (
@@ -421,7 +492,7 @@ export default function CardTable({
         >
           <PlayableCard
             card={dragState.card}
-            compact={dragState.zone !== "field" && dragState.zone !== "trainer"}
+            compact={dragState.zone !== "field"}
             hidden={dragState.hidden}
           />
         </div>
@@ -430,9 +501,41 @@ export default function CardTable({
         viewer={zoneViewer}
         perspective={perspective}
         selectedCardId={selectedCardId}
-        onSelectCard={setSelectedCardId}
+        onSelectCard={selectCard}
+        onHoverCard={handleCardHover}
+        onHoverCardEnd={handleCardHoverEnd}
         onClose={() => setZoneViewer(null)}
       />
     </div>
+  );
+}
+
+function CardPreviewPanel({ card, hidden }) {
+  return (
+    <aside className="tcg-card-preview-panel" aria-label="Card preview">
+      <div className="tcg-card-preview-heading">
+        <span>Card Preview</span>
+        <strong>{card && !hidden ? card.name : "Preview"}</strong>
+      </div>
+      <div className="tcg-card-preview-frame">
+        {card ? (
+          hidden ? (
+            <CardBack />
+          ) : (
+            <PlayableCard card={card} />
+          )
+        ) : (
+          <div className="tcg-card-preview-empty">
+            <CardBack compact />
+            <span>Select a card to preview</span>
+          </div>
+        )}
+      </div>
+      <div className="tcg-card-preview-copy">
+        {card && !hidden
+          ? `${card.type} / ${card.style} / ${card.power || "-"}`
+          : "Hover or click a card to show a larger preview"}
+      </div>
+    </aside>
   );
 }

@@ -5,14 +5,14 @@ const ZONE_LABELS = {
   deck: "Deck",
   hand: "Hand",
   field: "Field",
-  trainer: "Trainer Zone",
   life: "Life Zone",
   discard: "Discard",
   carrot: "Carrot Zone",
+  expel: "Expel",
 };
 
 function shouldHideCards(zone, playerId, perspective) {
-  if (zone === "discard" || zone === "field" || zone === "trainer") return false;
+  if (zone === "discard" || zone === "field" || zone === "expel") return false;
   if (zone === "hand" || zone === "life") return perspective !== playerId;
   if (zone === "deck") return perspective !== playerId;
   return false;
@@ -23,6 +23,8 @@ export default function ZoneViewerModal({
   perspective,
   selectedCardId,
   onSelectCard,
+  onHoverCard,
+  onHoverCardEnd,
   onClose,
 }) {
   if (!viewer) return null;
@@ -54,7 +56,7 @@ export default function ZoneViewerModal({
         </header>
 
         {viewer.cards.length === 0 ? (
-          <div className="tcg-zone-modal-empty">ยังไม่มีการ์ด</div>
+          <div className="tcg-zone-modal-empty">No cards</div>
         ) : (
           <div className="tcg-zone-modal-grid">
             {viewer.cards.map((card) => (
@@ -63,8 +65,17 @@ export default function ZoneViewerModal({
                 card={card}
                 hidden={hidden}
                 selected={selectedCardId === card.instanceId}
+                onPointerEnter={() =>
+                  onHoverCard?.({
+                    card,
+                    playerId: viewer.playerId,
+                    zone: viewer.zone,
+                    hidden,
+                  })
+                }
+                onPointerLeave={() => onHoverCardEnd?.(card.instanceId)}
                 onPointerDown={() => {
-                  onSelectCard(card.instanceId);
+                  onSelectCard(card.instanceId, hidden);
                   onClose();
                 }}
               />

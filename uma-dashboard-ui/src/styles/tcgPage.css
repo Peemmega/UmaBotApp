@@ -374,6 +374,9 @@
 }
 
 .tcg-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 12px;
   border-radius: var(--uma-radius-md);
   padding: 14px;
   border: 1px solid rgba(255, 255, 255, 0.7);
@@ -383,6 +386,10 @@
     radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.18), transparent 38%),
     linear-gradient(135deg, #27884a, #45ad5f 52%, #2f8a40);
   box-shadow: var(--uma-shadow-pop);
+}
+
+.tcg-board-lanes {
+  min-width: 0;
 }
 
 .tcg-player-area {
@@ -487,8 +494,15 @@
 .tcg-player-zones {
   min-width: 0;
   display: grid;
-  grid-template-columns: 122px 144px minmax(0, 1fr);
+  grid-template-columns: 122px minmax(0, 1fr);
   gap: 9px;
+}
+
+.tcg-center-zones {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: minmax(190px, 1fr) minmax(106px, auto);
+  gap: 8px;
 }
 
 .tcg-side-zones {
@@ -507,18 +521,17 @@
 }
 
 .tcg-zone-field {
-  grid-column: 3;
-  min-height: 190px;
-}
-
-.tcg-zone-trainer {
-  grid-column: 2;
+  grid-column: auto;
   min-height: 190px;
 }
 
 .tcg-zone-hand {
   grid-column: 1 / -1;
   min-height: 132px;
+}
+
+.tcg-zone-carrot {
+  min-height: 106px;
 }
 
 .tcg-zone-header {
@@ -554,9 +567,20 @@
   overflow-x: auto;
 }
 
+.tcg-zone-body.free {
+  position: relative;
+  min-height: 220px;
+  overflow: auto;
+}
+
 .tcg-zone-body.pile {
   display: grid;
   place-items: center;
+}
+
+.tcg-field-card-slot {
+  position: absolute;
+  width: max-content;
 }
 
 .tcg-empty-zone {
@@ -610,6 +634,14 @@
   box-shadow:
     0 0 0 4px rgba(255, 212, 90, 0.76),
     0 0 24px rgba(255, 212, 90, 0.58),
+    0 8px 15px rgba(28, 74, 39, 0.22);
+}
+
+.tcg-playable-card.hovered:not(.selected),
+.tcg-playable-card:hover:not(.selected) {
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.7),
+    0 0 18px rgba(85, 220, 166, 0.5),
     0 8px 15px rgba(28, 74, 39, 0.22);
 }
 
@@ -901,7 +933,113 @@
   margin: 0 auto;
 }
 
+.tcg-card-preview-panel {
+  position: sticky;
+  top: 64px;
+  align-self: start;
+  border-radius: var(--uma-radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--uma-ink);
+  box-shadow: 0 12px 26px rgba(19, 78, 39, 0.18);
+}
+
+.tcg-card-preview-heading {
+  margin-bottom: 8px;
+}
+
+.tcg-card-preview-heading span {
+  display: block;
+  color: var(--uma-primary-dark);
+  font-size: 10px;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tcg-card-preview-heading strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--uma-ink);
+  font-size: 15px;
+  line-height: 1.1;
+}
+
+.tcg-card-preview-frame {
+  min-height: 270px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--uma-radius-sm);
+  background: linear-gradient(180deg, #f8fff4, #eafbdc);
+  border: 1px solid rgba(35, 150, 78, 0.16);
+  overflow: hidden;
+}
+
+.tcg-card-preview-frame .tcg-playable-card {
+  --card-width: 174px;
+  height: 246px;
+  cursor: default;
+  pointer-events: none;
+}
+
+.tcg-card-preview-frame .tcg-playable-card.rested {
+  transform: rotate(0deg);
+}
+
+.tcg-card-preview-frame .tcg-card-back {
+  width: 174px;
+  height: 246px;
+}
+
+.tcg-card-preview-empty {
+  min-height: 246px;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  color: var(--uma-muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.tcg-card-preview-empty .tcg-card-back {
+  width: 92px;
+  height: 130px;
+}
+
+.tcg-card-preview-copy {
+  margin-top: 8px;
+  color: var(--uma-muted);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
 @media (max-width: 900px) {
+  .tcg-board {
+    grid-template-columns: 1fr;
+  }
+
+  .tcg-card-preview-panel {
+    position: static;
+    order: 2;
+  }
+
+  .tcg-card-preview-frame {
+    min-height: 190px;
+  }
+
+  .tcg-card-preview-frame .tcg-playable-card {
+    --card-width: 118px;
+    height: 166px;
+  }
+
+  .tcg-card-preview-frame .tcg-card-back {
+    width: 118px;
+    height: 166px;
+  }
+
   .tcg-deck-select-columns {
     grid-template-columns: 1fr;
   }
@@ -940,20 +1078,16 @@
   }
 
   .tcg-player-zones {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 
   .tcg-side-zones {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-column: 1 / -1;
   }
 
-  .tcg-zone-trainer {
-    grid-column: 1;
-  }
-
   .tcg-zone-field {
-    grid-column: 2;
+    grid-column: auto;
   }
 
   .tcg-zone {

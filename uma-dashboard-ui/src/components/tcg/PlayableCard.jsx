@@ -7,7 +7,10 @@ export default function PlayableCard({
   hidden = false,
   compact = false,
   selected = false,
+  hovered = false,
   onPointerDown,
+  onPointerEnter,
+  onPointerLeave,
   isDragging = false,
 }) {
   const [imageFailed, setImageFailed] = useState(false);
@@ -23,6 +26,7 @@ export default function PlayableCard({
         "tcg-playable-card",
         compact ? "compact" : "",
         selected ? "selected" : "",
+        hovered ? "hovered" : "",
         card.status === "rest" ? "rested" : "",
         isDragging ? "dragging-source" : "",
       ]
@@ -33,6 +37,8 @@ export default function PlayableCard({
         "--card-style-accent": theme.accent,
       }}
       onPointerDown={(event) => onPointerDown?.(event, card)}
+      onPointerEnter={() => onPointerEnter?.(card)}
+      onPointerLeave={() => onPointerLeave?.(card)}
       aria-label={hidden ? "Hidden card" : card.name}
     >
       {hidden ? (

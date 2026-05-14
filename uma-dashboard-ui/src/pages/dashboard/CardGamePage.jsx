@@ -23,10 +23,10 @@ function setupPlayer(playerId, playerName, deck) {
       life: deckInstance.slice(0, 5),
       hand: deckInstance.slice(5, 10),
       deck: deckInstance.slice(10),
-      trainer: [trainerCard],
-      field: [],
+      field: [{ ...trainerCard, fieldX: 18, fieldY: 18 }],
       discard: [],
       carrot: [],
+      expel: [],
     },
   };
 }
