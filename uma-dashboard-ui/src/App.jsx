@@ -121,13 +121,13 @@ export default function App() {
     }
 
     const loadPlayer = async () => {
-      const playerUrl = `${BOT_API_URL}/player/${userId}?username=${encodeURIComponent(
-        username
-      )}`;
-
       try {
         setLoading(true);
         setError("");
+
+        const playerUrl = `${BOT_API_URL}/player/${userId}?username=${encodeURIComponent(
+          username
+        )}`;
 
         const res = await fetch(playerUrl);
         if (!res.ok) throw new Error(`player API failed: ${res.status}`);
