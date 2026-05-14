@@ -54,7 +54,7 @@ export default function PlayableCard({
           />
           <div className="tcg-card-image-meta">
             <span>{card.type}</span>
-            <strong>{card.cost}</strong>
+            {/* <strong>{card.cost}</strong> */}
           </div>
         </div>
       ) : (
