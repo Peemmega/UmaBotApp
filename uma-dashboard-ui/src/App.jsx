@@ -6,7 +6,7 @@ import LoadingScreen from "./components/LoadingScreen";
 import HorseshoeBackground from "./components/HorseshoeBackground";
 
 const APP_BASE = "https://umabotapp-production-c99a.up.railway.app";
-const BOT_API_BASE =   "https://umadndbot-production-c99a.up.railway.app";
+const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const SESSION_KEY = "uma_login";
 const SESSION_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
