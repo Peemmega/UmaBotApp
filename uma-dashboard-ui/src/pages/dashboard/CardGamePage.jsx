@@ -34,8 +34,8 @@ function setupPlayer(playerId, playerName, deck) {
     trainerCard,
     carrotCounter: 0,
     zones: {
-      life: deckInstance.slice(0, 5),
-      hand: deckInstance.slice(5, 10),
+      hand: deckInstance.slice(0, 5),
+      life: deckInstance.slice(5, 10),
       deck: deckInstance.slice(10),
       field: [{ ...trainerCard, fieldX: 18, fieldY: 18 }],
       discard: [],

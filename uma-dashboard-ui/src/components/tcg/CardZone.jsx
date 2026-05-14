@@ -2,6 +2,7 @@ import CardBack from "./CardBack";
 import PlayableCard from "./PlayableCard";
 
 const PILE_ZONES = new Set(["deck", "life", "discard", "expel"]);
+const ALWAYS_HIDDEN_ZONES = new Set(["deck", "life"]);
 
 function getZoneTitle(zone) {
   const titles = {
@@ -32,7 +33,8 @@ export default function CardZone({
   const zoneId = `${playerId}:${zone}`;
   const isPile = PILE_ZONES.has(zone);
   const isOpponentHand = zone === "hand" && perspective !== playerId;
-  const isHiddenPile = zone === "deck" || zone === "life";
+  const isHiddenZone = ALWAYS_HIDDEN_ZONES.has(zone);
+  const isHiddenCard = isOpponentHand || isHiddenZone || cards[0]?.hidden;
   const visibleCards = isPile ? cards.slice(0, 1) : cards;
   const isFreeField = zone === "field";
 
@@ -51,23 +53,23 @@ export default function CardZone({
         {cards.length === 0 ? (
           <div className="tcg-empty-zone">{zone === "expel" ? "Expel" : "Drop"}</div>
         ) : (
-          visibleCards.map((card) => (
+          visibleCards.map((card, index) => (
             <div
               key={card.instanceId}
-              className={isFreeField ? "tcg-field-card-slot" : undefined}
+              className={isFreeField ? "tcg-field-card-slot" : "tcg-zone-card-slot"}
               style={
                 isFreeField
                   ? {
                       left: `${card.fieldX ?? 12}px`,
                       top: `${card.fieldY ?? 12}px`,
                     }
-                  : undefined
+                  : { "--card-index": index }
               }
             >
               <PlayableCard
                 card={card}
                 compact={zone !== "field"}
-                hidden={isOpponentHand || isHiddenPile}
+                hidden={isHiddenCard}
                 selected={selectedCardId === card.instanceId}
                 hovered={hoveredCardId === card.instanceId}
                 isDragging={draggingCardId === card.instanceId}
@@ -76,7 +78,7 @@ export default function CardZone({
                     card,
                     playerId,
                     zone,
-                    hidden: isOpponentHand || isHiddenPile,
+                    hidden: isHiddenCard,
                   })
                 }
                 onPointerLeave={() => onCardHoverEnd?.(card.instanceId)}
@@ -86,7 +88,7 @@ export default function CardZone({
                     card,
                     playerId,
                     zone,
-                    hidden: isOpponentHand || isHiddenPile,
+                    hidden: isHiddenCard,
                   });
                 }}
               />

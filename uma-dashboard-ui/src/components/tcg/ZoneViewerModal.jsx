@@ -12,9 +12,9 @@ const ZONE_LABELS = {
 };
 
 function shouldHideCards(zone, playerId, perspective) {
+  if (zone === "deck" || zone === "life") return true;
   if (zone === "discard" || zone === "field" || zone === "expel") return false;
   if (zone === "hand" || zone === "life") return perspective !== playerId;
-  if (zone === "deck") return perspective !== playerId;
   return false;
 }
 
