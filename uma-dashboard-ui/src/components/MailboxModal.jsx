@@ -6,7 +6,7 @@ import skillIcon from "../assets/mail/skill_pt_mail_icon.webp";
 import aptitudeIcon from "../assets/mail/aptitude_mail_icon.webp";
 import { playSound } from "../utils/soundManager";
 
-const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
+const BOT_API_BASE =   "https://umadndbot-production-c99a.up.railway.app";
 
 const rewardIconMap = {
   uma_coin: moneyIcon,

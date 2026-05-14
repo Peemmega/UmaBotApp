@@ -5,7 +5,7 @@ import { fallbackRaceImg, raceImageMap } from "../../utils/raceSchedule.js";
 import Toast from "../../components/Toast";
 import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 
-const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
+const BOT_API_BASE =   "https://umadndbot-production-c99a.up.railway.app";
 
 const DISTANCE_FILTERS = [
   { value: "all", label: "ทั้งหมด" },

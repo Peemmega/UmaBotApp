@@ -6,7 +6,7 @@ import minusIcon from "../assets/icons/reduce.webp";
 import resetIcon from "../assets/icons/reset.webp";
 import editIcon from "../assets/icons/change_icon.webp";
 
-const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
+const BOT_API_BASE =   "https://umadndbot-production-c99a.up.railway.app";
 
 const ZONE_FIELDS = [
   ["flat", "เพิ่มแต้มผลรวม"],

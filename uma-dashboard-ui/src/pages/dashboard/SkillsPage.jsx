@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import "../../styles/skillsPage.css";
 import Toast from "../../components/Toast";
 
-const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
+const BOT_API_BASE =   "https://umadndbot-production-c99a.up.railway.app";
 import { playSound } from "../../utils/soundManager";
 
 import witIcon from "../../assets/icons/Wit.webp";
