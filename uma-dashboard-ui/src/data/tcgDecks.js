@@ -3,19 +3,35 @@ import { CARD_DATABASE, getCard } from "./tcgCards";
 const MAX_COPIES_PER_CARD = 4;
 const MAIN_DECK_SIZE = 40;
 
-function hydrateDeck(deck) {
-  const validation = validateDeck(deck);
-  const cards = expandDeckList(deck.mainDeck);
-  const keyCards = Object.keys(deck.mainDeck)
+function buildDeck({
+  id,
+  name,
+  description,
+  style,
+  highlight,
+  tags,
+  trainer,
+  mainDeck,
+}) {
+  const validation = validateDeck({ trainer, mainDeck });
+  const cards = expandDeckList(mainDeck);
+  const keyCards = Object.keys(mainDeck)
     .slice(0, 3)
     .map((cardId) => getCard(cardId)?.name || cardId);
 
   return {
-    ...deck,
+    id,
+    name,
+    description,
+    style,
+    highlight,
+    tags,
+    trainer,
+    mainDeck,
     cards,
     keyCards,
     mainDeckCount: cards.length,
-    trainerCard: getCard(deck.trainer),
+    trainerCard: getCard(trainer),
     validation,
   };
 }
@@ -30,7 +46,10 @@ export function expandDeckList(mainDeck) {
 export function validateDeck(deck) {
   const errors = [];
   const mainDeck = deck.mainDeck || {};
-  const total = Object.values(mainDeck).reduce((sum, quantity) => sum + quantity, 0);
+  const total = Object.values(mainDeck).reduce(
+    (sum, quantity) => sum + quantity,
+    0
+  );
 
   if (total !== MAIN_DECK_SIZE) {
     errors.push(`Main Deck must contain ${MAIN_DECK_SIZE} cards, got ${total}`);
@@ -61,15 +80,15 @@ export function validateDeck(deck) {
   return { valid: errors.length === 0, errors };
 }
 
-const DECKS = [
+const STARTER_DECKS = [
   {
     id: "starter-speed",
-    name: "Oguri Cap Speed Deck",
-    description: "เด็คสาย Speed ที่เน้นเปิดเกมไว ลง Trainee ต่อเนื่องเพื่อกดจังหวะตั้งแต่ต้นเกม เหมาะกับผู้เล่นที่ชอบบุกเร็วและใช้ทรัพยากรให้คุ้มในแต่ละเทิร์น",
+    name: "Starter Speed Deck",
+    description: "Basic 40-card starter deck built for early tempo tests.",
     style: "Speed",
-    highlight: "จุดเด่นคือความคล่องตัว จั่วแล้วลงสนามได้ง่าย สร้างแรงกดดันเร็ว ก่อนที่อีกฝ่ายจะตั้งบอร์ดทัน",
-    tags: ["Starter", "Tempo", "Aggro"],
-    trainer: "UMT-002",
+    highlight: "Fast open and simple board transitions.",
+    tags: ["Starter", "Tempo", "Low cost"],
+    trainer: "UMT-001",
     mainDeck: {
       "UMTD01-01": 4,
       "UMTD01-02": 4,
@@ -85,12 +104,12 @@ const DECKS = [
   },
   {
     id: "starter-stamina",
-    name: "T.M. Opera Stamina Deck",
-    description: "เด็คสาย Stamina ที่เน้นยืนระยะ คุมเกมกลางถึงท้ายเกม และรักษาทรัพยากรให้เพียงพอตลอดการแข่งขัน เหมาะกับผู้เล่นที่ชอบเล่นมั่นคง",
+    name: "Starter Stamina Deck",
+    description: "Basic 40-card starter deck built for slower setup tests.",
     style: "Stamina",
-    highlight: "จุดเด่นคือความเสถียร เล่นยาวได้ดี ไม่หมดแรงง่าย และค่อย ๆ สร้างความได้เปรียบจากบอร์ดที่แข็งแรง",
-    tags: ["Starter", "Control", "Stable"],
-    trainer: "UMT-003",
+    highlight: "Life zone and longer game flow checks.",
+    tags: ["Starter", "Steady", "Board tests"],
+    trainer: "UMT-002",
     mainDeck: {
       "UMTD02-01": 4,
       "UMTD02-02": 4,
@@ -106,12 +125,12 @@ const DECKS = [
   },
   {
     id: "starter-power",
-    name: "Gentildonna Power Deck",
-    description: "เด็คสาย Power ที่เน้นพลังสูงและการปะทะโดยตรง ใช้การ์ดที่มีแรงกดดันบนสนามเพื่อบังคับให้อีกฝ่ายต้องตอบโต้",
+    name: "Starter Power Deck",
+    description: "Basic 40-card starter deck built for field pressure tests.",
     style: "Power",
-    highlight: "จุดเด่นคือการสร้างบอร์ดที่แข็งและน่ากลัว ถ้าตั้งเกมได้จะบีบพื้นที่การเล่นของคู่แข่งอย่างต่อเนื่อง",
-    tags: ["Starter", "Pressure", "Beatdown"],
-    trainer: "UMT-004",
+    highlight: "High power trainees and layout checks.",
+    tags: ["Starter", "Power", "Board push"],
+    trainer: "UMT-003",
     mainDeck: {
       "UMTD03-01": 4,
       "UMTD03-02": 4,
@@ -127,12 +146,12 @@ const DECKS = [
   },
   {
     id: "starter-gut",
-    name: "Orferve Gut Deck",
-    description: "เด็คสาย Gut ที่เล่นแบบดื้อและพลิกสถานการณ์ได้ดี เหมาะกับผู้เล่นที่ชอบเสี่ยงแลกจังหวะ เพื่อกลับมาได้แม้โดนกดดัน",
+    name: "Starter Gut Deck",
+    description: "Basic 40-card starter deck built for tap/rest tests.",
     style: "Guts",
-    highlight: "จุดเด่นคือความอึดและการเล่นสวน เมื่อเกมเริ่มตึง เด็คนี้จะมีโอกาสสร้างจังหวะพลิกกลับได้ดี",
-    tags: ["Starter", "Comeback", "Resilience"],
-    trainer: "UMT-005",
+    highlight: "Repeated tap and move interactions.",
+    tags: ["Starter", "Rest synergy", "Pressure"],
+    trainer: "UMT-004",
     mainDeck: {
       "UMTD04-01": 4,
       "UMTD04-02": 4,
@@ -148,12 +167,12 @@ const DECKS = [
   },
   {
     id: "starter-wit",
-    name: "Anges Wit Deck",
-    description: "เด็คสาย Wit ที่เน้นการวางแผน จัดจังหวะ และใช้การ์ดให้เกิด value สูงสุด เหมาะกับผู้เล่นที่ชอบคุมมือและเลือกจังหวะเล่นอย่างแม่นยำ",
+    name: "Starter Wit Deck",
+    description: "Basic 40-card starter deck built for draw and control tests.",
     style: "Wit",
-    highlight: "จุดเด่นคือความยืดหยุ่น มีตัวเลือกในการเล่นหลายแบบ และสามารถปรับแผนตามสถานการณ์บนสนามได้ดี",
-    tags: ["Starter", "Value", "Technical"],
-    trainer: "UMT-001",
+    highlight: "Tricks, draw flow, and future keyword hooks.",
+    tags: ["Starter", "Draw", "Control"],
+    trainer: "UMT-005",
     mainDeck: {
       "UMTD05-01": 4,
       "UMTD05-02": 4,
@@ -169,4 +188,4 @@ const DECKS = [
   },
 ];
 
-export const predefinedTcgDecks = DECKS.map(hydrateDeck);
+export const predefinedTcgDecks = STARTER_DECKS.map(buildDeck);
