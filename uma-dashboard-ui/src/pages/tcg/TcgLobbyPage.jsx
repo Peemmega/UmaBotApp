@@ -3,6 +3,8 @@ import { RefreshCw, Plus } from "lucide-react";
 export default function TcgLobbyPage({
   rooms,
   loading,
+  creating,
+  joiningRoomId,
   error,
   onRefresh,
   onCreateRoom,
@@ -22,9 +24,9 @@ export default function TcgLobbyPage({
             <RefreshCw size={16} />
             Refresh
           </button>
-          <button type="button" onClick={onCreateRoom}>
+          <button type="button" onClick={onCreateRoom} disabled={loading || creating || Boolean(joiningRoomId)}>
             <Plus size={16} />
-            Create Room
+            {creating ? "Creating..." : "Create Room"}
           </button>
         </div>
       </header>
@@ -44,10 +46,15 @@ export default function TcgLobbyPage({
               </div>
               <button
                 type="button"
-                disabled={room.player_count >= room.max_players || room.phase !== "waiting"}
+                disabled={
+                  creating ||
+                  Boolean(joiningRoomId) ||
+                  room.player_count >= room.max_players ||
+                  room.phase !== "waiting"
+                }
                 onClick={() => onJoinRoom(room.room_id)}
               >
-                Join
+                {joiningRoomId === room.room_id ? "Joining..." : "Join"}
               </button>
             </article>
           ))
