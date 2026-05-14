@@ -88,7 +88,7 @@ const STARTER_DECKS = [
     style: "Speed",
     highlight: "Fast open and simple board transitions.",
     tags: ["Starter", "Tempo", "Low cost"],
-    trainer: "UMT-001",
+    trainer: "UMT-002",
     mainDeck: {
       "UMTD01-01": 4,
       "UMTD01-02": 4,
@@ -109,7 +109,7 @@ const STARTER_DECKS = [
     style: "Stamina",
     highlight: "Life zone and longer game flow checks.",
     tags: ["Starter", "Steady", "Board tests"],
-    trainer: "UMT-002",
+    trainer: "UMT-003",
     mainDeck: {
       "UMTD02-01": 4,
       "UMTD02-02": 4,
@@ -130,7 +130,7 @@ const STARTER_DECKS = [
     style: "Power",
     highlight: "High power trainees and layout checks.",
     tags: ["Starter", "Power", "Board push"],
-    trainer: "UMT-003",
+    trainer: "UMT-004",
     mainDeck: {
       "UMTD03-01": 4,
       "UMTD03-02": 4,
@@ -151,7 +151,7 @@ const STARTER_DECKS = [
     style: "Guts",
     highlight: "Repeated tap and move interactions.",
     tags: ["Starter", "Rest synergy", "Pressure"],
-    trainer: "UMT-004",
+    trainer: "UMT-005",
     mainDeck: {
       "UMTD04-01": 4,
       "UMTD04-02": 4,
@@ -172,7 +172,7 @@ const STARTER_DECKS = [
     style: "Wit",
     highlight: "Tricks, draw flow, and future keyword hooks.",
     tags: ["Starter", "Draw", "Control"],
-    trainer: "UMT-005",
+    trainer: "UMT-001",
     mainDeck: {
       "UMTD05-01": 4,
       "UMTD05-02": 4,
