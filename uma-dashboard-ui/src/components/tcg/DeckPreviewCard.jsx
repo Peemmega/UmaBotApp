@@ -3,6 +3,7 @@ import { tcgStyleThemes } from "../../data/tcgMockCards";
 
 export default function DeckPreviewCard({ deck, selected, onSelect }) {
   const theme = tcgStyleThemes[deck.style];
+  const validation = deck.validation || { valid: true, errors: [] };
 
   return (
     <button
@@ -31,9 +32,15 @@ export default function DeckPreviewCard({ deck, selected, onSelect }) {
           ))}
         </div>
         <div className="tcg-deck-meta">
-          <span>{deck.cards.length} cards</span>
+          <span>Main Deck {deck.mainDeckCount || deck.cards.length}</span>
+          <span>Trainer {deck.trainerCard ? "1" : "0"}</span>
           <span>{deck.keyCards.join(" / ")}</span>
         </div>
+        {!validation.valid && (
+          <div className="tcg-deck-highlight">
+            Invalid: {validation.errors.join(" / ")}
+          </div>
+        )}
       </div>
     </button>
   );

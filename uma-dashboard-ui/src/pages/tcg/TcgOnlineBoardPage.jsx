@@ -1,18 +1,13 @@
 import { useMemo } from "react";
 import CardTable from "../../components/tcg/CardTable";
-import { predefinedTcgDecks, tcgAssets } from "../../data/tcgMockCards";
+import { CARD_DATABASE } from "../../data/tcgCards";
 
-const imageById = new Map();
-predefinedTcgDecks.forEach((deck) => {
-  deck.cards.forEach((card) => {
-    if (!imageById.has(card.id)) imageById.set(card.id, card.image);
-  });
-});
+const imageById = new Map(
+  Object.values(CARD_DATABASE).map((card) => [card.id, card.image])
+);
 
 function hydrateCard(card) {
   if (!card || card.hidden) return card;
-  if (card.type === "Carrot") return { ...card, image: tcgAssets.carrot };
-  if (card.type === "Trainer") return { ...card, image: tcgAssets.trainer };
   return { ...card, image: imageById.get(card.id) || card.image };
 }
 

@@ -24,7 +24,7 @@ import "../../styles/tcgPage.css";
 
 function setupPlayer(playerId, playerName, deck) {
   const deckInstance = createDeckInstance(deck, playerId);
-  const trainerCard = createTrainerCard(playerId);
+  const trainerCard = createTrainerCard(playerId, deck.trainer);
 
   return {
     id: playerId,
