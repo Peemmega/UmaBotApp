@@ -69,7 +69,9 @@ export default function CardTable({
   const [zoneViewer, setZoneViewer] = useState(null);
   const [shuffleNotice, setShuffleNotice] = useState({});
   const [controlsOpen, setControlsOpen] = useState(false);
-  const activePlayerId = currentPlayerId || "player1";
+  const activePlayerId = onlineMode
+    ? currentPlayerId || "player1"
+    : perspective;
   const tablePerspective = onlineMode ? activePlayerId : perspective;
   const opponentPlayerId = activePlayerId === "player1" ? "player2" : "player1";
   const topPlayerId = onlineMode ? opponentPlayerId : "player2";
