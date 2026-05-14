@@ -8,7 +8,6 @@ import {
   joinRoom,
   leaveRoom,
   listRooms,
-  listTcgDecks,
   startRoom,
 } from "../../api/tcgApi";
 import useTcgSocket from "../../hooks/useTcgSocket";
@@ -52,7 +51,7 @@ export default function CardGamePage({
 }) {
   const [mode, setMode] = useState("online");
   const [selections, setSelections] = useState({ player1: "", player2: "" });
-  const [deckOptions, setDeckOptions] = useState([]);
+  const [deckOptions] = useState(predefinedTcgDecks);
   const [players, setPlayers] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [room, setRoom] = useState(null);
@@ -98,29 +97,6 @@ export default function CardGamePage({
   useEffect(() => {
     if (mode === "online" && !room) refreshRooms();
   }, [mode, refreshRooms, room]);
-
-  useEffect(() => {
-    let active = true;
-
-    const loadDecks = async () => {
-      try {
-        const data = await listTcgDecks();
-        if (active && Array.isArray(data) && data.length > 0) {
-          setDeckOptions(data);
-        }
-      } catch {
-        if (active) {
-          setDeckOptions(predefinedTcgDecks);
-        }
-      }
-    };
-
-    loadDecks();
-
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const deckMap = useMemo(
     () => new Map(deckOptions.map((deck) => [deck.id, deck])),

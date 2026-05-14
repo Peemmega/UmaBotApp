@@ -80,21 +80,6 @@ export function validateDeck(deck) {
   return { valid: errors.length === 0, errors };
 }
 
-const LEGACY_CONFIRM_IDS = {
-  "starter-speed": "speed-deck",
-  "starter-stamina": "stamina-deck",
-  "starter-power": "power-deck",
-  "starter-gut": "guts-deck",
-  "starter-wit": "wit-deck",
-};
-
-export function getDeckConfirmIds(deckId) {
-  const legacyDeckId = LEGACY_CONFIRM_IDS[deckId];
-  return legacyDeckId && legacyDeckId !== deckId
-    ? [deckId, legacyDeckId]
-    : [deckId];
-}
-
 const STARTER_DECKS = [
   {
     id: "starter-speed",
