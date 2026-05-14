@@ -21,11 +21,11 @@
 .tcg-fullscreen-page .tcg-table-page {
   width: min(100%, 1680px);
   margin: 0 auto;
-  padding-top: 52px;
+  padding-top: 44px;
 }
 
 .tcg-fullscreen-page .tcg-board {
-  min-height: calc(100vh - 160px);
+  min-height: calc(100vh - 132px);
 }
 
 .tcg-back-home {
@@ -51,7 +51,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding: 18px;
+  padding: 12px 14px;
   border-radius: var(--uma-radius-md);
   border: 1px solid rgba(255, 255, 255, 0.72);
   background:
@@ -71,7 +71,7 @@
 }
 
 .tcg-page-header h2 {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: var(--uma-ink);
   font-size: clamp(26px, 3vw, 38px);
   font-weight: 1000;
@@ -120,7 +120,7 @@
 }
 
 .tcg-rules-strip {
-  margin: 12px 0;
+  margin: 8px 0;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -375,7 +375,7 @@
 
 .tcg-board {
   border-radius: var(--uma-radius-md);
-  padding: 14px;
+  padding: 9px;
   border: 1px solid rgba(255, 255, 255, 0.7);
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0 1px, transparent 1px 58px),
@@ -391,38 +391,38 @@
 
 .tcg-player-area {
   display: grid;
-  grid-template-columns: 178px minmax(0, 1fr);
-  gap: 10px;
-  padding: 10px;
+  grid-template-columns: 162px minmax(0, 1fr);
+  gap: 7px;
+  padding: 7px;
   border-radius: var(--uma-radius-md);
   background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.26);
 }
 
 .tcg-player-area.opponent {
-  margin-bottom: 12px;
+  margin-bottom: 7px;
 }
 
 .tcg-player-area.local {
-  margin-top: 12px;
+  margin-top: 7px;
 }
 
 .tcg-player-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 6px;
 }
 
 .tcg-player-name {
   border-radius: var(--uma-radius-sm);
-  padding: 10px;
+  padding: 7px 8px;
   background: rgba(255, 255, 255, 0.9);
   color: var(--uma-ink);
 }
 
 .tcg-player-name span {
   display: block;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 1000;
 }
 
@@ -430,13 +430,14 @@
   display: block;
   margin-top: 4px;
   color: var(--uma-primary-dark);
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.15;
 }
 
 .tcg-draw-buttons {
   display: grid;
-  gap: 7px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
 }
 
 .tcg-draw-buttons button,
@@ -444,7 +445,7 @@
   min-height: 36px;
   border: none;
   border-radius: var(--uma-radius-xs);
-  padding: 7px 9px;
+  padding: 6px 7px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -452,7 +453,7 @@
   background: rgba(255, 255, 255, 0.92);
   color: #237642;
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 1000;
   cursor: pointer;
 }
@@ -464,7 +465,7 @@
 }
 
 .tcg-shuffle-notice {
-  min-height: 24px;
+  min-height: 22px;
   border-radius: var(--uma-radius-xs);
   padding: 5px 8px;
   background: rgba(255, 255, 255, 0.72);
@@ -474,9 +475,28 @@
   text-align: center;
 }
 
+.tcg-opponent-summary {
+  border-radius: var(--uma-radius-xs);
+  padding: 7px 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #327840;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.tcg-opponent-summary span,
+.tcg-opponent-summary strong {
+  display: block;
+}
+
+.tcg-opponent-summary strong {
+  margin-top: 3px;
+  color: #235f36;
+}
+
 .tcg-zone-view-buttons {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 6px;
 }
 
@@ -508,26 +528,26 @@
 .tcg-player-zones {
   min-width: 0;
   display: grid;
-  grid-template-columns: 122px minmax(0, 1fr);
-  gap: 9px;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 6px;
 }
 
 .tcg-center-zones {
   min-width: 0;
   display: grid;
-  grid-template-rows: minmax(190px, 1fr) minmax(106px, auto);
-  gap: 8px;
+  grid-template-rows: minmax(146px, 1fr) minmax(82px, auto);
+  gap: 6px;
 }
 
 .tcg-side-zones {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: 5px;
 }
 
 .tcg-zone {
   min-width: 0;
-  min-height: 128px;
+  min-height: 95px;
   border-radius: var(--uma-radius-sm);
   border: 1px dashed rgba(255, 255, 255, 0.7);
   background: rgba(14, 84, 42, 0.28);
@@ -536,27 +556,27 @@
 
 .tcg-zone-field {
   grid-column: auto;
-  min-height: 190px;
+  min-height: 146px;
 }
 
 .tcg-zone-hand {
   grid-column: 1 / -1;
-  min-height: 132px;
+  min-height: 104px;
 }
 
 .tcg-zone-carrot {
-  min-height: 106px;
+  min-height: 82px;
 }
 
 .tcg-zone-header {
-  min-height: 30px;
-  padding: 5px 8px;
+  min-height: 24px;
+  padding: 3px 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: rgba(255, 255, 255, 0.9);
   color: #2a6740;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 1000;
 }
 
@@ -571,7 +591,7 @@
 .tcg-zone-body {
   position: relative;
   min-height: calc(100% - 30px);
-  padding: 8px;
+  padding: 5px;
 }
 
 .tcg-zone-body.spread {
@@ -598,7 +618,7 @@
 }
 
 .tcg-empty-zone {
-  min-height: 76px;
+  min-height: 52px;
   width: 100%;
   display: grid;
   place-items: center;
@@ -608,10 +628,10 @@
 }
 
 .tcg-playable-card {
-  --card-width: 118px;
+  --card-width: 96px;
   width: var(--card-width);
   min-width: var(--card-width);
-  height: 166px;
+  height: 136px;
   border: 2px solid color-mix(in srgb, var(--card-style-color) 54%, #ffffff);
   border-radius: 8px;
   padding: 3px;
@@ -635,8 +655,8 @@
 }
 
 .tcg-playable-card.compact {
-  --card-width: 82px;
-  height: 116px;
+  --card-width: 64px;
+  height: 90px;
   padding: 3px;
 }
 
@@ -830,8 +850,8 @@
   right: 13px;
   bottom: 11px;
   z-index: 0;
-  width: 82px;
-  height: 116px;
+  width: 64px;
+  height: 90px;
   transform: translate(5px, 5px);
   opacity: 0.42;
   pointer-events: none;
@@ -952,7 +972,7 @@
   right: 16px;
   top: 96px;
   z-index: 1700;
-  width: 240px;
+  width: 300px;
   max-height: calc(100vh - 120px);
   border-radius: var(--uma-radius-md);
   border: 1px solid rgba(255, 255, 255, 0.58);
@@ -1002,7 +1022,7 @@
 }
 
 .tcg-card-preview-frame {
-  min-height: 270px;
+  min-height: 350px;
   display: grid;
   place-items: center;
   border-radius: var(--uma-radius-sm);
@@ -1012,8 +1032,8 @@
 }
 
 .tcg-card-preview-frame .tcg-playable-card {
-  --card-width: 174px;
-  height: 246px;
+  --card-width: 260px;
+  height: 100%;
   cursor: default;
   pointer-events: none;
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Eye, Plus, RotateCcw, RotateCw, Shuffle, UserRound, X } from "lucide-react";
+import { Eye, Plus, RotateCcw, RotateCw, Shuffle, UserRound } from "lucide-react";
 import CardZone from "./CardZone";
 import PlayableCard from "./PlayableCard";
 import ZoneViewerModal from "./ZoneViewerModal";
@@ -8,6 +8,8 @@ import { createCarrotCard } from "../../data/tcgMockCards";
 
 const ZONES = ["deck", "hand", "field", "life", "discard", "carrot", "expel"];
 const LEFT_ZONES = ["deck", "life", "discard", "expel"];
+const VIEWABLE_ZONES = ["deck", "discard", "expel"];
+const UNTAP_ZONES = ["field", "carrot"];
 
 function drawCards(player, count) {
   const drawn = player.zones.deck.slice(0, count);
@@ -68,7 +70,7 @@ export default function CardTable({
   const [dragState, setDragState] = useState(null);
   const [zoneViewer, setZoneViewer] = useState(null);
   const [shuffleNotice, setShuffleNotice] = useState({});
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [activePlayerId] = useState("player1");
   const dragRef = useRef(null);
 
   const findCardById = useCallback(
@@ -97,17 +99,14 @@ export default function CardTable({
     [findCardById, hoveredCard?.cardId]
   );
 
-  const previewCard = hoveredCardData || selectedCard;
-  const previewHidden = hoveredCardData
-    ? hoveredCard.hidden
-    : selectedCardHidden;
+  const previewCard = hoveredCardData;
+  const previewHidden = hoveredCard?.hidden || false;
 
   const activeTargetCardId = hoveredCard?.cardId || selectedCardId;
 
   const selectCard = useCallback((cardId, hidden = false) => {
     setSelectedCardId(cardId);
     setSelectedCardHidden(hidden);
-    setIsPreviewOpen(true);
   }, []);
 
   const handleCardHover = useCallback((payload) => {
@@ -115,7 +114,6 @@ export default function CardTable({
       cardId: payload.card.instanceId,
       hidden: payload.hidden,
     });
-    setIsPreviewOpen(true);
   }, []);
 
   const handleCardHoverEnd = useCallback((cardId) => {
@@ -330,6 +328,27 @@ export default function CardTable({
     }));
   };
 
+  const handleUntapAll = (playerId) => {
+    setPlayers((prev) => {
+      const nextZones = { ...prev[playerId].zones };
+
+      UNTAP_ZONES.forEach((zone) => {
+        nextZones[zone] = nextZones[zone].map((card) => ({
+          ...card,
+          status: "active",
+        }));
+      });
+
+      return {
+        ...prev,
+        [playerId]: {
+          ...prev[playerId],
+          zones: nextZones,
+        },
+      };
+    });
+  };
+
   const handleAddCarrot = (playerId) => {
     setPlayers((prev) => {
       const nextCounter = (prev[playerId].carrotCounter || 0) + 1;
@@ -360,7 +379,7 @@ export default function CardTable({
   };
 
   const visibleSelectedName =
-    previewHidden && previewCard ? "Hidden card" : previewCard?.name || "None";
+    previewHidden && previewCard ? "Hidden card" : previewCard?.name || "Hover a card";
 
   const playerRows = [
     { id: "player2", orientation: "opponent" },
@@ -423,51 +442,63 @@ export default function CardTable({
                   <span>{player.name}</span>
                   <strong>{player.deckName}</strong>
                 </div>
-                <div className="tcg-draw-buttons">
-                  <button type="button" onClick={() => handleDraw(id, 1)}>
-                    Draw 1
-                  </button>
-                  <button type="button" onClick={() => handleDraw(id, 2)}>
-                    Draw 2
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleShuffleDeck(id)}
-                    disabled={player.zones.deck.length === 0}
-                    title={
-                      player.zones.deck.length === 0
-                        ? "Deck empty"
-                        : "Shuffle Deck"
-                    }
-                  >
-                    <Shuffle size={16} />
-                    Shuffle Deck
-                  </button>
-                  <button type="button" onClick={() => handleAddCarrot(id)}>
-                    <Plus size={16} />
-                    Add Carrot
-                  </button>
-                  <button type="button" onClick={toggleSelectedCard}>
-                    <RotateCw size={16} />
-                    Tap / Active
-                  </button>
-                </div>
-                <div className="tcg-shuffle-notice" aria-live="polite">
-                  {shuffleNotice[id] || "Deck ready"}
-                </div>
-                <div className="tcg-zone-view-buttons">
-                  {ZONES.map((zone) => (
-                    <button
-                      type="button"
-                      key={zone}
-                      onClick={() => openZoneViewer(id, zone)}
-                    >
-                      <Eye size={13} />
-                      <span>{zone}</span>
-                      <strong>{player.zones[zone].length}</strong>
-                    </button>
-                  ))}
-                </div>
+                {id === activePlayerId ? (
+                  <>
+                    <div className="tcg-draw-buttons">
+                      <button type="button" onClick={() => handleDraw(id, 1)}>
+                        Draw 1
+                      </button>
+                      <button type="button" onClick={() => handleDraw(id, 2)}>
+                        Draw 2
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleShuffleDeck(id)}
+                        disabled={player.zones.deck.length === 0}
+                        title={
+                          player.zones.deck.length === 0
+                            ? "Deck empty"
+                            : "Shuffle Deck"
+                        }
+                      >
+                        <Shuffle size={16} />
+                        Shuffle
+                      </button>
+                      <button type="button" onClick={() => handleAddCarrot(id)}>
+                        <Plus size={16} />
+                        Carrot
+                      </button>
+                      <button type="button" onClick={toggleSelectedCard}>
+                        <RotateCw size={16} />
+                        Tap
+                      </button>
+                      <button type="button" onClick={() => handleUntapAll(id)}>
+                        Active All
+                      </button>
+                    </div>
+                    <div className="tcg-shuffle-notice" aria-live="polite">
+                      {shuffleNotice[id] || "Hover card / Space to Tap"}
+                    </div>
+                    <div className="tcg-zone-view-buttons">
+                      {VIEWABLE_ZONES.map((zone) => (
+                        <button
+                          type="button"
+                          key={zone}
+                          onClick={() => openZoneViewer(id, zone)}
+                        >
+                          <Eye size={13} />
+                          <span>{zone}</span>
+                          <strong>{player.zones[zone].length}</strong>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="tcg-opponent-summary">
+                    <span>Controls hidden</span>
+                    <strong>Active: Player 1</strong>
+                  </div>
+                )}
               </div>
 
               <div className="tcg-player-zones">
@@ -533,19 +564,9 @@ export default function CardTable({
         </div>
       </div>
 
-      <button
-        type="button"
-        className="tcg-preview-toggle"
-        onClick={() => setIsPreviewOpen(true)}
-      >
-        ดูการ์ด
-      </button>
-
       <CardPreviewPanel
         card={previewCard}
         hidden={previewHidden}
-        open={isPreviewOpen}
-        onClose={() => setIsPreviewOpen(false)}
       />
 
       {dragState && (
@@ -578,10 +599,12 @@ export default function CardTable({
   );
 }
 
-function CardPreviewPanel({ card, hidden, open, onClose }) {
+function CardPreviewPanel({ card, hidden }) {
+  if (!card) return null;
+
   return (
     <aside
-      className={`tcg-card-preview-panel ${open ? "open" : ""}`}
+      className="tcg-card-preview-panel open"
       aria-label="Card preview"
     >
       <div className="tcg-card-preview-heading">
@@ -589,22 +612,12 @@ function CardPreviewPanel({ card, hidden, open, onClose }) {
           <span>Card Preview</span>
           <strong>{card && !hidden ? card.name : "Preview"}</strong>
         </div>
-        <button type="button" onClick={onClose} aria-label="Close preview">
-          <X size={16} />
-        </button>
       </div>
       <div className="tcg-card-preview-frame">
-        {card ? (
-          hidden ? (
-            <CardBack />
-          ) : (
-            <PlayableCard card={card} />
-          )
+        {hidden ? (
+          <CardBack />
         ) : (
-          <div className="tcg-card-preview-empty">
-            <CardBack compact />
-            <span>Select a card to preview</span>
-          </div>
+          <PlayableCard card={card} />
         )}
       </div>
       <div className="tcg-card-preview-copy">
