@@ -62,6 +62,8 @@ export default function CardTable({
   players,
   setPlayers,
   onResetToDeckSelect,
+  currentPlayerId = "player1",
+  actionHandlers = null,
 }) {
   const [perspective, setPerspective] = useState("player1");
   const [selectedCardId, setSelectedCardId] = useState(null);
@@ -70,7 +72,7 @@ export default function CardTable({
   const [dragState, setDragState] = useState(null);
   const [zoneViewer, setZoneViewer] = useState(null);
   const [shuffleNotice, setShuffleNotice] = useState({});
-  const [activePlayerId] = useState("player1");
+  const activePlayerId = currentPlayerId || "player1";
   const dragRef = useRef(null);
 
   const findCardById = useCallback(
@@ -132,6 +134,30 @@ export default function CardTable({
     }) => {
       if (!toPlayerId || !toZone) return;
 
+      if (actionHandlers?.moveCard) {
+        let fieldX;
+        let fieldY;
+        if (toZone === "field" && clientX != null && clientY != null) {
+          const zoneElement = document.querySelector(
+            `[data-zone-id="${toPlayerId}:field"] .tcg-zone-body`
+          );
+          const rect = zoneElement?.getBoundingClientRect();
+          if (rect) {
+            fieldX = Math.max(8, clientX - rect.left - 58);
+            fieldY = Math.max(8, clientY - rect.top - 80);
+          }
+        }
+        actionHandlers.moveCard({
+          playerId: fromPlayerId,
+          cardId,
+          fromZone,
+          toZone,
+          fieldX,
+          fieldY,
+        });
+        return;
+      }
+
       setPlayers((prev) => {
         const movingCard = prev[fromPlayerId].zones[fromZone].find(
           (card) => card.instanceId === cardId
@@ -187,7 +213,7 @@ export default function CardTable({
         return next;
       });
     },
-    [setPlayers]
+    [actionHandlers, setPlayers]
   );
 
   const moveCard = moveCardBetweenZones;
@@ -195,13 +221,18 @@ export default function CardTable({
   const toggleSelectedCard = useCallback(() => {
     if (!activeTargetCardId) return;
 
+    if (actionHandlers?.tapCard) {
+      actionHandlers.tapCard(activeTargetCardId);
+      return;
+    }
+
     setPlayers((prev) =>
       updateCardInPlayers(prev, activeTargetCardId, (card) => ({
         ...card,
         status: card.status === "rest" ? "active" : "rest",
       }))
     );
-  }, [activeTargetCardId, setPlayers]);
+  }, [actionHandlers, activeTargetCardId, setPlayers]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -309,6 +340,11 @@ export default function CardTable({
   };
 
   const handleDraw = (playerId, count) => {
+    if (actionHandlers?.draw) {
+      actionHandlers.draw(count);
+      return;
+    }
+
     setPlayers((prev) => ({
       ...prev,
       [playerId]: drawCards(prev[playerId], count),
@@ -316,6 +352,11 @@ export default function CardTable({
   };
 
   const handleShuffleDeck = (playerId) => {
+    if (actionHandlers?.shuffleDeck) {
+      actionHandlers.shuffleDeck();
+      return;
+    }
+
     const deckCount = players[playerId].zones.deck.length;
     if (deckCount === 0) {
       setShuffleNotice((prev) => ({ ...prev, [playerId]: "Deck empty" }));
@@ -339,6 +380,11 @@ export default function CardTable({
   };
 
   const handleUntapAll = (playerId) => {
+    if (actionHandlers?.untapAll) {
+      actionHandlers.untapAll();
+      return;
+    }
+
     setPlayers((prev) => {
       const nextZones = { ...prev[playerId].zones };
 
@@ -360,6 +406,11 @@ export default function CardTable({
   };
 
   const handleAddCarrot = (playerId) => {
+    if (actionHandlers?.addCarrot) {
+      actionHandlers.addCarrot();
+      return;
+    }
+
     setPlayers((prev) => {
       const nextCounter = (prev[playerId].carrotCounter || 0) + 1;
       return {
@@ -414,14 +465,16 @@ export default function CardTable({
             ))}
         </div>
 
-        <button
-          type="button"
-          className="tcg-secondary-action tcg-rail-deck-select"
-          onClick={onResetToDeckSelect}
-        >
-          <RotateCcw size={16} />
-          Deck Select
-        </button>
+        {onResetToDeckSelect && (
+          <button
+            type="button"
+            className="tcg-secondary-action tcg-rail-deck-select"
+            onClick={onResetToDeckSelect}
+          >
+            <RotateCcw size={16} />
+            Deck Select
+          </button>
+        )}
 
         <PlayerControls
           player={activePlayer}
@@ -501,7 +554,14 @@ export default function CardTable({
         </div>
       )}
       <ZoneViewerModal
-        viewer={zoneViewer}
+        viewer={
+          zoneViewer
+            ? {
+                ...zoneViewer,
+                cards: players[zoneViewer.playerId].zones[zoneViewer.zone],
+              }
+            : null
+        }
         perspective={perspective}
         selectedCardId={selectedCardId}
         onSelectCard={selectCard}

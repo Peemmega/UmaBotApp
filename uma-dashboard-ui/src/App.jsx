@@ -208,6 +208,9 @@ export default function App() {
         <CardGamePage
           fullscreen
           onBackToDashboard={handleBackToDashboard}
+          username={player?.username || username}
+          userId={userId}
+          avatarUrl={avatarUrl}
         />
       ) : (
         <DashboardPage

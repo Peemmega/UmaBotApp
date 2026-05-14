@@ -1003,6 +1003,201 @@
   color: #ffffff;
 }
 
+.tcg-online-shell {
+  width: min(100% - 24px, 1180px);
+  margin: 0 auto;
+  padding: 64px 0 28px;
+  color: var(--uma-ink);
+  text-align: left;
+}
+
+.tcg-online-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-radius: var(--uma-radius-md);
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: var(--uma-shadow-card);
+}
+
+.tcg-online-header span {
+  display: block;
+  color: var(--uma-primary-dark);
+  font-size: 11px;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tcg-online-header h2 {
+  margin: 5px 0 0;
+  color: var(--uma-ink);
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 1000;
+}
+
+.tcg-online-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.tcg-online-actions button,
+.tcg-room-card button,
+.tcg-practice-back,
+.tcg-online-leave {
+  min-height: 38px;
+  border: none;
+  border-radius: var(--uma-radius-sm);
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--uma-gradient-primary);
+  color: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  cursor: pointer;
+}
+
+.tcg-online-actions button:disabled,
+.tcg-room-card button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.45);
+  opacity: 0.56;
+}
+
+.tcg-online-error,
+.tcg-online-empty {
+  margin-top: 12px;
+  border-radius: var(--uma-radius-sm);
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #8a2434;
+  font-weight: 900;
+}
+
+.tcg-online-empty {
+  color: var(--uma-muted);
+}
+
+.tcg-room-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.tcg-room-card,
+.tcg-player-slot {
+  border-radius: var(--uma-radius-md);
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--uma-shadow-card);
+}
+
+.tcg-room-card h3 {
+  margin: 6px 0 2px;
+  color: var(--uma-ink);
+}
+
+.tcg-room-card p {
+  color: var(--uma-muted);
+  font-weight: 800;
+}
+
+.tcg-room-status {
+  border-radius: var(--uma-radius-pill);
+  padding: 4px 8px;
+  background: #efffdc;
+  color: #237642;
+  font-size: 11px;
+  font-weight: 1000;
+  text-transform: capitalize;
+}
+
+.tcg-player-slots,
+.tcg-online-deck-grid {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.tcg-player-slots {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tcg-player-slot {
+  justify-content: flex-start;
+}
+
+.tcg-player-slot img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+}
+
+.tcg-player-slot span {
+  color: var(--uma-ink);
+  font-weight: 900;
+}
+
+.tcg-player-slot em {
+  margin-left: auto;
+  border-radius: var(--uma-radius-pill);
+  padding: 4px 8px;
+  background: #efffdc;
+  color: #237642;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 1000;
+}
+
+.tcg-confirm-strip {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tcg-confirm-strip span {
+  border-radius: var(--uma-radius-pill);
+  padding: 7px 11px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #237642;
+  font-weight: 1000;
+}
+
+.tcg-online-deck-grid {
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.tcg-practice-back {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1300;
+}
+
+.tcg-online-leave {
+  position: fixed;
+  right: 12px;
+  top: 58px;
+  z-index: 1700;
+  background: linear-gradient(135deg, #7a384f, #a84c69);
+}
+
 .tcg-card-preview-panel {
   position: fixed;
   right: 16px;
