@@ -934,6 +934,11 @@
   font-weight: 800;
 }
 
+.tcg-zone-modal-header .tcg-zone-modal-hint {
+  color: #237642;
+  font-size: 12px;
+}
+
 .tcg-zone-modal-header button {
   width: 38px;
   height: 38px;
@@ -963,8 +968,39 @@
   overflow-y: auto;
 }
 
+.tcg-zone-modal-card {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+}
+
 .tcg-zone-modal-grid .tcg-playable-card {
   margin: 0 auto;
+}
+
+.tcg-zone-modal-card-actions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.tcg-zone-modal-card-actions button {
+  min-height: 28px;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 6px;
+  background: #efffdc;
+  color: #237642;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 1000;
+  cursor: pointer;
+}
+
+.tcg-zone-modal-card-actions button:hover {
+  background: var(--uma-gradient-primary);
+  color: #ffffff;
 }
 
 .tcg-card-preview-panel {
@@ -1282,54 +1318,94 @@
 .tcg-fullscreen-page .tcg-table-page {
   width: 100%;
   max-width: none;
-  padding-top: 36px;
+  padding-top: 0;
 }
 
-.tcg-fullscreen-page .tcg-page-header {
-  position: fixed;
-  left: 12px;
-  top: 10px;
-  z-index: 1200;
-  width: min(420px, calc(100vw - 160px));
-  padding: 8px 10px;
-  border-color: rgba(255, 255, 255, 0.28);
-  background: rgba(18, 80, 42, 0.58);
+.tcg-fullscreen-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.tcg-control-rail {
+  min-height: 100vh;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-right: 1px solid rgba(255, 255, 255, 0.16);
+  background:
+    linear-gradient(180deg, rgba(7, 42, 23, 0.94), rgba(10, 66, 33, 0.9)),
+    #0a321d;
   color: #ffffff;
-  box-shadow: 0 10px 24px rgba(8, 40, 22, 0.18);
-  backdrop-filter: blur(12px);
+  box-shadow: 12px 0 30px rgba(0, 0, 0, 0.18);
+  z-index: 1000;
 }
 
-.tcg-fullscreen-page .tcg-page-header h2,
-.tcg-fullscreen-page .tcg-page-header span {
+.tcg-board-stage {
+  min-width: 0;
+  min-height: 100vh;
+  padding: 8px;
+}
+
+.tcg-rail-header {
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.tcg-rail-header span {
+  display: block;
+  color: rgba(239, 255, 220, 0.76);
+  font-size: 10px;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tcg-rail-header h2 {
+  margin: 5px 0 0;
   color: #ffffff;
-}
-
-.tcg-fullscreen-page .tcg-page-header h2 {
   font-size: 18px;
+  font-weight: 1000;
+  line-height: 1.05;
 }
 
-.tcg-fullscreen-page .tcg-table-actions {
-  gap: 5px;
+.tcg-control-rail .tcg-perspective-toggle {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
-.tcg-fullscreen-page .tcg-rules-strip {
-  position: fixed;
-  left: 12px;
-  bottom: 12px;
-  z-index: 1200;
-  max-width: min(44vw, 520px);
-  margin: 0;
+.tcg-control-rail .tcg-perspective-toggle button {
+  flex: 1;
+  color: rgba(239, 255, 220, 0.86);
 }
 
-.tcg-fullscreen-page .tcg-rules-strip span {
+.tcg-rail-deck-select {
+  width: 100%;
+}
+
+.tcg-control-rail .tcg-rules-strip {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tcg-control-rail .tcg-rules-strip span {
   padding: 5px 8px;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(239, 255, 220, 0.88);
+  border-color: rgba(255, 255, 255, 0.12);
   font-size: 11px;
 }
 
 .tcg-sim-board {
   width: 100%;
-  height: calc(100vh - 56px);
+  height: calc(100vh - 16px);
   min-height: 640px;
   display: grid;
   grid-template-rows: 1fr 24px 1fr;
@@ -1572,18 +1648,13 @@
 }
 
 .tcg-floating-controls {
-  position: fixed;
-  left: 14px;
-  bottom: 14px;
-  z-index: 1550;
-  width: min(360px, calc(100vw - 28px));
+  width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
   padding: 9px;
   background: rgba(8, 46, 24, 0.76);
   color: #ffffff;
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(14px);
+  box-shadow: none;
 }
 
 .tcg-floating-controls-title {
@@ -1611,7 +1682,7 @@
 }
 
 .tcg-floating-controls .tcg-zone-view-buttons {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   margin-top: 6px;
 }
 
@@ -1633,6 +1704,20 @@
 }
 
 @media (max-width: 760px) {
+  .tcg-fullscreen-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .tcg-control-rail {
+    min-height: auto;
+    position: relative;
+    padding: 8px;
+  }
+
+  .tcg-board-stage {
+    min-height: auto;
+  }
+
   .tcg-sim-board {
     height: auto;
     min-height: calc(100vh - 52px);

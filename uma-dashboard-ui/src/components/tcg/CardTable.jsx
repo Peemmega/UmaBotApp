@@ -120,8 +120,16 @@ export default function CardTable({
     setHoveredCard((prev) => (prev?.cardId === cardId ? null : prev));
   }, []);
 
-  const moveCard = useCallback(
-    ({ cardId, fromPlayerId, fromZone, toPlayerId, toZone, clientX, clientY }) => {
+  const moveCardBetweenZones = useCallback(
+    ({
+      cardId,
+      fromPlayerId,
+      fromZone,
+      toPlayerId = fromPlayerId,
+      toZone,
+      clientX,
+      clientY,
+    }) => {
       if (!toPlayerId || !toZone) return;
 
       setPlayers((prev) => {
@@ -181,6 +189,8 @@ export default function CardTable({
     },
     [setPlayers]
   );
+
+  const moveCard = moveCardBetweenZones;
 
   const toggleSelectedCard = useCallback(() => {
     if (!activeTargetCardId) return;
@@ -380,16 +390,17 @@ export default function CardTable({
 
   const visibleSelectedName =
     previewHidden && previewCard ? "Hidden card" : previewCard?.name || "Hover a card";
+  const activePlayer = players[activePlayerId];
 
   return (
-    <div className="tcg-table-page">
-      <header className="tcg-page-header">
-        <div>
+    <div className="tcg-table-page tcg-fullscreen-layout">
+      <aside className="tcg-control-rail">
+        <header className="tcg-rail-header">
           <span>Two Player Sandbox</span>
           <h2>TCG Playtest Board</h2>
-        </div>
-        <div className="tcg-table-actions">
-          <div className="tcg-perspective-toggle" aria-label="Perspective">
+        </header>
+
+        <div className="tcg-perspective-toggle" aria-label="Perspective">
             {["player1", "player2"].map((playerId, index) => (
               <button
                 type="button"
@@ -401,69 +412,71 @@ export default function CardTable({
                 P{index + 1}
               </button>
             ))}
+        </div>
+
+        <button
+          type="button"
+          className="tcg-secondary-action tcg-rail-deck-select"
+          onClick={onResetToDeckSelect}
+        >
+          <RotateCcw size={16} />
+          Deck Select
+        </button>
+
+        <PlayerControls
+          player={activePlayer}
+          playerId={activePlayerId}
+          notice={shuffleNotice[activePlayerId] || "Hover card / Space to Tap"}
+          onDraw={handleDraw}
+          onShuffle={handleShuffleDeck}
+          onAddCarrot={handleAddCarrot}
+          onTap={toggleSelectedCard}
+          onUntapAll={handleUntapAll}
+          onOpenZone={openZoneViewer}
+        />
+
+        <div className="tcg-rules-strip">
+          <span>Hover then press Space to Tap</span>
+          <span>Carrot: resource sandbox</span>
+          <span>Battle: manual sandbox</span>
+          <span>Keyword: future logic</span>
+          <span>Preview: {visibleSelectedName}</span>
+        </div>
+      </aside>
+
+      <main className="tcg-board-stage">
+        <div className="tcg-board tcg-sim-board">
+          <PlayerTableArea
+            player={players.player2}
+            playerId="player2"
+            side="opponent"
+            perspective={perspective}
+            selectedCardId={selectedCardId}
+            hoveredCardId={hoveredCard?.cardId}
+            draggingCardId={dragState?.card.instanceId}
+            onCardHover={handleCardHover}
+            onCardHoverEnd={handleCardHoverEnd}
+            onCardPointerDown={handleCardPointerDown}
+          />
+
+          <div className="tcg-center-divider" aria-hidden="true">
+            <span>Playmat</span>
           </div>
-          <button
-            type="button"
-            className="tcg-secondary-action"
-            onClick={onResetToDeckSelect}
-          >
-            <RotateCcw size={16} />
-            Deck Select
-          </button>
+
+          <PlayerTableArea
+            player={players.player1}
+            playerId="player1"
+            side="local"
+            perspective={perspective}
+            selectedCardId={selectedCardId}
+            hoveredCardId={hoveredCard?.cardId}
+            draggingCardId={dragState?.card.instanceId}
+            onCardHover={handleCardHover}
+            onCardHoverEnd={handleCardHoverEnd}
+            onCardPointerDown={handleCardPointerDown}
+          />
         </div>
-      </header>
-
-      <div className="tcg-rules-strip">
-        <span>Hover then press Space to Tap</span>
-        <span>Carrot: resource sandbox</span>
-        <span>Battle: manual sandbox</span>
-        <span>Keyword: future logic</span>
-        <span>Preview: {visibleSelectedName}</span>
-      </div>
-
-      <div className="tcg-board tcg-sim-board">
-        <PlayerTableArea
-          player={players.player2}
-          playerId="player2"
-          side="opponent"
-          perspective={perspective}
-          selectedCardId={selectedCardId}
-          hoveredCardId={hoveredCard?.cardId}
-          draggingCardId={dragState?.card.instanceId}
-          onCardHover={handleCardHover}
-          onCardHoverEnd={handleCardHoverEnd}
-          onCardPointerDown={handleCardPointerDown}
-        />
-
-        <div className="tcg-center-divider" aria-hidden="true">
-          <span>Playmat</span>
-        </div>
-
-        <PlayerTableArea
-          player={players.player1}
-          playerId="player1"
-          side="local"
-          perspective={perspective}
-          selectedCardId={selectedCardId}
-          hoveredCardId={hoveredCard?.cardId}
-          draggingCardId={dragState?.card.instanceId}
-          onCardHover={handleCardHover}
-          onCardHoverEnd={handleCardHoverEnd}
-          onCardPointerDown={handleCardPointerDown}
-        />
-      </div>
-
-      <PlayerControls
-        player={players[activePlayerId]}
-        playerId={activePlayerId}
-        notice={shuffleNotice[activePlayerId] || "Hover card / Space to Tap"}
-        onDraw={handleDraw}
-        onShuffle={handleShuffleDeck}
-        onAddCarrot={handleAddCarrot}
-        onTap={toggleSelectedCard}
-        onUntapAll={handleUntapAll}
-        onOpenZone={openZoneViewer}
-      />
+      </main>
 
       <CardPreviewPanel
         card={previewCard}
@@ -494,6 +507,8 @@ export default function CardTable({
         onSelectCard={selectCard}
         onHoverCard={handleCardHover}
         onHoverCardEnd={handleCardHoverEnd}
+        activePlayerId={activePlayerId}
+        onMoveCard={moveCardBetweenZones}
         onClose={() => setZoneViewer(null)}
       />
     </div>
@@ -586,7 +601,7 @@ function PlayerControls({
   onOpenZone,
 }) {
   return (
-    <aside className="tcg-floating-controls" aria-label="Player controls">
+    <section className="tcg-floating-controls" aria-label="Player controls">
       <div className="tcg-floating-controls-title">
         <span>Player Controls</span>
         <strong>{player.name}</strong>
@@ -631,7 +646,7 @@ function PlayerControls({
           </button>
         ))}
       </div>
-    </aside>
+    </section>
   );
 }
 

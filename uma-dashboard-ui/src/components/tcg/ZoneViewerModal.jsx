@@ -25,12 +25,28 @@ export default function ZoneViewerModal({
   onSelectCard,
   onHoverCard,
   onHoverCardEnd,
+  activePlayerId,
+  onMoveCard,
   onClose,
 }) {
   if (!viewer) return null;
 
   const hidden = shouldHideCards(viewer.zone, viewer.playerId, perspective);
   const title = `${viewer.playerName} - ${ZONE_LABELS[viewer.zone] || viewer.zone}`;
+  const canMove =
+    !hidden &&
+    viewer.playerId === activePlayerId &&
+    ["deck", "discard", "expel"].includes(viewer.zone);
+
+  const handleMove = (card, toZone) => {
+    onMoveCard?.({
+      cardId: card.instanceId,
+      fromPlayerId: viewer.playerId,
+      fromZone: viewer.zone,
+      toPlayerId: viewer.playerId,
+      toZone,
+    });
+  };
 
   return (
     <div className="tcg-zone-modal-backdrop" onPointerDown={onClose}>
@@ -49,6 +65,11 @@ export default function ZoneViewerModal({
               {viewer.cards.length} cards
               {viewer.zone === "deck" && !hidden ? " - debug deck list" : ""}
             </p>
+            {canMove && (
+              <p className="tcg-zone-modal-hint">
+                Move cards from this viewer to Hand, Field, Discard, or Expel.
+              </p>
+            )}
           </div>
           <button type="button" onClick={onClose} aria-label="Close zone viewer">
             <X size={20} />
@@ -60,25 +81,48 @@ export default function ZoneViewerModal({
         ) : (
           <div className="tcg-zone-modal-grid">
             {viewer.cards.map((card) => (
-              <PlayableCard
-                key={card.instanceId}
-                card={card}
-                hidden={hidden}
-                selected={selectedCardId === card.instanceId}
-                onPointerEnter={() =>
-                  onHoverCard?.({
-                    card,
-                    playerId: viewer.playerId,
-                    zone: viewer.zone,
-                    hidden,
-                  })
-                }
-                onPointerLeave={() => onHoverCardEnd?.(card.instanceId)}
-                onPointerDown={() => {
-                  onSelectCard(card.instanceId, hidden);
-                  onClose();
-                }}
-              />
+              <div className="tcg-zone-modal-card" key={card.instanceId}>
+                <PlayableCard
+                  card={card}
+                  hidden={hidden}
+                  selected={selectedCardId === card.instanceId}
+                  onPointerEnter={() =>
+                    onHoverCard?.({
+                      card,
+                      playerId: viewer.playerId,
+                      zone: viewer.zone,
+                      hidden,
+                    })
+                  }
+                  onPointerLeave={() => onHoverCardEnd?.(card.instanceId)}
+                  onPointerDown={() => {
+                    onSelectCard(card.instanceId, hidden);
+                  }}
+                />
+                {canMove && (
+                  <div className="tcg-zone-modal-card-actions">
+                    <button type="button" onClick={() => handleMove(card, "hand")}>
+                      Hand
+                    </button>
+                    <button type="button" onClick={() => handleMove(card, "field")}>
+                      Field
+                    </button>
+                    {viewer.zone !== "discard" && (
+                      <button
+                        type="button"
+                        onClick={() => handleMove(card, "discard")}
+                      >
+                        Discard
+                      </button>
+                    )}
+                    {viewer.zone !== "expel" && (
+                      <button type="button" onClick={() => handleMove(card, "expel")}>
+                        Expel
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         )}
