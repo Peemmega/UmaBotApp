@@ -18,6 +18,7 @@ import TcgLobbyPage from "../tcg/TcgLobbyPage";
 import TcgOnlineBoardPage from "../tcg/TcgOnlineBoardPage";
 import TcgRoomPage from "../tcg/TcgRoomPage";
 import "../../styles/tcgPage.css";
+import "../../styles/tcgTheme.css";
 
 function setupPlayer(playerId, playerName, deck) {
   const deckInstance = createDeckInstance(deck, playerId);
