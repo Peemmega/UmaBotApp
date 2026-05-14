@@ -381,11 +381,6 @@ export default function CardTable({
   const visibleSelectedName =
     previewHidden && previewCard ? "Hidden card" : previewCard?.name || "Hover a card";
 
-  const playerRows = [
-    { id: "player2", orientation: "opponent" },
-    { id: "player1", orientation: "local" },
-  ];
-
   return (
     <div className="tcg-table-page">
       <header className="tcg-page-header">
@@ -426,143 +421,49 @@ export default function CardTable({
         <span>Preview: {visibleSelectedName}</span>
       </div>
 
-      <div className="tcg-board">
-        <div className="tcg-board-lanes">
-          {playerRows.map(({ id, orientation }) => {
-            const player = players[id];
+      <div className="tcg-board tcg-sim-board">
+        <PlayerTableArea
+          player={players.player2}
+          playerId="player2"
+          side="opponent"
+          perspective={perspective}
+          selectedCardId={selectedCardId}
+          hoveredCardId={hoveredCard?.cardId}
+          draggingCardId={dragState?.card.instanceId}
+          onCardHover={handleCardHover}
+          onCardHoverEnd={handleCardHoverEnd}
+          onCardPointerDown={handleCardPointerDown}
+        />
 
-            return (
-              <section
-                className={`tcg-player-area ${orientation}`}
-                key={id}
-                aria-label={player.name}
-              >
-              <div className="tcg-player-sidebar">
-                <div className="tcg-player-name">
-                  <span>{player.name}</span>
-                  <strong>{player.deckName}</strong>
-                </div>
-                {id === activePlayerId ? (
-                  <>
-                    <div className="tcg-draw-buttons">
-                      <button type="button" onClick={() => handleDraw(id, 1)}>
-                        Draw 1
-                      </button>
-                      <button type="button" onClick={() => handleDraw(id, 2)}>
-                        Draw 2
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleShuffleDeck(id)}
-                        disabled={player.zones.deck.length === 0}
-                        title={
-                          player.zones.deck.length === 0
-                            ? "Deck empty"
-                            : "Shuffle Deck"
-                        }
-                      >
-                        <Shuffle size={16} />
-                        Shuffle
-                      </button>
-                      <button type="button" onClick={() => handleAddCarrot(id)}>
-                        <Plus size={16} />
-                        Carrot
-                      </button>
-                      <button type="button" onClick={toggleSelectedCard}>
-                        <RotateCw size={16} />
-                        Tap
-                      </button>
-                      <button type="button" onClick={() => handleUntapAll(id)}>
-                        Active All
-                      </button>
-                    </div>
-                    <div className="tcg-shuffle-notice" aria-live="polite">
-                      {shuffleNotice[id] || "Hover card / Space to Tap"}
-                    </div>
-                    <div className="tcg-zone-view-buttons">
-                      {VIEWABLE_ZONES.map((zone) => (
-                        <button
-                          type="button"
-                          key={zone}
-                          onClick={() => openZoneViewer(id, zone)}
-                        >
-                          <Eye size={13} />
-                          <span>{zone}</span>
-                          <strong>{player.zones[zone].length}</strong>
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                ) : (
-                  <div className="tcg-opponent-summary">
-                    <span>Controls hidden</span>
-                    <strong>Active: Player 1</strong>
-                  </div>
-                )}
-              </div>
-
-              <div className="tcg-player-zones">
-                <div className="tcg-side-zones">
-                  {LEFT_ZONES.map((zone) => (
-                    <CardZone
-                      key={zone}
-                      playerId={id}
-                      zone={zone}
-                      cards={player.zones[zone]}
-                      perspective={perspective}
-                      selectedCardId={selectedCardId}
-                      hoveredCardId={hoveredCard?.cardId}
-                      draggingCardId={dragState?.card.instanceId}
-                      onCardHover={handleCardHover}
-                      onCardHoverEnd={handleCardHoverEnd}
-                      onCardPointerDown={handleCardPointerDown}
-                    />
-                  ))}
-                </div>
-                <div className="tcg-center-zones">
-                  <CardZone
-                    playerId={id}
-                    zone="field"
-                    cards={player.zones.field}
-                    perspective={perspective}
-                    selectedCardId={selectedCardId}
-                    hoveredCardId={hoveredCard?.cardId}
-                    draggingCardId={dragState?.card.instanceId}
-                    onCardHover={handleCardHover}
-                    onCardHoverEnd={handleCardHoverEnd}
-                    onCardPointerDown={handleCardPointerDown}
-                  />
-                  <CardZone
-                    playerId={id}
-                    zone="carrot"
-                    cards={player.zones.carrot}
-                    perspective={perspective}
-                    selectedCardId={selectedCardId}
-                    hoveredCardId={hoveredCard?.cardId}
-                    draggingCardId={dragState?.card.instanceId}
-                    onCardHover={handleCardHover}
-                    onCardHoverEnd={handleCardHoverEnd}
-                    onCardPointerDown={handleCardPointerDown}
-                  />
-                </div>
-                <CardZone
-                  playerId={id}
-                  zone="hand"
-                  cards={player.zones.hand}
-                  perspective={perspective}
-                  selectedCardId={selectedCardId}
-                  hoveredCardId={hoveredCard?.cardId}
-                  draggingCardId={dragState?.card.instanceId}
-                  onCardHover={handleCardHover}
-                  onCardHoverEnd={handleCardHoverEnd}
-                  onCardPointerDown={handleCardPointerDown}
-                />
-              </div>
-              </section>
-            );
-          })}
+        <div className="tcg-center-divider" aria-hidden="true">
+          <span>Playmat</span>
         </div>
+
+        <PlayerTableArea
+          player={players.player1}
+          playerId="player1"
+          side="local"
+          perspective={perspective}
+          selectedCardId={selectedCardId}
+          hoveredCardId={hoveredCard?.cardId}
+          draggingCardId={dragState?.card.instanceId}
+          onCardHover={handleCardHover}
+          onCardHoverEnd={handleCardHoverEnd}
+          onCardPointerDown={handleCardPointerDown}
+        />
       </div>
+
+      <PlayerControls
+        player={players[activePlayerId]}
+        playerId={activePlayerId}
+        notice={shuffleNotice[activePlayerId] || "Hover card / Space to Tap"}
+        onDraw={handleDraw}
+        onShuffle={handleShuffleDeck}
+        onAddCarrot={handleAddCarrot}
+        onTap={toggleSelectedCard}
+        onUntapAll={handleUntapAll}
+        onOpenZone={openZoneViewer}
+      />
 
       <CardPreviewPanel
         card={previewCard}
@@ -596,6 +497,141 @@ export default function CardTable({
         onClose={() => setZoneViewer(null)}
       />
     </div>
+  );
+}
+
+function PlayerTableArea({
+  player,
+  playerId,
+  side,
+  perspective,
+  selectedCardId,
+  hoveredCardId,
+  draggingCardId,
+  onCardHover,
+  onCardHoverEnd,
+  onCardPointerDown,
+}) {
+  const sharedZoneProps = {
+    playerId,
+    perspective,
+    selectedCardId,
+    hoveredCardId,
+    draggingCardId,
+    onCardHover,
+    onCardHoverEnd,
+    onCardPointerDown,
+  };
+
+  return (
+    <section className={`tcg-table-area ${side}`} aria-label={player.name}>
+      <div className="tcg-table-player-label">
+        <span>{player.name}</span>
+        <strong>{player.deckName}</strong>
+      </div>
+
+      {side === "opponent" && (
+        <CardZone zone="hand" cards={player.zones.hand} {...sharedZoneProps} />
+      )}
+
+      <div className="tcg-table-main-row">
+        <div className="tcg-mini-zone-stack left">
+          {LEFT_ZONES.slice(0, 2).map((zone) => (
+            <CardZone
+              key={zone}
+              zone={zone}
+              cards={player.zones[zone]}
+              {...sharedZoneProps}
+            />
+          ))}
+        </div>
+
+        <div className="tcg-playfield-cluster">
+          <CardZone zone="field" cards={player.zones.field} {...sharedZoneProps} />
+          <CardZone
+            zone="carrot"
+            cards={player.zones.carrot}
+            {...sharedZoneProps}
+          />
+        </div>
+
+        <div className="tcg-mini-zone-stack right">
+          {LEFT_ZONES.slice(2).map((zone) => (
+            <CardZone
+              key={zone}
+              zone={zone}
+              cards={player.zones[zone]}
+              {...sharedZoneProps}
+            />
+          ))}
+        </div>
+      </div>
+
+      {side === "local" && (
+        <CardZone zone="hand" cards={player.zones.hand} {...sharedZoneProps} />
+      )}
+    </section>
+  );
+}
+
+function PlayerControls({
+  player,
+  playerId,
+  notice,
+  onDraw,
+  onShuffle,
+  onAddCarrot,
+  onTap,
+  onUntapAll,
+  onOpenZone,
+}) {
+  return (
+    <aside className="tcg-floating-controls" aria-label="Player controls">
+      <div className="tcg-floating-controls-title">
+        <span>Player Controls</span>
+        <strong>{player.name}</strong>
+      </div>
+      <div className="tcg-draw-buttons">
+        <button type="button" onClick={() => onDraw(playerId, 1)}>
+          Draw 1
+        </button>
+        <button type="button" onClick={() => onDraw(playerId, 2)}>
+          Draw 2
+        </button>
+        <button
+          type="button"
+          onClick={() => onShuffle(playerId)}
+          disabled={player.zones.deck.length === 0}
+          title={player.zones.deck.length === 0 ? "Deck empty" : "Shuffle Deck"}
+        >
+          <Shuffle size={16} />
+          Shuffle
+        </button>
+        <button type="button" onClick={() => onAddCarrot(playerId)}>
+          <Plus size={16} />
+          Carrot
+        </button>
+        <button type="button" onClick={onTap}>
+          <RotateCw size={16} />
+          Tap
+        </button>
+        <button type="button" onClick={() => onUntapAll(playerId)}>
+          Active All
+        </button>
+      </div>
+      <div className="tcg-shuffle-notice" aria-live="polite">
+        {notice}
+      </div>
+      <div className="tcg-zone-view-buttons">
+        {VIEWABLE_ZONES.map((zone) => (
+          <button type="button" key={zone} onClick={() => onOpenZone(playerId, zone)}>
+            <Eye size={13} />
+            <span>{zone}</span>
+            <strong>{player.zones[zone].length}</strong>
+          </button>
+        ))}
+      </div>
+    </aside>
   );
 }
 

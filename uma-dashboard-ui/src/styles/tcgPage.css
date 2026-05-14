@@ -1277,3 +1277,376 @@
     padding: 12px;
   }
 }
+
+/* Tabletop simulator layout */
+.tcg-fullscreen-page .tcg-table-page {
+  width: 100%;
+  max-width: none;
+  padding-top: 36px;
+}
+
+.tcg-fullscreen-page .tcg-page-header {
+  position: fixed;
+  left: 12px;
+  top: 10px;
+  z-index: 1200;
+  width: min(420px, calc(100vw - 160px));
+  padding: 8px 10px;
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(18, 80, 42, 0.58);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(8, 40, 22, 0.18);
+  backdrop-filter: blur(12px);
+}
+
+.tcg-fullscreen-page .tcg-page-header h2,
+.tcg-fullscreen-page .tcg-page-header span {
+  color: #ffffff;
+}
+
+.tcg-fullscreen-page .tcg-page-header h2 {
+  font-size: 18px;
+}
+
+.tcg-fullscreen-page .tcg-table-actions {
+  gap: 5px;
+}
+
+.tcg-fullscreen-page .tcg-rules-strip {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 1200;
+  max-width: min(44vw, 520px);
+  margin: 0;
+}
+
+.tcg-fullscreen-page .tcg-rules-strip span {
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+}
+
+.tcg-sim-board {
+  width: 100%;
+  height: calc(100vh - 56px);
+  min-height: 640px;
+  display: grid;
+  grid-template-rows: 1fr 24px 1fr;
+  gap: 3px;
+  padding: 10px 14px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 0 1px, transparent 1px 64px),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.055) 0 1px, transparent 1px 64px),
+    radial-gradient(circle at 50% 50%, rgba(121, 213, 122, 0.14), transparent 38%),
+    linear-gradient(135deg, #143d25, #1d6b37 48%, #114023);
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.22);
+}
+
+.tcg-table-area {
+  position: relative;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 5px;
+  padding: 0;
+}
+
+.tcg-table-area.opponent {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.tcg-table-area.local {
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.tcg-table-player-label {
+  position: absolute;
+  left: 8px;
+  top: 7px;
+  z-index: 3;
+  min-width: 128px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 7px;
+  padding: 5px 8px;
+  background: rgba(6, 38, 21, 0.58);
+  color: #ffffff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+  pointer-events: none;
+}
+
+.tcg-table-player-label span,
+.tcg-table-player-label strong {
+  display: block;
+  line-height: 1.1;
+}
+
+.tcg-table-player-label span {
+  font-size: 12px;
+  font-weight: 1000;
+}
+
+.tcg-table-player-label strong {
+  margin-top: 2px;
+  color: rgba(239, 255, 220, 0.86);
+  font-size: 10px;
+}
+
+.tcg-table-area.opponent > .tcg-zone-hand {
+  align-self: start;
+}
+
+.tcg-table-area.local > .tcg-zone-hand {
+  align-self: end;
+}
+
+.tcg-table-main-row {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr) 82px;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.tcg-mini-zone-stack {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  align-content: stretch;
+}
+
+.tcg-playfield-cluster {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 74px;
+  gap: 6px;
+}
+
+.tcg-sim-board .tcg-zone {
+  min-height: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(3, 35, 18, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(96, 255, 146, 0.045);
+}
+
+.tcg-sim-board .tcg-zone-header {
+  min-height: 20px;
+  padding: 2px 6px;
+  background: rgba(8, 48, 24, 0.5);
+  color: rgba(239, 255, 220, 0.9);
+  font-size: 10px;
+}
+
+.tcg-sim-board .tcg-zone-header strong {
+  min-width: 22px;
+  padding: 1px 6px;
+  background: rgba(239, 255, 220, 0.18);
+  color: #ffffff;
+}
+
+.tcg-sim-board .tcg-zone-body {
+  padding: 4px;
+}
+
+.tcg-sim-board .tcg-zone-field {
+  border-color: rgba(141, 255, 161, 0.12);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.06), transparent 34%),
+    rgba(4, 40, 20, 0.12);
+}
+
+.tcg-sim-board .tcg-zone-field .tcg-zone-header {
+  opacity: 0.62;
+}
+
+.tcg-sim-board .tcg-zone-body.free {
+  height: 100%;
+  overflow: hidden;
+}
+
+.tcg-sim-board .tcg-zone-carrot {
+  min-height: 74px;
+  background: rgba(97, 74, 18, 0.2);
+}
+
+.tcg-sim-board .tcg-zone-carrot .tcg-zone-body.spread {
+  align-items: center;
+}
+
+.tcg-sim-board .tcg-zone-hand {
+  min-height: 82px;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.13);
+}
+
+.tcg-sim-board .tcg-zone-hand .tcg-zone-header {
+  display: none;
+}
+
+.tcg-sim-board .tcg-zone-hand .tcg-zone-body.spread {
+  min-height: 82px;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  overflow-x: auto;
+  padding-inline: 26px;
+}
+
+.tcg-sim-board .tcg-zone-hand .tcg-playable-card {
+  margin-left: -16px;
+  transition:
+    transform var(--uma-duration-base) ease,
+    box-shadow var(--uma-duration-base) ease,
+    margin var(--uma-duration-base) ease;
+}
+
+.tcg-sim-board .tcg-zone-hand .tcg-playable-card:hover,
+.tcg-sim-board .tcg-zone-hand .tcg-playable-card.hovered {
+  z-index: 5;
+  margin-inline: 3px;
+  transform: translateY(-12px) scale(1.08);
+}
+
+.tcg-table-area.opponent .tcg-zone-hand .tcg-playable-card:hover,
+.tcg-table-area.opponent .tcg-zone-hand .tcg-playable-card.hovered {
+  transform: translateY(12px) scale(1.08);
+}
+
+.tcg-sim-board .tcg-mini-zone-stack .tcg-zone {
+  min-height: 72px;
+}
+
+.tcg-sim-board .tcg-mini-zone-stack .tcg-zone-body.pile {
+  min-height: 50px;
+}
+
+.tcg-sim-board .tcg-mini-zone-stack .tcg-playable-card.compact,
+.tcg-sim-board .tcg-mini-zone-stack .tcg-pile-depth {
+  --card-width: 44px;
+  width: 44px;
+  min-width: 44px;
+  height: 62px;
+}
+
+.tcg-sim-board .tcg-playable-card {
+  --card-width: 84px;
+  height: 119px;
+}
+
+.tcg-sim-board .tcg-playable-card.compact {
+  --card-width: 56px;
+  height: 79px;
+}
+
+.tcg-center-divider {
+  position: relative;
+  display: grid;
+  place-items: center;
+  color: rgba(239, 255, 220, 0.34);
+  font-size: 10px;
+  font-weight: 1000;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.tcg-center-divider::before {
+  content: "";
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(239, 255, 220, 0.34), transparent);
+}
+
+.tcg-center-divider span {
+  position: relative;
+  z-index: 1;
+  padding: 0 12px;
+  background: rgba(18, 73, 35, 0.72);
+}
+
+.tcg-floating-controls {
+  position: fixed;
+  left: 14px;
+  bottom: 14px;
+  z-index: 1550;
+  width: min(360px, calc(100vw - 28px));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 9px;
+  background: rgba(8, 46, 24, 0.76);
+  color: #ffffff;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(14px);
+}
+
+.tcg-floating-controls-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+.tcg-floating-controls-title span {
+  color: rgba(239, 255, 220, 0.76);
+  font-size: 10px;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tcg-floating-controls-title strong {
+  font-size: 12px;
+  font-weight: 1000;
+}
+
+.tcg-floating-controls .tcg-draw-buttons {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tcg-floating-controls .tcg-zone-view-buttons {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 6px;
+}
+
+.tcg-floating-controls .tcg-shuffle-notice {
+  margin-top: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(239, 255, 220, 0.9);
+}
+
+@media (max-width: 1100px) {
+  .tcg-sim-board .tcg-playable-card {
+    --card-width: 72px;
+    height: 102px;
+  }
+
+  .tcg-table-main-row {
+    grid-template-columns: 70px minmax(0, 1fr) 70px;
+  }
+}
+
+@media (max-width: 760px) {
+  .tcg-sim-board {
+    height: auto;
+    min-height: calc(100vh - 52px);
+    grid-template-rows: auto 18px auto;
+    overflow-x: auto;
+  }
+
+  .tcg-table-main-row {
+    min-width: 720px;
+  }
+
+  .tcg-floating-controls {
+    width: calc(100vw - 20px);
+    left: 10px;
+    bottom: 10px;
+  }
+}
