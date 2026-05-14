@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CardTable from "../../components/tcg/CardTable";
 import DeckSelect from "../../components/tcg/DeckSelect";
 import {
   confirmDeck,
   createRoom,
+  getRoom,
   joinRoom,
   leaveRoom,
   listRooms,
@@ -61,7 +62,11 @@ export default function CardGamePage({
   const [rooms, setRooms] = useState([]);
   const [room, setRoom] = useState(null);
   const [loadingRooms, setLoadingRooms] = useState(false);
+  const [creatingRoom, setCreatingRoom] = useState(false);
+  const [joiningRoomId, setJoiningRoomId] = useState("");
   const [onlineError, setOnlineError] = useState("");
+  const createRoomRequestRef = useRef(null);
+  const joinRoomRequestRef = useRef(null);
 
   const playerPayload = useMemo(
     () => ({
@@ -76,7 +81,7 @@ export default function CardGamePage({
     setRoom(nextRoom);
   }, []);
 
-  const { sendAction } = useTcgSocket({
+  const { status: socketStatus, sendAction } = useTcgSocket({
     roomId: room?.room_id,
     userId,
     onRoomState: handleRoomState,
@@ -99,21 +104,51 @@ export default function CardGamePage({
     if (mode === "online" && !room) refreshRooms();
   }, [mode, refreshRooms, room]);
 
+  useEffect(() => {
+    if (!room?.room_id || !userId || socketStatus === "open") return undefined;
+
+    const pollRoom = async () => {
+      try {
+        const nextRoom = await getRoom(room.room_id, userId);
+        setRoom(nextRoom);
+      } catch (err) {
+        setOnlineError(String(err.message || err));
+      }
+    };
+
+    const intervalId = window.setInterval(pollRoom, 2500);
+    return () => window.clearInterval(intervalId);
+  }, [room?.room_id, socketStatus, userId]);
+
   const handleCreateRoom = async () => {
+    if (createRoomRequestRef.current) return;
     try {
       setOnlineError("");
-      setRoom(await createRoom(playerPayload));
+      setCreatingRoom(true);
+      const request = createRoom(playerPayload);
+      createRoomRequestRef.current = request;
+      setRoom(await request);
     } catch (err) {
       setOnlineError(String(err.message || err));
+    } finally {
+      createRoomRequestRef.current = null;
+      setCreatingRoom(false);
     }
   };
 
   const handleJoinRoom = async (roomId) => {
+    if (room?.room_id === roomId || joinRoomRequestRef.current) return;
     try {
       setOnlineError("");
-      setRoom(await joinRoom(roomId, playerPayload));
+      setJoiningRoomId(roomId);
+      const request = joinRoom(roomId, playerPayload);
+      joinRoomRequestRef.current = request;
+      setRoom(await request);
     } catch (err) {
       setOnlineError(String(err.message || err));
+    } finally {
+      joinRoomRequestRef.current = null;
+      setJoiningRoomId("");
     }
   };
 
@@ -176,6 +211,8 @@ export default function CardGamePage({
           <TcgLobbyPage
             rooms={rooms}
             loading={loadingRooms}
+            creating={creatingRoom}
+            joiningRoomId={joiningRoomId}
             error={onlineError}
             onRefresh={refreshRooms}
             onCreateRoom={handleCreateRoom}
