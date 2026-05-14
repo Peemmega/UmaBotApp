@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import "../styles/raceCalendar.css";
-import { BOT_API_URL } from "../api/config";
 import { raceImageMap, fallbackRaceImg } from "../utils/raceSchedule.js";
 import { Button } from "./ui";
+
+BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const monthNames = [
   "January", "February", "March", "April", "May", "June",
@@ -21,7 +22,7 @@ export default function RaceCalendar() {
   useEffect(() => {
     const loadCalendar = async () => {
       try {
-        const res = await fetch(`${BOT_API_URL}/race/calendar`);
+        const res = await fetch(`${BOT_API_BASE}/race/calendar`);
         const data = await res.json();
         setEvents(data);
       } catch (err) {

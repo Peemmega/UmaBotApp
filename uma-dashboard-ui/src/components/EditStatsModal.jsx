@@ -4,7 +4,6 @@ import closeSound from "../assets/sounds/close.mp3";
 import plusIcon from "../assets/icons/add.webp";
 import minusIcon from "../assets/icons/reduce.webp";
 
-import { BOT_API_URL } from "../api/config";
 import { playSound } from "../utils/soundManager";
 
 const STAT_KEYS = [
@@ -85,7 +84,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
       setSaving(true);
       setMessage("");
 
-      const res = await fetch(`${BOT_API_URL}/player/stats/update`, {
+      const res = await fetch("https://umadndbot-production.up.railway.app/player/stats/update", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

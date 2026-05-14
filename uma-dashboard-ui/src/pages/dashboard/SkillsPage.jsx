@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import "../../styles/skillsPage.css";
-import { BOT_API_URL } from "../../api/config";
 import Toast from "../../components/Toast";
+
+const BOT_API_BASE =   "https://umadndbot-production-c99a.up.railway.app";
 import { playSound } from "../../utils/soundManager";
 
 import witIcon from "../../assets/icons/Wit.webp";
@@ -26,12 +27,12 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
   };
 
   useEffect(() => {
-    fetch(`${BOT_API_URL}/skills/tags`)
+    fetch(`${BOT_API_BASE}/skills/tags`)
       .then((res) => res.json())
       .then((data) => setTags(data))
       .catch(console.error);
 
-    fetch(`${BOT_API_URL}/skills?tag=all`)
+    fetch(`${BOT_API_BASE}/skills?tag=all`)
       .then((res) => res.json())
       .then((data) => setSkills(data))
       .catch(console.error);
@@ -41,7 +42,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
       if (!selectedSkill) return;
 
       try {
-        const res = await fetch(`${BOT_API_URL}/player/skill/equip`, {
+        const res = await fetch(`${BOT_API_BASE}/player/skill/equip`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

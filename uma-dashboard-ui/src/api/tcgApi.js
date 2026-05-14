@@ -1,11 +1,14 @@
-import { debugApiLog, TCG_API_BASE } from "./config";
+const API_BASE =
+  import.meta.env.VITE_TCG_API_BASE ||
+  import.meta.env.VITE_BOT_API_BASE ||
+    "https://umadndbot-production-c99a.up.railway.app";
 
-export { TCG_API_BASE };
+export const TCG_API_BASE = API_BASE.replace(/\/$/, "");
 
 async function request(path, options = {}) {
   const url = `${TCG_API_BASE}${path}`;
 
-  debugApiLog("[TCG API] Request:", {
+  console.log("[TCG API] Request:", {
     url,
     method: options.method || "GET",
     base: TCG_API_BASE,
@@ -40,7 +43,7 @@ async function request(path, options = {}) {
     data = { raw: rawText };
   }
 
-  debugApiLog("[TCG API] Response:", {
+  console.log("[TCG API] Response:", {
     url,
     status: res.status,
     ok: res.ok,
@@ -115,7 +118,7 @@ export function getSocketUrl(roomId, userId) {
 
   const url = `${wsBase}/ws/tcg/${roomId}?user_id=${encodeURIComponent(userId)}`;
 
-  debugApiLog("[TCG WS] URL:", url);
+  console.log("[TCG WS] URL:", url);
 
   return url;
 }
