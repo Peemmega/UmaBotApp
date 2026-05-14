@@ -27,6 +27,7 @@ export default function CardZone({
   onCardHover,
   onCardHoverEnd,
   draggingCardId,
+  canDragCards = true,
 }) {
   const zoneId = `${playerId}:${zone}`;
   const isPile = PILE_ZONES.has(zone);
@@ -79,14 +80,15 @@ export default function CardZone({
                   })
                 }
                 onPointerLeave={() => onCardHoverEnd?.(card.instanceId)}
-                onPointerDown={(event) =>
+                onPointerDown={(event) => {
+                  if (!canDragCards) return;
                   onCardPointerDown(event, {
                     card,
                     playerId,
                     zone,
                     hidden: isOpponentHand || isHiddenPile,
-                  })
-                }
+                  });
+                }}
               />
             </div>
           ))

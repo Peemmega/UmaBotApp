@@ -28,9 +28,18 @@ function hydratePlayers(players) {
   return next;
 }
 
-export default function TcgOnlineBoardPage({ room, sendAction, onLeave }) {
+function getPlayerSlotForUser(room, userId) {
+  const userIdString = String(userId || "");
+  const found = Object.entries(room.players || {}).find(
+    ([, player]) => String(player?.user_id || "") === userIdString
+  );
+  return found?.[0] || room.my_player_id || "player1";
+}
+
+export default function TcgOnlineBoardPage({ room, userId, sendAction, onLeave }) {
   const players = useMemo(() => hydratePlayers(room.game_state?.players), [room.game_state]);
-  const myPlayerId = room.my_player_id || "player1";
+  const myPlayerId = getPlayerSlotForUser(room, userId);
+  const playerSlotLabel = myPlayerId === "player2" ? "You are Player 2" : "You are Player 1";
 
   const actionHandlers = {
     draw: (count) => sendAction(count === 2 ? "DRAW_2" : "DRAW"),
@@ -38,7 +47,7 @@ export default function TcgOnlineBoardPage({ room, sendAction, onLeave }) {
     addCarrot: () => sendAction("ADD_CARROT"),
     tapCard: (cardId) => sendAction("TAP_CARD", { cardId }),
     untapAll: () => sendAction("UNTAP_ALL"),
-    moveCard: (payload) => sendAction("MOVE_CARD", payload),
+    moveCard: ({ playerId, ...payload }) => sendAction("MOVE_CARD", payload),
   };
 
   return (
@@ -50,6 +59,8 @@ export default function TcgOnlineBoardPage({ room, sendAction, onLeave }) {
         players={players}
         setPlayers={() => {}}
         currentPlayerId={myPlayerId}
+        onlineMode
+        playerSlotLabel={playerSlotLabel}
         actionHandlers={actionHandlers}
       />
     </div>

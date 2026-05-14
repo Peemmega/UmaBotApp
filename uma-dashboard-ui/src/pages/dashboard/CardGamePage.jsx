@@ -256,6 +256,7 @@ export default function CardGamePage({
         <div className={fullscreen ? "tcg-fullscreen-page" : undefined}>
           <TcgOnlineBoardPage
             room={room}
+            userId={userId}
             sendAction={sendAction}
             onLeave={handleLeaveRoom}
           />
