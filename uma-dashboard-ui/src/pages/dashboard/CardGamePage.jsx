@@ -176,6 +176,8 @@ export default function CardGamePage({
       const confirmIds = getDeckConfirmIds(deckId);
       let nextRoom = null;
       let lastError = null;
+      print(deckId);
+      print(confirmIds);
 
       for (const candidateDeckId of confirmIds) {
         try {
