@@ -11,7 +11,7 @@ import {
   startRoom,
 } from "../../api/tcgApi";
 import useTcgSocket from "../../hooks/useTcgSocket";
-import { predefinedTcgDecks } from "../../data/tcgDecks";
+import { getDeckConfirmIds, predefinedTcgDecks } from "../../data/tcgDecks";
 import { createDeckInstance, createTrainerCard } from "../../data/tcgRuntime";
 import TcgDeckSelectOnline from "../tcg/TcgDeckSelectOnline";
 import TcgLobbyPage from "../tcg/TcgLobbyPage";
@@ -173,7 +173,26 @@ export default function CardGamePage({
   const handleConfirmDeck = async (deckId) => {
     if (!room) return;
     try {
-      setRoom(await confirmDeck(room.room_id, userId, deckId));
+      const confirmIds = getDeckConfirmIds(deckId);
+      let nextRoom = null;
+      let lastError = null;
+
+      for (const candidateDeckId of confirmIds) {
+        try {
+          nextRoom = await confirmDeck(room.room_id, userId, candidateDeckId);
+          lastError = null;
+          break;
+        } catch (err) {
+          lastError = err;
+          const message = String(err?.message || "").toLowerCase();
+          if (!message.includes("invalid deck") || candidateDeckId === confirmIds.at(-1)) {
+            throw err;
+          }
+        }
+      }
+
+      if (nextRoom) setRoom(nextRoom);
+      if (lastError && !nextRoom) throw lastError;
     } catch (err) {
       setOnlineError(String(err.message || err));
     }
