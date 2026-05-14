@@ -733,19 +733,19 @@ function PlayerControls({
           disabled={player.zones.deck.length === 0}
           title={player.zones.deck.length === 0 ? "Deck empty" : "Shuffle Deck"}
         >
-          <Shuffle size={16} />
+          {/* <Shuffle size={16} /> */}
           Shuffle
         </button>
         <button type="button" onClick={() => onAddCarrot(playerId)}>
-          <Plus size={16} />
+          {/* <Plus size={16} /> */}
           Carrot
         </button>
         <button type="button" onClick={onTap}>
-          <RotateCw size={16} />
+          {/* <RotateCw size={16} /> */}
           Tap
         </button>
         <button type="button" onClick={() => onUntapAll(playerId)}>
-          Active All
+          UntapAll
         </button>
       </div>
       <div className="tcg-shuffle-notice" aria-live="polite">

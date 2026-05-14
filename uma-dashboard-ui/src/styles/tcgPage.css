@@ -1005,6 +1005,23 @@
     opacity var(--uma-duration-base) ease;
 }
 
+.tcg-zone-modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tcg-zone-modal-header button.tcg-zone-modal-reveal {
+  width: auto;
+  min-width: 96px;
+  padding: 0 12px;
+  display: inline-flex;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 1000;
+  white-space: nowrap;
+}
+
 .tcg-zone-modal-empty {
   min-height: 220px;
   display: grid;

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import PlayableCard from "./PlayableCard";
 
@@ -29,9 +30,18 @@ export default function ZoneViewerModal({
   onMoveCard,
   onClose,
 }) {
+  const [deckRevealed, setDeckRevealed] = useState(false);
+
+  useEffect(() => {
+    setDeckRevealed(false);
+  }, [viewer?.playerId, viewer?.zone]);
+
   if (!viewer) return null;
 
-  const hidden = shouldHideCards(viewer.zone, viewer.playerId, perspective);
+  const canRevealDeck =
+    viewer.zone === "deck" && viewer.playerId === activePlayerId;
+  const baseHidden = shouldHideCards(viewer.zone, viewer.playerId, perspective);
+  const hidden = baseHidden && !(canRevealDeck && deckRevealed);
   const title = `${viewer.playerName} - ${ZONE_LABELS[viewer.zone] || viewer.zone}`;
   const canMove =
     !hidden &&
@@ -63,7 +73,7 @@ export default function ZoneViewerModal({
             <h3>{title}</h3>
             <p>
               {viewer.cards.length} cards
-              {viewer.zone === "deck" && !hidden ? " - debug deck list" : ""}
+              {viewer.zone === "deck" && !hidden ? " - revealed deck list" : ""}
             </p>
             {canMove && (
               <p className="tcg-zone-modal-hint">
@@ -71,9 +81,20 @@ export default function ZoneViewerModal({
               </p>
             )}
           </div>
-          <button type="button" onClick={onClose} aria-label="Close zone viewer">
-            <X size={20} />
-          </button>
+          <div className="tcg-zone-modal-header-actions">
+            {canRevealDeck && (
+              <button
+                type="button"
+                className="tcg-zone-modal-reveal"
+                onClick={() => setDeckRevealed((revealed) => !revealed)}
+              >
+                {deckRevealed ? "Hide Deck" : "Show Deck"}
+              </button>
+            )}
+            <button type="button" onClick={onClose} aria-label="Close zone viewer">
+              <X size={20} />
+            </button>
+          </div>
         </header>
 
         {viewer.cards.length === 0 ? (
