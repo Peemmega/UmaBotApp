@@ -40,10 +40,10 @@ export default function CardZone({
 
   return (
     <section className={`tcg-zone tcg-zone-${zone}`} data-zone-id={zoneId}>
-      <header className="tcg-zone-header">
+      {/* <header className="tcg-zone-header">
         <span>{getZoneTitle(zone)}</span>
         <strong>{cards.length}</strong>
-      </header>
+      </header> */}
 
       <div
         className={`tcg-zone-body ${
