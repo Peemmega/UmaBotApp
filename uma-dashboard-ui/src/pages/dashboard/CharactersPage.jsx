@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import "../../styles/charactersPage.css";
 import rose_garden_img from "../../assets/character/uma/rose_garden.webp"
 import manhattan_cafe_img from "../../assets/character/uma/manhattan_cafe.webp"
-import special_week_img from "../../assets/character/uma/special_week.webp"
 import calstone_light_o_img from "../../assets/character/uma/calstone_light_o.webp"
 
 import spica_img from "../../assets/character/trainer/spica.webp"
