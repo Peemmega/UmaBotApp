@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { tcgAssets } from "../../data/tcgMockCards";
+import { tcgAssets } from "../../data/tcgRuntime";
 
 export default function CardBack({ compact = false, label = "UMA" }) {
   const [failed, setFailed] = useState(false);

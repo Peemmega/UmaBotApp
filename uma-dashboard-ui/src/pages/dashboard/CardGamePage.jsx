@@ -18,7 +18,6 @@ import TcgLobbyPage from "../tcg/TcgLobbyPage";
 import TcgOnlineBoardPage from "../tcg/TcgOnlineBoardPage";
 import TcgRoomPage from "../tcg/TcgRoomPage";
 import "../../styles/tcgPage.css";
-import "../../styles/tcgTheme.css";
 
 function setupPlayer(playerId, playerName, deck) {
   const deckInstance = createDeckInstance(deck, playerId);
@@ -32,8 +31,8 @@ function setupPlayer(playerId, playerName, deck) {
     trainerCard,
     carrotCounter: 0,
     zones: {
-      hand: deckInstance.slice(0, 5),
-      life: deckInstance.slice(5, 10),
+      life: deckInstance.slice(0, 5),
+      hand: deckInstance.slice(5, 10),
       deck: deckInstance.slice(10),
       field: [{ ...trainerCard, fieldX: 18, fieldY: 18 }],
       discard: [],
@@ -50,24 +49,22 @@ export default function CardGamePage({
   userId = "",
   avatarUrl = "",
 }) {
+  const [deckOptions] = useState(predefinedTcgDecks);
+  const deckMap = useMemo(
+    () => new Map(deckOptions.map((deck) => [deck.id, deck])),
+    [deckOptions]
+  );
   const [mode, setMode] = useState("online");
   const [selections, setSelections] = useState({ player1: "", player2: "" });
-  const [deckOptions] = useState(predefinedTcgDecks);
   const [players, setPlayers] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [room, setRoom] = useState(null);
   const [loadingRooms, setLoadingRooms] = useState(false);
   const [creatingRoom, setCreatingRoom] = useState(false);
   const [joiningRoomId, setJoiningRoomId] = useState("");
-  const [leavingRoom, setLeavingRoom] = useState(false);
-  const [startingRoom, setStartingRoom] = useState(false);
-  const [confirmingDeck, setConfirmingDeck] = useState(false);
   const [onlineError, setOnlineError] = useState("");
   const createRoomRequestRef = useRef(null);
   const joinRoomRequestRef = useRef(null);
-  const leaveRoomRequestRef = useRef(null);
-  const startRoomRequestRef = useRef(null);
-  const confirmDeckRequestRef = useRef(null);
 
   const playerPayload = useMemo(
     () => ({
@@ -104,11 +101,6 @@ export default function CardGamePage({
   useEffect(() => {
     if (mode === "online" && !room) refreshRooms();
   }, [mode, refreshRooms, room]);
-
-  const deckMap = useMemo(
-    () => new Map(deckOptions.map((deck) => [deck.id, deck])),
-    [deckOptions]
-  );
 
   useEffect(() => {
     if (!room?.room_id || !userId || socketStatus === "open") return undefined;
@@ -159,50 +151,32 @@ export default function CardGamePage({
   };
 
   const handleLeaveRoom = async () => {
-    if (leaveRoomRequestRef.current) return;
-    setLeavingRoom(true);
     if (room) {
       try {
-        const request = leaveRoom(room.room_id, playerPayload);
-        leaveRoomRequestRef.current = request;
-        await request;
+        await leaveRoom(room.room_id, playerPayload);
       } catch {
         // Leaving the screen should still work if the room was already gone.
       }
     }
-    leaveRoomRequestRef.current = null;
-    setLeavingRoom(false);
     setRoom(null);
     refreshRooms();
   };
 
   const handleStartOnlineGame = async () => {
-    if (!room || startRoomRequestRef.current) return;
+    if (!room) return;
     try {
-      setStartingRoom(true);
-      const request = startRoom(room.room_id, playerPayload);
-      startRoomRequestRef.current = request;
-      setRoom(await request);
+      setRoom(await startRoom(room.room_id, playerPayload));
     } catch (err) {
       setOnlineError(String(err.message || err));
-    } finally {
-      startRoomRequestRef.current = null;
-      setStartingRoom(false);
     }
   };
 
   const handleConfirmDeck = async (deckId) => {
-    if (!room || confirmDeckRequestRef.current) return;
+    if (!room) return;
     try {
-      setConfirmingDeck(true);
-      const request = confirmDeck(room.room_id, userId, deckId);
-      confirmDeckRequestRef.current = request;
-      setRoom(await request);
+      setRoom(await confirmDeck(room.room_id, userId, deckId));
     } catch (err) {
       setOnlineError(String(err.message || err));
-    } finally {
-      confirmDeckRequestRef.current = null;
-      setConfirmingDeck(false);
     }
   };
 
@@ -256,8 +230,6 @@ export default function CardGamePage({
             userId={userId}
             onStart={handleStartOnlineGame}
             onLeave={handleLeaveRoom}
-            starting={startingRoom}
-            leaving={leavingRoom}
           />
         </div>
       );
@@ -273,8 +245,6 @@ export default function CardGamePage({
             decks={deckOptions}
             onConfirmDeck={handleConfirmDeck}
             onLeave={handleLeaveRoom}
-            confirming={confirmingDeck}
-            leaving={leavingRoom}
           />
         </div>
       );
@@ -285,10 +255,8 @@ export default function CardGamePage({
         <div className={fullscreen ? "tcg-fullscreen-page" : undefined}>
           <TcgOnlineBoardPage
             room={room}
-            userId={userId}
             sendAction={sendAction}
             onLeave={handleLeaveRoom}
-            leaving={leavingRoom}
           />
         </div>
       );

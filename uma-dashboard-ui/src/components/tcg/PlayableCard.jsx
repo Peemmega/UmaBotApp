@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { tcgStyleThemes } from "../../data/tcgMockCards";
+import { tcgStyleThemes } from "../../data/tcgRuntime";
 import CardBack from "./CardBack";
 
 export default function PlayableCard({
