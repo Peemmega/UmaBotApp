@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import "../../styles/charactersPage.css";
 import rose_garden_img from "../../assets/character/uma/rose_garden.webp"
+import manhattan_cafe_img from "../../assets/character/uma/manhattan_cafe.webp"
 import special_week_img from "../../assets/character/uma/special_week.webp"
 import calstone_light_o_img from "../../assets/character/uma/calstone_light_o.webp"
 
@@ -11,35 +12,23 @@ import { Badge, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../c
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 
 const characters = [
-  // {
-  //   id: 1,
-  //   name: "Oguri Cap",
-  //   type: "Trainee",
-  //   image: john_musume_img,
-  // },
-  // {
-  //   id: 2,
-  //   name: "Special Week",
-  //   type: "Trainee",
-  //   image: special_week_img,
-  // },
-  // {
-  //   id: 3,
-  //   name: "Tokai Teio",
-  //   type: "Trainee",
-  //   image: john_musume_img,
-  // },
   {
-    id: 4,
+    id: 1,
     name: "Calston Light O",
     type: "Trainee",
     image: calstone_light_o_img,
   },
   {
-    id: 5,
+    id: 2,
     name: "Rose Garden",
     type: "Trainee",
     image: rose_garden_img,
+  },
+  {
+    id: 3,
+    name: "Manhattan Cafe",
+    type: "Trainee",
+    image: manhattan_cafe_img,
   },
   {
     id: 101,
