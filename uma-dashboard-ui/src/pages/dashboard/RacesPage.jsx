@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import "../../styles/skillsPage.css";
 import { playSound } from "../../utils/soundManager";
-import { fallbackRaceImg, raceImageMap } from "../../utils/raceSchedule.js";
+import { getRaceImage } from "../../utils/raceSchedule.js";
 import Toast from "../../components/Toast";
 import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
@@ -17,10 +18,10 @@ const DISTANCE_FILTERS = [
 ];
 
 const PATH_ICON = {
-  1: "→",
-  2: "↵",
-  3: "↗",
-  4: "↘",
+  1: "➡️",
+  2: "⤵️",
+  3: "↗️",
+  4: "↘️",
 };
 
 export default function RacesPage({ userId }) {
@@ -136,7 +137,7 @@ export default function RacesPage({ userId }) {
           key={`${activeDistance}-${search}`}
         >
           {filteredRaces.map((race) => {
-          const raceImg = raceImageMap[race.id] || fallbackRaceImg;
+          const raceImg = getRaceImage(race);
 
           return (
             <StaggerItem
@@ -177,7 +178,7 @@ export default function RacesPage({ userId }) {
         </StaggerContainer>
       )}
 
-      {selectedRace && (
+      {selectedRace && createPortal(
         <div
           className="zone-edit-backdrop"
           onClick={() => setSelectedRace(null)}
@@ -198,7 +199,7 @@ export default function RacesPage({ userId }) {
                 </div>
 
                 <img
-                  src={raceImageMap[selectedRace.id] || fallbackRaceImg}
+                  src={getRaceImage(selectedRace)}
                   alt={selectedRace.name}
                 />
               </div>
@@ -243,7 +244,8 @@ export default function RacesPage({ userId }) {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {toast && (

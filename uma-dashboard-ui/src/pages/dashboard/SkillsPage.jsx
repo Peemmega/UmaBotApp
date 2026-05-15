@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import "../../styles/skillsPage.css";
 import Toast from "../../components/Toast";
 
@@ -214,7 +215,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
         </StaggerContainer>
       )}
 
-      {selectedSkill && (
+      {selectedSkill && createPortal(
         <div className="skill-equip-backdrop" onClick={() => setSelectedSkill(null)}>
           <div className="skill-equip-modal" onClick={(e) => e.stopPropagation()}>
             <Button
@@ -254,7 +255,8 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
               ))}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {toast && (
