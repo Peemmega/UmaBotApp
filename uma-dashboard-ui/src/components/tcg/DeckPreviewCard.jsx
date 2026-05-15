@@ -1,8 +1,8 @@
 import { Check } from "lucide-react";
-import { tcgStyleThemes } from "../../data/tcgMockCards";
+import { tcgStyleThemes } from "../../data/tcgRuntime";
 
 export default function DeckPreviewCard({ deck, selected, onSelect }) {
-  const theme = tcgStyleThemes[deck.style];
+  const theme = tcgStyleThemes[deck.style] || tcgStyleThemes.Speed;
   const validation = deck.validation || { valid: true, errors: [] };
 
   return (

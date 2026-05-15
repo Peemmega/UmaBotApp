@@ -49,9 +49,10 @@ export default function CardGamePage({
   userId = "",
   avatarUrl = "",
 }) {
+  const [deckOptions] = useState(predefinedTcgDecks);
   const deckMap = useMemo(
-    () => new Map(predefinedTcgDecks.map((deck) => [deck.id, deck])),
-    []
+    () => new Map(deckOptions.map((deck) => [deck.id, deck])),
+    [deckOptions]
   );
   const [mode, setMode] = useState("online");
   const [selections, setSelections] = useState({ player1: "", player2: "" });
@@ -241,6 +242,7 @@ export default function CardGamePage({
           <TcgDeckSelectOnline
             room={room}
             myPlayerId={room.my_player_id}
+            decks={deckOptions}
             onConfirmDeck={handleConfirmDeck}
             onLeave={handleLeaveRoom}
           />
@@ -273,6 +275,7 @@ export default function CardGamePage({
           Online Lobby
         </button>
         <DeckSelect
+          decks={deckOptions}
           selections={selections}
           onSelectDeck={handleSelectDeck}
           onStartGame={handleStartPractice}

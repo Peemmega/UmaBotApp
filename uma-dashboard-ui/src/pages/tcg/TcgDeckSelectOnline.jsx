@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { predefinedTcgDecks } from "../../data/tcgDecks";
 import DeckPreviewCard from "../../components/tcg/DeckPreviewCard";
 
 export default function TcgDeckSelectOnline({
   room,
   myPlayerId,
+  decks,
   onConfirmDeck,
   onLeave,
 }) {
   const [selectedDeckId, setSelectedDeckId] = useState("");
+  const deckList = decks || [];
   const confirmed = room.deck_confirmed || {};
   const youConfirmed = Boolean(confirmed[myPlayerId]);
   const opponentId = myPlayerId === "player1" ? "player2" : "player1";
@@ -38,7 +39,7 @@ export default function TcgDeckSelectOnline({
       </div>
 
       <div className="tcg-online-deck-grid">
-        {predefinedTcgDecks.map((deck) => (
+        {deckList.map((deck) => (
           <DeckPreviewCard
             key={deck.id}
             deck={deck}
