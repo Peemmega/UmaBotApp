@@ -924,11 +924,11 @@ body {
 .zone-edit-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1200;
+  z-index: 5000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 22px;
+  padding: clamp(10px, 2vw, 22px);
   background: rgba(42, 25, 50, 0.46);
   backdrop-filter: blur(10px);
   animation: fadeIn 180ms ease;
@@ -939,14 +939,17 @@ body {
 }
 
 .zone-edit-modal {
-  width: min(94vw, 640px);
-  max-height: 92vh;
-  overflow-y: auto;
+  width: min(1180px, calc(100vw - 24px));
+  height: min(860px, calc(100dvh - 24px));
+  max-height: none;
+  overflow: hidden;
   border-radius: var(--uma-radius-md);
   background: var(--uma-surface);
   border: 1px solid rgba(255, 255, 255, 0.74);
   box-shadow: var(--uma-shadow-pop);
   animation: mailboxPopIn 260ms ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .zone-edit-modal.closing {
@@ -955,7 +958,10 @@ body {
 
 .zone-edit-body {
   position: relative;
-  padding: 18px 48px 28px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: clamp(18px, 2.6vw, 34px) clamp(20px, 4vw, 56px) clamp(24px, 3vw, 38px);
 }
 
 .zone-edit-image-frame {
@@ -1038,6 +1044,7 @@ body {
 
 .zone-edit-list {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -1232,6 +1239,16 @@ body {
   }
   .zone-edit-row {
     grid-template-columns: 1fr 32px 28px 32px;
+  }
+
+  .zone-edit-modal {
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+  }
+
+  .zone-edit-list {
+    grid-template-columns: 1fr;
   }
 
    .stats-grid {

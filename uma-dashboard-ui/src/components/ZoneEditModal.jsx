@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { playSound } from "../utils/soundManager";
 
 import plusIcon from "../assets/icons/add.webp";
@@ -150,7 +151,7 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
     }
   };
 
-  return (
+  return createPortal(
     <div className={`zone-edit-backdrop ${closing ? "closing" : ""}`} onClick={closeModal}>
       <div className={`zone-edit-modal ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
         <div className="title-banner">
@@ -245,6 +246,7 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -7,7 +7,7 @@ export default function PageTransition({ children, className = "" }) {
   const transition = prefersReducedMotion
     ? { duration: 0 }
     : {
-        duration: 0.42,
+        duration: 0.3,
         ease: [0.22, 1, 0.36, 1],
       };
 

@@ -8,6 +8,7 @@ import spica_img from "../../assets/character/trainer/spica.webp"
 import kaguya_img from "../../assets/character/trainer/kaguya.webp"
 import gelbert_img from "../../assets/character/trainer/gelbert.webp"
 import { Badge, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
+import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 
 const characters = [
   // {
@@ -114,14 +115,25 @@ export default function CharactersPage() {
       
 
       {filteredCharacters.length === 0 ? (
-        <GameCard className="page-empty-state">
-          <strong>No characters found</strong>
-          <span>Try a different name or roster filter.</span>
-        </GameCard>
+        <StaggerContainer>
+          <StaggerItem>
+            <GameCard className="page-empty-state">
+              <strong>No characters found</strong>
+              <span>Try a different name or roster filter.</span>
+            </GameCard>
+          </StaggerItem>
+        </StaggerContainer>
       ) : (
-        <div className="characters-grid">
+        <StaggerContainer
+          className="characters-grid"
+          key={`${activeFilter}-${search}`}
+        >
           {filteredCharacters.map((character) => (
-          <GameCard as="article" className="character-card" key={character.id}>
+          <StaggerItem
+            as="article"
+            className="ui-game-card character-card"
+            key={character.id}
+          >
             <div className="character-image-frame">
               {character.image ? (
                 <img src={character.image} alt={character.name} />
@@ -139,9 +151,9 @@ export default function CharactersPage() {
                 {/* <button type="button">View</button> */}
               </div>
             </div>
-          </GameCard>
+          </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       )}
     </section>
   );

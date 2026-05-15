@@ -20,7 +20,7 @@ export default function TopBar({ unreadCount = 0, onMailClick, onLogout }) {
 
         <a
           className="discord-btn"
-          href="https://discord.gg/75R2E9PU"
+          href="https://discord.gg/cwvNJm6R8A"
           target="_blank"
           rel="noreferrer"
           onClick={() => playSound("click")}

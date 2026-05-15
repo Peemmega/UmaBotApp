@@ -26,8 +26,8 @@
 
 .characters-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--uma-space-5);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--uma-space-4);
 }
 
 .character-card {
@@ -46,8 +46,8 @@
 }
 
 .character-image-frame {
-  height: 230px;
-  margin: var(--uma-space-3) var(--uma-space-3) 0;
+  height: 180px;
+  margin: var(--uma-space-2) var(--uma-space-2) 0;
   background:
     radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.88), transparent 30%),
     linear-gradient(135deg, rgba(245, 255, 241, 0.95), rgba(236, 252, 203, 0.88));
