@@ -9,6 +9,7 @@ import witIcon from "../../assets/icons/Wit.webp";
 import staminaIcon from "../../assets/icons/Stamina.webp";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
+import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 
 export default function SkillsPage({ userId, username, onSkillEquipped }) {
   const [skills, setSkills] = useState([]);
@@ -149,16 +150,20 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
       
 
       {filteredSkills.length === 0 ? (
-        <GameCard className="page-empty-state">
-          <strong>No skills found</strong>
-          <span>Try a different keyword or tag.</span>
-        </GameCard>
+        <StaggerContainer>
+          <StaggerItem>
+            <GameCard className="page-empty-state">
+              <strong>No skills found</strong>
+              <span>Try a different keyword or tag.</span>
+            </GameCard>
+          </StaggerItem>
+        </StaggerContainer>
       ) : (
-        <div className="skills-grid">
+        <StaggerContainer className="skills-grid" key={`${activeTag}-${search}`}>
           {filteredSkills.map((skill) => (
-          <GameCard
+          <StaggerItem
             as="article"
-            className="skill-card"
+            className="ui-game-card skill-card"
             key={skill.id}
             onClick={() => {
               playSound("open");
@@ -204,9 +209,9 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
                 </div> */}
               </div>
             </div>
-          </GameCard>
+          </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       )}
 
       {selectedSkill && (

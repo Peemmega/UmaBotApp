@@ -11,6 +11,7 @@ import skillIcon from "../../assets/icons/skillPoint.webp";
 import editIcon from "../../assets/icons/change_icon.webp";
 import { playSound } from "../../utils/soundManager";
 import { Badge, SectionHeader } from "../../components/ui";
+import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 
 export default function ProfilePage({
   username,
@@ -38,10 +39,11 @@ export default function ProfilePage({
     <>
       {error ? <div className="error-box">{error}</div> : null}
 
-      <div className="dashboard-shell">
+      <StaggerContainer className="dashboard-shell profile-stagger">
         {/* container-card */}
           {error ? <div className="error-box">{error}</div> : null}
 
+          <StaggerItem>
           <section className="profile-card">
             <div className="title-banner">
               <h2>Trainee Profile</h2>
@@ -95,7 +97,9 @@ export default function ProfilePage({
               </div>
             </div>
           </section>
+          </StaggerItem>
 
+          <StaggerItem>
           <section className="sheet-card main-stats-card padding_container">
             <div className="section-header-row">
               <div></div>
@@ -150,7 +154,9 @@ export default function ProfilePage({
               />
             )}
           </section>
+          </StaggerItem>
 
+          <StaggerItem>
           <section className="sheet-card">
             <div className="title-banner">
               <h2>ค่าความถนัด</h2>
@@ -175,7 +181,9 @@ export default function ProfilePage({
               </div>
             </div>
           </section>
+          </StaggerItem>
 
+          <StaggerItem>
           <ZonePanel
               userId={userId}
               player={player}
@@ -189,7 +197,8 @@ export default function ProfilePage({
                 }));
               }}
             />
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
     </>
   );
 }

@@ -4,6 +4,7 @@ import { playSound } from "../../utils/soundManager";
 import { fallbackRaceImg, raceImageMap } from "../../utils/raceSchedule.js";
 import Toast from "../../components/Toast";
 import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
+import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
@@ -121,19 +122,26 @@ export default function RacesPage({ userId }) {
       </GameCard>
       
       {filteredRaces.length === 0 ? (
-        <GameCard className="page-empty-state">
-          <strong>No races found</strong>
-          <span>Try another race name, track, or distance filter.</span>
-        </GameCard>
+        <StaggerContainer>
+          <StaggerItem>
+            <GameCard className="page-empty-state">
+              <strong>No races found</strong>
+              <span>Try another race name, track, or distance filter.</span>
+            </GameCard>
+          </StaggerItem>
+        </StaggerContainer>
       ) : (
-        <div className="skills-grid race-grid">
+        <StaggerContainer
+          className="skills-grid race-grid"
+          key={`${activeDistance}-${search}`}
+        >
           {filteredRaces.map((race) => {
           const raceImg = raceImageMap[race.id] || fallbackRaceImg;
 
           return (
-            <GameCard
+            <StaggerItem
               as="article"
-              className="race-card"
+              className="ui-game-card race-card"
               key={race.id}
               onClick={() => {
                 playSound("open");
@@ -163,10 +171,10 @@ export default function RacesPage({ userId }) {
                   </div>
                 </div>
               </div>
-            </GameCard>
+            </StaggerItem>
           );
           })}
-        </div>
+        </StaggerContainer>
       )}
 
       {selectedRace && (
