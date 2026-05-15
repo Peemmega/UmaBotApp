@@ -16,6 +16,7 @@
     "@capacitor/browser": "^8.0.3",
     "@capacitor/core": "^8.0.0",
     "@vitejs/plugin-react": "latest",
+    "framer-motion": "^12.38.0",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",

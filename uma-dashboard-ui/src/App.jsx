@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import CardGamePage from "./pages/dashboard/CardGamePage";
 import LoadingScreen from "./components/LoadingScreen";
 import HorseshoeBackground from "./components/HorseshoeBackground";
+import PageTransition from "./components/PageTransition";
 
 const APP_BASE = "https://umabotapp-production-c99a.up.railway.app";
 const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
@@ -198,35 +200,40 @@ export default function App() {
     window.dispatchEvent(new Event("uma:navigate"));
   };
 
+  const pageContent = !username ? (
+    <LoginPage key="login" appBase={APP_BASE} />
+  ) : isTcgRoute ? (
+    <PageTransition key="tcg">
+      <CardGamePage
+        fullscreen
+        onBackToDashboard={handleBackToDashboard}
+        username={player?.username || username}
+        userId={userId}
+        avatarUrl={avatarUrl}
+      />
+    </PageTransition>
+  ) : (
+    <DashboardPage
+      key="dashboard"
+      username={username}
+      userId={userId}
+      avatarUrl={avatarUrl}
+      player={player}
+      setPlayer={setPlayer}
+      statsSummary={statsSummary}
+      showRaw={showRaw}
+      setShowRaw={setShowRaw}
+      error={error}
+      loading={loading}
+      onLogout={handleLogout}
+    />
+  );
+
   return (
     <>
       {!isTcgRoute && <HorseshoeBackground />}
 
-      {!username ? (
-        <LoginPage appBase={APP_BASE} />
-      ) : isTcgRoute ? (
-        <CardGamePage
-          fullscreen
-          onBackToDashboard={handleBackToDashboard}
-          username={player?.username || username}
-          userId={userId}
-          avatarUrl={avatarUrl}
-        />
-      ) : (
-        <DashboardPage
-          username={username}
-          userId={userId}
-          avatarUrl={avatarUrl}
-          player={player}
-          setPlayer={setPlayer}
-          statsSummary={statsSummary}
-          showRaw={showRaw}
-          setShowRaw={setShowRaw}
-          error={error}
-          loading={loading}
-          onLogout={handleLogout}
-        />
-      )}
+      <AnimatePresence mode="wait">{pageContent}</AnimatePresence>
 
       {showIntro && (
         <LoadingScreen onFinished={() => setShowIntro(false)} />

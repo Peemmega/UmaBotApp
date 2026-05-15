@@ -14,7 +14,7 @@ export default function AppShell({
       <div className="dashboard-layout app-shell-layout">
         {nav}
 
-        <main className="dashboard-shell app-shell-main">{children}</main>
+        <div className="dashboard-shell app-shell-main">{children}</div>
 
         {rightRail}
       </div>

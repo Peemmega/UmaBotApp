@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import "../styles/dashboard.css";
 import "../styles/mailbox.css";
 
 import MailboxModal from "../components/MailboxModal";
 import RenameModal from "../components/RenameModal";
+import PageTransition from "../components/PageTransition";
 import { AppShell, GameNav, RightRail, TopBar } from "../components/layout";
 
 import ProfilePage from "./dashboard/ProfilePage";
@@ -192,7 +194,9 @@ export default function DashboardPage({
       }
       modals={modals}
     >
-      {renderMiddlePage()}
+      <AnimatePresence mode="wait">
+        <PageTransition key={activePage}>{renderMiddlePage()}</PageTransition>
+      </AnimatePresence>
     </AppShell>
   );
 }
