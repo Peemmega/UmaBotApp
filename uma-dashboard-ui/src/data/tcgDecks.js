@@ -15,6 +15,8 @@ function buildDeck({
 }) {
   const validation = validateDeck({ trainer, mainDeck });
   const cards = expandDeckList(mainDeck);
+  const coverCardId = Object.keys(mainDeck)[0];
+  const coverCard = getCard(coverCardId);
   const keyCards = Object.keys(mainDeck)
     .slice(0, 3)
     .map((cardId) => getCard(cardId)?.name || cardId);
@@ -29,6 +31,7 @@ function buildDeck({
     trainer,
     mainDeck,
     cards,
+    coverCard,
     keyCards,
     mainDeckCount: cards.length,
     trainerCard: getCard(trainer),
@@ -188,4 +191,120 @@ const STARTER_DECKS = [
   },
 ];
 
-export const predefinedTcgDecks = STARTER_DECKS.map(buildDeck);
+const CUSTOM_DECKS = [
+  {
+    id: "sakura-laurel",
+    name: "Sakura Laurel Deck",
+    description: "Sakura lineup built around Laurel and UMTD04 support.",
+    style: "Speed",
+    highlight: "Sakura Laurel leads the tempo package.",
+    tags: ["Custom", "Sakura", "Tempo"],
+    trainer: "UMT-006",
+    mainDeck: {
+      "UMBT01-01": 4,
+      "UMBT01-03": 4,
+      "UMBT01-02": 2,
+      "UMTD04-02": 4,
+      "UMTD04-05": 4,
+      "UMBT01-04": 4,
+      "UMBT01-06": 3,
+      "UMTD04-08": 4,
+      "UMTD04-07": 4,
+      "UMBT01-08": 4,
+      "UMTD04-10": 3,
+    },
+  },
+  {
+    id: "v-family",
+    name: "V Family Deck",
+    description: "V family core backed by Opera O and Meisho Doto.",
+    style: "Stamina",
+    highlight: "Vixena, Cheval Grand, and Vivlos anchor the deck.",
+    tags: ["Custom", "V Family", "Stamina"],
+    trainer: "UMT-003",
+    mainDeck: {
+      "UMBT01-14": 4,
+      "UMBT01-15": 4,
+      "UMBT01-16": 4,
+      "UMBT01-17": 4,
+      "UMBT01-18": 4,
+      "UMTD02-01": 4,
+      "UMTD02-03": 4,
+      "UMTD02-07": 2,
+      "UMTD02-08": 4,
+      "UMTD02-09": 2,
+      "UMTD02-10": 4,
+    },
+  },
+  {
+    id: "tiara",
+    name: "Tiara Deck",
+    description: "Almond Eye package mixed with the UMTD01 Tiara suite.",
+    style: "Speed",
+    highlight: "Almond Eye and Oguri Cap share the top end.",
+    tags: ["Custom", "Tiara", "Hybrid"],
+    trainer: "UMT-002",
+    mainDeck: {
+      "UMBT01-09": 4,
+      "UMTD01-02": 2,
+      "UMBT01-11": 4,
+      "UMTD01-03": 4,
+      "UMTD01-04": 4,
+      "UMTD01-01": 2,
+      "UMTD01-05": 2,
+      "UMBT01-12": 2,
+      "UMTD01-08": 2,
+      "UMBT01-13": 2,
+      "UMTD01-07": 4,
+      "UMTD01-09": 4,
+      "UMTD01-10": 4,
+    },
+  },
+  {
+    id: "admire-vega",
+    name: "Admire Vega Deck",
+    description: "Admire Vega booster cards with UMTD03 power support.",
+    style: "Power",
+    highlight: "Admire Vega drives a compact 40-card pressure plan.",
+    tags: ["Custom", "Admire Vega", "Power"],
+    trainer: "UMT-004",
+    mainDeck: {
+      "UMTD03-02": 4,
+      "UMBT01-19": 4,
+      "UMBT01-20": 4,
+      "UMBT01-21": 4,
+      "UMBT01-22": 4,
+      "UMTD03-04": 4,
+      "UMTD03-05": 4,
+      "UMTD03-08": 4,
+      "UMTD03-09": 4,
+      "UMTD03-10": 4,
+    },
+  },
+  {
+    id: "still-in-love",
+    name: "Still in love Deck",
+    description: "Still in love list with Daring Tact and UMTD01 events.",
+    style: "Guts",
+    highlight: "Still in love leads a lean event-heavy shell.",
+    tags: ["Custom", "Still in love", "Events"],
+    trainer: "UMT-002",
+    mainDeck: {
+      "UMBT01-10": 4,
+      "UMTD01-02": 2,
+      "UMBT01-11": 4,
+      "UMTD01-03": 4,
+      "UMTD01-04": 4,
+      "UMBT01-12": 3,
+      "UMTD01-08": 4,
+      "UMBT01-13": 3,
+      "UMTD01-07": 4,
+      "UMTD01-09": 4,
+      "UMTD01-10": 4,
+    },
+  },
+];
+
+export const predefinedTcgDecks = [...STARTER_DECKS, ...CUSTOM_DECKS].map(
+  buildDeck
+);

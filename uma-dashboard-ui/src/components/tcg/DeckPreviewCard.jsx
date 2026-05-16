@@ -4,6 +4,8 @@ import { tcgStyleThemes } from "../../data/tcgRuntime";
 export default function DeckPreviewCard({ deck, selected, onSelect }) {
   const theme = tcgStyleThemes[deck.style] || tcgStyleThemes.Speed;
   const validation = deck.validation || { valid: true, errors: [] };
+  const coverImage = deck.coverCard?.image;
+  const coverLabel = deck.coverCard?.name || deck.style;
 
   return (
     <button
@@ -18,7 +20,13 @@ export default function DeckPreviewCard({ deck, selected, onSelect }) {
       <span className="tcg-deck-selected-icon" aria-hidden="true">
         <Check size={17} strokeWidth={3} />
       </span>
-      <div className="tcg-deck-preview-art">{deck.style}</div>
+      <div className="tcg-deck-preview-art">
+        {coverImage ? (
+          <img src={coverImage} alt={coverLabel} loading="lazy" />
+        ) : (
+          <span>{deck.style}</span>
+        )}
+      </div>
       <div className="tcg-deck-preview-main">
         <div className="tcg-deck-preview-title-row">
           <h3>{deck.name}</h3>
