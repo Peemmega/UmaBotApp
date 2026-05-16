@@ -269,8 +269,8 @@ const CUSTOM_DECKS = [
     tags: ["Custom", "Admire Vega", "Power"],
     trainer: "UMT-004",
     mainDeck: {
-      "UMTD03-02": 4,
       "UMBT01-19": 4,
+      "UMTD03-02": 4,
       "UMBT01-20": 4,
       "UMBT01-21": 4,
       "UMBT01-22": 4,
