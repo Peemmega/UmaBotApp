@@ -57,10 +57,27 @@ export function startRoom(roomId, player) {
   });
 }
 
-export function confirmDeck(roomId, userId, deckId) {
+export function confirmDeck(roomId, userId, deck) {
+  const deckPayload =
+    typeof deck === "string"
+      ? { deck_id: deck }
+      : {
+          deck_id: deck.id,
+          deck: {
+            id: deck.id,
+            name: deck.name,
+            description: deck.description,
+            style: deck.style,
+            highlight: deck.highlight,
+            tags: deck.tags,
+            trainer: deck.trainer,
+            mainDeck: deck.mainDeck,
+          },
+        };
+
   return request(`/tcg/rooms/${roomId}/deck/confirm`, {
     method: "POST",
-    body: JSON.stringify({ user_id: userId, deck_id: deckId }),
+    body: JSON.stringify({ user_id: userId, ...deckPayload }),
   });
 }
 

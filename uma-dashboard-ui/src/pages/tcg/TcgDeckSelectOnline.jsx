@@ -7,6 +7,7 @@ export default function TcgDeckSelectOnline({
   decks,
   onConfirmDeck,
   onLeave,
+  error = "",
   confirming = false,
   leaving = false,
 }) {
@@ -41,6 +42,8 @@ export default function TcgDeckSelectOnline({
         <span>You: {youConfirmed ? "Confirmed" : "Selecting"}</span>
         <span>Opponent: {confirmed[opponentId] ? "Confirmed" : "Selecting"}</span>
       </div>
+
+      {error && <div className="tcg-online-error">{error}</div>}
 
       <div className="tcg-online-deck-grid">
         {deckList.map((deck) => (

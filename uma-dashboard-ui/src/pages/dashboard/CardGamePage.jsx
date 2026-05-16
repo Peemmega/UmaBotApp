@@ -174,8 +174,9 @@ export default function CardGamePage({
 
   const handleConfirmDeck = async (deckId) => {
     if (!room) return;
+    const deck = deckMap.get(deckId);
     try {
-      setRoom(await confirmDeck(room.room_id, userId, deckId));
+      setRoom(await confirmDeck(room.room_id, userId, deck || deckId));
     } catch (err) {
       setOnlineError(String(err.message || err));
     }
@@ -244,6 +245,7 @@ export default function CardGamePage({
             room={room}
             myPlayerId={room.my_player_id}
             decks={deckOptions}
+            error={onlineError}
             onConfirmDeck={handleConfirmDeck}
             onLeave={handleLeaveRoom}
           />
