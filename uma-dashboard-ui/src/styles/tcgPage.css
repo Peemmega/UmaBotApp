@@ -516,6 +516,10 @@
   filter: grayscale(0.35);
 }
 
+.tcg-selected-action-button {
+  display: none;
+}
+
 .tcg-shuffle-notice {
   min-height: 22px;
   border-radius: var(--uma-radius-xs);
@@ -2036,9 +2040,13 @@
   font-weight: 1000;
 }
 
-.tcg-floating-controls .tcg-draw-buttons {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
+  .tcg-floating-controls .tcg-draw-buttons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tcg-selected-action-button {
+    display: inline-flex;
+  }
 
 .tcg-floating-controls .tcg-zone-view-buttons {
   grid-template-columns: 1fr;

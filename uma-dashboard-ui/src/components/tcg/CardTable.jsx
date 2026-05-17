@@ -1045,16 +1045,25 @@ function PlayerControls({
         </button>
         {selectedCount > 0 && (
           <>
-            <button type="button" onClick={(event) => blurAndRun(event, onTapSelected)}>
+            <button
+              type="button"
+              className="tcg-selected-action-button"
+              onClick={(event) => blurAndRun(event, onTapSelected)}
+            >
               Tap Selected
             </button>
             <button
               type="button"
+              className="tcg-selected-action-button"
               onClick={(event) => blurAndRun(event, onDiscardSelected)}
             >
               Discard Selected
             </button>
-            <button type="button" onClick={(event) => blurAndRun(event, onHandSelected)}>
+            <button
+              type="button"
+              className="tcg-selected-action-button"
+              onClick={(event) => blurAndRun(event, onHandSelected)}
+            >
               Move Selected to Hand
             </button>
           </>
