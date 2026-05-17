@@ -25,7 +25,7 @@ export default function PlayableCard({
       className={[
         "tcg-playable-card",
         compact ? "compact" : "",
-        selected ? "selected" : "",
+        selected ? "selected tcg-card-selected" : "",
         hovered ? "hovered" : "",
         card.status === "rest" ? "rested" : "",
         isDragging ? "dragging-source" : "",

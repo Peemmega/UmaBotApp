@@ -25,6 +25,25 @@ function isTypingTarget(target) {
   );
 }
 
+function getSelectionRect(selectionBox) {
+  if (!selectionBox) return null;
+  return {
+    left: Math.min(selectionBox.startX, selectionBox.currentX),
+    right: Math.max(selectionBox.startX, selectionBox.currentX),
+    top: Math.min(selectionBox.startY, selectionBox.currentY),
+    bottom: Math.max(selectionBox.startY, selectionBox.currentY),
+  };
+}
+
+function rectsIntersect(first, second) {
+  return (
+    first.left < second.right &&
+    first.right > second.left &&
+    first.top < second.bottom &&
+    first.bottom > second.top
+  );
+}
+
 function drawCards(player, count) {
   const drawn = player.zones.deck.slice(0, count);
   return {
@@ -85,6 +104,7 @@ export default function CardTable({
   const bottomPlayerId = onlineMode ? activePlayerId : "player1";
   const dragRef = useRef(null);
   const selectionRef = useRef(null);
+  const cardElementsRef = useRef(new Map());
 
   const findCardById = useCallback(
     (cardId) => {
@@ -146,6 +166,31 @@ export default function CardTable({
   const clearSelection = useCallback(() => {
     setSelectedCardIds([]);
   }, []);
+
+  const handleCardElement = useCallback((cardId, element, metadata) => {
+    if (!element) {
+      cardElementsRef.current.delete(cardId);
+      return;
+    }
+    cardElementsRef.current.set(cardId, { element, ...metadata });
+  }, []);
+
+  const getSelectableIdsInRect = useCallback(
+    (selectionRect) => {
+      if (!selectionRect) return [];
+
+      return Array.from(cardElementsRef.current.entries())
+        .filter(([, entry]) => {
+          if (entry.playerId !== activePlayerId) return false;
+          return rectsIntersect(
+            selectionRect,
+            entry.element.getBoundingClientRect()
+          );
+        })
+        .map(([cardId]) => cardId);
+    },
+    [activePlayerId]
+  );
 
   const handleCardHover = useCallback((payload) => {
     setHoveredCard({
@@ -382,26 +427,25 @@ export default function CardTable({
   const handleBoardPointerDown = useCallback(
     (event) => {
       const target = event.target;
+      if (event.button !== 0 && event.pointerType === "mouse") return;
       if (
         target instanceof HTMLElement &&
         !target.closest(".tcg-playable-card, button, [role='dialog']")
       ) {
-        if (event.shiftKey) {
-          event.preventDefault();
-          const nextSelection = {
-            startX: event.clientX,
-            startY: event.clientY,
-            x: event.clientX,
-            y: event.clientY,
-          };
-          selectionRef.current = nextSelection;
-          setSelectionBox(nextSelection);
-          return;
-        }
-        clearSelection();
+        event.preventDefault();
+        const nextSelection = {
+          startX: event.clientX,
+          startY: event.clientY,
+          currentX: event.clientX,
+          currentY: event.clientY,
+          active: true,
+          hasMoved: false,
+        };
+        selectionRef.current = nextSelection;
+        setSelectionBox(nextSelection);
       }
     },
-    [clearSelection]
+    []
   );
 
   const hasSelectedCards = selectedCardIds.length > 0;
@@ -464,15 +508,20 @@ export default function CardTable({
 
       if (current.hasMoved && targetZone) {
         const [toPlayerId, toZone] = targetZone.split(":");
-        moveCard({
-          cardId: current.card.instanceId,
-          fromPlayerId: current.playerId,
-          fromZone: current.zone,
-          toPlayerId,
-          toZone,
-          clientX: event.clientX,
-          clientY: event.clientY,
-        });
+        current.dragCardIds
+          .map((cardId) => findCardLocation(cardId))
+          .filter((location) => location && isControllableCard(location))
+          .forEach((location) => {
+            moveCard({
+              cardId: location.card.instanceId,
+              fromPlayerId: location.playerId,
+              fromZone: location.zone,
+              toPlayerId,
+              toZone,
+              clientX: event.clientX,
+              clientY: event.clientY,
+            });
+          });
       } else {
         selectCard(current.card.instanceId, current.hidden, {
           additive: current.additive,
@@ -492,7 +541,7 @@ export default function CardTable({
       window.removeEventListener("pointerup", handlePointerUp);
       window.removeEventListener("pointercancel", handlePointerUp);
     };
-  }, [dragState, moveCard, selectCard]);
+  }, [dragState, findCardLocation, isControllableCard, moveCard, selectCard]);
 
   useEffect(() => {
     if (!selectionBox) return undefined;
@@ -500,64 +549,71 @@ export default function CardTable({
     const handlePointerMove = (event) => {
       const current = selectionRef.current;
       if (!current) return;
+      const distance = Math.hypot(
+        event.clientX - current.startX,
+        event.clientY - current.startY
+      );
       const nextSelection = {
         ...current,
-        x: event.clientX,
-        y: event.clientY,
+        currentX: event.clientX,
+        currentY: event.clientY,
+        hasMoved: current.hasMoved || distance > 4,
       };
       selectionRef.current = nextSelection;
       setSelectionBox(nextSelection);
+      setSelectedCardIds(
+        Array.from(new Set(getSelectableIdsInRect(getSelectionRect(nextSelection))))
+      );
     };
 
-    const handlePointerUp = () => {
+    const handlePointerUp = (event) => {
       const current = selectionRef.current;
       if (!current) return;
+      const distance = Math.hypot(
+        event.clientX - current.startX,
+        event.clientY - current.startY
+      );
+      const nextSelection = {
+        ...current,
+        currentX: event.clientX,
+        currentY: event.clientY,
+        hasMoved: current.hasMoved || distance > 4,
+      };
 
-      const left = Math.min(current.startX, current.x);
-      const right = Math.max(current.startX, current.x);
-      const top = Math.min(current.startY, current.y);
-      const bottom = Math.max(current.startY, current.y);
-      const selectedIds = Array.from(
-        tableRootRef.current?.querySelectorAll(
-          `.tcg-card-selectable-target[data-player-id="${activePlayerId}"]`
-        ) || []
-      )
-        .filter((element) => {
-          const rect = element.getBoundingClientRect();
-          return (
-            rect.left < right &&
-            rect.right > left &&
-            rect.top < bottom &&
-            rect.bottom > top
-          );
-        })
-        .map((element) => element.getAttribute("data-card-id"))
-        .filter(Boolean);
-
-      setSelectedCardIds(Array.from(new Set(selectedIds)));
+      if (nextSelection.hasMoved) {
+        setSelectedCardIds(
+          Array.from(new Set(getSelectableIdsInRect(getSelectionRect(nextSelection))))
+        );
+      } else {
+        clearSelection();
+      }
       selectionRef.current = null;
       setSelectionBox(null);
     };
 
+    document.body.classList.add("tcg-selecting");
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", handlePointerUp);
     window.addEventListener("pointercancel", handlePointerUp);
 
     return () => {
+      document.body.classList.remove("tcg-selecting");
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
       window.removeEventListener("pointercancel", handlePointerUp);
     };
-  }, [activePlayerId, selectionBox]);
+  }, [clearSelection, getSelectableIdsInRect, selectionBox]);
 
   const handleCardPointerDown = (event, payload) => {
     if (event.button !== 0 && event.pointerType === "mouse") return;
     if (payload.playerId !== activePlayerId) return;
 
     event.preventDefault();
+    const isSelectedDrag = selectedCardIds.includes(payload.card.instanceId);
     const nextDrag = {
       ...payload,
       additive: event.ctrlKey || event.metaKey,
+      dragCardIds: isSelectedDrag ? selectedCardIds : [payload.card.instanceId],
       startX: event.clientX,
       startY: event.clientY,
       x: event.clientX,
@@ -755,7 +811,7 @@ export default function CardTable({
       </aside>
 
       <main className="tcg-board-stage" onPointerDown={handleBoardPointerDown}>
-        <div className="tcg-board tcg-sim-board" onPointerDown={handleBoardPointerDown}>
+        <div className="tcg-board tcg-sim-board">
           <PlayerTableArea
             player={players[topPlayerId]}
             playerId={topPlayerId}
@@ -767,6 +823,7 @@ export default function CardTable({
             onCardHover={handleCardHover}
             onCardHoverEnd={handleCardHoverEnd}
             onCardPointerDown={handleCardPointerDown}
+            onCardElement={handleCardElement}
           />
 
           <div className="tcg-center-divider" aria-hidden="true">
@@ -784,6 +841,7 @@ export default function CardTable({
             onCardHover={handleCardHover}
             onCardHoverEnd={handleCardHoverEnd}
             onCardPointerDown={handleCardPointerDown}
+            onCardElement={handleCardElement}
           />
         </div>
       </main>
@@ -814,10 +872,10 @@ export default function CardTable({
         <div
           className="tcg-selection-box"
           style={{
-            left: `${Math.min(selectionBox.startX, selectionBox.x)}px`,
-            top: `${Math.min(selectionBox.startY, selectionBox.y)}px`,
-            width: `${Math.abs(selectionBox.x - selectionBox.startX)}px`,
-            height: `${Math.abs(selectionBox.y - selectionBox.startY)}px`,
+            left: `${Math.min(selectionBox.startX, selectionBox.currentX)}px`,
+            top: `${Math.min(selectionBox.startY, selectionBox.currentY)}px`,
+            width: `${Math.abs(selectionBox.currentX - selectionBox.startX)}px`,
+            height: `${Math.abs(selectionBox.currentY - selectionBox.startY)}px`,
           }}
           aria-hidden="true"
         />
@@ -855,6 +913,7 @@ function PlayerTableArea({
   onCardHover,
   onCardHoverEnd,
   onCardPointerDown,
+  onCardElement,
 }) {
   const sharedZoneProps = {
     playerId,
@@ -865,6 +924,7 @@ function PlayerTableArea({
     onCardHover,
     onCardHoverEnd,
     onCardPointerDown,
+    onCardElement,
   };
 
   return (

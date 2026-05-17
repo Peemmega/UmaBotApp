@@ -742,6 +742,11 @@
     0 8px 15px rgba(28, 74, 39, 0.22);
 }
 
+.tcg-card-selected {
+  outline: 2px solid rgba(255, 244, 160, 0.96);
+  outline-offset: 2px;
+}
+
 .tcg-playable-card.hovered:not(.selected),
 .tcg-playable-card:hover:not(.selected) {
   box-shadow:
@@ -948,12 +953,17 @@
 
 .tcg-selection-box {
   position: fixed;
-  z-index: 2100;
+  z-index: 2050;
   pointer-events: none;
   border: 2px solid rgba(255, 234, 126, 0.95);
   border-radius: 6px;
   background: rgba(255, 234, 126, 0.16);
   box-shadow: 0 0 24px rgba(255, 230, 110, 0.44);
+}
+
+.tcg-selecting,
+.tcg-selecting * {
+  user-select: none;
 }
 
 .tcg-zone-modal-backdrop {

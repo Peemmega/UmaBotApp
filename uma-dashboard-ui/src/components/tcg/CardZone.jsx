@@ -28,6 +28,7 @@ export default function CardZone({
   onCardPointerDown,
   onCardHover,
   onCardHoverEnd,
+  onCardElement,
   draggingCardId,
   canDragCards = true,
 }) {
@@ -72,6 +73,13 @@ export default function CardZone({
               data-player-id={playerId}
               data-zone={zone}
               data-hidden={isHiddenCard ? "true" : "false"}
+              ref={(element) =>
+                onCardElement?.(card.instanceId, element, {
+                  playerId,
+                  zone,
+                  hidden: isHiddenCard,
+                })
+              }
               style={
                 isFreeField
                   ? {
