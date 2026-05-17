@@ -39,6 +39,8 @@ export default function PlayableCard({
       onPointerDown={(event) => onPointerDown?.(event, card)}
       onPointerEnter={() => onPointerEnter?.(card)}
       onPointerLeave={() => onPointerLeave?.(card)}
+      onPointerUp={(event) => event.currentTarget.blur()}
+      onMouseUp={(event) => event.currentTarget.blur()}
       aria-label={hidden ? "Hidden card" : card.name}
     >
       {hidden ? (

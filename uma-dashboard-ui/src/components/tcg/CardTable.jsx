@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Eye,
-  Plus,
   RotateCcw,
-  RotateCw,
-  Shuffle,
   SlidersHorizontal,
   UserRound,
 } from "lucide-react";
@@ -18,6 +15,15 @@ const ZONES = ["deck", "hand", "field", "life", "discard", "carrot", "expel"];
 const LEFT_ZONES = ["deck", "life", "discard", "expel"];
 const VIEWABLE_ZONES = ["deck", "discard", "expel"];
 const UNTAP_ZONES = ["field", "carrot"];
+const TCG_HOTKEY_CODES = new Set(["KeyR", "KeyD", "KeyH"]);
+
+function isTypingTarget(target) {
+  return (
+    target instanceof HTMLElement &&
+    (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) ||
+      target.isContentEditable)
+  );
+}
 
 function drawCards(player, count) {
   const drawn = player.zones.deck.slice(0, count);
@@ -61,11 +67,12 @@ export default function CardTable({
   playerSlotLabel = "",
   actionHandlers = null,
 }) {
+  const tableRootRef = useRef(null);
   const [perspective, setPerspective] = useState("player1");
-  const [selectedCardId, setSelectedCardId] = useState(null);
-  const [selectedCardHidden, setSelectedCardHidden] = useState(false);
+  const [selectedCardIds, setSelectedCardIds] = useState([]);
   const [hoveredCard, setHoveredCard] = useState(null);
   const [dragState, setDragState] = useState(null);
+  const [selectionBox, setSelectionBox] = useState(null);
   const [zoneViewer, setZoneViewer] = useState(null);
   const [shuffleNotice, setShuffleNotice] = useState({});
   const [controlsOpen, setControlsOpen] = useState(false);
@@ -77,6 +84,7 @@ export default function CardTable({
   const topPlayerId = onlineMode ? opponentPlayerId : "player2";
   const bottomPlayerId = onlineMode ? activePlayerId : "player1";
   const dragRef = useRef(null);
+  const selectionRef = useRef(null);
 
   const findCardById = useCallback(
     (cardId) => {
@@ -92,11 +100,6 @@ export default function CardTable({
       return null;
     },
     [players]
-  );
-
-  const selectedCard = useMemo(
-    () => findCardById(selectedCardId),
-    [findCardById, selectedCardId]
   );
 
   const findCardLocation = useCallback(
@@ -123,15 +126,25 @@ export default function CardTable({
   const previewCard = hoveredCardData;
   const previewHidden = hoveredCard?.hidden || false;
 
-  const activeTargetCardId = hoveredCard?.cardId || selectedCardId;
-  const activeTargetLocation = useMemo(
-    () => findCardLocation(activeTargetCardId),
-    [activeTargetCardId, findCardLocation]
+  const isControllableCard = useCallback(
+    (location) => location?.playerId === activePlayerId,
+    [activePlayerId]
   );
 
-  const selectCard = useCallback((cardId, hidden = false) => {
-    setSelectedCardId(cardId);
-    setSelectedCardHidden(hidden);
+  const selectCard = useCallback((cardId, hidden = false, options = {}) => {
+    void hidden;
+    setSelectedCardIds((prev) => {
+      if (options.additive) {
+        return prev.includes(cardId)
+          ? prev.filter((selectedId) => selectedId !== cardId)
+          : [...prev, cardId];
+      }
+      return [cardId];
+    });
+  }, []);
+
+  const clearSelection = useCallback(() => {
+    setSelectedCardIds([]);
   }, []);
 
   const handleCardHover = useCallback((payload) => {
@@ -247,47 +260,167 @@ export default function CardTable({
 
   const moveCard = moveCardBetweenZones;
 
-  const toggleSelectedCard = useCallback(() => {
-    if (!activeTargetCardId) return;
-    if (onlineMode && activeTargetLocation?.playerId !== activePlayerId) return;
+  const getActionTargets = useCallback(() => {
+    const targetCardIds =
+      selectedCardIds.length > 0
+        ? selectedCardIds
+        : hoveredCard?.cardId
+          ? [hoveredCard.cardId]
+          : [];
 
-    if (actionHandlers?.tapCard) {
-      actionHandlers.tapCard(activeTargetCardId);
-      return;
-    }
-
-    setPlayers((prev) =>
-      updateCardInPlayers(prev, activeTargetCardId, (card) => ({
-        ...card,
-        status: card.status === "rest" ? "active" : "rest",
-      }))
-    );
+    return targetCardIds
+      .map((cardId) => findCardLocation(cardId))
+      .filter((location) => location && isControllableCard(location));
   }, [
-    actionHandlers,
-    activePlayerId,
-    activeTargetCardId,
-    activeTargetLocation?.playerId,
-    onlineMode,
-    setPlayers,
+    findCardLocation,
+    hoveredCard?.cardId,
+    isControllableCard,
+    selectedCardIds,
   ]);
+
+  const toggleCards = useCallback(
+    (targets = getActionTargets()) => {
+      if (targets.length === 0) return;
+
+      if (actionHandlers?.tapCard) {
+        targets.forEach((target) => actionHandlers.tapCard(target.card.instanceId));
+        return;
+      }
+
+      setPlayers((prev) => {
+        let next = prev;
+        targets.forEach((target) => {
+          next = updateCardInPlayers(next, target.card.instanceId, (card) => ({
+            ...card,
+            status: card.status === "rest" ? "active" : "rest",
+          }));
+        });
+        return next;
+      });
+    },
+    [actionHandlers, getActionTargets, setPlayers]
+  );
+
+  const moveCardsToZone = useCallback(
+    (toZone, targets = getActionTargets()) => {
+      targets.forEach((target) => {
+        moveCardBetweenZones({
+          cardId: target.card.instanceId,
+          fromPlayerId: target.playerId,
+          fromZone: target.zone,
+          toPlayerId: target.playerId,
+          toZone,
+        });
+      });
+    },
+    [getActionTargets, moveCardBetweenZones]
+  );
+
+  const toggleSelectedCard = useCallback(() => {
+    toggleCards();
+  }, [toggleCards]);
+
+  useEffect(() => {
+    setSelectedCardIds((prev) =>
+      prev.filter((cardId) => isControllableCard(findCardLocation(cardId)))
+    );
+  }, [findCardLocation, isControllableCard, players]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.code !== "Space") return;
+      const target = event.target;
+      const root = tableRootRef.current;
+      const activeElement = document.activeElement;
+      const isInsideTable =
+        root &&
+        ((target instanceof Node && root.contains(target)) ||
+          (activeElement instanceof Node && root.contains(activeElement)) ||
+          !activeElement ||
+          activeElement === document.body);
+
+      if (!isInsideTable || isTypingTarget(target)) return;
       if (
-        event.target instanceof HTMLElement &&
-        ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(event.target.tagName)
+        target instanceof HTMLElement &&
+        target.closest('[role="dialog"], .tcg-zone-modal')
       ) {
         return;
       }
 
+      if (event.code === "Space") {
+        event.preventDefault();
+        return;
+      }
+
+      if (event.code === "Escape") {
+        clearSelection();
+        return;
+      }
+
+      if (!TCG_HOTKEY_CODES.has(event.code)) return;
+      const targets = getActionTargets();
+      if (targets.length === 0) return;
+
       event.preventDefault();
-      toggleSelectedCard();
+      if (event.code === "KeyR") {
+        toggleCards(targets);
+      } else if (event.code === "KeyD") {
+        moveCardsToZone("discard", targets);
+      } else if (event.code === "KeyH") {
+        moveCardsToZone("hand", targets);
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggleSelectedCard]);
+  }, [clearSelection, getActionTargets, moveCardsToZone, toggleCards]);
+
+  const blurAndRun = useCallback((event, callback) => {
+    event.currentTarget.blur();
+    callback();
+  }, []);
+
+  const handleBoardPointerDown = useCallback(
+    (event) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        !target.closest(".tcg-playable-card, button, [role='dialog']")
+      ) {
+        if (event.shiftKey) {
+          event.preventDefault();
+          const nextSelection = {
+            startX: event.clientX,
+            startY: event.clientY,
+            x: event.clientX,
+            y: event.clientY,
+          };
+          selectionRef.current = nextSelection;
+          setSelectionBox(nextSelection);
+          return;
+        }
+        clearSelection();
+      }
+    },
+    [clearSelection]
+  );
+
+  const hasSelectedCards = selectedCardIds.length > 0;
+  const selectedCount = selectedCardIds.length;
+
+  const handleSelectedTap = useCallback(() => {
+    if (!hasSelectedCards) return;
+    toggleCards(getActionTargets());
+  }, [getActionTargets, hasSelectedCards, toggleCards]);
+
+  const handleSelectedDiscard = useCallback(() => {
+    if (!hasSelectedCards) return;
+    moveCardsToZone("discard", getActionTargets());
+  }, [getActionTargets, hasSelectedCards, moveCardsToZone]);
+
+  const handleSelectedHand = useCallback(() => {
+    if (!hasSelectedCards) return;
+    moveCardsToZone("hand", getActionTargets());
+  }, [getActionTargets, hasSelectedCards, moveCardsToZone]);
 
   useEffect(() => {
     if (!dragState) return undefined;
@@ -341,7 +474,9 @@ export default function CardTable({
           clientY: event.clientY,
         });
       } else {
-        selectCard(current.card.instanceId, current.hidden);
+        selectCard(current.card.instanceId, current.hidden, {
+          additive: current.additive,
+        });
       }
 
       dragRef.current = null;
@@ -359,13 +494,70 @@ export default function CardTable({
     };
   }, [dragState, moveCard, selectCard]);
 
+  useEffect(() => {
+    if (!selectionBox) return undefined;
+
+    const handlePointerMove = (event) => {
+      const current = selectionRef.current;
+      if (!current) return;
+      const nextSelection = {
+        ...current,
+        x: event.clientX,
+        y: event.clientY,
+      };
+      selectionRef.current = nextSelection;
+      setSelectionBox(nextSelection);
+    };
+
+    const handlePointerUp = () => {
+      const current = selectionRef.current;
+      if (!current) return;
+
+      const left = Math.min(current.startX, current.x);
+      const right = Math.max(current.startX, current.x);
+      const top = Math.min(current.startY, current.y);
+      const bottom = Math.max(current.startY, current.y);
+      const selectedIds = Array.from(
+        tableRootRef.current?.querySelectorAll(
+          `.tcg-card-selectable-target[data-player-id="${activePlayerId}"]`
+        ) || []
+      )
+        .filter((element) => {
+          const rect = element.getBoundingClientRect();
+          return (
+            rect.left < right &&
+            rect.right > left &&
+            rect.top < bottom &&
+            rect.bottom > top
+          );
+        })
+        .map((element) => element.getAttribute("data-card-id"))
+        .filter(Boolean);
+
+      setSelectedCardIds(Array.from(new Set(selectedIds)));
+      selectionRef.current = null;
+      setSelectionBox(null);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerUp);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
+    };
+  }, [activePlayerId, selectionBox]);
+
   const handleCardPointerDown = (event, payload) => {
     if (event.button !== 0 && event.pointerType === "mouse") return;
-    if (onlineMode && payload.playerId !== activePlayerId) return;
+    if (payload.playerId !== activePlayerId) return;
 
     event.preventDefault();
     const nextDrag = {
       ...payload,
+      additive: event.ctrlKey || event.metaKey,
       startX: event.clientX,
       startY: event.clientY,
       x: event.clientX,
@@ -482,7 +674,7 @@ export default function CardTable({
   const activePlayer = players[activePlayerId];
 
   return (
-    <div className="tcg-table-page tcg-fullscreen-layout">
+    <div className="tcg-table-page tcg-fullscreen-layout" ref={tableRootRef}>
       <aside
         className={`tcg-control-rail ${
           controlsOpen ? "controls-open" : "controls-closed"
@@ -498,7 +690,9 @@ export default function CardTable({
             type="button"
             className="tcg-controls-toggle"
             aria-expanded={controlsOpen}
-            onClick={() => setControlsOpen((open) => !open)}
+            onClick={(event) =>
+              blurAndRun(event, () => setControlsOpen((open) => !open))
+            }
           >
             <SlidersHorizontal size={16} />
             Controls
@@ -512,7 +706,9 @@ export default function CardTable({
                 type="button"
                 key={playerId}
                 className={perspective === playerId ? "active" : ""}
-                onClick={() => setPerspective(playerId)}
+                onClick={(event) =>
+                  blurAndRun(event, () => setPerspective(playerId))
+                }
               >
                 <UserRound size={15} />
                 P{index + 1}
@@ -525,7 +721,7 @@ export default function CardTable({
           <button
             type="button"
             className="tcg-secondary-action tcg-rail-deck-select"
-            onClick={onResetToDeckSelect}
+            onClick={(event) => blurAndRun(event, onResetToDeckSelect)}
           >
             <RotateCcw size={16} />
             Deck Select
@@ -535,17 +731,22 @@ export default function CardTable({
         <PlayerControls
           player={activePlayer}
           playerId={activePlayerId}
-          notice={shuffleNotice[activePlayerId] || "Hover card / Space to Tap"}
+          notice={shuffleNotice[activePlayerId] || "R Tap • D Discard • H Hand"}
+          selectedCount={selectedCount}
           onDraw={handleDraw}
           onShuffle={handleShuffleDeck}
           onAddCarrot={handleAddCarrot}
           onTap={toggleSelectedCard}
+          onTapSelected={handleSelectedTap}
+          onDiscardSelected={handleSelectedDiscard}
+          onHandSelected={handleSelectedHand}
           onUntapAll={handleUntapAll}
           onOpenZone={openZoneViewer}
         />
 
         <div className="tcg-rules-strip">
-          <span>Hover then press Space to Tap</span>
+          <span>R Tap • D Discard • H Hand</span>
+          {selectedCount > 0 && <span>Selected: {selectedCount}</span>}
           <span>Carrot: resource sandbox</span>
           <span>Battle: manual sandbox</span>
           <span>Keyword: future logic</span>
@@ -553,14 +754,14 @@ export default function CardTable({
         </div>
       </aside>
 
-      <main className="tcg-board-stage">
-        <div className="tcg-board tcg-sim-board">
+      <main className="tcg-board-stage" onPointerDown={handleBoardPointerDown}>
+        <div className="tcg-board tcg-sim-board" onPointerDown={handleBoardPointerDown}>
           <PlayerTableArea
             player={players[topPlayerId]}
             playerId={topPlayerId}
             side="opponent"
             perspective={tablePerspective}
-            selectedCardId={selectedCardId}
+            selectedCardIds={selectedCardIds}
             hoveredCardId={hoveredCard?.cardId}
             draggingCardId={dragState?.card.instanceId}
             onCardHover={handleCardHover}
@@ -577,7 +778,7 @@ export default function CardTable({
             playerId={bottomPlayerId}
             side="local"
             perspective={tablePerspective}
-            selectedCardId={selectedCardId}
+            selectedCardIds={selectedCardIds}
             hoveredCardId={hoveredCard?.cardId}
             draggingCardId={dragState?.card.instanceId}
             onCardHover={handleCardHover}
@@ -609,6 +810,18 @@ export default function CardTable({
           />
         </div>
       )}
+      {selectionBox && (
+        <div
+          className="tcg-selection-box"
+          style={{
+            left: `${Math.min(selectionBox.startX, selectionBox.x)}px`,
+            top: `${Math.min(selectionBox.startY, selectionBox.y)}px`,
+            width: `${Math.abs(selectionBox.x - selectionBox.startX)}px`,
+            height: `${Math.abs(selectionBox.y - selectionBox.startY)}px`,
+          }}
+          aria-hidden="true"
+        />
+      )}
       <ZoneViewerModal
         viewer={
           zoneViewer
@@ -619,7 +832,7 @@ export default function CardTable({
             : null
         }
         perspective={tablePerspective}
-        selectedCardId={selectedCardId}
+        selectedCardIds={selectedCardIds}
         onSelectCard={selectCard}
         onHoverCard={handleCardHover}
         onHoverCardEnd={handleCardHoverEnd}
@@ -636,7 +849,7 @@ function PlayerTableArea({
   playerId,
   side,
   perspective,
-  selectedCardId,
+  selectedCardIds,
   hoveredCardId,
   draggingCardId,
   onCardHover,
@@ -646,7 +859,7 @@ function PlayerTableArea({
   const sharedZoneProps = {
     playerId,
     perspective,
-    selectedCardId,
+    selectedCardIds,
     hoveredCardId,
     draggingCardId,
     onCardHover,
@@ -709,13 +922,22 @@ function PlayerControls({
   player,
   playerId,
   notice,
+  selectedCount,
   onDraw,
   onShuffle,
   onAddCarrot,
   onTap,
+  onTapSelected,
+  onDiscardSelected,
+  onHandSelected,
   onUntapAll,
   onOpenZone,
 }) {
+  const blurAndRun = (event, callback) => {
+    event.currentTarget.blur();
+    callback();
+  };
+
   return (
     <section className="tcg-floating-controls" aria-label="Player controls">
       <div className="tcg-floating-controls-title">
@@ -723,39 +945,76 @@ function PlayerControls({
         <strong>{player.name}</strong>
       </div>
       <div className="tcg-draw-buttons">
-        <button type="button" onClick={() => onDraw(playerId, 1)}>
+        <button
+          type="button"
+          onClick={(event) => blurAndRun(event, () => onDraw(playerId, 1))}
+        >
           Draw 1
         </button>
-        <button type="button" onClick={() => onDraw(playerId, 2)}>
+        <button
+          type="button"
+          onClick={(event) => blurAndRun(event, () => onDraw(playerId, 2))}
+        >
           Draw 2
         </button>
         <button
           type="button"
-          onClick={() => onShuffle(playerId)}
+          onClick={(event) => blurAndRun(event, () => onShuffle(playerId))}
           disabled={player.zones.deck.length === 0}
           title={player.zones.deck.length === 0 ? "Deck empty" : "Shuffle Deck"}
         >
           {/* <Shuffle size={16} /> */}
           Shuffle
         </button>
-        <button type="button" onClick={() => onAddCarrot(playerId)}>
+        <button
+          type="button"
+          onClick={(event) => blurAndRun(event, () => onAddCarrot(playerId))}
+        >
           {/* <Plus size={16} /> */}
           Carrot
         </button>
-        <button type="button" onClick={onTap}>
+        <button type="button" onClick={(event) => blurAndRun(event, onTap)}>
           {/* <RotateCw size={16} /> */}
           Tap
         </button>
-        <button type="button" onClick={() => onUntapAll(playerId)}>
+        <button
+          type="button"
+          onClick={(event) => blurAndRun(event, () => onUntapAll(playerId))}
+        >
           UntapAll
         </button>
+        {selectedCount > 0 && (
+          <>
+            <button type="button" onClick={(event) => blurAndRun(event, onTapSelected)}>
+              Tap Selected
+            </button>
+            <button
+              type="button"
+              onClick={(event) => blurAndRun(event, onDiscardSelected)}
+            >
+              Discard Selected
+            </button>
+            <button type="button" onClick={(event) => blurAndRun(event, onHandSelected)}>
+              Move Selected to Hand
+            </button>
+          </>
+        )}
       </div>
       <div className="tcg-shuffle-notice" aria-live="polite">
         {notice}
       </div>
+      {selectedCount > 0 && (
+        <div className="tcg-selected-count" aria-live="polite">
+          Selected: {selectedCount}
+        </div>
+      )}
       <div className="tcg-zone-view-buttons">
         {VIEWABLE_ZONES.map((zone) => (
-          <button type="button" key={zone} onClick={() => onOpenZone(playerId, zone)}>
+          <button
+            type="button"
+            key={zone}
+            onClick={(event) => blurAndRun(event, () => onOpenZone(playerId, zone))}
+          >
             <Eye size={13} />
             <span>{zone}</span>
             <strong>{player.zones[zone].length}</strong>

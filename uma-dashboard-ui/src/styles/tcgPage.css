@@ -527,6 +527,18 @@
   text-align: center;
 }
 
+.tcg-selected-count {
+  margin-top: 6px;
+  min-height: 22px;
+  border-radius: var(--uma-radius-xs);
+  padding: 5px 8px;
+  background: rgba(255, 234, 126, 0.18);
+  color: #327840;
+  font-size: 11px;
+  font-weight: 1000;
+  text-align: center;
+}
+
 .tcg-opponent-summary {
   border-radius: var(--uma-radius-xs);
   padding: 7px 8px;
@@ -932,6 +944,16 @@
 .tcg-drag-overlay .tcg-playable-card {
   opacity: 0.92;
   transform: rotate(0deg) scale(1.04);
+}
+
+.tcg-selection-box {
+  position: fixed;
+  z-index: 2100;
+  pointer-events: none;
+  border: 2px solid rgba(255, 234, 126, 0.95);
+  border-radius: 6px;
+  background: rgba(255, 234, 126, 0.16);
+  box-shadow: 0 0 24px rgba(255, 230, 110, 0.44);
 }
 
 .tcg-zone-modal-backdrop {

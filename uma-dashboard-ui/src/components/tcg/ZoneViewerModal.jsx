@@ -22,7 +22,7 @@ function shouldHideCards(zone, playerId, perspective) {
 export default function ZoneViewerModal({
   viewer,
   perspective,
-  selectedCardId,
+  selectedCardIds = [],
   onSelectCard,
   onHoverCard,
   onHoverCardEnd,
@@ -47,6 +47,7 @@ export default function ZoneViewerModal({
     !hidden &&
     viewer.playerId === activePlayerId &&
     ["deck", "discard", "expel"].includes(viewer.zone);
+  const selectedCards = new Set(selectedCardIds);
 
   const handleMove = (card, toZone) => {
     onMoveCard?.({
@@ -86,12 +87,22 @@ export default function ZoneViewerModal({
               <button
                 type="button"
                 className="tcg-zone-modal-reveal"
-                onClick={() => setDeckRevealed((revealed) => !revealed)}
+                onClick={(event) => {
+                  event.currentTarget.blur();
+                  setDeckRevealed((revealed) => !revealed);
+                }}
               >
                 {deckRevealed ? "Hide Deck" : "Show Deck"}
               </button>
             )}
-            <button type="button" onClick={onClose} aria-label="Close zone viewer">
+            <button
+              type="button"
+              onClick={(event) => {
+                event.currentTarget.blur();
+                onClose();
+              }}
+              aria-label="Close zone viewer"
+            >
               <X size={20} />
             </button>
           </div>
@@ -106,7 +117,7 @@ export default function ZoneViewerModal({
                 <PlayableCard
                   card={card}
                   hidden={hidden}
-                  selected={selectedCardId === card.instanceId}
+                  selected={selectedCards.has(card.instanceId)}
                   onPointerEnter={() =>
                     onHoverCard?.({
                       card,
@@ -116,28 +127,52 @@ export default function ZoneViewerModal({
                     })
                   }
                   onPointerLeave={() => onHoverCardEnd?.(card.instanceId)}
-                  onPointerDown={() => {
-                    onSelectCard(card.instanceId, hidden);
+                  onPointerDown={(event) => {
+                    if (hidden) return;
+                    onSelectCard(card.instanceId, hidden, {
+                      additive: event.ctrlKey || event.metaKey,
+                    });
                   }}
                 />
                 {canMove && (
                   <div className="tcg-zone-modal-card-actions">
-                    <button type="button" onClick={() => handleMove(card, "hand")}>
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.currentTarget.blur();
+                        handleMove(card, "hand");
+                      }}
+                    >
                       Hand
                     </button>
-                    <button type="button" onClick={() => handleMove(card, "field")}>
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.currentTarget.blur();
+                        handleMove(card, "field");
+                      }}
+                    >
                       Field
                     </button>
                     {viewer.zone !== "discard" && (
                       <button
                         type="button"
-                        onClick={() => handleMove(card, "discard")}
+                        onClick={(event) => {
+                          event.currentTarget.blur();
+                          handleMove(card, "discard");
+                        }}
                       >
                         Discard
                       </button>
                     )}
                     {viewer.zone !== "expel" && (
-                      <button type="button" onClick={() => handleMove(card, "expel")}>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.currentTarget.blur();
+                          handleMove(card, "expel");
+                        }}
+                      >
                         Expel
                       </button>
                     )}

@@ -23,7 +23,7 @@ export default function CardZone({
   zone,
   cards,
   perspective,
-  selectedCardId,
+  selectedCardIds = [],
   hoveredCardId,
   onCardPointerDown,
   onCardHover,
@@ -37,6 +37,7 @@ export default function CardZone({
   const isHiddenZone = ALWAYS_HIDDEN_ZONES.has(zone);
   const isHiddenCard = isOpponentHand || isHiddenZone || cards[0]?.hidden;
   const visibleCards = isPile ? cards.slice(0, 1) : cards;
+  const selectedCards = new Set(selectedCardIds);
   const isFreeField = zone === "field";
   const hideHeader = HIDE_HEADER_ZONES.has(zone);
 
@@ -63,8 +64,14 @@ export default function CardZone({
             <div
               key={card.instanceId}
               className={
-                isFreeField ? "tcg-field-card-slot" : "tcg-zone-card-slot"
+                `${
+                  isFreeField ? "tcg-field-card-slot" : "tcg-zone-card-slot"
+                } tcg-card-selectable-target`
               }
+              data-card-id={card.instanceId}
+              data-player-id={playerId}
+              data-zone={zone}
+              data-hidden={isHiddenCard ? "true" : "false"}
               style={
                 isFreeField
                   ? {
@@ -78,7 +85,7 @@ export default function CardZone({
                 card={card}
                 compact={zone !== "field"}
                 hidden={isHiddenCard}
-                selected={selectedCardId === card.instanceId}
+                selected={selectedCards.has(card.instanceId)}
                 hovered={hoveredCardId === card.instanceId}
                 isDragging={draggingCardId === card.instanceId}
                 onPointerEnter={() =>

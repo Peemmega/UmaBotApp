@@ -56,7 +56,10 @@ export default function TcgOnlineBoardPage({
       <button
         type="button"
         className="tcg-online-leave"
-        onClick={onLeave}
+        onClick={(event) => {
+          event.currentTarget.blur();
+          onLeave();
+        }}
         disabled={leaving}
       >
         {leaving ? "Leaving..." : "Leave Room"}
