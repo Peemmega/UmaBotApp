@@ -268,7 +268,7 @@
 .tcg-deck-preview-art {
   position: relative;
   min-height: 170px;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 2.8 / 4;
   border-radius: var(--uma-radius-xs);
   display: grid;
   place-items: center;
