@@ -5,7 +5,7 @@ const API_BASE =
   "https://umatcgserver-production.up.railway.app";
 
 export const TCG_API_BASE = API_BASE.replace(/\/$/, "");
-const TCG_DATA_CACHE_KEY = "uma.tcg.data.v1";
+const TCG_DATA_CACHE_KEY = "uma.tcg.data.v2";
 let tcgDataCache = null;
 
 async function request(path, options = {}) {

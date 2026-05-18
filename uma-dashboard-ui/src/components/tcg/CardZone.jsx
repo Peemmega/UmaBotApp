@@ -2,14 +2,13 @@ import PlayableCard from "./PlayableCard";
 
 const PILE_ZONES = new Set(["deck", "life", "discard", "expel"]);
 const ALWAYS_HIDDEN_ZONES = new Set(["deck", "life"]);
-const HIDE_HEADER_ZONES = new Set(["field", "trainer", "carrot"]);
+const HIDE_HEADER_ZONES = new Set(["field", "carrot"]);
 
 function getZoneTitle(zone) {
   const titles = {
     deck: "Deck",
     hand: "Hand",
     field: "Field",
-    trainer: "Trainer",
     life: "Life Zone",
     discard: "Discard",
     carrot: "Carrot Zone",
