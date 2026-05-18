@@ -1,6 +1,3 @@
-import { getCard } from "./tcgCards";
-import { expandDeckList } from "./tcgDecks";
-
 const STYLE_THEMES = {
   Speed: {
     color: "#20b8ff",
@@ -33,9 +30,20 @@ export const tcgStyleThemes = STYLE_THEMES;
 
 export const tcgAssets = {
   cardBack: "",
-  trainer: getCard("UMT-001")?.image || "",
-  carrot: getCard("UMC-01")?.image || "",
+  trainer: "/tcg/cards/trainers/UMT_001.webp",
+  carrot: "/tcg/cards/carrots/UMC_01.webp",
 };
+
+function getCard(cardsById, cardId) {
+  return cardsById?.[cardId] || null;
+}
+
+function expandDeckList(mainDeck, cardsById) {
+  return Object.entries(mainDeck || {}).flatMap(([cardId, quantity]) => {
+    const card = getCard(cardsById, cardId);
+    return card ? Array.from({ length: quantity }, () => ({ ...card })) : [];
+  });
+}
 
 export function shuffleCards(cards) {
   const shuffled = [...cards];
@@ -51,16 +59,16 @@ export function shuffleCards(cards) {
   return shuffled;
 }
 
-export function createDeckInstance(deck, playerId) {
-  return shuffleCards(expandDeckList(deck.mainDeck)).map((card, index) => ({
+export function createDeckInstance(deck, playerId, cardsById = {}) {
+  return shuffleCards(expandDeckList(deck.mainDeck, cardsById)).map((card, index) => ({
     ...card,
     instanceId: `${playerId}-${deck.id}-${index + 1}`,
     status: "active",
   }));
 }
 
-export function createTrainerCard(playerId, trainerId = "UMT-001") {
-  const trainer = getCard(trainerId) || getCard("UMT-001");
+export function createTrainerCard(playerId, trainerId = "UMT-001", cardsById = {}) {
+  const trainer = getCard(cardsById, trainerId) || getCard(cardsById, "UMT-001");
   return {
     ...trainer,
     instanceId: `${playerId}-trainer-card`,
@@ -69,8 +77,13 @@ export function createTrainerCard(playerId, trainerId = "UMT-001") {
   };
 }
 
-export function createCarrotCard(playerId, index) {
-  const carrot = getCard("UMC-01");
+export function createCarrotCard(playerId, index, cardsById = {}) {
+  const carrot = getCard(cardsById, "UMC-01") || {
+    id: "UMC-01",
+    name: "Carrot",
+    type: "Carrot",
+    image: tcgAssets.carrot,
+  };
   return {
     ...carrot,
     instanceId: `${playerId}-carrot-${index}`,

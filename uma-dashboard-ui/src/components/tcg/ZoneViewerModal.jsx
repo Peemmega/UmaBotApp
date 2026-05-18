@@ -6,6 +6,7 @@ const ZONE_LABELS = {
   deck: "Deck",
   hand: "Hand",
   field: "Field",
+  trainer: "Trainer",
   life: "Life Zone",
   discard: "Discard",
   carrot: "Carrot Zone",
@@ -14,7 +15,7 @@ const ZONE_LABELS = {
 
 function shouldHideCards(zone, playerId, perspective) {
   if (zone === "deck" || zone === "life") return true;
-  if (zone === "discard" || zone === "field" || zone === "expel") return false;
+  if (zone === "discard" || zone === "field" || zone === "trainer" || zone === "expel") return false;
   if (zone === "hand" || zone === "life") return perspective !== playerId;
   return false;
 }

@@ -1,8 +1,12 @@
+import { preloadCardImages } from "../data/tcgImageCache";
+
 const API_BASE =
   import.meta.env.VITE_TCG_API_BASE ||
   "https://umatcgserver-production.up.railway.app";
 
 export const TCG_API_BASE = API_BASE.replace(/\/$/, "");
+const TCG_DATA_CACHE_KEY = "uma.tcg.data.v1";
+let tcgDataCache = null;
 
 async function request(path, options = {}) {
   const res = await fetch(`${TCG_API_BASE}${path}`, {
@@ -23,6 +27,57 @@ async function request(path, options = {}) {
 
 export function listRooms() {
   return request("/tcg/rooms");
+}
+
+export function getTcgCards() {
+  return request("/tcg/cards");
+}
+
+export function getTcgDecks() {
+  return request("/tcg/decks");
+}
+
+export function getTcgTrainers() {
+  return request("/tcg/trainers");
+}
+
+export async function loadTcgData({ force = false } = {}) {
+  if (!force && tcgDataCache) return tcgDataCache;
+
+  if (!force) {
+    const cached = localStorage.getItem(TCG_DATA_CACHE_KEY);
+    if (cached) {
+      try {
+        tcgDataCache = JSON.parse(cached);
+        preloadCardImages(tcgDataCache.cards);
+        return tcgDataCache;
+      } catch {
+        localStorage.removeItem(TCG_DATA_CACHE_KEY);
+      }
+    }
+  }
+
+  const [cardsResponse, decksResponse, trainersResponse] = await Promise.all([
+    getTcgCards(),
+    getTcgDecks(),
+    getTcgTrainers(),
+  ]);
+  const version = [
+    cardsResponse.version,
+    decksResponse.version,
+    trainersResponse.version,
+  ].join(":");
+  const data = {
+    version,
+    cards: cardsResponse.cards || {},
+    decks: decksResponse.decks || [],
+    trainers: trainersResponse.trainers || [],
+  };
+
+  tcgDataCache = data;
+  localStorage.setItem(TCG_DATA_CACHE_KEY, JSON.stringify(data));
+  preloadCardImages(data.cards);
+  return data;
 }
 
 export function getRoom(roomId, userId) {
@@ -57,27 +112,14 @@ export function startRoom(roomId, player) {
   });
 }
 
-export function confirmDeck(roomId, userId, deck) {
-  const deckPayload =
-    typeof deck === "string"
-      ? { deck_id: deck }
-      : {
-          deck_id: deck.id,
-          deck: {
-            id: deck.id,
-            name: deck.name,
-            description: deck.description,
-            style: deck.style,
-            highlight: deck.highlight,
-            tags: deck.tags,
-            trainer: deck.trainer,
-            mainDeck: deck.mainDeck,
-          },
-        };
-
-  return request(`/tcg/rooms/${roomId}/deck/confirm`, {
+export function confirmLoadout(roomId, userId, deckId, trainerId) {
+  return request(`/tcg/rooms/${roomId}/loadout`, {
     method: "POST",
-    body: JSON.stringify({ user_id: userId, ...deckPayload }),
+    body: JSON.stringify({
+      user_id: userId,
+      deck_id: deckId,
+      trainer_id: trainerId,
+    }),
   });
 }
 

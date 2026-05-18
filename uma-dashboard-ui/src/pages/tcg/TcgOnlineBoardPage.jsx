@@ -1,22 +1,17 @@
 import { useMemo } from "react";
 import CardTable from "../../components/tcg/CardTable";
-import { CARD_DATABASE } from "../../data/tcgCards";
 
-const imageById = new Map(
-  Object.values(CARD_DATABASE).map((card) => [card.id, card.image])
-);
-
-function hydrateCard(card) {
+function hydrateCard(card, cardsById) {
   if (!card || card.hidden) return card;
-  return { ...card, image: imageById.get(card.id) || card.image };
+  return { ...card, image: cardsById?.[card.id]?.image || card.image };
 }
 
-function hydratePlayers(players) {
+function hydratePlayers(players, cardsById) {
   const next = {};
   Object.entries(players || {}).forEach(([playerId, player]) => {
     const zones = {};
     Object.entries(player.zones || {}).forEach(([zone, cards]) => {
-      zones[zone] = cards.map(hydrateCard);
+      zones[zone] = cards.map((card) => hydrateCard(card, cardsById));
     });
     next[playerId] = { ...player, name: playerId === "player1" ? "Player 1" : "Player 2", zones };
   });
@@ -34,11 +29,15 @@ function getPlayerSlotForUser(room, userId) {
 export default function TcgOnlineBoardPage({
   room,
   userId,
+  cardsById,
   sendAction,
   onLeave,
   leaving = false,
 }) {
-  const players = useMemo(() => hydratePlayers(room.game_state?.players), [room.game_state]);
+  const players = useMemo(
+    () => hydratePlayers(room.game_state?.players, cardsById),
+    [cardsById, room.game_state]
+  );
   const myPlayerId = getPlayerSlotForUser(room, userId);
   const playerSlotLabel = myPlayerId === "player2" ? "You are Player 2" : "You are Player 1";
 

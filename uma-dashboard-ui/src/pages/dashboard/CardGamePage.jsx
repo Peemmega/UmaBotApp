@@ -2,16 +2,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CardTable from "../../components/tcg/CardTable";
 import DeckSelect from "../../components/tcg/DeckSelect";
 import {
-  confirmDeck,
+  confirmLoadout,
   createRoom,
   getRoom,
   joinRoom,
   leaveRoom,
   listRooms,
+  loadTcgData,
   startRoom,
 } from "../../api/tcgApi";
 import useTcgSocket from "../../hooks/useTcgSocket";
-import { predefinedTcgDecks } from "../../data/tcgDecks";
 import { createDeckInstance, createTrainerCard } from "../../data/tcgRuntime";
 import TcgDeckSelectOnline from "../tcg/TcgDeckSelectOnline";
 import TcgLobbyPage from "../tcg/TcgLobbyPage";
@@ -20,22 +20,24 @@ import TcgRoomPage from "../tcg/TcgRoomPage";
 import "../../styles/tcgPage.css";
 import "../../styles/tcgTheme.css";
 
-function setupPlayer(playerId, playerName, deck) {
-  const deckInstance = createDeckInstance(deck, playerId);
-  const trainerCard = createTrainerCard(playerId, deck.trainer);
+function setupPlayer(playerId, playerName, deck, trainerId, cardsById) {
+  const deckInstance = createDeckInstance(deck, playerId, cardsById);
+  const trainerCard = createTrainerCard(playerId, trainerId, cardsById);
 
   return {
     id: playerId,
     name: playerName,
     deckId: deck.id,
     deckName: deck.name,
+    trainerId,
     trainerCard,
     carrotCounter: 0,
     zones: {
-      life: deckInstance.slice(0, 5),
-      hand: deckInstance.slice(5, 10),
+      hand: deckInstance.slice(0, 5),
+      life: deckInstance.slice(5, 10),
       deck: deckInstance.slice(10),
-      field: [{ ...trainerCard, fieldX: 18, fieldY: 18 }],
+      field: [],
+      trainer: [{ ...trainerCard, fieldX: 18, fieldY: 18 }],
       discard: [],
       carrot: [],
       expel: [],
@@ -50,13 +52,22 @@ export default function CardGamePage({
   userId = "",
   avatarUrl = "",
 }) {
-  const [deckOptions] = useState(predefinedTcgDecks);
+  const [tcgData, setTcgData] = useState({
+    cards: {},
+    decks: [],
+    trainers: [],
+  });
+  const [dataLoading, setDataLoading] = useState(true);
   const deckMap = useMemo(
-    () => new Map(deckOptions.map((deck) => [deck.id, deck])),
-    [deckOptions]
+    () => new Map(tcgData.decks.map((deck) => [deck.id, deck])),
+    [tcgData.decks]
   );
+  const defaultTrainerId = tcgData.trainers[0]?.id || "UMT-001";
   const [mode, setMode] = useState("online");
-  const [selections, setSelections] = useState({ player1: "", player2: "" });
+  const [selections, setSelections] = useState({
+    player1: { deckId: "", trainerId: "" },
+    player2: { deckId: "", trainerId: "" },
+  });
   const [players, setPlayers] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [room, setRoom] = useState(null);
@@ -75,6 +86,25 @@ export default function CardGamePage({
     }),
     [avatarUrl, userId, username]
   );
+
+  useEffect(() => {
+    let mounted = true;
+    loadTcgData()
+      .then((data) => {
+        if (!mounted) return;
+        setTcgData(data);
+      })
+      .catch((err) => {
+        if (mounted) setOnlineError(String(err.message || err));
+      })
+      .finally(() => {
+        if (mounted) setDataLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleRoomState = useCallback((nextRoom) => {
     setRoom(nextRoom);
@@ -172,28 +202,59 @@ export default function CardGamePage({
     }
   };
 
-  const handleConfirmDeck = async (deckId) => {
+  const handleConfirmLoadout = async (deckId, trainerId) => {
     if (!room) return;
-    const deck = deckMap.get(deckId);
     try {
-      setRoom(await confirmDeck(room.room_id, userId, deck || deckId));
+      setRoom(await confirmLoadout(room.room_id, userId, deckId, trainerId));
     } catch (err) {
       setOnlineError(String(err.message || err));
     }
   };
 
+  const handleConfirmDeck = async (deckId) => {
+    const deck = deckMap.get(deckId);
+    await handleConfirmLoadout(deckId, deck?.trainer || defaultTrainerId);
+  };
+
   const handleSelectDeck = (playerId, deckId) => {
-    setSelections((prev) => ({ ...prev, [playerId]: deckId }));
+    const deck = deckMap.get(deckId);
+    setSelections((prev) => ({
+      ...prev,
+      [playerId]: {
+        ...prev[playerId],
+        deckId,
+        trainerId: prev[playerId]?.trainerId || deck?.trainer || defaultTrainerId,
+      },
+    }));
+  };
+
+  const handleSelectTrainer = (playerId, trainerId) => {
+    setSelections((prev) => ({
+      ...prev,
+      [playerId]: { ...prev[playerId], trainerId },
+    }));
   };
 
   const handleStartPractice = () => {
-    const player1Deck = deckMap.get(selections.player1);
-    const player2Deck = deckMap.get(selections.player2);
+    const player1Deck = deckMap.get(selections.player1.deckId);
+    const player2Deck = deckMap.get(selections.player2.deckId);
     if (!player1Deck || !player2Deck) return;
 
     setPlayers({
-      player1: setupPlayer("player1", "Player 1", player1Deck),
-      player2: setupPlayer("player2", "Player 2", player2Deck),
+      player1: setupPlayer(
+        "player1",
+        "Player 1",
+        player1Deck,
+        selections.player1.trainerId || player1Deck.trainer,
+        tcgData.cards
+      ),
+      player2: setupPlayer(
+        "player2",
+        "Player 2",
+        player2Deck,
+        selections.player2.trainerId || player2Deck.trainer,
+        tcgData.cards
+      ),
     });
   };
 
@@ -244,9 +305,11 @@ export default function CardGamePage({
           <TcgDeckSelectOnline
             room={room}
             myPlayerId={room.my_player_id}
-            decks={deckOptions}
+            decks={tcgData.decks}
+            trainers={tcgData.trainers}
             error={onlineError}
             onConfirmDeck={handleConfirmDeck}
+            onConfirmLoadout={handleConfirmLoadout}
             onLeave={handleLeaveRoom}
           />
         </div>
@@ -258,6 +321,7 @@ export default function CardGamePage({
         <div className={fullscreen ? "tcg-fullscreen-page" : undefined}>
           <TcgOnlineBoardPage
             room={room}
+            cardsById={tcgData.cards}
             sendAction={sendAction}
             onLeave={handleLeaveRoom}
           />
@@ -267,6 +331,15 @@ export default function CardGamePage({
   }
 
   if (!players) {
+    if (dataLoading) {
+      return (
+        <div className={fullscreen ? "tcg-fullscreen-page" : undefined}>
+          {backButton}
+          <div className="tcg-online-shell">Loading TCG data...</div>
+        </div>
+      );
+    }
+
     return (
       <div className={fullscreen ? "tcg-fullscreen-page" : undefined}>
         {backButton}
@@ -278,9 +351,11 @@ export default function CardGamePage({
           Online Lobby
         </button>
         <DeckSelect
-          decks={deckOptions}
+          decks={tcgData.decks}
+          trainers={tcgData.trainers}
           selections={selections}
           onSelectDeck={handleSelectDeck}
+          onSelectTrainer={handleSelectTrainer}
           onStartGame={handleStartPractice}
         />
       </div>

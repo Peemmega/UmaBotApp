@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getCachedCardImage } from "../../data/tcgImageCache";
 import { tcgStyleThemes } from "../../data/tcgRuntime";
 import CardBack from "./CardBack";
 
@@ -18,6 +19,7 @@ export default function PlayableCard({
 
   const theme = tcgStyleThemes[card.style] || tcgStyleThemes.Speed;
   const hasImage = card.image && !imageFailed;
+  const imageSrc = hasImage ? getCachedCardImage(card.image) : "";
 
   return (
     <button
@@ -49,7 +51,7 @@ export default function PlayableCard({
         <div className="tcg-card-image-wrap">
           <img
             className="tcg-card-image"
-            src={card.image}
+            src={imageSrc}
             alt={card.name}
             draggable="false"
             onError={() => setImageFailed(true)}
