@@ -1,4 +1,5 @@
 import { createPortal } from "react-dom";
+import CardKeywordTags from "./CardKeywordTags";
 import PlayableCard from "./PlayableCard";
 
 function getCardSummary(card) {
@@ -29,11 +30,15 @@ export default function TcgFloatingCardPreview({ card }) {
         </div>
       </div>
       <div className="tcg-card-preview-frame">
-        <PlayableCard card={card} />
+        <PlayableCard card={card} showText={false} />
       </div>
       <div className="tcg-card-preview-copy">
         <strong>{getCardSummary(card)}</strong>
-        {card.text && <span>{card.text}</span>}
+        <CardKeywordTags
+          tags={card.tags}
+          showDescriptions
+          emptyText="No keyword abilities"
+        />
       </div>
     </aside>
   );
