@@ -214,7 +214,7 @@
   border-radius: var(--uma-radius-sm);
   padding: 10px;
   display: grid;
-  grid-template-columns: minmax(108px, 34%) 1fr;
+  grid-template-columns: minmax(108px, 24%) 1fr;
   gap: 12px;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.62), rgba(153, 240, 177, 0.18) 42%, rgba(255, 255, 255, 0.7) 74%),
