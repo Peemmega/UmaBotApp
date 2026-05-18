@@ -18,6 +18,11 @@ export default function TcgDeckSelectOnline({
   const [selectedDeckId, setSelectedDeckId] = useState("");
   const [selectedTrainerId, setSelectedTrainerId] = useState("");
   const [hoveredPreviewCard, setHoveredPreviewCard] = useState(null);
+  const showPreview = (card) => {
+    if (!card?.image || card.hidden || card.id === "hidden-card") return;
+    setHoveredPreviewCard(card);
+  };
+  const hidePreview = () => setHoveredPreviewCard(null);
   const deckList = decks || [];
   const confirmed = room.deck_confirmed || {};
   const trainerConfirmed = room.trainer_confirmed || {};
@@ -68,6 +73,10 @@ export default function TcgDeckSelectOnline({
                 : "tcg-trainer-option"
             }
             onClick={() => setSelectedTrainerId(trainer.id)}
+            onMouseEnter={() => showPreview(trainer)}
+            onMouseLeave={hidePreview}
+            onFocus={() => showPreview(trainer)}
+            onBlur={hidePreview}
           >
             <img src={trainer.image} alt="" />
             <span>{trainer.name}</span>
@@ -84,7 +93,7 @@ export default function TcgDeckSelectOnline({
             selected={selectedDeckId === deck.id}
             onSelect={setSelectedDeckId}
             onPreviewCard={setHoveredPreviewCard}
-            onPreviewEnd={() => setHoveredPreviewCard(null)}
+            onPreviewEnd={hidePreview}
           />
         ))}
       </div>
