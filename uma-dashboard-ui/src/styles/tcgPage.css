@@ -1608,7 +1608,7 @@
 }
 
 .tcg-floating-card-preview {
-  z-index: 5200;
+  z-index: 9000;
   pointer-events: none;
   animation: tcg-hover-preview-in 140ms ease-out;
 }
@@ -1739,7 +1739,7 @@
   }
 
   .tcg-floating-card-preview {
-    z-index: 5200;
+    z-index: 9000;
     pointer-events: none;
     animation: tcg-hover-preview-mobile-in 140ms ease-out;
   }

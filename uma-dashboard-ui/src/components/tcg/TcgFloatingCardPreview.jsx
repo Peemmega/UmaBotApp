@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import PlayableCard from "./PlayableCard";
 
 function getCardSummary(card) {
@@ -16,7 +17,7 @@ export default function TcgFloatingCardPreview({ card }) {
     return null;
   }
 
-  return (
+  const preview = (
     <aside
       className="tcg-card-preview-panel tcg-floating-card-preview open"
       aria-label="Card preview"
@@ -36,4 +37,6 @@ export default function TcgFloatingCardPreview({ card }) {
       </div>
     </aside>
   );
+
+  return createPortal(preview, document.body);
 }

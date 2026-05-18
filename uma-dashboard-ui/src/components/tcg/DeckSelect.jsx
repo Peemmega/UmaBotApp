@@ -13,6 +13,11 @@ export default function DeckSelect({
   onStartGame,
 }) {
   const [hoveredPreviewCard, setHoveredPreviewCard] = useState(null);
+  const showPreview = (card) => {
+    if (!card?.image || card.hidden || card.id === "hidden-card") return;
+    setHoveredPreviewCard(card);
+  };
+  const hidePreview = () => setHoveredPreviewCard(null);
   const deckList = decks || [];
   const canStart = Boolean(
     selections.player1?.deckId &&
@@ -71,6 +76,10 @@ export default function DeckSelect({
                       : "tcg-trainer-option"
                   }
                   onClick={() => onSelectTrainer(playerId, trainer.id)}
+                  onMouseEnter={() => showPreview(trainer)}
+                  onMouseLeave={hidePreview}
+                  onFocus={() => showPreview(trainer)}
+                  onBlur={hidePreview}
                 >
                   <img src={trainer.image} alt="" />
                   <span>{trainer.name}</span>
@@ -86,7 +95,7 @@ export default function DeckSelect({
                   selected={selections[playerId]?.deckId === deck.id}
                   onSelect={(deckId) => onSelectDeck(playerId, deckId)}
                   onPreviewCard={setHoveredPreviewCard}
-                  onPreviewEnd={() => setHoveredPreviewCard(null)}
+                  onPreviewEnd={hidePreview}
                 />
               ))}
             </div>
