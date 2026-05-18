@@ -1113,15 +1113,18 @@ function CardPreviewPanel({ card, hidden }) {
         {hidden ? (
           <CardBack />
         ) : (
-          <PlayableCard card={card} />
+          <PlayableCard card={card} showText={false} />
         )}
       </div>
       <div className="tcg-card-preview-copy">
         {card && !hidden ? (
           <>
             <strong>{`${card.type} / ${card.style} / ${card.power || "-"}`}</strong>
-            <CardKeywordTags tags={card.tags} />
-            {card.text && <span>{card.text}</span>}
+            <CardKeywordTags
+              tags={card.tags}
+              showDescriptions
+              emptyText="No keyword abilities"
+            />
           </>
         ) : (
           "Hover or click a card to show a larger preview"

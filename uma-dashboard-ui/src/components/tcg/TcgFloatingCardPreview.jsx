@@ -30,12 +30,15 @@ export default function TcgFloatingCardPreview({ card }) {
         </div>
       </div>
       <div className="tcg-card-preview-frame">
-        <PlayableCard card={card} />
+        <PlayableCard card={card} showText={false} />
       </div>
       <div className="tcg-card-preview-copy">
         <strong>{getCardSummary(card)}</strong>
-        <CardKeywordTags tags={card.tags} />
-        {card.text && <span>{card.text}</span>}
+        <CardKeywordTags
+          tags={card.tags}
+          showDescriptions
+          emptyText="No keyword abilities"
+        />
       </div>
     </aside>
   );

@@ -13,6 +13,7 @@ export default function PlayableCard({
   onPointerEnter,
   onPointerLeave,
   isDragging = false,
+  showText = true,
 }) {
   const [imageFailed, setImageFailed] = useState(false);
   if (!card) return null;
@@ -75,7 +76,7 @@ export default function PlayableCard({
             <span>{card.style}</span>
             <strong>{card.power || "-"}</strong>
           </div>
-          {!compact && <p className="tcg-card-text">{card.text}</p>}
+          {!compact && showText && <p className="tcg-card-text">{card.text}</p>}
         </>
       )}
     </button>

@@ -214,7 +214,7 @@
   border-radius: var(--uma-radius-sm);
   padding: 10px;
   display: grid;
-  grid-template-columns: minmax(80px,24%) 1fr;
+  grid-template-columns: minmax(108px, 34%) 1fr;
   gap: 12px;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.62), rgba(153, 240, 177, 0.18) 42%, rgba(255, 255, 255, 0.7) 74%),
@@ -268,7 +268,7 @@
 .tcg-deck-preview-art {
   position: relative;
   min-height: 170px;
-  /* aspect-ratio: 2.8 / 4; */
+  aspect-ratio: 2.8 / 4;
   border-radius: var(--uma-radius-xs);
   display: grid;
   place-items: center;
@@ -1720,6 +1720,7 @@
 
 .tcg-keyword-tag {
   position: relative;
+  display: inline-flex;
   border-radius: var(--uma-radius-pill);
   padding: 4px 8px;
   background: rgba(35, 150, 78, 0.12);
@@ -1737,6 +1738,7 @@
 
 .tcg-keyword-tooltip {
   position: absolute;
+  display: block;
   left: 0;
   bottom: calc(100% + 7px);
   z-index: 3;
@@ -1760,6 +1762,27 @@
 .tcg-keyword-tag.open .tcg-keyword-tooltip {
   opacity: 1;
   transform: translateY(0);
+}
+
+.tcg-keyword-descriptions {
+  display: grid;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.tcg-keyword-descriptions span,
+.tcg-keyword-empty {
+  display: block;
+  color: var(--uma-muted);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.tcg-keyword-descriptions strong {
+  display: inline;
+  margin: 0;
+  color: var(--uma-ink);
 }
 
 @keyframes tcg-hover-preview-in {
