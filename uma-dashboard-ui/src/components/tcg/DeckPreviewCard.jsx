@@ -6,15 +6,15 @@ export default function DeckPreviewCard({ deck, selected, onSelect }) {
   const [showCards, setShowCards] = useState(false);
   const theme = tcgStyleThemes[deck.style] || tcgStyleThemes.Speed;
   const validation = deck.validation || { valid: true, errors: [] };
-  const coverImage = deck.coverImage || deck.coverCard?.image || deck.trainerCard?.image || "";
-  const coverLabel = deck.coverCard?.name || deck.trainerCard?.name || deck.style;
+  const coverImage = deck.coverImage || deck.coverCard?.image || "";
+  const coverLabel = deck.coverCard?.name || deck.style;
   const cardById = useMemo(() => {
     const cards = new Map();
-    [...(deck.cards || []), deck.coverCard, deck.trainerCard].forEach((card) => {
+    [...(deck.cards || []), deck.coverCard].forEach((card) => {
       if (card?.id && !cards.has(card.id)) cards.set(card.id, card);
     });
     return cards;
-  }, [deck.cards, deck.coverCard, deck.trainerCard]);
+  }, [deck.cards, deck.coverCard]);
   const deckRows = useMemo(
     () =>
       Object.entries(deck.mainDeck || {}).map(([cardId, quantity]) => ({
@@ -70,7 +70,6 @@ export default function DeckPreviewCard({ deck, selected, onSelect }) {
         </div>
         <div className="tcg-deck-meta">
           <span>Main Deck {deck.mainDeckCount || deck.cards?.length || 0}</span>
-          <span>Trainer {deck.trainerCard ? "1" : "0"}</span>
           <span>{(deck.keyCards || []).join(" / ")}</span>
         </div>
         <button
@@ -118,16 +117,6 @@ export default function DeckPreviewCard({ deck, selected, onSelect }) {
               <X size={18} />
             </button>
           </header>
-
-          {deck.trainerCard && (
-            <div className="tcg-deck-list-trainer">
-              <img src={deck.trainerCard.image} alt="" />
-              <div>
-                <span>Trainer</span>
-                <strong>{deck.trainerCard.name}</strong>
-              </div>
-            </div>
-          )}
 
           <div className="tcg-deck-list-rows">
             {deckRows.map(({ cardId, quantity, card }) => (
