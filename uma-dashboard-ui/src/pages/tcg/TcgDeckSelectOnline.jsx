@@ -5,6 +5,7 @@ export default function TcgDeckSelectOnline({
   room,
   myPlayerId,
   decks,
+  cardsById = {},
   trainers = [],
   onConfirmDeck,
   onConfirmLoadout,
@@ -77,6 +78,7 @@ export default function TcgDeckSelectOnline({
           <DeckPreviewCard
             key={deck.id}
             deck={deck}
+            cardsById={cardsById}
             selected={selectedDeckId === deck.id}
             onSelect={setSelectedDeckId}
           />
