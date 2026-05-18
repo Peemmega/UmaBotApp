@@ -303,6 +303,7 @@ export default function CardGamePage({
             room={room}
             myPlayerId={room.my_player_id}
             decks={tcgData.decks}
+            cardsById={tcgData.cards}
             trainers={tcgData.trainers}
             error={onlineError}
             onConfirmDeck={handleConfirmDeck}
@@ -349,6 +350,7 @@ export default function CardGamePage({
         </button>
         <DeckSelect
           decks={tcgData.decks}
+          cardsById={tcgData.cards}
           trainers={tcgData.trainers}
           selections={selections}
           onSelectDeck={handleSelectDeck}

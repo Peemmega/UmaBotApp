@@ -3,6 +3,7 @@ import DeckPreviewCard from "./DeckPreviewCard";
 
 export default function DeckSelect({
   decks,
+  cardsById = {},
   trainers = [],
   selections,
   onSelectDeck,
@@ -78,6 +79,7 @@ export default function DeckSelect({
                 <DeckPreviewCard
                   key={`${playerId}-${deck.id}`}
                   deck={deck}
+                  cardsById={cardsById}
                   selected={selections[playerId]?.deckId === deck.id}
                   onSelect={(deckId) => onSelectDeck(playerId, deckId)}
                 />
