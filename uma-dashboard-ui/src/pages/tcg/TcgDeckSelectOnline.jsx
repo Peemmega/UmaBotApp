@@ -20,8 +20,7 @@ export default function TcgDeckSelectOnline({
   const trainerConfirmed = room.trainer_confirmed || {};
   const youConfirmed = Boolean(confirmed[myPlayerId]);
   const opponentId = myPlayerId === "player1" ? "player2" : "player1";
-  const selectedDeck = deckList.find((deck) => deck.id === selectedDeckId);
-  const activeTrainerId = selectedTrainerId || selectedDeck?.trainer || trainers[0]?.id || "";
+  const activeTrainerId = selectedTrainerId || trainers[0]?.id || "";
 
   return (
     <div className="tcg-online-shell">

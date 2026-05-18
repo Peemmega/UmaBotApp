@@ -211,18 +211,16 @@ export default function CardGamePage({
   };
 
   const handleConfirmDeck = async (deckId) => {
-    const deck = deckMap.get(deckId);
-    await handleConfirmLoadout(deckId, deck?.trainer || defaultTrainerId);
+    await handleConfirmLoadout(deckId, defaultTrainerId);
   };
 
   const handleSelectDeck = (playerId, deckId) => {
-    const deck = deckMap.get(deckId);
     setSelections((prev) => ({
       ...prev,
       [playerId]: {
         ...prev[playerId],
         deckId,
-        trainerId: prev[playerId]?.trainerId || deck?.trainer || defaultTrainerId,
+        trainerId: prev[playerId]?.trainerId || defaultTrainerId,
       },
     }));
   };
@@ -244,14 +242,14 @@ export default function CardGamePage({
         "player1",
         "Player 1",
         player1Deck,
-        selections.player1.trainerId || player1Deck.trainer,
+        selections.player1.trainerId || defaultTrainerId,
         tcgData.cards
       ),
       player2: setupPlayer(
         "player2",
         "Player 2",
         player2Deck,
-        selections.player2.trainerId || player2Deck.trainer,
+        selections.player2.trainerId || defaultTrainerId,
         tcgData.cards
       ),
     });
