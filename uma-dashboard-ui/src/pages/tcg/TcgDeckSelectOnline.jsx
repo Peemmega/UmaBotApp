@@ -1,5 +1,6 @@
 import { useState } from "react";
 import DeckPreviewCard from "../../components/tcg/DeckPreviewCard";
+import TcgFloatingCardPreview from "../../components/tcg/TcgFloatingCardPreview";
 
 export default function TcgDeckSelectOnline({
   room,
@@ -16,6 +17,7 @@ export default function TcgDeckSelectOnline({
 }) {
   const [selectedDeckId, setSelectedDeckId] = useState("");
   const [selectedTrainerId, setSelectedTrainerId] = useState("");
+  const [hoveredPreviewCard, setHoveredPreviewCard] = useState(null);
   const deckList = decks || [];
   const confirmed = room.deck_confirmed || {};
   const trainerConfirmed = room.trainer_confirmed || {};
@@ -81,9 +83,12 @@ export default function TcgDeckSelectOnline({
             cardsById={cardsById}
             selected={selectedDeckId === deck.id}
             onSelect={setSelectedDeckId}
+            onPreviewCard={setHoveredPreviewCard}
+            onPreviewEnd={() => setHoveredPreviewCard(null)}
           />
         ))}
       </div>
+      <TcgFloatingCardPreview card={hoveredPreviewCard} />
     </div>
   );
 }

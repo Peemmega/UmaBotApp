@@ -1607,6 +1607,12 @@
   overflow: auto;
 }
 
+.tcg-floating-card-preview {
+  z-index: 5200;
+  pointer-events: none;
+  animation: tcg-hover-preview-in 140ms ease-out;
+}
+
 .tcg-card-preview-heading {
   display: flex;
   align-items: flex-start;
@@ -1695,6 +1701,27 @@
   line-height: 1.25;
 }
 
+.tcg-card-preview-copy strong,
+.tcg-card-preview-copy span {
+  display: block;
+}
+
+.tcg-card-preview-copy strong {
+  color: var(--uma-ink);
+  margin-bottom: 4px;
+}
+
+@keyframes tcg-hover-preview-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
 .tcg-preview-toggle {
   display: none;
 }
@@ -1709,6 +1736,12 @@
     max-height: min(72vh, 520px);
     transform: translateY(calc(100% + 18px));
     transition: transform var(--uma-duration-base) ease;
+  }
+
+  .tcg-floating-card-preview {
+    z-index: 5200;
+    pointer-events: none;
+    animation: tcg-hover-preview-mobile-in 140ms ease-out;
   }
 
   .tcg-card-preview-panel.open {
@@ -1752,6 +1785,17 @@
   .tcg-card-preview-frame .tcg-card-back {
     width: 118px;
     height: 166px;
+  }
+
+  @keyframes tcg-hover-preview-mobile-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   .tcg-deck-select-columns {

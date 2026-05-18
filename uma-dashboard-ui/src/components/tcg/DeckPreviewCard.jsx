@@ -3,7 +3,14 @@ import { createPortal } from "react-dom";
 import { Check, X } from "lucide-react";
 import { tcgAssets, tcgStyleThemes } from "../../data/tcgRuntime";
 
-export default function DeckPreviewCard({ deck, selected, onSelect, cardsById = {} }) {
+export default function DeckPreviewCard({
+  deck,
+  selected,
+  onSelect,
+  cardsById = {},
+  onPreviewCard,
+  onPreviewEnd,
+}) {
   const [showCards, setShowCards] = useState(false);
   const theme = tcgStyleThemes[deck.style] || tcgStyleThemes.Speed;
   const validation = deck.validation || { valid: true, errors: [] };
@@ -32,11 +39,20 @@ export default function DeckPreviewCard({ deck, selected, onSelect, cardsById = 
       })),
     [cardById, deck.mainDeck]
   );
+  const showPreview = (card) => {
+    if (!card?.image || card.hidden || card.id === "hidden-card") return;
+    onPreviewCard?.(card);
+  };
+  const hidePreview = () => onPreviewEnd?.();
 
   const handleSelect = () => onSelect(deck.id);
   const handleOpenDeckList = (event) => {
     event.stopPropagation();
     setShowCards(true);
+  };
+  const handleCloseDeckList = () => {
+    hidePreview();
+    setShowCards(false);
   };
   const handleKeyDown = (event) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -49,7 +65,7 @@ export default function DeckPreviewCard({ deck, selected, onSelect, cardsById = 
     if (!showCards) return undefined;
 
     const handleEscape = (event) => {
-      if (event.key === "Escape") setShowCards(false);
+      if (event.key === "Escape") handleCloseDeckList();
     };
 
     window.addEventListener("keydown", handleEscape);
@@ -60,7 +76,7 @@ export default function DeckPreviewCard({ deck, selected, onSelect, cardsById = 
     <div
       className="tcg-deck-list-backdrop"
       role="presentation"
-      onClick={() => setShowCards(false)}
+      onClick={handleCloseDeckList}
     >
       <section
         className="tcg-deck-list-modal"
@@ -77,7 +93,7 @@ export default function DeckPreviewCard({ deck, selected, onSelect, cardsById = 
           <button
             type="button"
             className="tcg-deck-list-close"
-            onClick={() => setShowCards(false)}
+            onClick={handleCloseDeckList}
             aria-label="Close deck list"
           >
             <X size={18} />
@@ -87,7 +103,19 @@ export default function DeckPreviewCard({ deck, selected, onSelect, cardsById = 
         <div className="tcg-deck-list-rows">
           {deckRows.map(({ cardId, quantity, card }) => (
             <div className="tcg-deck-list-row" key={cardId}>
-              {card.image ? <img src={card.image} alt="" /> : <div />}
+              {card.image ? (
+                <img
+                  src={card.image}
+                  alt=""
+                  draggable="false"
+                  onMouseEnter={() => showPreview(card)}
+                  onMouseLeave={hidePreview}
+                  onFocus={() => showPreview(card)}
+                  onBlur={hidePreview}
+                />
+              ) : (
+                <div />
+              )}
               <strong>x{quantity}</strong>
               <div>
                 <span>{card.name}</span>
@@ -127,7 +155,16 @@ export default function DeckPreviewCard({ deck, selected, onSelect, cardsById = 
         </span>
         <div className="tcg-deck-preview-art">
           {coverImage ? (
-            <img src={coverImage} alt={coverLabel} loading="lazy" />
+            <img
+              src={coverImage}
+              alt={coverLabel}
+              loading="lazy"
+              draggable="false"
+              onMouseEnter={() => showPreview(coverCard)}
+              onMouseLeave={hidePreview}
+              onFocus={() => showPreview(coverCard)}
+              onBlur={hidePreview}
+            />
           ) : (
             <span>{coverLabel}</span>
           )}
