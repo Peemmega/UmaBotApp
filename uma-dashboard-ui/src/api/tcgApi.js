@@ -44,40 +44,43 @@ export function getTcgTrainers() {
 export async function loadTcgData({ force = false } = {}) {
   if (!force && tcgDataCache) return tcgDataCache;
 
-  if (!force) {
+  try {
+    const [cardsResponse, decksResponse, trainersResponse] = await Promise.all([
+      getTcgCards(),
+      getTcgDecks(),
+      getTcgTrainers(),
+    ]);
+    const version = [
+      cardsResponse.version,
+      decksResponse.version,
+      trainersResponse.version,
+    ].join(":");
+    const data = {
+      version,
+      cards: cardsResponse.cards || {},
+      decks: decksResponse.decks || [],
+      trainers: trainersResponse.trainers || [],
+    };
+
+    tcgDataCache = data;
+    localStorage.setItem(TCG_DATA_CACHE_KEY, JSON.stringify(data));
+    preloadCardImages(data.cards);
+    return data;
+  } catch (error) {
+    if (force) throw error;
+
     const cached = localStorage.getItem(TCG_DATA_CACHE_KEY);
-    if (cached) {
-      try {
-        tcgDataCache = JSON.parse(cached);
-        preloadCardImages(tcgDataCache.cards);
-        return tcgDataCache;
-      } catch {
-        localStorage.removeItem(TCG_DATA_CACHE_KEY);
-      }
+    if (!cached) throw error;
+
+    try {
+      tcgDataCache = JSON.parse(cached);
+      preloadCardImages(tcgDataCache.cards);
+      return tcgDataCache;
+    } catch {
+      localStorage.removeItem(TCG_DATA_CACHE_KEY);
+      throw error;
     }
   }
-
-  const [cardsResponse, decksResponse, trainersResponse] = await Promise.all([
-    getTcgCards(),
-    getTcgDecks(),
-    getTcgTrainers(),
-  ]);
-  const version = [
-    cardsResponse.version,
-    decksResponse.version,
-    trainersResponse.version,
-  ].join(":");
-  const data = {
-    version,
-    cards: cardsResponse.cards || {},
-    decks: decksResponse.decks || [],
-    trainers: trainersResponse.trainers || [],
-  };
-
-  tcgDataCache = data;
-  localStorage.setItem(TCG_DATA_CACHE_KEY, JSON.stringify(data));
-  preloadCardImages(data.cards);
-  return data;
 }
 
 export function getRoom(roomId, userId) {
