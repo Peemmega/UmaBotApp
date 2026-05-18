@@ -9,6 +9,7 @@ import CardZone from "./CardZone";
 import PlayableCard from "./PlayableCard";
 import ZoneViewerModal from "./ZoneViewerModal";
 import CardBack from "./CardBack";
+import CardKeywordTags from "./CardKeywordTags";
 import { createCarrotCard, shuffleCards } from "../../data/tcgRuntime";
 
 const ZONES = ["deck", "hand", "field", "life", "discard", "carrot", "expel"];
@@ -1116,9 +1117,15 @@ function CardPreviewPanel({ card, hidden }) {
         )}
       </div>
       <div className="tcg-card-preview-copy">
-        {card && !hidden
-          ? `${card.type} / ${card.style} / ${card.power || "-"}`
-          : "Hover or click a card to show a larger preview"}
+        {card && !hidden ? (
+          <>
+            <strong>{`${card.type} / ${card.style} / ${card.power || "-"}`}</strong>
+            <CardKeywordTags tags={card.tags} />
+            {card.text && <span>{card.text}</span>}
+          </>
+        ) : (
+          "Hover or click a card to show a larger preview"
+        )}
       </div>
     </aside>
   );
