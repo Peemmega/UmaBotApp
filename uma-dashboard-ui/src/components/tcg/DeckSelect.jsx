@@ -3,12 +3,19 @@ import DeckPreviewCard from "./DeckPreviewCard";
 
 export default function DeckSelect({
   decks,
+  trainers = [],
   selections,
   onSelectDeck,
+  onSelectTrainer,
   onStartGame,
 }) {
   const deckList = decks || [];
-  const canStart = Boolean(selections.player1 && selections.player2);
+  const canStart = Boolean(
+    selections.player1?.deckId &&
+      selections.player1?.trainerId &&
+      selections.player2?.deckId &&
+      selections.player2?.trainerId
+  );
 
   return (
     <div className="tcg-deck-select">
@@ -45,16 +52,33 @@ export default function DeckSelect({
               </div>
               <strong>
                 {deckList.find(
-                  (deck) => deck.id === selections[playerId]
+                  (deck) => deck.id === selections[playerId]?.deckId
                 )?.name || "Not selected"}
               </strong>
+            </div>
+            <div className="tcg-trainer-select-grid">
+              {trainers.map((trainer) => (
+                <button
+                  type="button"
+                  key={`${playerId}-${trainer.id}`}
+                  className={
+                    selections[playerId]?.trainerId === trainer.id
+                      ? "tcg-trainer-option selected"
+                      : "tcg-trainer-option"
+                  }
+                  onClick={() => onSelectTrainer(playerId, trainer.id)}
+                >
+                  <img src={trainer.image} alt="" />
+                  <span>{trainer.name}</span>
+                </button>
+              ))}
             </div>
             <div className="tcg-deck-grid">
               {deckList.map((deck) => (
                 <DeckPreviewCard
                   key={`${playerId}-${deck.id}`}
                   deck={deck}
-                  selected={selections[playerId] === deck.id}
+                  selected={selections[playerId]?.deckId === deck.id}
                   onSelect={(deckId) => onSelectDeck(playerId, deckId)}
                 />
               ))}

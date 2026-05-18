@@ -2,13 +2,14 @@ import PlayableCard from "./PlayableCard";
 
 const PILE_ZONES = new Set(["deck", "life", "discard", "expel"]);
 const ALWAYS_HIDDEN_ZONES = new Set(["deck", "life"]);
-const HIDE_HEADER_ZONES = new Set(["field", "carrot"]);
+const HIDE_HEADER_ZONES = new Set(["field", "trainer", "carrot"]);
 
 function getZoneTitle(zone) {
   const titles = {
     deck: "Deck",
     hand: "Hand",
     field: "Field",
+    trainer: "Trainer",
     life: "Life Zone",
     discard: "Discard",
     carrot: "Carrot Zone",
@@ -40,6 +41,7 @@ export default function CardZone({
   const visibleCards = isPile ? cards.slice(0, 1) : cards;
   const selectedCards = new Set(selectedCardIds);
   const isFreeField = zone === "field";
+  const isCompactZone = zone !== "field";
   const hideHeader = HIDE_HEADER_ZONES.has(zone);
 
   return (
@@ -91,7 +93,7 @@ export default function CardZone({
             >
               <PlayableCard
                 card={card}
-                compact={zone !== "field"}
+                compact={isCompactZone}
                 hidden={isHiddenCard}
                 selected={selectedCards.has(card.instanceId)}
                 hovered={hoveredCardId === card.instanceId}
