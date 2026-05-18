@@ -434,39 +434,23 @@
 }
 
 .tcg-deck-list-modal {
-    position: relative;
-    width: min(760px, 100%);
-    max-height: min(80vh, 920px);
-
-    margin: auto;
-
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
-
+    width: min(600px, -24px + 100vw);
+    height: min(800px, -24px + 100dvh);
+    max-height: none;
+    box-shadow: var(--uma-shadow-pop);
+    flex-direction: column;
+    display: flex;
+    border-radius: var(--uma-radius-md);
+    background: var(--uma-surface);
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.74);
+    border-image: initial;
     overflow: hidden;
-    background:
-        linear-gradient(
-            135deg,
-            #ffffff94,
-            #a6f2bb29 46%,
-            #ffffff80
-        ),
-        linear-gradient(
-            #fffffff5,
-            #effff4eb
-        ),
-        #fff;
-
-    border: 1px solid #77da9257;
-
-    box-shadow:
-        0 28px 76px #06231157,
-        inset 0 1px #ffffffd1;
 
     animation:
         tcg-modal-pop .19s var(--uma-ease-pop);
 
-    position: relative;
 }
 
 .tcg-deck-list-header {
