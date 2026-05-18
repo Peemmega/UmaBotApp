@@ -420,61 +420,32 @@
 }
 
 .tcg-deck-list-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-
-  z-index: 9999;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: clamp(12px, 3vw, 28px);
-  background: rgba(6, 21, 13, 0.58);
-  backdrop-filter: blur(12px) saturate(1.1);
-  overflow: hidden;
-
-  animation: tcg-modal-fade 160ms ease-out;
-  isolation: isolate;
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(10px, 2vw, 22px);
+    background: rgba(20, 28, 22, 0.52);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.18s ease;
 }
 
 .tcg-deck-list-modal {
-    position: relative;
     width: min(760px, 100%);
-    max-height: min(80vh, 920px);
+    max-height: 82vh;
 
-    margin: auto;
+    overflow: hidden;
 
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
 
-    overflow: hidden;
-    background:
-        linear-gradient(
-            135deg,
-            #ffffff94,
-            #a6f2bb29 46%,
-            #ffffff80
-        ),
-        linear-gradient(
-            #fffffff5,
-            #effff4eb
-        ),
-        #fff;
-
-    border: 1px solid #77da9257;
-
-    box-shadow:
-        0 28px 76px #06231157,
-        inset 0 1px #ffffffd1;
-
-    animation:
-        tcg-modal-pop .19s var(--uma-ease-pop);
+    border-radius: var(--uma-radius-lg);
 
     position: relative;
+
+    margin: auto;
 }
 
 .tcg-deck-list-header {
