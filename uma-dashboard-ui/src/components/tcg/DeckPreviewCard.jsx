@@ -181,12 +181,12 @@ export default function DeckPreviewCard({
               <span key={tag}>{tag}</span>
             ))}
           </div>
-          <div className="tcg-deck-meta">
+          {/* <div className="tcg-deck-meta">
             <span>Main Deck {totalCards}</span>
             {keyCards && <span>{keyCards}</span>}
-          </div>
+          </div> */}
           <div className="tcg-deck-preview-actions">
-            <button
+            {/* <button
               type="button"
               className="tcg-select-deck-button"
               onClick={(event) => {
@@ -195,7 +195,7 @@ export default function DeckPreviewCard({
               }}
             >
               Select Deck
-            </button>
+            </button> */}
             <button
               type="button"
               className="tcg-view-deck-button"
