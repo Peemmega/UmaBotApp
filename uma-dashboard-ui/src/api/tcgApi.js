@@ -5,7 +5,7 @@ const API_BASE =
   "https://umatcgserver-production.up.railway.app";
 
 export const TCG_API_BASE = API_BASE.replace(/\/$/, "");
-const TCG_DATA_CACHE_KEY = "uma.tcg.data.v2";
+const TCG_DATA_CACHE_KEY = "uma.tcg.data.v3";
 let tcgDataCache = null;
 
 async function request(path, options = {}) {
@@ -37,10 +37,6 @@ export function getTcgDecks() {
   return request("/tcg/decks");
 }
 
-export function getTcgTrainers() {
-  return request("/tcg/trainers");
-}
-
 export async function loadTcgData({ force = false } = {}) {
   if (!force && tcgDataCache) return tcgDataCache;
 
@@ -57,21 +53,18 @@ export async function loadTcgData({ force = false } = {}) {
     }
   }
 
-  const [cardsResponse, decksResponse, trainersResponse] = await Promise.all([
+  const [cardsResponse, decksResponse] = await Promise.all([
     getTcgCards(),
     getTcgDecks(),
-    getTcgTrainers(),
   ]);
   const version = [
     cardsResponse.version,
     decksResponse.version,
-    trainersResponse.version,
   ].join(":");
   const data = {
     version,
     cards: cardsResponse.cards || {},
     decks: decksResponse.decks || [],
-    trainers: trainersResponse.trainers || [],
   };
 
   tcgDataCache = data;
@@ -112,13 +105,12 @@ export function startRoom(roomId, player) {
   });
 }
 
-export function confirmLoadout(roomId, userId, deckId, trainerId) {
+export function confirmLoadout(roomId, userId, deckId) {
   return request(`/tcg/rooms/${roomId}/loadout`, {
     method: "POST",
     body: JSON.stringify({
       user_id: userId,
       deck_id: deckId,
-      trainer_id: trainerId,
     }),
   });
 }

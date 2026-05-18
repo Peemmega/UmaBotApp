@@ -408,8 +408,7 @@
   border-bottom: 1px solid rgba(35, 150, 78, 0.12);
 }
 
-.tcg-deck-list-header span,
-.tcg-deck-list-trainer span {
+.tcg-deck-list-header span {
   color: #4f7657;
   font-size: 11px;
   font-weight: 1000;
@@ -434,28 +433,11 @@
   cursor: pointer;
 }
 
-.tcg-deck-list-trainer {
-  margin: 12px 16px 0;
-  display: grid;
-  grid-template-columns: 42px 1fr;
-  align-items: center;
-  gap: 10px;
-  border-radius: var(--uma-radius-sm);
-  padding: 8px;
-  background: rgba(226, 255, 235, 0.72);
-}
-
-.tcg-deck-list-trainer img,
 .tcg-deck-list-row img {
   width: 36px;
   height: 50px;
   object-fit: cover;
   border-radius: 6px;
-}
-
-.tcg-deck-list-trainer strong {
-  display: block;
-  color: var(--uma-ink);
 }
 
 .tcg-deck-list-rows {
@@ -1472,44 +1454,6 @@
 
 .tcg-online-deck-grid {
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-}
-
-.tcg-trainer-select-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(138px, 1fr));
-  gap: 10px;
-  margin: 12px 0 16px;
-}
-
-.tcg-trainer-option {
-  display: grid;
-  grid-template-columns: 44px 1fr;
-  align-items: center;
-  gap: 10px;
-  min-height: 62px;
-  border: 1px solid rgba(64, 175, 103, 0.18);
-  border-radius: 12px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(231, 255, 238, 0.78));
-  color: #235c36;
-  font-weight: 900;
-  text-align: left;
-  cursor: pointer;
-  box-shadow: 0 10px 22px rgba(54, 129, 77, 0.12);
-  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
-}
-
-.tcg-trainer-option:hover,
-.tcg-trainer-option.selected {
-  border-color: rgba(72, 194, 114, 0.68);
-  box-shadow: 0 14px 28px rgba(54, 129, 77, 0.2), 0 0 0 3px rgba(102, 216, 134, 0.18);
-  transform: translateY(-1px);
-}
-
-.tcg-trainer-option img {
-  width: 38px;
-  height: 52px;
-  object-fit: cover;
-  border-radius: 7px;
 }
 
 .tcg-practice-back {

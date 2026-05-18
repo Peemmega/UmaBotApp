@@ -30,7 +30,6 @@ export const tcgStyleThemes = STYLE_THEMES;
 
 export const tcgAssets = {
   cardBack: "",
-  trainer: "/tcg/cards/trainers/UMT_001.webp",
   carrot: "/tcg/cards/carrots/UMC_01.webp",
 };
 
@@ -65,16 +64,6 @@ export function createDeckInstance(deck, playerId, cardsById = {}) {
     instanceId: `${playerId}-${deck.id}-${index + 1}`,
     status: "active",
   }));
-}
-
-export function createTrainerCard(playerId, trainerId = "UMT-001", cardsById = {}) {
-  const trainer = getCard(cardsById, trainerId) || getCard(cardsById, "UMT-001");
-  return {
-    ...trainer,
-    instanceId: `${playerId}-trainer-card`,
-    style: "Wit",
-    status: "active",
-  };
 }
 
 export function createCarrotCard(playerId, index, cardsById = {}) {

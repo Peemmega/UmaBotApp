@@ -5,7 +5,6 @@ export default function TcgDeckSelectOnline({
   room,
   myPlayerId,
   decks,
-  trainers = [],
   onConfirmDeck,
   onConfirmLoadout,
   onLeave,
@@ -14,14 +13,10 @@ export default function TcgDeckSelectOnline({
   leaving = false,
 }) {
   const [selectedDeckId, setSelectedDeckId] = useState("");
-  const [selectedTrainerId, setSelectedTrainerId] = useState("");
   const deckList = decks || [];
   const confirmed = room.deck_confirmed || {};
-  const trainerConfirmed = room.trainer_confirmed || {};
   const youConfirmed = Boolean(confirmed[myPlayerId]);
   const opponentId = myPlayerId === "player1" ? "player2" : "player1";
-  const selectedDeck = deckList.find((deck) => deck.id === selectedDeckId);
-  const activeTrainerId = selectedTrainerId || selectedDeck?.trainer || trainers[0]?.id || "";
 
   return (
     <div className="tcg-online-shell">
@@ -36,42 +31,24 @@ export default function TcgDeckSelectOnline({
           </button>
           <button
             type="button"
-            disabled={!selectedDeckId || !activeTrainerId || youConfirmed || confirming || leaving}
+            disabled={!selectedDeckId || youConfirmed || confirming || leaving}
             onClick={() =>
               onConfirmLoadout
-                ? onConfirmLoadout(selectedDeckId, activeTrainerId)
+                ? onConfirmLoadout(selectedDeckId)
                 : onConfirmDeck(selectedDeckId)
             }
           >
-            {confirming ? "Confirming..." : "Confirm Loadout"}
+            {confirming ? "Confirming..." : "Confirm Deck"}
           </button>
         </div>
       </header>
 
       <div className="tcg-confirm-strip">
-        <span>You: {youConfirmed && trainerConfirmed[myPlayerId] ? "Ready" : "Selecting"}</span>
-        <span>Opponent: {confirmed[opponentId] && trainerConfirmed[opponentId] ? "Ready" : "Selecting"}</span>
+        <span>You: {youConfirmed ? "Ready" : "Selecting"}</span>
+        <span>Opponent: {confirmed[opponentId] ? "Ready" : "Selecting"}</span>
       </div>
 
       {error && <div className="tcg-online-error">{error}</div>}
-
-      <div className="tcg-trainer-select-grid">
-        {trainers.map((trainer) => (
-          <button
-            type="button"
-            key={trainer.id}
-            className={
-              activeTrainerId === trainer.id
-                ? "tcg-trainer-option selected"
-                : "tcg-trainer-option"
-            }
-            onClick={() => setSelectedTrainerId(trainer.id)}
-          >
-            <img src={trainer.image} alt="" />
-            <span>{trainer.name}</span>
-          </button>
-        ))}
-      </div>
 
       <div className="tcg-online-deck-grid">
         {deckList.map((deck) => (

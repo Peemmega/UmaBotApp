@@ -12,7 +12,7 @@ import {
   startRoom,
 } from "../../api/tcgApi";
 import useTcgSocket from "../../hooks/useTcgSocket";
-import { createDeckInstance, createTrainerCard } from "../../data/tcgRuntime";
+import { createDeckInstance } from "../../data/tcgRuntime";
 import TcgDeckSelectOnline from "../tcg/TcgDeckSelectOnline";
 import TcgLobbyPage from "../tcg/TcgLobbyPage";
 import TcgOnlineBoardPage from "../tcg/TcgOnlineBoardPage";
@@ -20,23 +20,20 @@ import TcgRoomPage from "../tcg/TcgRoomPage";
 import "../../styles/tcgPage.css";
 import "../../styles/tcgTheme.css";
 
-function setupPlayer(playerId, playerName, deck, trainerId, cardsById) {
+function setupPlayer(playerId, playerName, deck, cardsById) {
   const deckInstance = createDeckInstance(deck, playerId, cardsById);
-  const trainerCard = createTrainerCard(playerId, trainerId, cardsById);
 
   return {
     id: playerId,
     name: playerName,
     deckId: deck.id,
     deckName: deck.name,
-    trainerId,
-    trainerCard,
     carrotCounter: 0,
     zones: {
       hand: deckInstance.slice(0, 5),
       life: deckInstance.slice(5, 10),
       deck: deckInstance.slice(10),
-      field: [{ ...trainerCard, fieldX: 18, fieldY: 18 }],
+      field: [],
       discard: [],
       carrot: [],
       expel: [],
@@ -54,18 +51,16 @@ export default function CardGamePage({
   const [tcgData, setTcgData] = useState({
     cards: {},
     decks: [],
-    trainers: [],
   });
   const [dataLoading, setDataLoading] = useState(true);
   const deckMap = useMemo(
     () => new Map(tcgData.decks.map((deck) => [deck.id, deck])),
     [tcgData.decks]
   );
-  const defaultTrainerId = tcgData.trainers[0]?.id || "UMT-001";
   const [mode, setMode] = useState("online");
   const [selections, setSelections] = useState({
-    player1: { deckId: "", trainerId: "" },
-    player2: { deckId: "", trainerId: "" },
+    player1: { deckId: "" },
+    player2: { deckId: "" },
   });
   const [players, setPlayers] = useState(null);
   const [rooms, setRooms] = useState([]);
@@ -201,36 +196,26 @@ export default function CardGamePage({
     }
   };
 
-  const handleConfirmLoadout = async (deckId, trainerId) => {
+  const handleConfirmLoadout = async (deckId) => {
     if (!room) return;
     try {
-      setRoom(await confirmLoadout(room.room_id, userId, deckId, trainerId));
+      setRoom(await confirmLoadout(room.room_id, userId, deckId));
     } catch (err) {
       setOnlineError(String(err.message || err));
     }
   };
 
   const handleConfirmDeck = async (deckId) => {
-    const deck = deckMap.get(deckId);
-    await handleConfirmLoadout(deckId, deck?.trainer || defaultTrainerId);
+    await handleConfirmLoadout(deckId);
   };
 
   const handleSelectDeck = (playerId, deckId) => {
-    const deck = deckMap.get(deckId);
     setSelections((prev) => ({
       ...prev,
       [playerId]: {
         ...prev[playerId],
         deckId,
-        trainerId: prev[playerId]?.trainerId || deck?.trainer || defaultTrainerId,
       },
-    }));
-  };
-
-  const handleSelectTrainer = (playerId, trainerId) => {
-    setSelections((prev) => ({
-      ...prev,
-      [playerId]: { ...prev[playerId], trainerId },
     }));
   };
 
@@ -244,14 +229,12 @@ export default function CardGamePage({
         "player1",
         "Player 1",
         player1Deck,
-        selections.player1.trainerId || player1Deck.trainer,
         tcgData.cards
       ),
       player2: setupPlayer(
         "player2",
         "Player 2",
         player2Deck,
-        selections.player2.trainerId || player2Deck.trainer,
         tcgData.cards
       ),
     });
@@ -305,7 +288,6 @@ export default function CardGamePage({
             room={room}
             myPlayerId={room.my_player_id}
             decks={tcgData.decks}
-            trainers={tcgData.trainers}
             error={onlineError}
             onConfirmDeck={handleConfirmDeck}
             onConfirmLoadout={handleConfirmLoadout}
@@ -351,10 +333,8 @@ export default function CardGamePage({
         </button>
         <DeckSelect
           decks={tcgData.decks}
-          trainers={tcgData.trainers}
           selections={selections}
           onSelectDeck={handleSelectDeck}
-          onSelectTrainer={handleSelectTrainer}
           onStartGame={handleStartPractice}
         />
       </div>
