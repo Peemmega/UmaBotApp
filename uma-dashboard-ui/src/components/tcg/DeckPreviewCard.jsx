@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { Check, X } from "lucide-react";
 import { tcgAssets, tcgStyleThemes } from "../../data/tcgRuntime";
 
@@ -54,6 +55,59 @@ export default function DeckPreviewCard({ deck, selected, onSelect, cardsById = 
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [showCards]);
+
+  const deckListModal = showCards ? (
+    <div
+      className="tcg-deck-list-backdrop"
+      role="presentation"
+      onClick={() => setShowCards(false)}
+    >
+      <section
+        className="tcg-deck-list-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${deck.name} card list`}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header className="tcg-deck-list-header">
+          <div>
+            <span>Deck List</span>
+            <h3>{deck.name}</h3>
+          </div>
+          <button
+            type="button"
+            className="tcg-deck-list-close"
+            onClick={() => setShowCards(false)}
+            aria-label="Close deck list"
+          >
+            <X size={18} />
+          </button>
+        </header>
+
+        <div className="tcg-deck-list-rows">
+          {deckRows.map(({ cardId, quantity, card }) => (
+            <div className="tcg-deck-list-row" key={cardId}>
+              {card.image ? <img src={card.image} alt="" /> : <div />}
+              <strong>x{quantity}</strong>
+              <div>
+                <span>{card.name}</span>
+                <small>
+                  {[
+                    card.type,
+                    card.style,
+                    card.cost != null ? `Cost ${card.cost}` : "",
+                    card.power ? `Power ${card.power}` : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" / ")}
+                </small>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  ) : null;
 
   return (
     <>
@@ -121,58 +175,7 @@ export default function DeckPreviewCard({ deck, selected, onSelect, cardsById = 
         </div>
       </article>
 
-      {showCards && (
-        <div
-          className="tcg-deck-list-backdrop"
-          role="presentation"
-          onClick={() => setShowCards(false)}
-        >
-          <section
-            className="tcg-deck-list-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-label={`${deck.name} card list`}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <header className="tcg-deck-list-header">
-              <div>
-                <span>Deck List</span>
-                <h3>{deck.name}</h3>
-              </div>
-              <button
-                type="button"
-                className="tcg-deck-list-close"
-                onClick={() => setShowCards(false)}
-                aria-label="Close deck list"
-              >
-                <X size={18} />
-              </button>
-            </header>
-
-            <div className="tcg-deck-list-rows">
-              {deckRows.map(({ cardId, quantity, card }) => (
-                <div className="tcg-deck-list-row" key={cardId}>
-                  {card.image ? <img src={card.image} alt="" /> : <div />}
-                  <strong>x{quantity}</strong>
-                  <div>
-                    <span>{card.name}</span>
-                    <small>
-                      {[
-                        card.type,
-                        card.style,
-                        card.cost != null ? `Cost ${card.cost}` : "",
-                        card.power ? `Power ${card.power}` : "",
-                      ]
-                        .filter(Boolean)
-                        .join(" / ")}
-                    </small>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-      )}
+      {deckListModal ? createPortal(deckListModal, document.body) : null}
     </>
   );
 }
