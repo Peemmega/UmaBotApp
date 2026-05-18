@@ -1,21 +1,50 @@
-import { Check } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Check, X } from "lucide-react";
 import { tcgStyleThemes } from "../../data/tcgRuntime";
 
 export default function DeckPreviewCard({ deck, selected, onSelect }) {
+  const [showCards, setShowCards] = useState(false);
   const theme = tcgStyleThemes[deck.style] || tcgStyleThemes.Speed;
   const validation = deck.validation || { valid: true, errors: [] };
-  const coverImage = deck.coverCard?.image;
-  const coverLabel = deck.coverCard?.name || deck.style;
+  const coverImage = deck.coverImage || deck.coverCard?.image || deck.trainerCard?.image || "";
+  const coverLabel = deck.coverCard?.name || deck.trainerCard?.name || deck.style;
+  const cardById = useMemo(() => {
+    const cards = new Map();
+    [...(deck.cards || []), deck.coverCard, deck.trainerCard].forEach((card) => {
+      if (card?.id && !cards.has(card.id)) cards.set(card.id, card);
+    });
+    return cards;
+  }, [deck.cards, deck.coverCard, deck.trainerCard]);
+  const deckRows = useMemo(
+    () =>
+      Object.entries(deck.mainDeck || {}).map(([cardId, quantity]) => ({
+        cardId,
+        quantity,
+        card: cardById.get(cardId) || { id: cardId, name: cardId },
+      })),
+    [cardById, deck.mainDeck]
+  );
+
+  const handleSelect = () => onSelect(deck.id);
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleSelect();
+    }
+  };
 
   return (
-    <button
-      type="button"
+    <>
+    <article
       className={`tcg-deck-preview ${selected ? "selected" : ""}`}
       style={{
         "--deck-style-color": theme.color,
         "--deck-style-accent": theme.accent,
       }}
-      onClick={() => onSelect(deck.id)}
+      role="button"
+      tabIndex={0}
+      onClick={handleSelect}
+      onKeyDown={handleKeyDown}
     >
       <span className="tcg-deck-selected-icon" aria-hidden="true">
         <Check size={17} strokeWidth={3} />
@@ -35,21 +64,90 @@ export default function DeckPreviewCard({ deck, selected, onSelect }) {
         <p>{deck.description}</p>
         <div className="tcg-deck-highlight">{deck.highlight}</div>
         <div className="tcg-deck-tags">
-          {deck.tags.map((tag) => (
+          {(deck.tags || []).map((tag) => (
             <span key={tag}>{tag}</span>
           ))}
         </div>
         <div className="tcg-deck-meta">
-          <span>Main Deck {deck.mainDeckCount || deck.cards.length}</span>
+          <span>Main Deck {deck.mainDeckCount || deck.cards?.length || 0}</span>
           <span>Trainer {deck.trainerCard ? "1" : "0"}</span>
-          <span>{deck.keyCards.join(" / ")}</span>
+          <span>{(deck.keyCards || []).join(" / ")}</span>
         </div>
+        <button
+          type="button"
+          className="tcg-view-deck-button"
+          onClick={(event) => {
+            event.stopPropagation();
+            setShowCards(true);
+          }}
+        >
+          ดูการ์ดในเด็ค
+        </button>
         {!validation.valid && (
           <div className="tcg-deck-highlight">
             Invalid: {validation.errors.join(" / ")}
           </div>
         )}
       </div>
-    </button>
+    </article>
+
+    {showCards && (
+      <div
+        className="tcg-deck-list-backdrop"
+        role="presentation"
+        onClick={() => setShowCards(false)}
+      >
+        <section
+          className="tcg-deck-list-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${deck.name} card list`}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <header className="tcg-deck-list-header">
+            <div>
+              <span>Deck List</span>
+              <h3>{deck.name}</h3>
+            </div>
+            <button
+              type="button"
+              className="tcg-deck-list-close"
+              onClick={() => setShowCards(false)}
+              aria-label="Close deck list"
+            >
+              <X size={18} />
+            </button>
+          </header>
+
+          {deck.trainerCard && (
+            <div className="tcg-deck-list-trainer">
+              <img src={deck.trainerCard.image} alt="" />
+              <div>
+                <span>Trainer</span>
+                <strong>{deck.trainerCard.name}</strong>
+              </div>
+            </div>
+          )}
+
+          <div className="tcg-deck-list-rows">
+            {deckRows.map(({ cardId, quantity, card }) => (
+              <div className="tcg-deck-list-row" key={cardId}>
+                {card.image ? <img src={card.image} alt="" /> : <div />}
+                <strong>x{quantity}</strong>
+                <div>
+                  <span>{card.name}</span>
+                  <small>
+                    {[card.type, card.style, card.cost != null ? `Cost ${card.cost}` : "", card.power ? `Power ${card.power}` : ""]
+                      .filter(Boolean)
+                      .join(" / ")}
+                  </small>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    )}
+    </>
   );
 }

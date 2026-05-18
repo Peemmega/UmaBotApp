@@ -11,10 +11,10 @@ import ZoneViewerModal from "./ZoneViewerModal";
 import CardBack from "./CardBack";
 import { createCarrotCard, shuffleCards } from "../../data/tcgRuntime";
 
-const ZONES = ["deck", "hand", "field", "trainer", "life", "discard", "carrot", "expel"];
+const ZONES = ["deck", "hand", "field", "life", "discard", "carrot", "expel"];
 const LEFT_ZONES = ["deck", "life", "discard", "expel"];
 const VIEWABLE_ZONES = ["deck", "discard", "expel"];
-const UNTAP_ZONES = ["field", "trainer", "carrot"];
+const UNTAP_ZONES = ["field", "carrot"];
 const TCG_HOTKEY_CODES = new Set(["KeyR", "KeyD", "KeyH"]);
 
 function isTypingTarget(target) {
@@ -952,11 +952,6 @@ function PlayerTableArea({
 
         <div className="tcg-playfield-cluster">
           <CardZone zone="field" cards={player.zones.field} {...sharedZoneProps} />
-          <CardZone
-            zone="trainer"
-            cards={player.zones.trainer || []}
-            {...sharedZoneProps}
-          />
           <CardZone
             zone="carrot"
             cards={player.zones.carrot}
