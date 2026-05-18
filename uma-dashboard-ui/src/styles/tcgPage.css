@@ -439,6 +439,7 @@
 
   animation: tcg-modal-fade 160ms ease-out;
   isolation: isolate;
+  overscroll-behavior: contain;
 }
 
 .tcg-deck-list-modal {
