@@ -1,5 +1,7 @@
 import { Play } from "lucide-react";
+import { useState } from "react";
 import DeckPreviewCard from "./DeckPreviewCard";
+import TcgFloatingCardPreview from "./TcgFloatingCardPreview";
 
 export default function DeckSelect({
   decks,
@@ -10,6 +12,7 @@ export default function DeckSelect({
   onSelectTrainer,
   onStartGame,
 }) {
+  const [hoveredPreviewCard, setHoveredPreviewCard] = useState(null);
   const deckList = decks || [];
   const canStart = Boolean(
     selections.player1?.deckId &&
@@ -82,12 +85,15 @@ export default function DeckSelect({
                   cardsById={cardsById}
                   selected={selections[playerId]?.deckId === deck.id}
                   onSelect={(deckId) => onSelectDeck(playerId, deckId)}
+                  onPreviewCard={setHoveredPreviewCard}
+                  onPreviewEnd={() => setHoveredPreviewCard(null)}
                 />
               ))}
             </div>
           </section>
         ))}
       </div>
+      <TcgFloatingCardPreview card={hoveredPreviewCard} />
     </div>
   );
 }
