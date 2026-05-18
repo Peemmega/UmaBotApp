@@ -3,14 +3,18 @@ import DeckPreviewCard from "./DeckPreviewCard";
 
 export default function DeckSelect({
   decks,
+  trainers = [],
   selections,
   onSelectDeck,
+  onSelectTrainer,
   onStartGame,
 }) {
   const deckList = decks || [];
   const canStart = Boolean(
     selections.player1?.deckId &&
-      selections.player2?.deckId
+      selections.player1?.trainerId &&
+      selections.player2?.deckId &&
+      selections.player2?.trainerId
   );
 
   return (
@@ -51,6 +55,23 @@ export default function DeckSelect({
                   (deck) => deck.id === selections[playerId]?.deckId
                 )?.name || "Not selected"}
               </strong>
+            </div>
+            <div className="tcg-trainer-select-grid">
+              {trainers.map((trainer) => (
+                <button
+                  type="button"
+                  key={`${playerId}-${trainer.id}`}
+                  className={
+                    selections[playerId]?.trainerId === trainer.id
+                      ? "tcg-trainer-option selected"
+                      : "tcg-trainer-option"
+                  }
+                  onClick={() => onSelectTrainer(playerId, trainer.id)}
+                >
+                  <img src={trainer.image} alt="" />
+                  <span>{trainer.name}</span>
+                </button>
+              ))}
             </div>
             <div className="tcg-deck-grid">
               {deckList.map((deck) => (
