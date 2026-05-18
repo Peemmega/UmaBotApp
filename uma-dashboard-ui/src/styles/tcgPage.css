@@ -420,26 +420,17 @@
 }
 
 .tcg-deck-list-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-
-  z-index: 9999;
-
-  display: flex;
-  align-items: center;
+  z-index: 5000;
+  backdrop-filter: blur(10px);
   justify-content: center;
-
-  padding: clamp(12px, 3vw, 28px);
-  background: rgba(6, 21, 13, 0.58);
-  backdrop-filter: blur(12px) saturate(1.1);
-  overflow: hidden;
-
+  align-items: center;
+  display: flex;
+  position: fixed;
+  background: rgba(42, 25, 50, 0.46);
+  padding: clamp(10px, 2vw, 22px);
+  animation: 0.18s ease 0s 1 normal none running fadeIn;
+  inset: 0px;  
   animation: tcg-modal-fade 160ms ease-out;
-  isolation: isolate;
-  overscroll-behavior: contain;
 }
 
 .tcg-deck-list-modal {
