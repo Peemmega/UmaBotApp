@@ -15,11 +15,13 @@ import CharactersPage from "./dashboard/CharactersPage";
 import QAPage from "./dashboard/QAPage";
 import RacesPage from "./dashboard/RacesPage";
 import CardGamePage from "./dashboard/CardGamePage";
+import RaceGamePage from "./dashboard/RaceGamePage";
 
 const VALID_PAGES = [
   "profile",
   "chars",
   "races",
+  "race",
   "tcg",
   "skills",
   "tutorials",
@@ -81,6 +83,15 @@ export default function DashboardPage({
 
       case "races":
         return <RacesPage userId={userId} />;
+
+      case "race":
+        return (
+          <RaceGamePage
+            username={player?.username || username}
+            userId={userId}
+            avatarUrl={avatarUrl}
+          />
+        );
 
       case "tcg":
         return <CardGamePage />;
