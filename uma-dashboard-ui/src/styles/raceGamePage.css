@@ -511,6 +511,9 @@
 
 .race-log-panel {
   padding: 14px;
+  background:
+    linear-gradient(180deg, #ffffff, #f1fff5),
+    #ffffff;
 }
 
 .race-log-panel > div {
@@ -524,9 +527,12 @@
 
 .race-log-item {
   margin: 0;
+  border: 1px solid rgba(34, 126, 74, 0.14);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.66);
+  background: #ffffff;
+  color: #24382f;
   overflow: hidden;
+  box-shadow: 0 8px 18px rgba(55, 99, 76, 0.08);
 }
 
 .race-log-item p {
@@ -534,27 +540,28 @@
   padding: 8px 10px;
   display: flex;
   gap: 9px;
-  color: rgba(36, 56, 47, 0.78);
+  color: #24382f;
   font-size: 13px;
   font-weight: 850;
 }
 
 .race-log-item p span {
-  color: #2fb86a;
+  color: #0f7a42;
   font-weight: 1000;
 }
 
 .race-log-detail {
-  border-top: 1px solid rgba(47, 184, 106, 0.12);
+  border-top: 1px solid rgba(34, 126, 74, 0.16);
   padding: 8px 10px 10px;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  background: rgba(242, 255, 246, 0.54);
+  background: #eefcf3;
+  color: #24382f;
 }
 
 .race-log-detail strong {
-  color: #6f3f86;
+  color: #5e256f;
   font-size: 12px;
   white-space: pre-line;
 }
@@ -563,15 +570,29 @@
   display: grid;
   grid-template-columns: 72px minmax(0, 1fr);
   gap: 7px;
-  color: rgba(36, 56, 47, 0.74);
+  color: #24382f;
   font-size: 12px;
   line-height: 1.35;
 }
 
 .race-log-detail b {
-  color: #1d8b52;
+  color: #0f7a42;
   font-size: 11px;
   text-transform: uppercase;
+}
+
+.race-log-detail span,
+.race-log-detail em,
+.race-log-detail code,
+.race-log-detail strong,
+.race-log-item span,
+.race-log-item b {
+  opacity: 1;
+}
+
+.race-log-detail span {
+  color: #2b4a3b;
+  word-break: break-word;
 }
 
 @media (max-width: 980px) {

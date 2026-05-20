@@ -255,7 +255,7 @@ export default function RaceGamePage({
                   </span>
                   <h3>{item.race_name}</h3>
                   <p>
-                    Turn {item.turn}/{item.max_turn} · {item.player_count} racers
+                    Turn {item.turn}/{item.max_turn} | {item.player_count} racers
                   </p>
                 </div>
                 <button
@@ -280,7 +280,7 @@ export default function RaceGamePage({
           <span className="race-kicker">{room.phase}</span>
           <h2>{room.race_name}</h2>
           <p>
-            Turn {room.turn}/{room.max_turn} · Phase {room.race_phase} ·{" "}
+            Turn {room.turn}/{room.max_turn} | Phase {room.race_phase} |{" "}
             {socketStatus}
           </p>
         </div>
@@ -313,7 +313,7 @@ export default function RaceGamePage({
             </div>
             <div>
               <Gauge size={17} />
-              <span>{room.distance} · {room.track}</span>
+              <span>{room.distance} | {room.track}</span>
             </div>
           </div>
         </div>
@@ -346,7 +346,7 @@ export default function RaceGamePage({
               <div>
                 <h3>{player.name}</h3>
                 <p>
-                  {player.style} · STA {player.stamina_left} · WIT {player.wit_mana}
+                  {player.style} | STA {player.stamina_left} | WIT {player.wit_mana}
                 </p>
                 <div className="race-progress">
                   <span
@@ -393,7 +393,7 @@ export default function RaceGamePage({
             <div className="race-result-panel">
               <Trophy size={24} />
               <h3>{room.result?.winner?.name || "Race Complete"}</h3>
-              <p>Winner · {room.result?.winner?.score || 0} score</p>
+              <p>Winner | {room.result?.winner?.score || 0} score</p>
             </div>
           ) : (
             <>
@@ -493,8 +493,8 @@ function RaceLogItem({ log }) {
               <div>
                 <b>Roll</b>
                 <span>
-                  {summary.dice || "-"} · base {summary.base_total} · total{" "}
-                  {summary.total} · {summary.distance_color}
+                  {summary.dice || "-"} | base {summary.base_total} | total{" "}
+                  {summary.total} | {summary.distance_color}
                 </span>
               </div>
               <div>
@@ -522,16 +522,16 @@ function RaceLogItem({ log }) {
               <div>
                 <b>Path</b>
                 <span>
-                  {path.label || "-"} · STA -{path.stamina_cost || 0}/+
-                  {path.stamina_gain || 0} · dice cap {signed(-(path.reduce_dice_value || 0))} ·
-                  SPD x{path.spd_multiplier || 1} · POW x{path.power_total_multiplier || 1}
+                  {path.label || "-"} | STA -{path.stamina_cost || 0}/+
+                  {path.stamina_gain || 0} | dice cap {signed(-(path.reduce_dice_value || 0))} |
+                  SPD x{path.spd_multiplier || 1} | POW x{path.power_total_multiplier || 1}
                 </span>
               </div>
               <div>
                 <b>Bonus</b>
                 <span>
-                  {summary.bonus_display || "-"} · STA left {summary.stamina_left}
-                  {summary.stamina_note ? ` · ${summary.stamina_note}` : ""}
+                  {summary.bonus_display || "-"} | STA left {summary.stamina_left}
+                  {summary.stamina_note ? ` | ${summary.stamina_note}` : ""}
                 </span>
               </div>
             </>
