@@ -203,7 +203,7 @@
 .tcg-deck-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 8px;
 }
 
 .tcg-deck-preview {
