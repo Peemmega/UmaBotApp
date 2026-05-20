@@ -83,6 +83,27 @@ export function useRaceSkill(roomId, userId, slot, skillId) {
   });
 }
 
+export function useRaceZone(roomId, player) {
+  return request(`/race/rooms/${roomId}/zone`, {
+    method: "POST",
+    body: JSON.stringify(player),
+  });
+}
+
+export function useRaceBlock(roomId, player) {
+  return request(`/race/rooms/${roomId}/block`, {
+    method: "POST",
+    body: JSON.stringify(player),
+  });
+}
+
+export function useRaceRush(roomId, player) {
+  return request(`/race/rooms/${roomId}/rush`, {
+    method: "POST",
+    body: JSON.stringify(player),
+  });
+}
+
 export function getRaceSocketUrl(roomId, userId) {
   const wsBase = RACE_API_BASE.replace(/^https:/, "wss:").replace(/^http:/, "ws:");
   return `${wsBase}/ws/race/${roomId}?user_id=${encodeURIComponent(userId)}`;

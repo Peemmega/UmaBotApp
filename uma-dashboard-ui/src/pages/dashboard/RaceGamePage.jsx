@@ -20,7 +20,10 @@ import {
   listRaceStages,
   runRaceTurn,
   startRaceRoom,
+  useRaceBlock,
+  useRaceRush,
   useRaceSkill,
+  useRaceZone,
 } from "../../api/raceApi";
 import useRaceSocket from "../../hooks/useRaceSocket";
 import "../../styles/raceGamePage.css";
@@ -174,6 +177,15 @@ export default function RaceGamePage({
     runAction("skill", () =>
       useRaceSkill(room.room_id, userId, skill.slot, skill.id)
     );
+
+  const handleZone = () =>
+    runAction("zone", () => useRaceZone(room.room_id, playerPayload));
+
+  const handleBlock = () =>
+    runAction("block", () => useRaceBlock(room.room_id, playerPayload));
+
+  const handleRush = () =>
+    runAction("rush", () => useRaceRush(room.room_id, playerPayload));
 
   if (!room) {
     return (
@@ -402,6 +414,29 @@ export default function RaceGamePage({
                 <Sparkles size={17} />
                 Skill
               </button>
+              <div className="race-special-actions">
+                <button
+                  type="button"
+                  onClick={handleZone}
+                  disabled={!myPlayer || myPlayer.zone_left <= 0 || Boolean(actionBusy)}
+                >
+                  Zone
+                </button>
+                <button
+                  type="button"
+                  onClick={handleBlock}
+                  disabled={!myPlayer || myPlayer.used_block || Boolean(actionBusy)}
+                >
+                  Block
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRush}
+                  disabled={!myPlayer || myPlayer.used_rush || Boolean(actionBusy)}
+                >
+                  Rush
+                </button>
+              </div>
               {showSkills && (
                 <div className="race-skill-list">
                   {(myPlayer?.skills || []).map((skill) => (
@@ -429,13 +464,85 @@ export default function RaceGamePage({
         <h3>Action Log</h3>
         <div>
           {(room.action_logs || []).slice().reverse().map((log) => (
-            <p key={log.id}>
-              <span>T{log.turn}</span>
-              {log.message}
-            </p>
+            <RaceLogItem key={log.id} log={log} />
           ))}
         </div>
       </section>
     </section>
   );
+}
+
+function RaceLogItem({ log }) {
+  const summary = log.payload?.roll_summary;
+  const pending = summary?.pending_bonus || {};
+  const aptitude = summary?.aptitude_bonus || {};
+  const path = summary?.path || {};
+  const hasDetails = Boolean(summary || log.payload?.result_text);
+
+  return (
+    <article className="race-log-item">
+      <p>
+        <span>T{log.turn}</span>
+        {log.message}
+      </p>
+      {hasDetails && (
+        <div className="race-log-detail">
+          {log.payload?.result_text && <strong>{log.payload.result_text}</strong>}
+          {summary && (
+            <>
+              <div>
+                <b>Roll</b>
+                <span>
+                  {summary.dice || "-"} · base {summary.base_total} · total{" "}
+                  {summary.total} · {summary.distance_color}
+                </span>
+              </div>
+              <div>
+                <b>Stats</b>
+                <span>
+                  SPD {summary.stats?.speed || 0}, STA {summary.stats?.stamina || 0},
+                  POW {summary.stats?.power || 0}, GUT {summary.stats?.gut || 0},
+                  WIT {summary.stats?.wit || 0}
+                </span>
+              </div>
+              <div>
+                <b>Aptitude</b>
+                <span>
+                  SPD +{aptitude.speed || 0}, POW +{aptitude.power || 0}, WIT +{aptitude.wit || 0}
+                </span>
+              </div>
+              <div>
+                <b>Pending</b>
+                <span>
+                  Flat {signed(pending.flat)}, Dice {signed(pending.add_d)}, KH{" "}
+                  {signed(pending.add_kh)}, Floor {signed(pending.floor)}, Cap{" "}
+                  {signed(pending.cap)}, Gold {signed(pending.gold_range)}
+                </span>
+              </div>
+              <div>
+                <b>Path</b>
+                <span>
+                  {path.label || "-"} · STA -{path.stamina_cost || 0}/+
+                  {path.stamina_gain || 0} · dice cap {signed(-(path.reduce_dice_value || 0))} ·
+                  SPD x{path.spd_multiplier || 1} · POW x{path.power_total_multiplier || 1}
+                </span>
+              </div>
+              <div>
+                <b>Bonus</b>
+                <span>
+                  {summary.bonus_display || "-"} · STA left {summary.stamina_left}
+                  {summary.stamina_note ? ` · ${summary.stamina_note}` : ""}
+                </span>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </article>
+  );
+}
+
+function signed(value = 0) {
+  const numberValue = Number(value) || 0;
+  return numberValue > 0 ? `+${numberValue}` : String(numberValue);
 }
