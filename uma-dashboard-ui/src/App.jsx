@@ -3,6 +3,7 @@ import { AnimatePresence } from "framer-motion";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import CardGamePage from "./pages/dashboard/CardGamePage";
+import RaceGamePage from "./pages/dashboard/RaceGamePage";
 import LoadingScreen from "./components/LoadingScreen";
 import HorseshoeBackground from "./components/HorseshoeBackground";
 import PageTransition from "./components/PageTransition";
@@ -194,6 +195,10 @@ export default function App() {
     routePath === "/tcg" ||
     routePath === "/dashboard/tcg" ||
     routePath === "/dashboard/tcg-fullscreen";
+  const isRaceRoute =
+    routePath === "/race" ||
+    routePath === "/dashboard/race" ||
+    routePath === "/dashboard/race-fullscreen";
 
   const handleBackToDashboard = () => {
     window.history.pushState({}, "", "/dashboard/profile");
@@ -205,6 +210,16 @@ export default function App() {
   ) : isTcgRoute ? (
     <PageTransition key="tcg">
       <CardGamePage
+        fullscreen
+        onBackToDashboard={handleBackToDashboard}
+        username={player?.username || username}
+        userId={userId}
+        avatarUrl={avatarUrl}
+      />
+    </PageTransition>
+  ) : isRaceRoute ? (
+    <PageTransition key="race">
+      <RaceGamePage
         fullscreen
         onBackToDashboard={handleBackToDashboard}
         username={player?.username || username}
@@ -231,7 +246,7 @@ export default function App() {
 
   return (
     <>
-      {!isTcgRoute && <HorseshoeBackground />}
+      {!isTcgRoute && !isRaceRoute && <HorseshoeBackground />}
 
       <AnimatePresence mode="wait">{pageContent}</AnimatePresence>
 

@@ -58,6 +58,12 @@ export default function DashboardPage({
       return;
     }
 
+    if (page === "race") {
+      window.history.pushState({}, "", "/race");
+      window.dispatchEvent(new Event("uma:navigate"));
+      return;
+    }
+
     setActivePage(page);
     window.history.pushState({}, "", `/dashboard/${page}`);
   };

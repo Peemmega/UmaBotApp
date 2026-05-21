@@ -1,14 +1,24 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import {
+  Activity,
   Bot,
+  ChevronUp,
   DoorOpen,
   Flag,
   Gauge,
+  Heart,
+  Map,
   Play,
   Plus,
+  Radio,
   RefreshCw,
   Sparkles,
+  Sun,
+  Target,
   Trophy,
+  Users,
+  Zap,
 } from "lucide-react";
 import {
   addRaceBot,
@@ -72,7 +82,21 @@ function roomRaceImageSource(race) {
   };
 }
 
+function hasHumanPlayers(roomData) {
+  return (roomData?.players || []).some((player) => !player.is_mob);
+}
+
+function hasOnlyBotsAfterLeave(roomData, userId) {
+  const remainingPlayers = (roomData?.players || []).filter(
+    (player) => String(player.id) !== String(userId)
+  );
+
+  return remainingPlayers.length > 0 && remainingPlayers.every((player) => player.is_mob);
+}
+
 export default function RaceGamePage({
+  fullscreen = false,
+  onBackToDashboard,
   username = "Unknown",
   userId = "",
   avatarUrl = "",
@@ -86,6 +110,7 @@ export default function RaceGamePage({
   const [actionBusy, setActionBusy] = useState("");
   const [error, setError] = useState("");
   const [showSkills, setShowSkills] = useState(false);
+  const [hiddenRoomIds, setHiddenRoomIds] = useState(() => new Set());
   const requestRef = useRef(false);
 
   const playerPayload = useMemo(
@@ -124,23 +149,44 @@ export default function RaceGamePage({
     [room]
   );
 
-  const refreshRooms = useCallback(async () => {
+  const leaderScore = useMemo(
+    () => Math.max(1, ...(room?.scoreboard || []).map((player) => Number(player.score) || 0)),
+    [room?.scoreboard]
+  );
+
+  const turnProgress = room
+    ? Math.min(100, Math.max(0, ((Number(room.turn) || 0) / Math.max(1, Number(room.max_turn) || 1)) * 100))
+    : 0;
+
+  const refreshRooms = useCallback(async (extraHiddenRoomIds = []) => {
     try {
       setLoading(true);
       setError("");
       const data = await listRaceRooms();
-      setRooms(data.rooms || []);
+      const hiddenIds = new Set([...hiddenRoomIds, ...extraHiddenRoomIds]);
+      const nextRooms = (data.rooms || []).filter((item) => !hiddenIds.has(item.room_id));
+      const visibleRooms = await Promise.all(
+        nextRooms.map(async (item) => {
+          try {
+            const detail = await getRaceRoom(item.room_id, userId);
+            return hasHumanPlayers(detail) ? item : null;
+          } catch {
+            return item;
+          }
+        })
+      );
+      setRooms(visibleRooms.filter(Boolean));
     } catch (err) {
       setError(String(err.message || err));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [hiddenRoomIds, userId]);
 
   useEffect(() => {
     let mounted = true;
     Promise.all([listRaceStages(), listRaceRooms()])
-      .then(([raceData, roomData]) => {
+      .then(async ([raceData, roomData]) => {
         if (!mounted) return;
         const nextStages = raceData || [];
         setStages(nextStages);
@@ -149,13 +195,25 @@ export default function RaceGamePage({
         } else if (nextStages[0]?.id) {
           setSelectedStage(nextStages[0].id);
         }
-        setRooms(roomData.rooms || []);
+        const visibleRooms = await Promise.all(
+          (roomData.rooms || [])
+            .filter((item) => !hiddenRoomIds.has(item.room_id))
+            .map(async (item) => {
+            try {
+              const detail = await getRaceRoom(item.room_id, userId);
+              return hasHumanPlayers(detail) ? item : null;
+            } catch {
+              return item;
+            }
+          })
+        );
+        if (mounted) setRooms(visibleRooms.filter(Boolean));
       })
       .catch((err) => setError(String(err.message || err)));
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [hiddenRoomIds, userId]);
 
   useEffect(() => {
     if (!room?.room_id || !userId || socketStatus === "open") return undefined;
@@ -177,10 +235,14 @@ export default function RaceGamePage({
       requestRef.current = true;
       setActionBusy(label);
       setError("");
+      const shouldCloseAfterLeave = label === "leave" && hasOnlyBotsAfterLeave(room, userId);
       const nextRoom = await action();
-      if (nextRoom?.phase === "closed") {
+      if (nextRoom?.phase === "closed" || shouldCloseAfterLeave) {
+        if (shouldCloseAfterLeave && room?.room_id) {
+          setHiddenRoomIds((current) => new Set(current).add(room.room_id));
+        }
         setRoom(null);
-        refreshRooms();
+        await refreshRooms(shouldCloseAfterLeave && room?.room_id ? [room.room_id] : []);
       } else {
         setRoom(nextRoom);
       }
@@ -226,7 +288,7 @@ export default function RaceGamePage({
 
   if (!room) {
     return (
-      <section className="race-page">
+    <section className={`race-page ${fullscreen ? "race-fullscreen-page" : ""}`}>
         <header className="race-hero">
           <div>
             <span className="race-kicker">Online Race</span>
@@ -315,27 +377,64 @@ export default function RaceGamePage({
   }
 
   return (
-    <section className="race-page">
-      <header className="race-hero room">
-        <div>
-          <span className="race-kicker">{room.phase}</span>
-          <h2>{room.race_name}</h2>
-          <p>
-            Turn {room.turn}/{room.max_turn} | Phase {room.race_phase} |{" "}
-            {socketStatus}
-          </p>
+    <section className={`race-page race-hud-page ${fullscreen ? "race-fullscreen-page" : ""}`}>
+      <header className="race-hero room race-hud-topbar">
+        <div className="race-live-brand">
+          <Trophy size={26} />
+          <div>
+            <span className="race-kicker">Race Live</span>
+            <h2>{room.race_name}</h2>
+          </div>
         </div>
-        <button type="button" className="race-ghost-btn" onClick={handleLeave}>
-          <DoorOpen size={16} />
-          Leave
-        </button>
+
+        <div className="race-hud-stat race-hud-turn">
+          <span>Turn</span>
+          <strong>{room.turn}<small>/{room.max_turn}</small></strong>
+          <div><span style={{ width: `${turnProgress}%` }} /></div>
+        </div>
+
+        <div className="race-hud-stat">
+          <span>Phase</span>
+          <strong>{room.race_phase || room.phase}</strong>
+        </div>
+
+        <div className="race-hud-stat">
+          <span>Distance</span>
+          <strong>{room.distance}</strong>
+          <em>{room.track}</em>
+        </div>
+
+        <div className="race-hud-stat">
+          <span>Weather</span>
+          <strong><Sun size={16} /> Fine</strong>
+          <em>{socketStatus}</em>
+        </div>
+
+        <div className="race-top-actions">
+          {fullscreen && (
+            <button type="button" className="race-ghost-btn" onClick={onBackToDashboard}>
+              Dashboard
+            </button>
+          )}
+          <button type="button" className="race-ghost-btn race-leave-btn" onClick={handleLeave}>
+            <DoorOpen size={16} />
+            Leave Room
+          </button>
+        </div>
       </header>
 
       {error && <div className="race-error">{error}</div>}
 
-      <div className="race-game-grid">
-        <div className="race-track-panel">
-          <img className="race-track-image" src={roomRaceImage} alt="" />
+      <div className="race-hud-grid">
+        <aside className="race-track-panel race-hud-panel race-track-hud">
+          <PanelTitle icon={<Map size={16} />} title="Track HUD" />
+          <div className="race-track-map">
+            <img className="race-track-image" src={roomRaceImage} alt="" />
+            <div className="race-map-overlay">
+              <span>{room.current_path?.label || "Start"}</span>
+              <b>{Math.round(turnProgress)}%</b>
+            </div>
+          </div>
           <div className="race-path-strip" aria-label="Track path">
             {room.path?.map((step) => (
               <span
@@ -347,72 +446,102 @@ export default function RaceGamePage({
               </span>
             ))}
           </div>
-          <div className="race-status-panel">
-            <div>
-              <Flag size={17} />
-              <span>{room.current_path?.label}</span>
-            </div>
-            <div>
-              <Gauge size={17} />
-              <span>{room.distance} | {room.track}</span>
-            </div>
+          <div className="race-info-tile-grid">
+            <div><Flag size={15} /><span>{room.current_path?.label || "-"}</span></div>
+            <div><Gauge size={15} /><span>{room.distance}</span></div>
+            <div><Target size={15} /><span>{room.track}</span></div>
+            <div><Users size={15} /><span>{room.players?.length || 0} racers</span></div>
           </div>
-        </div>
-
-        <aside className="race-score-panel">
-          <h3>
-            <Trophy size={18} />
-            Scoreboard
-          </h3>
-          <div className="race-score-list">
-            {room.scoreboard?.map((player) => (
-              <div className="race-score-row" key={player.id}>
-                <span>{player.rank}</span>
-                <strong>{player.name}</strong>
-                <em>{player.style}</em>
-                <b>{player.score}</b>
-              </div>
-            ))}
+          <div className="race-aptitude-panel">
+            <span>Aptitude Bonus</span>
+            <div>
+              <em><img src={speedIcon} alt="" /> Speed</em>
+              <em><img src={staminaIcon} alt="" /> Stamina</em>
+              <em><img src={powerIcon} alt="" /> Power</em>
+              <em><img src={gutIcon} alt="" /> Guts</em>
+            </div>
           </div>
         </aside>
-      </div>
 
-      <div className="race-action-layout">
-        <div className="race-player-grid">
-          {room.players?.map((player) => (
-            <article className="race-player-card" key={player.id}>
-              <div className="race-player-avatar">
-                {player.avatar ? <img src={player.avatar} alt="" /> : <Bot size={22} />}
-              </div>
-              <div>
-                <h3>{player.name}</h3>
-                <p className="race-player-meta">
-                  <span>{player.style}</span>
-                  <span>
-                    <img src={staminaIcon} alt="Stamina" />
-                    {player.stamina_left}
-                  </span>
-                  <span>
-                    <img src={witIcon} alt="Wit" />
-                    {player.wit_mana}
-                  </span>
-                </p>
-                <div className="race-progress">
-                  <span
-                    style={{
-                      width: `${Math.min(100, Math.max(4, (player.score / Math.max(1, room.scoreboard?.[0]?.score || 1)) * 100))}%`,
-                    }}
-                  />
-                </div>
-              </div>
-              <span className={player.last_roll_turn === room.turn ? "rolled" : ""}>
-                {player.is_mob ? "Bot" : player.last_roll_turn === room.turn ? "Done" : "Ready"}
-              </span>
-            </article>
-          ))}
-        </div>
+        <main className="race-hud-panel race-live-panel">
+          <div className="race-live-stage" style={{ backgroundImage: `url(${roomRaceImage})` }}>
+            <div className="race-live-stage-overlay" />
+            <div className="race-phase-banner">
+              <Zap size={18} />
+              {room.race_phase || "Race"}
+            </div>
+            <div className="race-runner-stack">
+              {room.players?.map((player) => {
+                const progress = Math.min(100, Math.max(6, ((Number(player.score) || 0) / leaderScore) * 100));
+                return (
+                  <motion.article
+                    layout
+                    className="race-runner-card"
+                    key={player.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.22 }}
+                  >
+                    <div className="race-player-avatar">
+                      {player.avatar ? <img src={player.avatar} alt="" /> : <Bot size={22} />}
+                    </div>
+                    <div className="race-runner-info">
+                      <div>
+                        <h3>{player.name}</h3>
+                        <span>{player.style} Pace {player.score}</span>
+                      </div>
+                      <div className="race-player-meta">
+                        <span><img src={staminaIcon} alt="Stamina" />{player.stamina_left}</span>
+                        <span><img src={witIcon} alt="Wit" />{player.wit_mana}</span>
+                        <span className={player.last_roll_turn === room.turn ? "rolled" : ""}>
+                          {player.is_mob ? "Bot" : player.last_roll_turn === room.turn ? "Done" : "Ready"}
+                        </span>
+                      </div>
+                      <div className="race-progress">
+                        <span style={{ width: `${progress}%` }} />
+                      </div>
+                    </div>
+                  </motion.article>
+                );
+              })}
+            </div>
+          </div>
+        </main>
 
-        <aside className="race-command-panel">
+        <aside className="race-score-panel race-hud-panel">
+          <PanelTitle icon={<Trophy size={16} />} title="Scoreboard" />
+          <div className="race-score-list">
+            {room.scoreboard?.map((player, index) => {
+              const diff = (Number(player.score) || 0) - leaderScore;
+              return (
+                <motion.div layout className="race-score-row" key={player.id}>
+                  <span>{player.rank || index + 1}</span>
+                  <strong>{player.name}</strong>
+                  <em>{player.style}</em>
+                  <b>{player.score}</b>
+                  <i className={diff === 0 ? "lead" : ""}>
+                    {diff === 0 ? <ChevronUp size={14} /> : diff}
+                  </i>
+                </motion.div>
+              );
+            })}
+          </div>
+          <div className="race-status-panel">
+            <div><Activity size={16} /><span>{room.phase}</span></div>
+            <div><Radio size={16} /><span>{socketStatus}</span></div>
+          </div>
+        </aside>
+
+        <section className="race-log-panel race-hud-panel">
+          <PanelTitle icon={<Radio size={16} />} title="Race Commentary" />
+          <div className="race-log-list">
+            {(room.action_logs || []).slice().reverse().map((log) => (
+              <RaceLogItem key={log.id} log={log} />
+            ))}
+          </div>
+        </section>
+
+        <aside className="race-command-panel race-hud-panel">
           {room.phase === "waiting" ? (
             <>
               <div className="race-bot-row">
@@ -430,12 +559,12 @@ export default function RaceGamePage({
               </div>
               <button
                 type="button"
-                className="race-primary-btn"
+                className="race-primary-btn race-run-btn"
                 onClick={handleStart}
                 disabled={String(room.owner_id) !== String(userId) || Boolean(actionBusy)}
               >
-                <Play size={17} />
-                Start
+                <Play size={20} />
+                Start Race
               </button>
             </>
           ) : room.phase === "ended" ? (
@@ -446,23 +575,30 @@ export default function RaceGamePage({
             </div>
           ) : (
             <>
-              <button
-                type="button"
-                className="race-primary-btn"
-                onClick={handleRun}
-                disabled={!canRun || Boolean(actionBusy)}
-              >
-                <Flag size={17} />
-                {actionBusy === "run" ? "Running..." : "Run"}
-              </button>
-              <button
-                type="button"
-                className="race-skill-toggle"
-                onClick={() => setShowSkills((value) => !value)}
-              >
-                <Sparkles size={17} />
-                Skill
-              </button>
+              <div className="race-main-actions">
+                <button
+                  type="button"
+                  className="race-primary-btn race-run-btn"
+                  onClick={handleRun}
+                  disabled={!canRun || Boolean(actionBusy)}
+                >
+                  <Flag size={22} />
+                  {actionBusy === "run" ? "Running..." : "Run"}
+                </button>
+                <button
+                  type="button"
+                  className="race-skill-toggle race-skill-btn"
+                  onClick={() => setShowSkills((value) => !value)}
+                >
+                  <Sparkles size={22} />
+                  Skill
+                </button>
+              </div>
+              <div className="race-stamina-readout">
+                <Heart size={18} />
+                <span>Stamina</span>
+                <strong>{myPlayer?.stamina_left ?? 0}</strong>
+              </div>
               <div className="race-special-actions">
                 <button
                   type="button"
@@ -508,16 +644,16 @@ export default function RaceGamePage({
           )}
         </aside>
       </div>
-
-      <section className="race-log-panel">
-        <h3>Action Log</h3>
-        <div className="race-log-list">
-          {(room.action_logs || []).slice().reverse().map((log) => (
-            <RaceLogItem key={log.id} log={log} />
-          ))}
-        </div>
-      </section>
     </section>
+  );
+}
+
+function PanelTitle({ icon, title }) {
+  return (
+    <h3 className="race-panel-title">
+      {icon}
+      {title}
+    </h3>
   );
 }
 
