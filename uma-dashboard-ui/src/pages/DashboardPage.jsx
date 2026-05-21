@@ -29,7 +29,8 @@ const VALID_PAGES = [
 ];
 
 function getPageFromPath() {
-  const page = window.location.pathname.split("/").pop();
+  const normalizedPath = window.location.pathname.replace(/\/+$/, "");
+  const page = normalizedPath.split("/").pop();
   return VALID_PAGES.includes(page) ? page : "profile";
 }
 

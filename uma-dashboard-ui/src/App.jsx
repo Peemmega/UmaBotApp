@@ -191,14 +191,15 @@ export default function App() {
     window.location.href = "/";
   };
 
+  const normalizedRoutePath = routePath.replace(/\/+$/, "") || "/";
   const isTcgRoute =
-    routePath === "/tcg" ||
-    routePath === "/dashboard/tcg" ||
-    routePath === "/dashboard/tcg-fullscreen";
+    normalizedRoutePath === "/tcg" ||
+    normalizedRoutePath === "/dashboard/tcg" ||
+    normalizedRoutePath === "/dashboard/tcg-fullscreen";
   const isRaceRoute =
-    routePath === "/race" ||
-    routePath === "/dashboard/race" ||
-    routePath === "/dashboard/race-fullscreen";
+    normalizedRoutePath === "/race" ||
+    normalizedRoutePath === "/dashboard/race" ||
+    normalizedRoutePath === "/dashboard/race-fullscreen";
 
   const handleBackToDashboard = () => {
     window.history.pushState({}, "", "/dashboard/profile");
