@@ -395,7 +395,7 @@ export default function RaceGamePage({
     <section className={`race-page race-hud-page ${fullscreen ? "race-fullscreen-page" : ""}`}>
       <header className="race-hero room race-hud-topbar">
         <div className="race-live-brand">
-          <Trophy size={26} />
+          <Trophy size={42} />
           <div>
             <span className="race-kicker">Race Live</span>
             <h2>{room.race_name}</h2>
@@ -421,7 +421,6 @@ export default function RaceGamePage({
         <div className="race-hud-stat">
           <span>Track</span>
           <strong><Target size={16} /> {room.track}</strong>
-          <em>{socketStatus}</em>
         </div>
 
         <div className="race-top-actions">
