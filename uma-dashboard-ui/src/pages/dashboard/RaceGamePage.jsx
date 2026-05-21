@@ -408,7 +408,7 @@ export default function RaceGamePage({
 
         <div className="race-hud-stat">
           <span>Race Live</span>
-          <h2>{room.race_name}</h2>
+          <strong>{room.race_name}</strong>
         </div>
 
         <div className="race-hud-stat">
@@ -469,9 +469,9 @@ export default function RaceGamePage({
             ))}
           </div>
           <div className="race-info-tile-grid">
-            <div><Flag size={15} /><span>{room.current_path?.label || "-"}</span></div>
+            {/* <div><Flag size={15} /><span>{room.current_path?.label || "-"}</span></div>
             <div><Gauge size={15} /><span>{room.distance}</span></div>
-            <div><Target size={15} /><span>{room.track}</span></div>
+            <div><Target size={15} /><span>{room.track}</span></div> */}
             <div><Users size={15} /><span>{room.players?.length || 0} racers</span></div>
           </div>
           <div className="race-aptitude-panel">
