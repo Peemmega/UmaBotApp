@@ -271,6 +271,10 @@ function preloadImages(sources = []) {
   });
 }
 
+function getRaceWinner(roomData) {
+  return roomData?.result?.winner || roomData?.scoreboard?.[0] || null;
+}
+
 export default function RaceGamePage({
   fullscreen = false,
   onBackToDashboard,
@@ -366,6 +370,7 @@ export default function RaceGamePage({
     () => getLatestRollByName(room?.action_logs || []),
     [room?.action_logs]
   );
+  const raceWinner = useMemo(() => getRaceWinner(room), [room]);
 
   const refreshRooms = useCallback(async (extraHiddenRoomIds = []) => {
     try {
@@ -662,6 +667,44 @@ export default function RaceGamePage({
       </header>
 
       {error && <div className="race-error">{error}</div>}
+
+      {room.phase === "ended" && raceWinner && (
+        <div className="race-winner-overlay" role="status" aria-live="polite">
+          <div className="race-confetti" aria-hidden="true">
+            {Array.from({ length: 36 }, (_, index) => (
+              <span
+                key={index}
+                style={{
+                  "--i": index,
+                  "--x": `${(index * 29) % 100}%`,
+                  "--delay": `${-(index % 12) * 0.13}s`,
+                  "--duration": `${2.4 + (index % 7) * 0.18}s`,
+                  "--drift": `${((index % 7) - 3) * 22}px`,
+                  "--color": ["#69d47d", "#f5cf60", "#ffffff", "#e97b7b", "#6fc7e8"][index % 5],
+                }}
+              />
+            ))}
+          </div>
+          <motion.div
+            className="race-winner-card"
+            initial={{ opacity: 0, scale: 0.86, y: 18 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.36, ease: "easeOut" }}
+          >
+            <Trophy size={42} />
+            <span>Winner</span>
+            <h2>{raceWinner.name}</h2>
+            <div>
+              <em>{raceWinner.style || "Style"}</em>
+              <strong>{raceWinner.score || 0} pts</strong>
+            </div>
+            <button type="button" className="race-primary-btn" onClick={handleLeave}>
+              <DoorOpen size={18} />
+              Leave Room
+            </button>
+          </motion.div>
+        </div>
+      )}
 
       <div className="race-hud-grid">
         <aside className="race-track-panel race-hud-panel race-track-hud">

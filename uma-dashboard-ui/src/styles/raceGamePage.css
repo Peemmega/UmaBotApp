@@ -2055,6 +2055,134 @@
   cursor: not-allowed;
 }
 
+.race-winner-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.16), transparent 34%),
+    rgba(24, 38, 28, 0.22);
+  overflow: hidden;
+}
+
+.race-winner-card {
+  position: relative;
+  z-index: 2;
+  width: min(92vw, 430px);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 24px;
+  padding: 26px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+  pointer-events: auto;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(239, 255, 233, 0.9)),
+    rgba(255, 255, 255, 0.9);
+  color: #24382f;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 26px 60px rgba(56, 92, 59, 0.34),
+    0 0 48px rgba(91, 211, 112, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.race-winner-card svg {
+  color: #b9902b;
+  filter: drop-shadow(0 0 12px rgba(245, 207, 96, 0.55));
+}
+
+.race-winner-card > span {
+  color: #2f8c4f;
+  font-size: 13px;
+  font-weight: 1000;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.race-winner-card h2 {
+  margin: 0;
+  color: #203329;
+  font-size: clamp(30px, 4.6vw, 48px);
+  line-height: 1;
+}
+
+.race-winner-card div {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 1000;
+}
+
+.race-winner-card em {
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: rgba(75, 169, 91, 0.13);
+  color: #2f8c4f;
+  font-style: normal;
+}
+
+.race-winner-card strong {
+  color: #8d6d1f;
+  font-size: 18px;
+}
+
+.race-winner-card button {
+  min-width: 170px;
+  margin-top: 6px;
+}
+
+.race-confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.race-confetti span {
+  position: absolute;
+  left: var(--x);
+  bottom: -12%;
+  width: 9px;
+  height: 16px;
+  border-radius: 3px;
+  background: var(--color);
+  opacity: 0;
+  transform: translate3d(0, 0, 0) rotate(0deg);
+  animation: raceConfettiRise var(--duration) ease-out infinite;
+  animation-delay: var(--delay);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.28);
+}
+
+.race-confetti span:nth-child(3n) {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+}
+
+.race-confetti span:nth-child(4n) {
+  width: 12px;
+  height: 6px;
+}
+
+@keyframes raceConfettiRise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  12% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--drift), -118vh, 0) rotate(540deg);
+  }
+}
+
 @media (max-width: 1180px) {
   .race-fullscreen-page.race-hud-page {
     position: relative;
