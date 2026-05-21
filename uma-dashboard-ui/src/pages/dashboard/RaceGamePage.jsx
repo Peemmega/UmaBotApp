@@ -540,8 +540,6 @@ export default function RaceGamePage({
                         <strong>{latestRoll ? `+${latestRoll.total}` : "+0"}</strong>
                       </div>
                       <div className="race-player-meta">
-                        <span>{player.style}</span>
-                        <span>Pace {player.score}</span>
                         <span><img src={staminaIcon} alt="Stamina" />{player.stamina_left}</span>
                         <span><img src={witIcon} alt="Wit" />{player.wit_mana}</span>
                         <span className={player.last_roll_turn === room.turn ? "rolled" : ""}>

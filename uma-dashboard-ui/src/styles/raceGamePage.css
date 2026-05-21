@@ -1042,7 +1042,7 @@
 
 .race-phase-banner {
   position: absolute;
-  top: 16px;
+  top: 8px;
   left: 50%;
   transform: translateX(-50%);
   border-radius: 999px;
@@ -1513,7 +1513,7 @@
 }
 
 .race-fullscreen-page .race-phase-banner {
-  padding: 6px 14px;
+  padding: 3px 20px;
   background: linear-gradient(90deg, rgba(57, 171, 92, 0.9), rgba(145, 200, 109, 0.86));
   color: #ffffff;
   font-size: 16px;
@@ -1521,7 +1521,7 @@
 }
 
 .race-fullscreen-page .race-runner-stack {
-  width: min(54%, 500px);
+  width: min(35%, 500px);
   margin-top: 42px;
   gap: 7px;
   max-height: calc(100% - 52px);
@@ -1566,6 +1566,7 @@
   color: rgba(38, 55, 41, 0.74);
   overflow: hidden;
   white-space: nowrap;
+  font-weight: 600;
 }
 
 .race-fullscreen-page .race-player-meta span {
@@ -1623,7 +1624,7 @@
 
 .race-fullscreen-page .race-aptitude-panel em {
   display: grid;
-  grid-template-columns: 18px minmax(0, 0.8fr) minmax(0, 1fr);
+  grid-template-columns: 18px minmax(0, 0.8fr);
 }
 
 .race-fullscreen-page .race-aptitude-panel em small {
