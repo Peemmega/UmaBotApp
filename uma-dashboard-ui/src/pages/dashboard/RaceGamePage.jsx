@@ -665,7 +665,7 @@ export default function RaceGamePage({
                   WIT Reroll {myPlayer?.wit_reroll_left ?? 0}
                 </button>
               </div>
-              <div className="race-special-actions">
+              <div className="race-reroll-actions">
                 <button
                   type="button"
                   onClick={handleBlock}
@@ -680,11 +680,6 @@ export default function RaceGamePage({
                 >
                   Rush
                 </button>
-              </div>
-              <div className="race-stamina-readout">
-                <Heart size={18} />
-                <span>Stamina / WIT</span>
-                <strong>{myPlayer?.stamina_left ?? 0} / {myPlayer?.wit_mana ?? 0}</strong>
               </div>
             </>
           ) : (
