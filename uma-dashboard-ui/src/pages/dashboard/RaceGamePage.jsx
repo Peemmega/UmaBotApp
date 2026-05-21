@@ -810,7 +810,7 @@ export default function RaceGamePage({
           </div>
         </section>
 
-        <aside className="race-command-panel race-hud-panel">
+        <aside className="race-command-panel race-hud-panel uma-scroll">
           {room.phase === "waiting" ? (
             <>
               <div className="race-bot-picker">
