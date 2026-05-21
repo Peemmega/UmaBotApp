@@ -707,8 +707,20 @@ export default function RaceGamePage({
               />
             </AnimatePresence>
             <div className="race-speed-burst" aria-hidden="true">
-              {Array.from({ length: 22 }, (_, index) => (
-                <span key={index} style={{ "--i": index }} />
+              {Array.from({ length: 34 }, (_, index) => (
+                <span
+                  key={index}
+                  style={{
+                    "--i": index,
+                    "--angle": `${(index * 137.5) % 360}deg`,
+                    "--delay": `${-((index * 0.073) % 1.35)}s`,
+                    "--duration": `${0.58 + (index % 7) * 0.055}s`,
+                    "--length": `${150 + (index % 6) * 38}px`,
+                    "--thickness": `${2 + (index % 4)}px`,
+                    "--start": `${34 + (index % 5) * 16}px`,
+                    "--end": `${330 + (index % 8) * 56}px`,
+                  }}
+                />
               ))}
             </div>
             <div className="race-live-stage-overlay" />
