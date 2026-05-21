@@ -1425,7 +1425,7 @@
 .race-fullscreen-page .race-hud-grid {
   height: calc(100vh - 76px);
   grid-template-columns: minmax(250px, 0.72fr) minmax(440px, 1.4fr) minmax(250px, 0.68fr);
-  grid-template-rows: minmax(0, 1fr) 172px;
+  grid-template-rows: minmax(0, 1fr) 320px;
   gap: 8px;
   padding: 0;
 }
@@ -1524,7 +1524,7 @@
 }
 
 .race-fullscreen-page .race-aptitude-panel div {
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3,1fr);
 }
 
 .race-fullscreen-page .race-aptitude-panel > span {

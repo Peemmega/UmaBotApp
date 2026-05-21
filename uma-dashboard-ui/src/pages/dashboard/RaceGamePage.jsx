@@ -472,8 +472,8 @@ export default function RaceGamePage({
               {aptitudeRows.map((item) => (
                 <em key={`${item.label}-${item.source}`}>
                   <img src={item.icon} alt="" />
-                  <strong>{item.label}</strong>
-                  <small>{item.source}</small>
+                  <strong>{item.source}</strong>
+                  <small>{"+1"}</small>
                 </em>
               ))}
             </div>
