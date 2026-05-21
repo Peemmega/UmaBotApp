@@ -48,11 +48,37 @@ import { getRaceImage } from "../../utils/raceSchedule.js";
 import "../../styles/raceGamePage.css";
 
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
+const ROOKIE_BOT_IDS = [
+  "rookie_front",
+  "rookie_pace",
+  "rookie_late",
+  "rookie_end",
+  "rookie_alt_front",
+  "rookie_alt_pace",
+  "rookie_alt_late",
+  "rookie_alt_end",
+];
 const BOT_OPTIONS = [
-  { id: "rookie_front", label: "Front" },
-  { id: "rookie_pace", label: "Pace" },
-  { id: "rookie_late", label: "Late" },
-  { id: "rookie_end", label: "End" },
+  { id: "rookie_front", label: "Rookie Front" },
+  { id: "rookie_pace", label: "Rookie Pace" },
+  { id: "rookie_late", label: "Rookie Late" },
+  { id: "rookie_end", label: "Rookie End" },
+  { id: "rookie_alt_front", label: "Rookie Alt Front" },
+  { id: "rookie_alt_pace", label: "Rookie Alt Pace" },
+  { id: "rookie_alt_late", label: "Rookie Alt Late" },
+  { id: "rookie_alt_end", label: "Rookie Alt End" },
+  { id: "fujimasa_march", label: "Fujimasa March" },
+  { id: "beyond_the_light", label: "Beyond The Light" },
+  { id: "oguri_cap", label: "Oguri Cap" },
+  { id: "obey_your_master", label: "Obey Your Master" },
+  { id: "orfevre", label: "Orfevre" },
+  { id: "gentildonna", label: "Gentildonna" },
+  { id: "verxina", label: "Verxina" },
+  { id: "still_in_love", label: "Still In Love" },
+  { id: "special_week", label: "Special Week" },
+  { id: "silecne_susuka", label: "Silecne Susuka" },
+  { id: "almond_eye", label: "Almond Eye" },
+  { id: "equinox", label: "Equinox" },
 ];
 const BONUS_ICONS = {
   speed: speedIcon,
@@ -71,6 +97,28 @@ const DISCORD_BONUS_ICON_MAP = {
   Wit: BONUS_ICONS.wit,
   Wits: BONUS_ICONS.wit,
   Skill: BONUS_ICONS.skill,
+};
+const LOCAL_MOB_AVATAR_BY_ID = {
+  rookie_front: "/mobs/rookie_front.png",
+  rookie_pace: "/mobs/rookie_pace.png",
+  rookie_late: "/mobs/rookie_late.png",
+  rookie_end: "/mobs/rookie_end.png",
+  rookie_alt_front: "/mobs/rookie_alt_front.png",
+  rookie_alt_pace: "/mobs/rookie_alt_pace.png",
+  rookie_alt_late: "/mobs/rookie_alt_late.png",
+  rookie_alt_end: "/mobs/rookie_alt_end.png",
+  fujimasa_march: "/mobs/fujimasa_march.png",
+  beyond_the_light: "/mobs/beyond_the_light.jpg",
+  oguri_cap: "/mobs/oguri_cap.png",
+  obey_your_master: "/mobs/obey_your_master.jpg",
+  orfevre: "/mobs/orfevre.png",
+  gentildonna: "/mobs/gentildonna.png",
+  verxina: "/mobs/verxina.png",
+  still_in_love: "/mobs/still_in_love.png",
+  special_week: "/mobs/special_week.png",
+  silecne_susuka: "/mobs/silecne_susuka.png",
+  almond_eye: "/mobs/almond_eye.png",
+  equinox: "/mobs/equinox.png",
 };
 const LOCAL_MOB_AVATAR_BY_NAME = {
   "almond eye": "/mobs/almond_eye.png",
@@ -96,6 +144,32 @@ const LOCAL_MOB_AVATAR_BY_NAME = {
   verxina: "/mobs/verxina.png",
   "waltz of shadow": "/mobs/mob_04.png",
 };
+const LOCAL_MOB_AVATAR_FILES = new Set([
+  "almond_eye.png",
+  "beyond_the_light.jpg",
+  "equinox.png",
+  "fujimasa_march.png",
+  "gentildonna.png",
+  "mob_01.png",
+  "mob_02.png",
+  "mob_03.png",
+  "mob_04.png",
+  "obey_your_master.jpg",
+  "oguri_cap.png",
+  "orfevre.png",
+  "rookie_alt_end.png",
+  "rookie_alt_front.png",
+  "rookie_alt_late.png",
+  "rookie_alt_pace.png",
+  "rookie_end.png",
+  "rookie_front.png",
+  "rookie_late.png",
+  "rookie_pace.png",
+  "silecne_susuka.png",
+  "special_week.png",
+  "still_in_love.png",
+  "verxina.png",
+]);
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
@@ -163,6 +237,8 @@ export default function RaceGamePage({
   const [error, setError] = useState("");
   const [showSkills, setShowSkills] = useState(false);
   const [hiddenRoomIds, setHiddenRoomIds] = useState(() => new Set());
+  const [selectedBot, setSelectedBot] = useState("rookie_front");
+  const [selectedBotLevel, setSelectedBotLevel] = useState(1);
   const requestRef = useRef(false);
 
   const playerPayload = useMemo(
@@ -327,14 +403,27 @@ export default function RaceGamePage({
   const handleCreate = () =>
     runAction("create", () => createRaceRoom(playerPayload, selectedStage));
 
-  const handleJoin = (roomId) =>
-    runAction("join", () => joinRaceRoom(roomId, playerPayload));
+  const handleJoin = (roomItem) =>
+    runAction("join", () =>
+      roomItem?.is_joined
+        ? getRaceRoom(roomItem.room_id, userId)
+        : joinRaceRoom(roomItem.room_id, playerPayload)
+    );
 
   const handleLeave = () =>
     runAction("leave", () => leaveRaceRoom(room.room_id, playerPayload));
 
-  const handleAddBot = (preset) =>
-    runAction("bot", () => addRaceBot(room.room_id, playerPayload, preset, 1));
+  const handleAddBot = () =>
+    runAction("bot", () => addRaceBot(room.room_id, playerPayload, selectedBot, selectedBotLevel));
+
+  const handleAddRookies = () =>
+    runAction("rookies", async () => {
+      let nextRoom = room;
+      for (const preset of ROOKIE_BOT_IDS) {
+        nextRoom = await addRaceBot(room.room_id, playerPayload, preset, selectedBotLevel);
+      }
+      return nextRoom;
+    });
 
   const handleStart = () =>
     runAction("start", () => startRaceRoom(room.room_id, playerPayload));
@@ -444,7 +533,7 @@ export default function RaceGamePage({
                   <div>
                     <button
                       type="button"
-                      onClick={() => handleJoin(item.room_id)}
+                      onClick={() => handleJoin(item)}
                       disabled={Boolean(actionBusy) || !canJoinRoom}
                     >
                       {item.is_joined ? "Rejoin" : "Join"}
@@ -633,18 +722,45 @@ export default function RaceGamePage({
         <aside className="race-command-panel race-hud-panel">
           {room.phase === "waiting" ? (
             <>
-              <div className="race-bot-row">
-                {BOT_OPTIONS.map((bot) => (
-                  <button
-                    key={bot.id}
-                    type="button"
-                    onClick={() => handleAddBot(bot.id)}
+              <div className="race-bot-picker">
+                <label>
+                  Bot
+                  <select
+                    value={selectedBot}
+                    onChange={(event) => setSelectedBot(event.target.value)}
                     disabled={Boolean(actionBusy)}
                   >
-                    <Bot size={15} />
-                    {bot.label}
-                  </button>
-                ))}
+                    {BOT_OPTIONS.map((bot) => (
+                      <option key={bot.id} value={bot.id}>
+                        {bot.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Lv
+                  <select
+                    value={selectedBotLevel}
+                    onChange={(event) => setSelectedBotLevel(Number(event.target.value))}
+                    disabled={Boolean(actionBusy)}
+                  >
+                    {Array.from({ length: 8 }, (_, index) => index + 1).map((level) => (
+                      <option key={level} value={level}>
+                        {level}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <div className="race-bot-row">
+                <button type="button" onClick={handleAddBot} disabled={Boolean(actionBusy)}>
+                  <Bot size={15} />
+                  Add Bot
+                </button>
+                <button type="button" onClick={handleAddRookies} disabled={Boolean(actionBusy)}>
+                  <Users size={15} />
+                  Add Rookies
+                </button>
               </div>
               <button
                 type="button"
@@ -839,12 +955,22 @@ function getRunnerState(player, room) {
 
 function getRunnerAvatar(player) {
   if (!player) return "";
-  const localMobAvatar = player.is_mob ? getLocalMobAvatar(player.name || player.username) : "";
+  const localMobAvatarById = getLocalMobAvatarById(player.mob_preset_key);
+  if (localMobAvatarById) return localMobAvatarById;
+
+  const localMobAvatar = getLocalMobAvatar(player.name || player.username);
   if (localMobAvatar) return localMobAvatar;
+
+  const localPathAvatar = getLocalMobAvatarFromPath(player.thumbnail || player.avatar);
+  if (localPathAvatar) return localPathAvatar;
 
   return player.is_mob
     ? firstUsableImage(player.thumbnail, player.avatar)
     : firstUsableImage(player.avatar, player.thumbnail);
+}
+
+function getLocalMobAvatarById(id = "") {
+  return LOCAL_MOB_AVATAR_BY_ID[String(id || "").trim()] || "";
 }
 
 function getLocalMobAvatar(name = "") {
@@ -852,6 +978,11 @@ function getLocalMobAvatar(name = "") {
     .replace(/\s+lv\.\d+$/i, "")
     .replace(/\s+/g, " ");
   return LOCAL_MOB_AVATAR_BY_NAME[normalizedName] || "";
+}
+
+function getLocalMobAvatarFromPath(value = "") {
+  const fileName = String(value || "").trim().split(/[\\/]/).pop();
+  return LOCAL_MOB_AVATAR_FILES.has(fileName) ? `/mobs/${fileName}` : "";
 }
 
 function firstUsableImage(...values) {
