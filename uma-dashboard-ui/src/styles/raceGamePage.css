@@ -1690,8 +1690,8 @@
 }
 
 .race-fullscreen-page .race-runner-card {
-  grid-template-columns: 40px minmax(0, 1fr);
-  padding: 7px 8px;
+  grid-template-columns: 60px minmax(0, 1fr);
+  padding: 0px 8px 0px 0px;
   border-color: rgba(66, 93, 59, 0.16);
   background: rgba(255, 255, 255, 0.76);
   color: #263729;

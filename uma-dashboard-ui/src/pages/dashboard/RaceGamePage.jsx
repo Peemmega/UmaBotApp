@@ -942,7 +942,7 @@ function getRunnerTurnScore(player, room, latestRoll) {
     return signed(latestRoll.total);
   }
 
-  return "+0";
+  return "0";
 }
 
 function getRunnerState(player, room) {
