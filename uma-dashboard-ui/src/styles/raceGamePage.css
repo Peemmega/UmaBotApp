@@ -1352,7 +1352,7 @@
   min-height: 56px;
   grid-template-columns: minmax(240px, 1.4fr) minmax(88px, 0.42fr) minmax(94px, 0.44fr) minmax(94px, 0.44fr) minmax(94px, 0.44fr) auto;
   gap: 6px;
-  padding: 7px 12px;
+  padding: 3px 20px;
 }
 
 .race-fullscreen-page .race-live-brand {
@@ -1398,7 +1398,7 @@
 
 .race-fullscreen-page .race-hud-topbar span {
   min-width: 0;
-  min-height: 0;
+  min-height: 12px;
 }
 
 .race-fullscreen-page .race-hud-stat strong {
@@ -1438,7 +1438,7 @@
 
 .race-fullscreen-page .race-hud-grid {
   height: calc(100vh - 76px);
-  grid-template-columns: minmax(250px, 0.72fr) minmax(440px, 1.4fr) minmax(250px, 0.68fr);
+  grid-template-columns: minmax(250px, 0.76fr) minmax(440px, 1.34fr) minmax(250px, 0.68fr);
   grid-template-rows: minmax(0, 1fr) 320px;
   gap: 8px;
   padding: 0;
@@ -1458,6 +1458,7 @@
 .race-fullscreen-page .race-track-image {
   aspect-ratio: 16 / 9;
   object-fit: contain;
+  max-height: 26vh;
   background: rgba(46, 63, 39, 0.12);
   filter: saturate(1.04);
 }
@@ -1489,14 +1490,30 @@
   width: min(54%, 500px);
   margin-top: 42px;
   gap: 7px;
+  max-height: calc(100% - 52px);
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .race-fullscreen-page .race-runner-card {
-  grid-template-columns: 42px minmax(0, 1fr);
-  padding: 8px;
+  grid-template-columns: 40px minmax(0, 1fr);
+  padding: 7px 8px;
   border-color: rgba(66, 93, 59, 0.16);
   background: rgba(255, 255, 255, 0.76);
   color: #263729;
+}
+
+.race-fullscreen-page .race-runner-title-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.race-fullscreen-page .race-runner-title-row strong {
+  color: #2f8c4f;
+  font-size: 15px;
+  font-weight: 1000;
 }
 
 .race-fullscreen-page .race-runner-info h3,
@@ -1509,12 +1526,21 @@
 }
 
 .race-fullscreen-page .race-player-meta {
+  display: flex;
+  gap: 7px;
+  flex-wrap: nowrap;
   color: rgba(38, 55, 41, 0.74);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.race-fullscreen-page .race-player-meta span {
+  flex: 0 0 auto;
+  font-size: 11px;
 }
 
 .race-fullscreen-page .race-progress {
-  height: 7px;
-  background: rgba(48, 69, 43, 0.14);
+  display: none;
 }
 
 .race-fullscreen-page .race-progress span {
@@ -1535,6 +1561,7 @@
 
 .race-fullscreen-page .race-aptitude-panel {
   gap: 7px;
+  padding-bottom: 8px;
 }
 
 .race-fullscreen-page .race-aptitude-panel div {
@@ -1547,6 +1574,7 @@
 
 .race-fullscreen-page .race-aptitude-panel em {
   min-width: 0;
+  padding: 5px;
   background: rgba(255, 255, 255, 0.58);
   color: #263729;
 }
@@ -1640,11 +1668,30 @@
 
 .race-fullscreen-page .race-stamina-readout,
 .race-fullscreen-page .race-special-actions button,
+.race-fullscreen-page .race-reroll-actions button,
 .race-fullscreen-page .race-skill-list button,
 .race-fullscreen-page .race-bot-row button {
   border-color: rgba(88, 122, 72, 0.16);
   background: rgba(255, 255, 255, 0.52) !important;
   color: #263729;
+}
+
+.race-reroll-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.race-reroll-actions button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 10px;
+  font-weight: 1000;
+}
+
+.race-reroll-actions button:disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
 }
 
 @media (max-width: 1180px) {

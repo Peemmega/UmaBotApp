@@ -172,6 +172,10 @@ export default function RaceGamePage({
     () => getAptitudeRows(room, myPlayer),
     [myPlayer, room]
   );
+  const latestRollByName = useMemo(
+    () => getLatestRollByName(room?.action_logs || []),
+    [room?.action_logs]
+  );
 
   const refreshRooms = useCallback(async (extraHiddenRoomIds = []) => {
     try {
@@ -487,7 +491,7 @@ export default function RaceGamePage({
             </div>
             <div className="race-runner-stack">
               {room.players?.map((player) => {
-                const progress = Math.min(100, Math.max(6, ((Number(player.score) || 0) / leaderScore) * 100));
+                const latestRoll = latestRollByName.get(normalizeRaceName(player.name));
                 return (
                   <motion.article
                     layout
@@ -501,19 +505,18 @@ export default function RaceGamePage({
                       {player.avatar ? <img src={player.avatar} alt="" /> : <Bot size={22} />}
                     </div>
                     <div className="race-runner-info">
-                      <div>
+                      <div className="race-runner-title-row">
                         <h3>{player.name}</h3>
-                        <span>{player.style} Pace {player.score}</span>
+                        <strong>{latestRoll ? `+${latestRoll.total}` : "+0"}</strong>
                       </div>
                       <div className="race-player-meta">
+                        <span>{player.style}</span>
+                        <span>Pace {player.score}</span>
                         <span><img src={staminaIcon} alt="Stamina" />{player.stamina_left}</span>
                         <span><img src={witIcon} alt="Wit" />{player.wit_mana}</span>
                         <span className={player.last_roll_turn === room.turn ? "rolled" : ""}>
                           {player.is_mob ? "Bot" : player.last_roll_turn === room.turn ? "Done" : "Ready"}
                         </span>
-                      </div>
-                      <div className="race-progress">
-                        <span style={{ width: `${progress}%` }} />
                       </div>
                     </div>
                   </motion.article>
@@ -637,6 +640,14 @@ export default function RaceGamePage({
                   Rush
                 </button>
               </div>
+              <div className="race-reroll-actions">
+                <button type="button" disabled title="Backend reroll endpoint required">
+                  Reroll
+                </button>
+                <button type="button" disabled title="Backend wit reroll endpoint required">
+                  WIT Reroll
+                </button>
+              </div>
               {showSkills && (
                 <div className="race-skill-list">
                   {(myPlayer?.skills || []).map((skill) => (
@@ -670,6 +681,29 @@ function PanelTitle({ icon, title }) {
       {title}
     </h3>
   );
+}
+
+function getLatestRollByName(logs) {
+  const entries = new Map();
+
+  [...logs].reverse().forEach((log) => {
+    const summary = log.payload?.roll_summary;
+    if (!summary) return;
+
+    const name = normalizeRaceName(getLogPlayerName(log));
+    if (!name || entries.has(name)) return;
+
+    entries.set(name, {
+      total: summary.total ?? getScoreFromLogMessage(log.message),
+      turn: log.turn,
+    });
+  });
+
+  return entries;
+}
+
+function normalizeRaceName(value = "") {
+  return String(value).trim().toLowerCase();
 }
 
 function RaceLogItem({ log }) {
