@@ -8,7 +8,7 @@ import {
   Flag,
   Gauge,
   Heart,
-  Map,
+  Map as MapIcon,
   Play,
   Plus,
   Radio,
@@ -444,7 +444,7 @@ export default function RaceGamePage({
 
       <div className="race-hud-grid">
         <aside className="race-track-panel race-hud-panel race-track-hud">
-          <PanelTitle icon={<Map size={16} />} title="Track HUD" />
+          <PanelTitle icon={<MapIcon size={16} />} title="Track HUD" />
           <div className="race-track-map">
             <img className="race-track-image" src={roomRaceImage} alt="" />
             <div className="race-map-overlay">
