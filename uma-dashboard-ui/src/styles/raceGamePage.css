@@ -1282,7 +1282,7 @@
     filter: saturate(1.05) brightness(1.02);
   }
   25% {
-    transform: scale(1.045) translate3d(0%, 0.30%, 0);
+    transform: scale(1.01) translate3d(0%, 0.30%, 0);
     filter: saturate(1.08) brightness(1.03);
   }
   50% {
@@ -1290,7 +1290,7 @@
     filter: saturate(1.05) brightness(1.02);
   }
   75% {
-    transform: scale(1.045) translate3d(0%, 0.30%, 0);
+    transform: scale(1.01) translate3d(0%, 0.30%, 0);
     filter: saturate(1.08) brightness(1.03);
   }
   100% {
