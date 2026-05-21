@@ -69,6 +69,26 @@
   font-weight: 800;
 }
 
+.race-player-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.race-player-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.race-player-meta img {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  object-fit: contain;
+}
+
 .race-toolbar,
 .race-create-panel,
 .race-style-tabs,
@@ -511,7 +531,11 @@
 
 .race-log-panel {
   min-height: 0;
+  max-height: min(52vh, 460px);
   padding: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background:
     linear-gradient(180deg, #ffffff, #f1fff5),
     #ffffff;
@@ -519,18 +543,20 @@
 
 .race-log-list {
   margin-top: 10px;
+  flex: 1 1 auto;
   min-height: 0;
-  max-height: min(44vh, 360px);
-  overflow-y: auto;
+  overflow-y: scroll;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   padding-right: 4px;
+  scrollbar-gutter: stable;
   display: flex;
   flex-direction: column;
   gap: 7px;
 }
 
 .race-log-item {
+  flex: 0 0 auto;
   margin: 0;
   border: 1px solid rgba(34, 126, 74, 0.14);
   border-radius: 12px;

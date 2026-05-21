@@ -50,6 +50,16 @@ const BONUS_ICONS = {
   wit: witIcon,
   skill: skillIcon,
 };
+const DISCORD_BONUS_ICON_MAP = {
+  Speed: BONUS_ICONS.speed,
+  Power: BONUS_ICONS.power,
+  Stamina: BONUS_ICONS.stamina,
+  Gut: BONUS_ICONS.gut,
+  Guts: BONUS_ICONS.gut,
+  Wit: BONUS_ICONS.wit,
+  Wits: BONUS_ICONS.wit,
+  Skill: BONUS_ICONS.skill,
+};
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
@@ -376,8 +386,16 @@ export default function RaceGamePage({
               </div>
               <div>
                 <h3>{player.name}</h3>
-                <p>
-                  {player.style} | STA {player.stamina_left} | WIT {player.wit_mana}
+                <p className="race-player-meta">
+                  <span>{player.style}</span>
+                  <span>
+                    <img src={staminaIcon} alt="Stamina" />
+                    {player.stamina_left}
+                  </span>
+                  <span>
+                    <img src={witIcon} alt="Wit" />
+                    {player.wit_mana}
+                  </span>
                 </p>
                 <div className="race-progress">
                   <span
@@ -518,7 +536,7 @@ function RaceLogItem({ log }) {
           <div>
             <b>Roll</b>
             <span>
-              {summary.dice || summary.base_total || "-"} = {summary.total ?? "-"}
+              {formatRollDice(summary.dice || summary.base_total || "-")} = {summary.total ?? "-"}
               {summary.distance_color ? ` | ${summary.distance_color}` : ""}
             </span>
           </div>
@@ -527,13 +545,13 @@ function RaceLogItem({ log }) {
             <span className="race-log-bonus-list">
               {bonusRows.length > 0
                 ? bonusRows.map((item) => (
-                    <em key={`${item.label}-${item.value}`}>
+                    <em key={`${item.label}-${item.value}-${item.index}`}>
                       {item.icon && <img src={item.icon} alt={item.label} />}
                       {item.note && <span>{item.note}</span>}
                       <strong>{item.value}</strong>
                     </em>
                   ))
-                : <em>ไม่มีโบนัส</em>}
+                : <em>No bonus</em>}
             </span>
           </div>
         </div>
@@ -545,43 +563,33 @@ function RaceLogItem({ log }) {
 function getRollBonusRows(summary) {
   if (!summary) return [];
 
+  return parseDiscordBonusDisplay(summary.bonus_display);
+}
+
+function parseDiscordBonusDisplay(value = "") {
+  const text = String(value || "");
+  if (!text || text === "-") return [];
+
   const rows = [];
-  const addNumericBonus = (label, value, icon, note = "") => {
-    const numberValue = Number(value) || 0;
-    if (numberValue !== 0) {
-      rows.push({ icon, label, note, value: signed(numberValue) });
-    }
-  };
+  const bonusPattern = /([+-]?\d+)\s*<:([^:>]+):\d+>/g;
+  let match = bonusPattern.exec(text);
 
-  const stats = summary.stats || {};
-  addNumericBonus("Speed", stats.speed, BONUS_ICONS.speed);
-  addNumericBonus("Power", stats.power, BONUS_ICONS.power);
-  addNumericBonus("Stamina", stats.stamina, BONUS_ICONS.stamina);
-  addNumericBonus("Gut", stats.gut, BONUS_ICONS.gut);
-  addNumericBonus("Wit", stats.wit, BONUS_ICONS.wit);
-
-  const aptitude = summary.aptitude_bonus || {};
-  addNumericBonus("Aptitude Speed", aptitude.speed, BONUS_ICONS.speed, "Apt");
-  addNumericBonus("Aptitude Power", aptitude.power, BONUS_ICONS.power, "Apt");
-  addNumericBonus("Aptitude Wit", aptitude.wit, BONUS_ICONS.wit, "Apt");
-
-  const pending = summary.pending_bonus || {};
-  addNumericBonus("Skill", pending.flat, BONUS_ICONS.skill);
-  addNumericBonus("Skill Dice", pending.add_d, BONUS_ICONS.skill, "Dice");
-  addNumericBonus("Skill Keep High", pending.add_kh, BONUS_ICONS.skill, "KH");
-  addNumericBonus("Skill Floor", pending.floor, BONUS_ICONS.skill, "Floor");
-  addNumericBonus("Skill Cap", pending.cap, BONUS_ICONS.skill, "Cap");
-  addNumericBonus("Skill Gold", pending.gold_range, BONUS_ICONS.skill, "Gold");
-
-  if (summary.bonus_display && summary.bonus_display !== "-") {
-    rows.push({ icon: BONUS_ICONS.skill, label: "Effect", value: summary.bonus_display });
-  }
-
-  if (summary.stamina_note) {
-    rows.push({ icon: BONUS_ICONS.stamina, label: "Stamina", value: summary.stamina_note });
+  while (match) {
+    const [, amount, iconName] = match;
+    rows.push({
+      icon: DISCORD_BONUS_ICON_MAP[iconName] || BONUS_ICONS.skill,
+      index: match.index,
+      label: iconName,
+      value: signed(amount),
+    });
+    match = bonusPattern.exec(text);
   }
 
   return rows;
+}
+
+function formatRollDice(value) {
+  return String(value).replace(/__/g, "");
 }
 
 function signed(value = 0) {
