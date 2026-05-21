@@ -482,17 +482,7 @@ export default function RaceGamePage({
               <b>{Math.round(turnProgress)}%</b>
             </div>
           </div>
-          <div className="race-path-strip uma-scroll" aria-label="Track path">
-            {room.path?.map((step) => (
-              <span
-                key={step.turn}
-                className={step.active ? "active" : ""}
-                title={`${step.turn}: ${step.label}`}
-              >
-                {step.icon}
-              </span>
-            ))}
-          </div>
+          
           <div className="race-info-tile-grid">
             {/* <div><Flag size={15} /><span>{room.current_path?.label || "-"}</span></div>
             <div><Gauge size={15} /><span>{room.distance}</span></div>
@@ -518,6 +508,17 @@ export default function RaceGamePage({
             <div className="race-phase-banner">
               <Zap size={18} />
               {room.race_phase ? `Phase ${room.race_phase}` : "Race"}
+            </div>
+            <div className="race-path-strip uma-scroll" aria-label="Track path">
+              {room.path?.map((step) => (
+                <span
+                  key={step.turn}
+                  className={step.active ? "active" : ""}
+                  title={`${step.turn}: ${step.label}`}
+                >
+                  {step.icon}
+                </span>
+              ))}
             </div>
             <div className="race-runner-stack uma-scroll">
               {room.players?.map((player) => {
