@@ -505,10 +505,6 @@ export default function RaceGamePage({
         <main className="race-hud-panel race-live-panel">
           <div className="race-live-stage" style={{ backgroundImage: `url(${roomRaceImage})` }}>
             <div className="race-live-stage-overlay" />
-            <div className="race-phase-banner">
-              <Zap size={18} />
-              {room.race_phase ? `Phase ${room.race_phase}` : "Race"}
-            </div>
             <div className="race-path-strip uma-scroll" aria-label="Track path">
               {room.path?.map((step) => (
                 <span
@@ -519,6 +515,10 @@ export default function RaceGamePage({
                   {step.icon}
                 </span>
               ))}
+            </div>
+            <div className="race-phase-banner">
+              <Zap size={18} />
+              {room.race_phase ? `Phase ${room.race_phase}` : "Race"}
             </div>
             <div className="race-runner-stack uma-scroll">
               {room.players?.map((player) => {
