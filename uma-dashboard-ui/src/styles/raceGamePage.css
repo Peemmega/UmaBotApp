@@ -1614,7 +1614,7 @@
 }
 
 .race-fullscreen-page .race-phase-banner {
-  top: 50px;
+  top: 60px;
   padding: 3px 20px;
   background: linear-gradient(90deg, rgba(57, 171, 92, 0.9), rgba(145, 200, 109, 0.86));
   color: #ffffff;
@@ -1635,7 +1635,7 @@
 
 .race-fullscreen-page .race-runner-stack {
   width: min(35%, 500px);
-  margin-top: 88px;
+  margin-top: 60px;
   gap: 7px;
   max-height: calc(100% - 52px);
   overflow-y: auto;
