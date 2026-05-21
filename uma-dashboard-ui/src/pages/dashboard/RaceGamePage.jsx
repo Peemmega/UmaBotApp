@@ -49,10 +49,10 @@ import "../../styles/raceGamePage.css";
 
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
 const BOT_OPTIONS = [
-  { id: "rookie_front", label: "Front Bot" },
-  { id: "rookie_pace", label: "Pace Bot" },
-  { id: "rookie_late", label: "Late Bot" },
-  { id: "rookie_end", label: "End Bot" },
+  { id: "rookie_front", label: "Front" },
+  { id: "rookie_pace", label: "Pace" },
+  { id: "rookie_late", label: "Late" },
+  { id: "rookie_end", label: "End" },
 ];
 const BONUS_ICONS = {
   speed: speedIcon,

@@ -4,6 +4,7 @@
   gap: 16px;
   color: var(--uma-ink);
 }
+
 .uma-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgba(63, 199, 134, 0.34) transparent;
@@ -1494,7 +1495,7 @@
 
 .race-fullscreen-page .race-hud-turn strong {
   color: #28a75a;
-  font-size: clamp(16px,2.25vw,20px);
+  font-size: clamp(16px,2.25vw,22px);
   line-height: 0.92;
 }
 
@@ -1523,7 +1524,7 @@
 
 .race-fullscreen-page .race-hud-grid {
   height: calc(100vh - 76px);
-  grid-template-columns: minmax(250px, 0.76fr) minmax(440px, 1.34fr) minmax(250px, 0.68fr);
+  grid-template-columns: minmax(220px,.4fr) minmax(440px,1.34fr) minmax(250px,.68fr);
   grid-template-rows: minmax(0, 1fr) 320px;
   gap: 8px;
   padding: 0;
@@ -1651,7 +1652,7 @@
 }
 
 .race-fullscreen-page .race-aptitude-panel div {
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(1,1fr);
 }
 
 .race-fullscreen-page .race-aptitude-panel > span {
