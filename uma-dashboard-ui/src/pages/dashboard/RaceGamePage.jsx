@@ -72,6 +72,30 @@ const DISCORD_BONUS_ICON_MAP = {
   Wits: BONUS_ICONS.wit,
   Skill: BONUS_ICONS.skill,
 };
+const LOCAL_MOB_AVATAR_BY_NAME = {
+  "almond eye": "/mobs/almond_eye.png",
+  "apple cider": "/mobs/mob_01.png",
+  "beyond the light": "/mobs/beyond_the_light.jpg",
+  "dominant power": "/mobs/mob_03.png",
+  equinox: "/mobs/equinox.png",
+  "faster than ray": "/mobs/mob_01.png",
+  "fujimasa march": "/mobs/fujimasa_march.png",
+  gentildonna: "/mobs/gentildonna.png",
+  "hexa canyon": "/mobs/mob_03.png",
+  "obey your master": "/mobs/obey_your_master.jpg",
+  "oguri cap": "/mobs/oguri_cap.png",
+  orfevre: "/mobs/orfevre.png",
+  "sarasate opera": "/mobs/mob_02.png",
+  "shindo runrun": "/mobs/mob_02.png",
+  "silecnt susuka": "/mobs/silecne_susuka.png",
+  "silecne susuka": "/mobs/silecne_susuka.png",
+  "silence suzuka": "/mobs/silecne_susuka.png",
+  "sunfish ray": "/mobs/mob_04.png",
+  "special week": "/mobs/special_week.png",
+  "still in love": "/mobs/still_in_love.png",
+  verxina: "/mobs/verxina.png",
+  "waltz of shadow": "/mobs/mob_04.png",
+};
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
@@ -94,6 +118,20 @@ function hasOnlyBotsAfterLeave(roomData, userId) {
   );
 
   return remainingPlayers.length > 0 && remainingPlayers.every((player) => player.is_mob);
+}
+
+function isUserInRoom(roomData, userId) {
+  return (roomData?.players || []).some((player) => String(player.id) === String(userId));
+}
+
+function mergeRoomSummary(item, detail, userId) {
+  return {
+    ...item,
+    phase: detail?.phase || item.phase,
+    turn: detail?.turn ?? item.turn,
+    player_count: detail?.players?.length ?? item.player_count,
+    is_joined: isUserInRoom(detail, userId),
+  };
 }
 
 function getAptitudeRows(roomData, player) {
@@ -201,7 +239,7 @@ export default function RaceGamePage({
         nextRooms.map(async (item) => {
           try {
             const detail = await getRaceRoom(item.room_id, userId);
-            return hasHumanPlayers(detail) ? item : null;
+            return hasHumanPlayers(detail) ? mergeRoomSummary(item, detail, userId) : null;
           } catch {
             return item;
           }
@@ -233,7 +271,7 @@ export default function RaceGamePage({
             .map(async (item) => {
             try {
               const detail = await getRaceRoom(item.room_id, userId);
-              return hasHumanPlayers(detail) ? item : null;
+              return hasHumanPlayers(detail) ? mergeRoomSummary(item, detail, userId) : null;
             } catch {
               return item;
             }
@@ -388,6 +426,7 @@ export default function RaceGamePage({
           ) : (
             rooms.map((item) => {
               const raceImage = getRaceImage(roomRaceImageSource(item));
+              const canJoinRoom = item.phase === "waiting" || item.is_joined;
 
               return (
                 <article className="race-room-card" key={item.room_id}>
@@ -406,9 +445,9 @@ export default function RaceGamePage({
                     <button
                       type="button"
                       onClick={() => handleJoin(item.room_id)}
-                      disabled={Boolean(actionBusy) || item.phase !== "waiting"}
+                      disabled={Boolean(actionBusy) || !canJoinRoom}
                     >
-                      Join
+                      {item.is_joined ? "Rejoin" : "Join"}
                     </button>
                   </div>
                 </article>
@@ -800,9 +839,28 @@ function getRunnerState(player, room) {
 
 function getRunnerAvatar(player) {
   if (!player) return "";
+  const localMobAvatar = player.is_mob ? getLocalMobAvatar(player.name || player.username) : "";
+  if (localMobAvatar) return localMobAvatar;
+
   return player.is_mob
-    ? player.thumbnail || player.avatar || ""
-    : player.avatar || player.thumbnail || "";
+    ? firstUsableImage(player.thumbnail, player.avatar)
+    : firstUsableImage(player.avatar, player.thumbnail);
+}
+
+function getLocalMobAvatar(name = "") {
+  const normalizedName = normalizeRaceName(name)
+    .replace(/\s+lv\.\d+$/i, "")
+    .replace(/\s+/g, " ");
+  return LOCAL_MOB_AVATAR_BY_NAME[normalizedName] || "";
+}
+
+function firstUsableImage(...values) {
+  return values.find((value) => isUsableImageSrc(value)) || "";
+}
+
+function isUsableImageSrc(value) {
+  const text = String(value || "").trim();
+  return Boolean(text && (text.startsWith("http://") || text.startsWith("https://") || text.startsWith("/")));
 }
 
 function RaceLogItem({ log }) {
