@@ -536,7 +536,7 @@ function RaceLogItem({ log }) {
           <div>
             <b>Roll</b>
             <span>
-              {formatRollDice(summary.dice || summary.base_total || "-")} = {summary.total ?? "-"}
+              {formatRollDice(summary.dice || summary.base_total || "-", summary.base_total)} = {summary.total ?? "-"}
               {summary.distance_color ? ` | ${summary.distance_color}` : ""}
             </span>
           </div>
@@ -588,8 +588,50 @@ function parseDiscordBonusDisplay(value = "") {
   return rows;
 }
 
-function formatRollDice(value) {
-  return String(value).replace(/__([^_]+?)__/g, "[$1]");
+function formatRollDice(value, baseTotal) {
+  const text = String(value);
+  const markedText = text.replace(/__([^_]+?)__/g, "[$1]");
+  if (markedText !== text) return markedText;
+
+  const target = Number(baseTotal);
+  if (!Number.isFinite(target)) return text;
+
+  const matches = [...text.matchAll(/\d+/g)];
+  const diceValues = matches.map((match) => Number(match[0]));
+  if (diceValues.length === 0) return text;
+
+  const selected = findDiceTotalIndexes(diceValues, target);
+  if (selected.size === 0) return text;
+
+  let cursor = 0;
+  let output = "";
+  matches.forEach((match, index) => {
+    const [numberText] = match;
+    const start = match.index ?? 0;
+    output += text.slice(cursor, start);
+    output += selected.has(index) ? `[${numberText}]` : numberText;
+    cursor = start + numberText.length;
+  });
+  output += text.slice(cursor);
+
+  return output;
+}
+
+function findDiceTotalIndexes(values, target) {
+  const selected = [];
+
+  function search(index, remaining) {
+    if (remaining === 0) return true;
+    if (index >= values.length || remaining < 0) return false;
+
+    selected.push(index);
+    if (search(index + 1, remaining - values[index])) return true;
+    selected.pop();
+
+    return search(index + 1, remaining);
+  }
+
+  return search(0, target) ? new Set(selected) : new Set();
 }
 
 function signed(value = 0) {
