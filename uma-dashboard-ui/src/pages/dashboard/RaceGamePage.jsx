@@ -523,6 +523,9 @@ export default function RaceGamePage({
             <div className="race-runner-stack uma-scroll">
               {room.players?.map((player) => {
                 const latestRoll = latestRollByName.get(normalizeRaceName(player.name));
+                const turnScore = getRunnerTurnScore(player, room, latestRoll);
+                const state = getRunnerState(player, room);
+                const avatar = getRunnerAvatar(player);
                 return (
                   <motion.article
                     layout
@@ -533,18 +536,18 @@ export default function RaceGamePage({
                     transition={{ duration: 0.22 }}
                   >
                     <div className="race-player-avatar">
-                      {player.avatar ? <img src={player.avatar} alt="" /> : <Bot size={22} />}
+                      {avatar ? <img src={avatar} alt="" /> : <Bot size={22} />}
                     </div>
                     <div className="race-runner-info">
                       <div className="race-runner-title-row">
                         <h3>{player.name}</h3>
-                        <strong>{latestRoll ? `+${latestRoll.total}` : "+0"}</strong>
+                        <strong>{turnScore}</strong>
                       </div>
                       <div className="race-player-meta">
                         <span><img src={staminaIcon} alt="Stamina" />{player.stamina_left}</span>
                         <span><img src={witIcon} alt="Wit" />{player.wit_mana}</span>
-                        <span className={player.last_roll_turn === room.turn ? "rolled" : ""}>
-                          {player.is_mob ? "Bot" : player.last_roll_turn === room.turn ? "Done" : "Ready"}
+                        <span className={`race-runner-state ${state.className}`}>
+                          {state.label}
                         </span>
                       </div>
                     </div>
@@ -771,6 +774,37 @@ function normalizeRaceName(value = "") {
   return String(value).trim().toLowerCase();
 }
 
+function getRunnerTurnScore(player, room, latestRoll) {
+  const currentTurn = Number(room?.turn);
+  const rolledThisTurn = Number(player?.last_roll_turn) === currentTurn;
+  const playerRollTotal = player?.last_roll?.total;
+
+  if (rolledThisTurn && Number.isFinite(Number(playerRollTotal))) {
+    return signed(playerRollTotal);
+  }
+
+  if (latestRoll?.turn === currentTurn && Number.isFinite(Number(latestRoll.total))) {
+    return signed(latestRoll.total);
+  }
+
+  return "+0";
+}
+
+function getRunnerState(player, room) {
+  if (player?.is_mob) return { label: "BOT", className: "is-bot" };
+  if (Number(player?.last_roll_turn) === Number(room?.turn)) {
+    return { label: "DONE", className: "is-done" };
+  }
+  return { label: "READY", className: "is-ready" };
+}
+
+function getRunnerAvatar(player) {
+  if (!player) return "";
+  return player.is_mob
+    ? player.thumbnail || player.avatar || ""
+    : player.avatar || player.thumbnail || "";
+}
+
 function RaceLogItem({ log }) {
   const summary = log.payload?.roll_summary;
   const bonusRows = getRollBonusRows(summary);
@@ -819,7 +853,7 @@ function getLogPlayerName(log) {
     log.payload?.player?.name;
   if (payloadName) return payloadName;
 
-  return String(log.message || "").replace(/\s+ran\s+[+-]?\d+.*/i, "").trim() || "Racer";
+  return String(log.message || "").replace(/\s+(?:auto\s+)?ran\s+[+-]?\d+.*/i, "").trim() || "Racer";
 }
 
 function getScoreFromLogMessage(message = "") {
