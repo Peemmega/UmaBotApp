@@ -241,6 +241,36 @@ function getRaceStageBackground(roomData, fallback) {
   };
 }
 
+function getUpcomingRaceStageBackgrounds(roomData, fallback) {
+  if (!roomData) return [fallback].filter(Boolean);
+  const path = Array.isArray(roomData.path) ? roomData.path : [];
+  const turn = Number(roomData.turn) || 0;
+  const maxTurn = Number(roomData.max_turn) || 0;
+  const upcomingKeys = new Set();
+
+  for (let offset = 1; offset <= 2; offset += 1) {
+    const nextTurn = turn + offset;
+    if (maxTurn > 0 && nextTurn >= maxTurn) {
+      upcomingKeys.add("end");
+      continue;
+    }
+
+    const nextStep = path.find((step) => Number(step.turn) === nextTurn);
+    upcomingKeys.add(Number(nextStep?.type) || 1);
+  }
+
+  return Array.from(upcomingKeys)
+    .map((key) => RACE_STAGE_BG_BY_PATH_TYPE[key])
+    .filter(Boolean);
+}
+
+function preloadImages(sources = []) {
+  sources.filter(Boolean).forEach((source) => {
+    const image = new Image();
+    image.src = source;
+  });
+}
+
 export default function RaceGamePage({
   fullscreen = false,
   onBackToDashboard,
@@ -311,6 +341,14 @@ export default function RaceGamePage({
     () => getRaceStageBackground(room, roomRaceImage),
     [room, roomRaceImage]
   );
+  const nextRaceStageBackgrounds = useMemo(
+    () => getUpcomingRaceStageBackgrounds(room, roomRaceImage),
+    [room, roomRaceImage]
+  );
+
+  useEffect(() => {
+    preloadImages([raceStageBackground.src, ...nextRaceStageBackgrounds]);
+  }, [nextRaceStageBackgrounds, raceStageBackground.src]);
 
   const leaderScore = useMemo(
     () => Math.max(1, ...(room?.scoreboard || []).map((player) => Number(player.score) || 0)),
@@ -668,7 +706,11 @@ export default function RaceGamePage({
                 transition={{ duration: 0.5, ease: "easeOut" }}
               />
             </AnimatePresence>
-            <div className="race-speed-lines" aria-hidden="true" />
+            <div className="race-speed-burst" aria-hidden="true">
+              {Array.from({ length: 22 }, (_, index) => (
+                <span key={index} style={{ "--i": index }} />
+              ))}
+            </div>
             <div className="race-live-stage-overlay" />
             <div className="race-path-strip uma-scroll" aria-label="Track path">
               {room.path?.map((step) => (
