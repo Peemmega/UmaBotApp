@@ -651,6 +651,14 @@ export default function RaceGamePage({
     );
   }
 
+  if (isRaceEnded(room)) {
+    return (
+      <section className={`race-page race-winner-page ${fullscreen ? "race-fullscreen-page" : ""}`}>
+        <RaceWinnerModal winner={raceWinner} onLeave={handleLeave} />
+      </section>
+    );
+  }
+
   return (
     <section className={`race-page race-hud-page ${fullscreen ? "race-fullscreen-page" : ""}`}>
       <header className="race-hero room race-hud-topbar">
@@ -702,47 +710,6 @@ export default function RaceGamePage({
       </header>
 
       {error && <div className="race-error">{error}</div>}
-
-      {isRaceEnded(room) && (
-        <div className="race-winner-overlay" role="status" aria-live="polite">
-          <div className="race-confetti" aria-hidden="true">
-            {Array.from({ length: 36 }, (_, index) => (
-              <span
-                key={index}
-                style={{
-                  "--i": index,
-                  "--x": `${(index * 29) % 100}%`,
-                  "--delay": `${-(index % 12) * 0.13}s`,
-                  "--duration": `${2.4 + (index % 7) * 0.18}s`,
-                  "--drift": `${((index % 7) - 3) * 22}px`,
-                  "--color": ["#69d47d", "#f5cf60", "#ffffff", "#e97b7b", "#6fc7e8"][index % 5],
-                }}
-              />
-            ))}
-          </div>
-          <motion.div
-            className="race-winner-card"
-            initial={{ opacity: 0, scale: 0.86, y: 18 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.36, ease: "easeOut" }}
-          >
-            <Trophy size={42} />
-            <span>Winner</span>
-            <div className="race-winner-portrait">
-              {raceWinner?.avatar ? <img src={raceWinner.avatar} alt="" /> : <Trophy size={44} />}
-            </div>
-            <h2>{raceWinner?.name || "Race Complete"}</h2>
-            <div>
-              <em>{raceWinner?.style || "Final"}</em>
-              <strong>{raceWinner?.score || 0} pts</strong>
-            </div>
-            <button type="button" className="race-primary-btn" onClick={handleLeave}>
-              <DoorOpen size={18} />
-              Leave Room
-            </button>
-          </motion.div>
-        </div>
-      )}
 
       <div className="race-hud-grid">
         <aside className="race-track-panel race-hud-panel race-track-hud">
@@ -1074,6 +1041,54 @@ function PanelTitle({ icon, title }) {
       {icon}
       {title}
     </h3>
+  );
+}
+
+function RaceWinnerModal({ winner, onLeave }) {
+  const winnerName = winner?.name || winner?.username || "Winner";
+  const winnerStyle = winner?.style || winner?.running_style || "-";
+  const winnerScore = winner?.score ?? winner?.total_score ?? 0;
+  const winnerAvatar = winner?.avatar || getRunnerAvatar(winner);
+
+  return (
+    <div className="race-winner-overlay" role="dialog" aria-modal="true" aria-label="Race winner">
+      <div className="race-confetti" aria-hidden="true">
+        {Array.from({ length: 38 }, (_, index) => (
+          <span
+            key={index}
+            style={{
+              "--x": `${(index * 29) % 100}%`,
+              "--drift": `${index % 2 === 0 ? "-" : ""}${24 + (index % 8) * 9}px`,
+              "--delay": `${-((index * 0.19) % 3.2)}s`,
+              "--duration": `${2.8 + (index % 6) * 0.24}s`,
+              "--color": ["#76d681", "#f5d35f", "#6fd3ff", "#ffffff", "#d8a65a"][index % 5],
+            }}
+          />
+        ))}
+      </div>
+
+      <motion.div
+        className="race-winner-card"
+        initial={{ opacity: 0, y: 18, scale: 0.94 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+      >
+        <Trophy size={42} />
+        <div className="race-winner-portrait">
+          {winnerAvatar ? <img src={winnerAvatar} alt="" /> : <Bot size={48} />}
+        </div>
+        <span>Winner</span>
+        <h2>{winnerName}</h2>
+        <div className="race-winner-meta">
+          <em>{winnerStyle}</em>
+          <strong>{winnerScore} score</strong>
+        </div>
+        <button type="button" className="race-primary-btn race-run-btn" onClick={onLeave}>
+          <DoorOpen size={20} />
+          Leave Room
+        </button>
+      </motion.div>
+    </div>
   );
 }
 
