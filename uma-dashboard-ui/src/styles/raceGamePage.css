@@ -1137,13 +1137,48 @@
   padding: 18px;
   display: flex;
   align-items: stretch;
+  overflow: hidden;
+  background: #eaf6df;
+}
+
+.race-live-bg {
+  position: absolute;
+  inset: -5%;
+  z-index: 0;
   background-size: cover;
-  background-position: center;
+  background-position: center 54%;
+  will-change: transform, opacity;
+  animation: raceForwardDrift 3.6s linear infinite;
+}
+
+.race-speed-lines {
+  position: absolute;
+  inset: -18%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.34;
+  background:
+    repeating-linear-gradient(
+      112deg,
+      transparent 0 28px,
+      rgba(255, 255, 255, 0.38) 29px 31px,
+      transparent 32px 70px
+    ),
+    repeating-linear-gradient(
+      112deg,
+      transparent 0 92px,
+      rgba(96, 208, 124, 0.22) 93px 96px,
+      transparent 97px 158px
+    );
+  mix-blend-mode: screen;
+  transform: translateX(-10%);
+  animation: raceSpeedLines 0.72s linear infinite;
 }
 
 .race-live-stage-overlay {
   position: absolute;
   inset: 0;
+  z-index: 2;
   background:
     linear-gradient(90deg, rgba(3, 17, 24, 0.72), rgba(3, 17, 24, 0.16) 45%, rgba(3, 17, 24, 0.46)),
     radial-gradient(circle at 65% 22%, rgba(255, 255, 255, 0.26), transparent 28%);
@@ -1190,12 +1225,36 @@
 
 .race-runner-stack {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   width: min(47%, 420px);
   margin-top: 86px;
   display: flex;
   flex-direction: column;
   gap: 9px;
+}
+
+@keyframes raceForwardDrift {
+  0% {
+    transform: scale(1.08) translate3d(1.2%, -0.8%, 0);
+    filter: saturate(1.04) brightness(1.02);
+  }
+  50% {
+    transform: scale(1.13) translate3d(-1.4%, 0.9%, 0);
+    filter: saturate(1.12) brightness(1.06);
+  }
+  100% {
+    transform: scale(1.08) translate3d(1.2%, -0.8%, 0);
+    filter: saturate(1.04) brightness(1.02);
+  }
+}
+
+@keyframes raceSpeedLines {
+  0% {
+    transform: translate3d(-13%, 3%, 0) scaleX(1.04);
+  }
+  100% {
+    transform: translate3d(10%, -3%, 0) scaleX(1.04);
+  }
 }
 
 .race-runner-card {
@@ -1649,9 +1708,17 @@
   min-height: 0;
   height: 100%;
   padding: 14px;
-  background-size: contain;
-  background-repeat: no-repeat;
   background-color: rgba(60, 78, 44, 0.16);
+}
+
+.race-fullscreen-page .race-live-bg {
+  inset: -4%;
+  background-size: cover;
+  background-position: center;
+}
+
+.race-fullscreen-page .race-speed-lines {
+  opacity: 0.22;
 }
 
 .race-fullscreen-page .race-live-stage-overlay {

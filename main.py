@@ -141,6 +141,8 @@ if os.path.exists(FRONTEND_DIST):
         app.mount("/tcg", StaticFiles(directory=os.path.join(FRONTEND_DIST, "tcg")), name="tcg-assets")
     if os.path.exists(os.path.join(FRONTEND_DIST, "mobs")):
         app.mount("/mobs", StaticFiles(directory=os.path.join(FRONTEND_DIST, "mobs")), name="mob-assets")
+    if os.path.exists(os.path.join(FRONTEND_DIST, "race_bg")):
+        app.mount("/race_bg", StaticFiles(directory=os.path.join(FRONTEND_DIST, "race_bg")), name="race-bg-assets")
 
     @app.get("/{full_path:path}")
     async def serve_react(full_path: str):

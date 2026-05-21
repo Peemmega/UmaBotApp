@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
   Bot,
@@ -170,6 +170,13 @@ const LOCAL_MOB_AVATAR_FILES = new Set([
   "still_in_love.png",
   "verxina.png",
 ]);
+const RACE_STAGE_BG_BY_PATH_TYPE = {
+  1: "/race_bg/path_1_bg.png",
+  2: "/race_bg/path_2_bg.png",
+  3: "/race_bg/path_3_bg.png",
+  4: "/race_bg/path_4_bg.png",
+  end: "/race_bg/path_end.png",
+};
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
@@ -218,6 +225,20 @@ function getAptitudeRows(roomData, player) {
     { icon: powerIcon, label: "Power", source: track },
     { icon: witIcon, label: "Wit", source: style },
   ];
+}
+
+function getRaceStageBackground(roomData, fallback) {
+  if (!roomData) return { key: "fallback", src: fallback };
+  const turn = Number(roomData.turn) || 0;
+  const maxTurn = Number(roomData.max_turn) || 0;
+  const isFinalTurn = maxTurn > 0 && turn >= maxTurn;
+  const pathType = Number(roomData.current_path?.type) || 1;
+  const bgKey = roomData.phase === "ended" || isFinalTurn ? "end" : pathType;
+
+  return {
+    key: `${turn}-${bgKey}`,
+    src: RACE_STAGE_BG_BY_PATH_TYPE[bgKey] || fallback,
+  };
 }
 
 export default function RaceGamePage({
@@ -285,6 +306,10 @@ export default function RaceGamePage({
   const roomRaceImage = useMemo(
     () => getRaceImage(roomRaceImageSource(room)),
     [room]
+  );
+  const raceStageBackground = useMemo(
+    () => getRaceStageBackground(room, roomRaceImage),
+    [room, roomRaceImage]
   );
 
   const leaderScore = useMemo(
@@ -631,7 +656,19 @@ export default function RaceGamePage({
         </aside>
 
         <main className="race-hud-panel race-live-panel">
-          <div className="race-live-stage" style={{ backgroundImage: `url(${roomRaceImage})` }}>
+          <div className="race-live-stage">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={raceStageBackground.key}
+                className="race-live-bg"
+                style={{ backgroundImage: `url(${raceStageBackground.src})` }}
+                initial={{ opacity: 0, scale: 1.1 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.18 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              />
+            </AnimatePresence>
+            <div className="race-speed-lines" aria-hidden="true" />
             <div className="race-live-stage-overlay" />
             <div className="race-path-strip uma-scroll" aria-label="Track path">
               {room.path?.map((step) => (
