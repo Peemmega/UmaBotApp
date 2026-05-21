@@ -393,16 +393,16 @@ export default function RaceGamePage({
                 <article className="race-room-card" key={item.room_id}>
                   <img src={raceImage} alt="" />
                   <div>
+                    <span className={`race-status-chip ${item.phase}`}>
+                      {item.phase}
+                    </span>
                     <h3>{item.race_name}</h3>
                     <p>
-                      Turn {item.turn}/{item.max_turn} | {item.player_count} racers
+                      Turn {item.max_turn} | {item.player_count} racers
                     </p>
                   </div>
 
                   <div>
-                    <span className={`race-status-chip ${item.phase}`}>
-                      {item.phase}
-                    </span>
                     <button
                       type="button"
                       onClick={() => handleJoin(item.room_id)}
