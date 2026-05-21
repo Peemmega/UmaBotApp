@@ -626,6 +626,62 @@
   word-break: break-word;
 }
 
+.race-log-summary-grid {
+  min-width: 0;
+  padding: 8px 10px;
+  display: grid;
+  grid-template-columns: minmax(150px, 0.9fr) minmax(130px, 0.75fr) minmax(180px, 1.35fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.race-log-summary-player,
+.race-log-summary-dice {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.race-log-summary-player span {
+  color: #0f7a42;
+  font-weight: 1000;
+}
+
+.race-log-summary-player strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #24382f;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.race-log-summary-player b {
+  margin-left: auto;
+  color: #1d8b52;
+  font-size: 15px;
+}
+
+.race-log-summary-dice {
+  color: #24382f;
+  font-size: 12px;
+  font-weight: 950;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.race-log-summary-dice em {
+  border-radius: 999px;
+  padding: 2px 7px;
+  background: rgba(47, 184, 106, 0.12);
+  color: #0f7a42;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 1000;
+}
+
 .race-log-bonus-list {
   display: flex;
   flex-wrap: wrap;
@@ -1261,6 +1317,11 @@
   .race-main-actions {
     grid-template-columns: 1fr;
   }
+
+  .race-log-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
 }
 
 /* Fullscreen broadcast tuning */
@@ -1288,14 +1349,14 @@
 }
 
 .race-fullscreen-page .race-hud-topbar {
-  min-height: 72px;
+  min-height: 56px;
   grid-template-columns: minmax(290px, 1.45fr) minmax(120px, 0.52fr) minmax(120px, 0.54fr) minmax(120px, 0.54fr) minmax(120px, 0.54fr) auto;
-  gap: 8px;
-  padding: 10px 14px;
+  gap: 6px;
+  padding: 7px 12px;
 }
 
 .race-fullscreen-page .race-live-brand {
-  gap: 10px;
+  gap: 8px;
 }
 
 .race-fullscreen-page .race-live-brand svg {
@@ -1305,34 +1366,37 @@
 
 .race-fullscreen-page .race-kicker {
   color: #2f8c4f;
-  font-size: 10px;
+  font-size: 9px;
+  letter-spacing: 0.04em;
 }
 
 .race-fullscreen-page .race-hero h2 {
   color: #223326;
-  font-size: clamp(24px, 2.2vw, 34px);
+  font-size: clamp(20px, 1.8vw, 30px);
   text-shadow: none;
 }
 
 .race-fullscreen-page .race-hud-stat {
-  padding-left: 10px;
+  padding-left: 8px;
   border-left-color: rgba(71, 92, 62, 0.16);
+  gap: 1px;
 }
 
 .race-fullscreen-page .race-hud-stat span,
 .race-fullscreen-page .race-hud-stat em {
   color: rgba(38, 55, 41, 0.56);
-  font-size: 10px;
+  font-size: 9px;
+  letter-spacing: 0.02em;
 }
 
 .race-fullscreen-page .race-hud-stat strong {
   color: #263729;
-  font-size: clamp(17px, 1.3vw, 23px);
+  font-size: clamp(15px, 1.12vw, 21px);
 }
 
 .race-fullscreen-page .race-hud-turn strong {
   color: #28a75a;
-  font-size: clamp(30px, 2.8vw, 46px);
+  font-size: clamp(24px, 2.25vw, 38px);
 }
 
 .race-fullscreen-page .race-hud-turn small {
@@ -1340,6 +1404,7 @@
 }
 
 .race-fullscreen-page .race-hud-turn div {
+  height: 5px;
   background: rgba(38, 55, 41, 0.16);
 }
 
@@ -1349,16 +1414,16 @@
 }
 
 .race-fullscreen-page .race-ghost-btn {
-  min-height: 34px;
+  min-height: 30px;
   border-color: rgba(63, 88, 60, 0.18);
   border-radius: 12px;
-  padding: 7px 12px;
+  padding: 6px 11px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(211, 227, 197, 0.68));
   color: #263729;
 }
 
 .race-fullscreen-page .race-hud-grid {
-  height: calc(100vh - 96px);
+  height: calc(100vh - 76px);
   grid-template-columns: minmax(250px, 0.72fr) minmax(440px, 1.4fr) minmax(250px, 0.68fr);
   grid-template-rows: minmax(0, 1fr) 172px;
   gap: 8px;
@@ -1458,6 +1523,10 @@
   gap: 7px;
 }
 
+.race-fullscreen-page .race-aptitude-panel div {
+  grid-template-columns: 1fr;
+}
+
 .race-fullscreen-page .race-aptitude-panel > span {
   color: #2f8c4f;
 }
@@ -1519,9 +1588,16 @@
 }
 
 .race-fullscreen-page .race-log-item p,
+.race-fullscreen-page .race-log-summary-player strong,
+.race-fullscreen-page .race-log-summary-dice,
 .race-fullscreen-page .race-log-detail span,
 .race-fullscreen-page .race-log-detail strong {
   color: #263729;
+}
+
+.race-fullscreen-page .race-log-summary-player b,
+.race-fullscreen-page .race-log-summary-player span {
+  color: #2f8c4f;
 }
 
 .race-fullscreen-page .race-log-detail {

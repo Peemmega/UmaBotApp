@@ -14,7 +14,6 @@ import {
   Radio,
   RefreshCw,
   Sparkles,
-  Sun,
   Target,
   Trophy,
   Users,
@@ -103,7 +102,6 @@ function getAptitudeRows(roomData, player) {
     { icon: speedIcon, label: "Speed", source: distance },
     { icon: powerIcon, label: "Power", source: track },
     { icon: witIcon, label: "Wit", source: style },
-    { icon: staminaIcon, label: "Stamina", source: roomData?.current_path?.label || "Path" },
   ];
 }
 
@@ -418,12 +416,11 @@ export default function RaceGamePage({
         <div className="race-hud-stat">
           <span>Distance</span>
           <strong>{room.distance}</strong>
-          <em>{room.track}</em>
         </div>
 
         <div className="race-hud-stat">
-          <span>Weather</span>
-          <strong><Sun size={16} /> Fine</strong>
+          <span>Track</span>
+          <strong><Target size={16} /> {room.track}</strong>
           <em>{socketStatus}</em>
         </div>
 
@@ -680,40 +677,57 @@ function PanelTitle({ icon, title }) {
 function RaceLogItem({ log }) {
   const summary = log.payload?.roll_summary;
   const bonusRows = getRollBonusRows(summary);
+  const playerName = getLogPlayerName(log);
+  const turnScore = summary?.total ?? getScoreFromLogMessage(log.message);
 
   return (
-    <article className="race-log-item">
-      <p>
-        <span>T{log.turn}</span>
-        {log.message}
-      </p>
-      {summary && (
-        <div className="race-log-detail">
-          <div>
-            <b>Roll</b>
-            <span>
-              {formatRollDice(summary.dice || summary.base_total || "-", summary.base_total)} = {summary.total ?? "-"}
-              {summary.distance_color ? ` | ${summary.distance_color}` : ""}
-            </span>
+    <article className={`race-log-item ${summary ? "race-log-roll" : ""}`}>
+      {summary ? (
+        <div className="race-log-summary-grid">
+          <div className="race-log-summary-player">
+            <span>T{log.turn}</span>
+            <strong>{playerName}</strong>
+            <b>+{turnScore}</b>
           </div>
-          <div>
-            <b>Bonus</b>
-            <span className="race-log-bonus-list">
-              {bonusRows.length > 0
-                ? bonusRows.map((item) => (
-                    <em key={`${item.label}-${item.value}-${item.index}`}>
-                      {item.icon && <img src={item.icon} alt={item.label} />}
-                      {item.note && <span>{item.note}</span>}
-                      <strong>{item.value}</strong>
-                    </em>
-                  ))
-                : <em>No bonus</em>}
-            </span>
+          <div className="race-log-summary-dice">
+            {formatRollDice(summary.dice || summary.base_total || "-", summary.base_total)}
+            {summary.distance_color ? <em>{summary.distance_color}</em> : null}
+          </div>
+          <div className="race-log-bonus-list">
+            {bonusRows.length > 0
+              ? bonusRows.map((item) => (
+                  <em key={`${item.label}-${item.value}-${item.index}`}>
+                    {item.icon && <img src={item.icon} alt={item.label} />}
+                    {item.note && <span>{item.note}</span>}
+                    <strong>{item.value}</strong>
+                  </em>
+                ))
+              : <em>No bonus</em>}
           </div>
         </div>
+      ) : (
+        <p>
+          <span>T{log.turn}</span>
+          {log.message}
+        </p>
       )}
     </article>
   );
+}
+
+function getLogPlayerName(log) {
+  const payloadName =
+    log.payload?.player_name ||
+    log.payload?.username ||
+    log.payload?.player?.name;
+  if (payloadName) return payloadName;
+
+  return String(log.message || "").replace(/\s+ran\s+[+-]?\d+.*/i, "").trim() || "Racer";
+}
+
+function getScoreFromLogMessage(message = "") {
+  const match = String(message).match(/ran\s+\+?(-?\d+)/i);
+  return match ? Number(match[1]) : "-";
 }
 
 function getRollBonusRows(summary) {
