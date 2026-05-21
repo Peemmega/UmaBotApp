@@ -26,6 +26,7 @@ import {
   useRaceZone,
 } from "../../api/raceApi";
 import useRaceSocket from "../../hooks/useRaceSocket";
+import { getRaceImage } from "../../utils/raceSchedule.js";
 import "../../styles/raceGamePage.css";
 
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
@@ -38,6 +39,13 @@ const BOT_OPTIONS = [
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
+}
+
+function roomRaceImageSource(race) {
+  return {
+    id: race?.stage_key || race?.race_id || race?.id,
+    name: race?.race_name || race?.name,
+  };
 }
 
 export default function RaceGamePage({
@@ -86,6 +94,11 @@ export default function RaceGamePage({
     myPlayer &&
     !myPlayer.is_mob &&
     myPlayer.last_roll_turn !== room.turn;
+
+  const roomRaceImage = useMemo(
+    () => getRaceImage(roomRaceImageSource(room)),
+    [room]
+  );
 
   const refreshRooms = useCallback(async () => {
     try {
@@ -246,27 +259,31 @@ export default function RaceGamePage({
           {rooms.length === 0 ? (
             <div className="race-empty">No web race rooms yet.</div>
           ) : (
-            rooms.map((item) => (
-              <article className="race-room-card" key={item.room_id}>
-                {item.thumbnail && <img src={item.thumbnail} alt="" />}
-                <div>
-                  <span className={`race-status-chip ${item.phase}`}>
-                    {item.phase}
-                  </span>
-                  <h3>{item.race_name}</h3>
-                  <p>
-                    Turn {item.turn}/{item.max_turn} | {item.player_count} racers
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleJoin(item.room_id)}
-                  disabled={Boolean(actionBusy) || item.phase !== "waiting"}
-                >
-                  Join
-                </button>
-              </article>
-            ))
+            rooms.map((item) => {
+              const raceImage = getRaceImage(roomRaceImageSource(item));
+
+              return (
+                <article className="race-room-card" key={item.room_id}>
+                  <img src={raceImage} alt="" />
+                  <div>
+                    <span className={`race-status-chip ${item.phase}`}>
+                      {item.phase}
+                    </span>
+                    <h3>{item.race_name}</h3>
+                    <p>
+                      Turn {item.turn}/{item.max_turn} | {item.player_count} racers
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleJoin(item.room_id)}
+                    disabled={Boolean(actionBusy) || item.phase !== "waiting"}
+                  >
+                    Join
+                  </button>
+                </article>
+              );
+            })
           )}
         </div>
       </section>
@@ -294,7 +311,7 @@ export default function RaceGamePage({
 
       <div className="race-game-grid">
         <div className="race-track-panel">
-          {room.image && <img className="race-track-image" src={room.image} alt="" />}
+          <img className="race-track-image" src={roomRaceImage} alt="" />
           <div className="race-path-strip" aria-label="Track path">
             {room.path?.map((step) => (
               <span
