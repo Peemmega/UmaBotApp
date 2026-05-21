@@ -133,17 +133,21 @@ async def discord_mobile_callback(code: str):
 # --- 4. Serve Frontend (เฉพาะเมื่อ Deploy ขึ้น Railway) ---
 
 # ต้องวางไว้หลัง API เสมอเพื่อไม่ให้ขวางทาง Route อื่น
-if os.path.exists("dist"):
-    app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
-    if os.path.exists("dist/tcg"):
-        app.mount("/tcg", StaticFiles(directory="dist/tcg"), name="tcg-assets")
+FRONTEND_DIST = "dist" if os.path.exists("dist") else os.path.join("uma-dashboard-ui", "dist")
+
+if os.path.exists(FRONTEND_DIST):
+    app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIST, "assets")), name="assets")
+    if os.path.exists(os.path.join(FRONTEND_DIST, "tcg")):
+        app.mount("/tcg", StaticFiles(directory=os.path.join(FRONTEND_DIST, "tcg")), name="tcg-assets")
+    if os.path.exists(os.path.join(FRONTEND_DIST, "mobs")):
+        app.mount("/mobs", StaticFiles(directory=os.path.join(FRONTEND_DIST, "mobs")), name="mob-assets")
 
     @app.get("/{full_path:path}")
     async def serve_react(full_path: str):
         # รายการ path ที่เป็น API/Auth ไม่ต้องส่งไฟล์ index.html
         if full_path.startswith("api") or full_path in ["login", "callback"]:
             return JSONResponse({"error": "Not Found"}, status_code=404)
-        return FileResponse("dist/index.html")
+        return FileResponse(os.path.join(FRONTEND_DIST, "index.html"))
 
 if __name__ == "__main__":
 
