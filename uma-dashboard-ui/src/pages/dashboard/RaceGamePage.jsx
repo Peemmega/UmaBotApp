@@ -272,7 +272,21 @@ function preloadImages(sources = []) {
 }
 
 function getRaceWinner(roomData) {
-  return roomData?.result?.winner || roomData?.scoreboard?.[0] || null;
+  return (
+    roomData?.result?.winner ||
+    roomData?.result?.rankings?.[0] ||
+    roomData?.scoreboard?.[0] ||
+    null
+  );
+}
+
+function isRaceEnded(roomData) {
+  if (!roomData) return false;
+  return (
+    roomData.phase === "ended" ||
+    roomData.status === "ended" ||
+    Boolean(roomData.result?.winner)
+  );
 }
 
 export default function RaceGamePage({
@@ -668,7 +682,7 @@ export default function RaceGamePage({
 
       {error && <div className="race-error">{error}</div>}
 
-      {room.phase === "ended" && raceWinner && (
+      {isRaceEnded(room) && (
         <div className="race-winner-overlay" role="status" aria-live="polite">
           <div className="race-confetti" aria-hidden="true">
             {Array.from({ length: 36 }, (_, index) => (
@@ -693,10 +707,10 @@ export default function RaceGamePage({
           >
             <Trophy size={42} />
             <span>Winner</span>
-            <h2>{raceWinner.name}</h2>
+            <h2>{raceWinner?.name || "Race Complete"}</h2>
             <div>
-              <em>{raceWinner.style || "Style"}</em>
-              <strong>{raceWinner.score || 0} pts</strong>
+              <em>{raceWinner?.style || "Final"}</em>
+              <strong>{raceWinner?.score || 0} pts</strong>
             </div>
             <button type="button" className="race-primary-btn" onClick={handleLeave}>
               <DoorOpen size={18} />
@@ -906,12 +920,11 @@ export default function RaceGamePage({
                 Start Race
               </button>
             </>
-          ) : room.phase === "ended" ? (
-            <div className="race-result-panel">
-              <Trophy size={24} />
-              <h3>{room.result?.winner?.name || "Race Complete"}</h3>
-              <p>Winner | {room.result?.winner?.score || 0} score</p>
-            </div>
+          ) : isRaceEnded(room) ? (
+            <button type="button" className="race-primary-btn race-run-btn" onClick={handleLeave}>
+              <DoorOpen size={20} />
+              Leave Room
+            </button>
           ) : isConfirmingTurn ? (
             <>
               <div className="race-confirm-card">
