@@ -2058,7 +2058,7 @@
 .race-winner-overlay {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 2147483000;
   display: grid;
   place-items: center;
   pointer-events: none;
@@ -2066,6 +2066,7 @@
     radial-gradient(circle at center, rgba(255, 255, 255, 0.16), transparent 34%),
     rgba(24, 38, 28, 0.22);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .race-winner-card {
@@ -2094,6 +2095,28 @@
 .race-winner-card svg {
   color: #b9902b;
   filter: drop-shadow(0 0 12px rgba(245, 207, 96, 0.55));
+}
+
+.race-winner-portrait {
+  width: 112px;
+  height: 112px;
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  border-radius: 28px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 242, 166, 0.7), transparent 45%),
+    linear-gradient(180deg, #fafff3, #dff5d9);
+  box-shadow:
+    0 16px 28px rgba(67, 107, 53, 0.2),
+    0 0 0 1px rgba(72, 166, 87, 0.18);
+}
+
+.race-winner-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .race-winner-card > span {

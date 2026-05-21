@@ -272,20 +272,41 @@ function preloadImages(sources = []) {
 }
 
 function getRaceWinner(roomData) {
-  return (
+  const winner = (
     roomData?.result?.winner ||
     roomData?.result?.rankings?.[0] ||
     roomData?.scoreboard?.[0] ||
     null
   );
+  if (!winner) return null;
+
+  const winnerPlayer = (roomData?.players || []).find(
+    (player) =>
+      String(player.id) === String(winner.id) ||
+      normalizeRaceName(player.name) === normalizeRaceName(winner.name)
+  );
+
+  return {
+    ...winnerPlayer,
+    ...winner,
+    avatar: getRunnerAvatar(winnerPlayer || winner),
+  };
 }
 
 function isRaceEnded(roomData) {
   if (!roomData) return false;
+  const turn = Number(roomData.turn) || 0;
+  const maxTurn = Number(roomData.max_turn) || 0;
+  const isFinalTurn = maxTurn > 0 && turn >= maxTurn;
+  const allPlayersRolled = (roomData.players || []).length > 0 && (roomData.players || []).every(
+    (player) => Number(player.last_roll_turn) === turn
+  );
+
   return (
     roomData.phase === "ended" ||
     roomData.status === "ended" ||
-    Boolean(roomData.result?.winner)
+    Boolean(roomData.result?.winner) ||
+    (isFinalTurn && (roomData.awaiting_turn_confirm || allPlayersRolled))
   );
 }
 
@@ -707,6 +728,9 @@ export default function RaceGamePage({
           >
             <Trophy size={42} />
             <span>Winner</span>
+            <div className="race-winner-portrait">
+              {raceWinner?.avatar ? <img src={raceWinner.avatar} alt="" /> : <Trophy size={44} />}
+            </div>
             <h2>{raceWinner?.name || "Race Complete"}</h2>
             <div>
               <em>{raceWinner?.style || "Final"}</em>
