@@ -279,14 +279,14 @@
 }
 
 .race-path-strip {
-  margin-top: 12px;
+  margin-top: 6px;
   min-height: 46px;
-  padding: 9px;
-  border-radius: 14px;
+  padding: 8px;
+  border-radius: 99px;
   background: rgba(230, 249, 236, 0.88);
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0px;
   overflow-x: auto;
 }
 
@@ -299,7 +299,7 @@
   place-items: center;
   background: rgba(255, 255, 255, 0.72);
   color: #2b4a3b;
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .race-path-strip span.active {
@@ -1350,7 +1350,7 @@
 
 .race-fullscreen-page .race-hud-topbar {
   min-height: 56px;
-  grid-template-columns: minmax(290px, 1.45fr) minmax(120px, 0.52fr) minmax(120px, 0.54fr) minmax(120px, 0.54fr) minmax(120px, 0.54fr) auto;
+  grid-template-columns: minmax(240px, 1.4fr) minmax(88px, 0.42fr) minmax(94px, 0.44fr) minmax(94px, 0.44fr) minmax(94px, 0.44fr) auto;
   gap: 6px;
   padding: 7px 12px;
 }
@@ -1360,6 +1360,8 @@
 }
 
 .race-fullscreen-page .race-live-brand svg {
+  width: 22px;
+  height: 22px;
   color: #8b6b25;
   filter: none;
 }
@@ -1377,26 +1379,38 @@
 }
 
 .race-fullscreen-page .race-hud-stat {
-  padding-left: 8px;
+  padding-left: 7px;
   border-left-color: rgba(71, 92, 62, 0.16);
-  gap: 1px;
+  gap: 0;
+  align-content: center;
 }
 
 .race-fullscreen-page .race-hud-stat span,
 .race-fullscreen-page .race-hud-stat em {
   color: rgba(38, 55, 41, 0.56);
-  font-size: 9px;
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
+  font-size: 8px;
   letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.race-fullscreen-page .race-hud-topbar span {
+  min-width: 0;
+  min-height: 0;
 }
 
 .race-fullscreen-page .race-hud-stat strong {
   color: #263729;
   font-size: clamp(15px, 1.12vw, 21px);
+  line-height: 1.05;
 }
 
 .race-fullscreen-page .race-hud-turn strong {
   color: #28a75a;
   font-size: clamp(24px, 2.25vw, 38px);
+  line-height: 0.92;
 }
 
 .race-fullscreen-page .race-hud-turn small {

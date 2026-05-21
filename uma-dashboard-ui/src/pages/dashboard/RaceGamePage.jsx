@@ -395,11 +395,21 @@ export default function RaceGamePage({
     <section className={`race-page race-hud-page ${fullscreen ? "race-fullscreen-page" : ""}`}>
       <header className="race-hero room race-hud-topbar">
         <div className="race-live-brand">
-          <Trophy size={42} />
+          <Trophy size={32} />
           <div>
             <span className="race-kicker">Race Live</span>
             <h2>{room.race_name}</h2>
           </div>
+        </div>
+
+        <div className="race-hud-stat">
+          <span>Track</span>
+          <strong>{room.track}</strong>
+        </div>
+
+        <div className="race-hud-stat">
+          <span>Distance</span>
+          <strong>{room.distance}</strong>
         </div>
 
         <div className="race-hud-stat race-hud-turn">
@@ -411,16 +421,6 @@ export default function RaceGamePage({
         <div className="race-hud-stat">
           <span>Phase</span>
           <strong>{room.race_phase || room.phase}</strong>
-        </div>
-
-        <div className="race-hud-stat">
-          <span>Distance</span>
-          <strong>{room.distance}</strong>
-        </div>
-
-        <div className="race-hud-stat">
-          <span>Track</span>
-          <strong><Target size={16} /> {room.track}</strong>
         </div>
 
         <div className="race-top-actions">
@@ -472,7 +472,6 @@ export default function RaceGamePage({
                 <em key={`${item.label}-${item.source}`}>
                   <img src={item.icon} alt="" />
                   <strong>{item.source}</strong>
-                  <small>{"+1"}</small>
                 </em>
               ))}
             </div>
