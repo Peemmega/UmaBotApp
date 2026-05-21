@@ -1262,3 +1262,309 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Fullscreen broadcast tuning */
+.race-fullscreen-page.race-hud-page {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 0;
+  padding: 8px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(108, 176, 92, 0.2), transparent 28%),
+    linear-gradient(135deg, #f8fff3 0%, #dfead3 42%, #8f7a51 100%);
+}
+
+.race-fullscreen-page.race-hud-page .race-hero,
+.race-fullscreen-page.race-hud-page .race-hud-panel {
+  border-color: rgba(88, 122, 72, 0.24);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(224, 240, 210, 0.7)),
+    rgba(255, 255, 255, 0.72);
+  color: #263729;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), 0 14px 30px rgba(73, 80, 54, 0.18);
+}
+
+.race-fullscreen-page .race-hud-topbar {
+  min-height: 72px;
+  grid-template-columns: minmax(290px, 1.45fr) minmax(120px, 0.52fr) minmax(120px, 0.54fr) minmax(120px, 0.54fr) minmax(120px, 0.54fr) auto;
+  gap: 8px;
+  padding: 10px 14px;
+}
+
+.race-fullscreen-page .race-live-brand {
+  gap: 10px;
+}
+
+.race-fullscreen-page .race-live-brand svg {
+  color: #8b6b25;
+  filter: none;
+}
+
+.race-fullscreen-page .race-kicker {
+  color: #2f8c4f;
+  font-size: 10px;
+}
+
+.race-fullscreen-page .race-hero h2 {
+  color: #223326;
+  font-size: clamp(24px, 2.2vw, 34px);
+  text-shadow: none;
+}
+
+.race-fullscreen-page .race-hud-stat {
+  padding-left: 10px;
+  border-left-color: rgba(71, 92, 62, 0.16);
+}
+
+.race-fullscreen-page .race-hud-stat span,
+.race-fullscreen-page .race-hud-stat em {
+  color: rgba(38, 55, 41, 0.56);
+  font-size: 10px;
+}
+
+.race-fullscreen-page .race-hud-stat strong {
+  color: #263729;
+  font-size: clamp(17px, 1.3vw, 23px);
+}
+
+.race-fullscreen-page .race-hud-turn strong {
+  color: #28a75a;
+  font-size: clamp(30px, 2.8vw, 46px);
+}
+
+.race-fullscreen-page .race-hud-turn small {
+  color: #263729;
+}
+
+.race-fullscreen-page .race-hud-turn div {
+  background: rgba(38, 55, 41, 0.16);
+}
+
+.race-fullscreen-page .race-hud-turn div span {
+  background: linear-gradient(90deg, #2fad61, #a1c86f);
+  box-shadow: none;
+}
+
+.race-fullscreen-page .race-ghost-btn {
+  min-height: 34px;
+  border-color: rgba(63, 88, 60, 0.18);
+  border-radius: 12px;
+  padding: 7px 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(211, 227, 197, 0.68));
+  color: #263729;
+}
+
+.race-fullscreen-page .race-hud-grid {
+  height: calc(100vh - 96px);
+  grid-template-columns: minmax(250px, 0.72fr) minmax(440px, 1.4fr) minmax(250px, 0.68fr);
+  grid-template-rows: minmax(0, 1fr) 172px;
+  gap: 8px;
+  padding: 0;
+}
+
+.race-fullscreen-page .race-hud-panel {
+  padding: 10px;
+  border-radius: 12px;
+}
+
+.race-fullscreen-page .race-panel-title {
+  margin-bottom: 8px;
+  color: #2f8c4f;
+  font-size: 12px;
+}
+
+.race-fullscreen-page .race-track-image {
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: rgba(46, 63, 39, 0.12);
+  filter: saturate(1.04);
+}
+
+.race-fullscreen-page .race-live-stage {
+  min-height: 0;
+  height: 100%;
+  padding: 14px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: rgba(60, 78, 44, 0.16);
+}
+
+.race-fullscreen-page .race-live-stage-overlay {
+  background:
+    linear-gradient(90deg, rgba(242, 249, 232, 0.76), rgba(242, 249, 232, 0.26) 46%, rgba(112, 94, 60, 0.18)),
+    radial-gradient(circle at 62% 20%, rgba(255, 255, 255, 0.42), transparent 30%);
+}
+
+.race-fullscreen-page .race-phase-banner {
+  padding: 6px 14px;
+  background: linear-gradient(90deg, rgba(57, 171, 92, 0.9), rgba(145, 200, 109, 0.86));
+  color: #ffffff;
+  font-size: 16px;
+  box-shadow: 0 8px 22px rgba(47, 140, 79, 0.22);
+}
+
+.race-fullscreen-page .race-runner-stack {
+  width: min(54%, 500px);
+  margin-top: 42px;
+  gap: 7px;
+}
+
+.race-fullscreen-page .race-runner-card {
+  grid-template-columns: 42px minmax(0, 1fr);
+  padding: 8px;
+  border-color: rgba(66, 93, 59, 0.16);
+  background: rgba(255, 255, 255, 0.76);
+  color: #263729;
+}
+
+.race-fullscreen-page .race-runner-info h3,
+.race-fullscreen-page .race-score-row strong {
+  color: #263729;
+}
+
+.race-fullscreen-page .race-runner-info > div:first-child span {
+  color: #8b6b25;
+}
+
+.race-fullscreen-page .race-player-meta {
+  color: rgba(38, 55, 41, 0.74);
+}
+
+.race-fullscreen-page .race-progress {
+  height: 7px;
+  background: rgba(48, 69, 43, 0.14);
+}
+
+.race-fullscreen-page .race-progress span {
+  background: linear-gradient(90deg, #35b765, #b7cb55);
+  box-shadow: none;
+}
+
+.race-fullscreen-page .race-info-tile-grid {
+  gap: 6px;
+}
+
+.race-fullscreen-page .race-info-tile-grid div,
+.race-fullscreen-page .race-aptitude-panel {
+  border-color: rgba(88, 122, 72, 0.16);
+  background: rgba(255, 255, 255, 0.5);
+  color: #263729;
+}
+
+.race-fullscreen-page .race-aptitude-panel {
+  gap: 7px;
+}
+
+.race-fullscreen-page .race-aptitude-panel > span {
+  color: #2f8c4f;
+}
+
+.race-fullscreen-page .race-aptitude-panel em {
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.58);
+  color: #263729;
+}
+
+.race-fullscreen-page .race-aptitude-panel em strong,
+.race-fullscreen-page .race-aptitude-panel em small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.race-fullscreen-page .race-aptitude-panel em {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 0.8fr) minmax(0, 1fr);
+}
+
+.race-fullscreen-page .race-aptitude-panel em small {
+  color: rgba(38, 55, 41, 0.6);
+  font-size: 10px;
+  font-weight: 1000;
+}
+
+.race-fullscreen-page .race-score-row {
+  min-height: 38px;
+  background: rgba(255, 255, 255, 0.46);
+  color: #263729;
+}
+
+.race-fullscreen-page .race-score-row:first-child {
+  background: linear-gradient(90deg, rgba(238, 218, 145, 0.92), rgba(255, 255, 255, 0.58));
+}
+
+.race-fullscreen-page .race-status-panel div {
+  background: rgba(255, 255, 255, 0.48);
+  color: #263729;
+}
+
+.race-fullscreen-page .race-log-panel,
+.race-fullscreen-page .race-command-panel {
+  min-height: 0;
+}
+
+.race-fullscreen-page .race-log-list,
+.race-fullscreen-page .race-skill-list {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.race-fullscreen-page .race-log-item {
+  background: rgba(255, 255, 255, 0.56);
+  color: #263729;
+}
+
+.race-fullscreen-page .race-log-item p,
+.race-fullscreen-page .race-log-detail span,
+.race-fullscreen-page .race-log-detail strong {
+  color: #263729;
+}
+
+.race-fullscreen-page .race-log-detail {
+  background: rgba(231, 243, 218, 0.72);
+}
+
+.race-fullscreen-page .race-command-panel {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+}
+
+.race-fullscreen-page .race-run-btn,
+.race-fullscreen-page .race-skill-btn {
+  min-height: 54px;
+  font-size: 18px;
+}
+
+.race-fullscreen-page .race-run-btn {
+  background: linear-gradient(135deg, #4dcf71, #2f8c4f) !important;
+}
+
+.race-fullscreen-page .race-skill-btn {
+  background: linear-gradient(135deg, #f1df9d, #9a7740) !important;
+  color: #ffffff;
+}
+
+.race-fullscreen-page .race-stamina-readout,
+.race-fullscreen-page .race-special-actions button,
+.race-fullscreen-page .race-skill-list button,
+.race-fullscreen-page .race-bot-row button {
+  border-color: rgba(88, 122, 72, 0.16);
+  background: rgba(255, 255, 255, 0.52) !important;
+  color: #263729;
+}
+
+@media (max-width: 1180px) {
+  .race-fullscreen-page.race-hud-page {
+    position: relative;
+    height: auto;
+    overflow-y: auto;
+  }
+
+  .race-fullscreen-page .race-hud-grid {
+    height: auto;
+  }
+}

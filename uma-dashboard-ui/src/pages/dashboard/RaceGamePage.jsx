@@ -94,6 +94,19 @@ function hasOnlyBotsAfterLeave(roomData, userId) {
   return remainingPlayers.length > 0 && remainingPlayers.every((player) => player.is_mob);
 }
 
+function getAptitudeRows(roomData, player) {
+  const distance = roomData?.distance || "Distance";
+  const track = roomData?.track || "Track";
+  const style = player?.style || "Style";
+
+  return [
+    { icon: speedIcon, label: "Speed", source: distance },
+    { icon: powerIcon, label: "Power", source: track },
+    { icon: witIcon, label: "Wit", source: style },
+    { icon: staminaIcon, label: "Stamina", source: roomData?.current_path?.label || "Path" },
+  ];
+}
+
 export default function RaceGamePage({
   fullscreen = false,
   onBackToDashboard,
@@ -157,6 +170,10 @@ export default function RaceGamePage({
   const turnProgress = room
     ? Math.min(100, Math.max(0, ((Number(room.turn) || 0) / Math.max(1, Number(room.max_turn) || 1)) * 100))
     : 0;
+  const aptitudeRows = useMemo(
+    () => getAptitudeRows(room, myPlayer),
+    [myPlayer, room]
+  );
 
   const refreshRooms = useCallback(async (extraHiddenRoomIds = []) => {
     try {
@@ -455,10 +472,13 @@ export default function RaceGamePage({
           <div className="race-aptitude-panel">
             <span>Aptitude Bonus</span>
             <div>
-              <em><img src={speedIcon} alt="" /> Speed</em>
-              <em><img src={staminaIcon} alt="" /> Stamina</em>
-              <em><img src={powerIcon} alt="" /> Power</em>
-              <em><img src={gutIcon} alt="" /> Guts</em>
+              {aptitudeRows.map((item) => (
+                <em key={`${item.label}-${item.source}`}>
+                  <img src={item.icon} alt="" />
+                  <strong>{item.label}</strong>
+                  <small>{item.source}</small>
+                </em>
+              ))}
             </div>
           </div>
         </aside>
