@@ -26,6 +26,12 @@ import {
   useRaceZone,
 } from "../../api/raceApi";
 import useRaceSocket from "../../hooks/useRaceSocket";
+import gutIcon from "../../assets/icons/Gut.webp";
+import powerIcon from "../../assets/icons/Power.webp";
+import speedIcon from "../../assets/icons/Speed.webp";
+import staminaIcon from "../../assets/icons/Stamina.webp";
+import witIcon from "../../assets/icons/Wit.webp";
+import skillIcon from "../../assets/skill_icon/Velocity.webp";
 import { getRaceImage } from "../../utils/raceSchedule.js";
 import "../../styles/raceGamePage.css";
 
@@ -36,6 +42,14 @@ const BOT_OPTIONS = [
   { id: "rookie_late", label: "Late Bot" },
   { id: "rookie_end", label: "End Bot" },
 ];
+const BONUS_ICONS = {
+  speed: speedIcon,
+  power: powerIcon,
+  stamina: staminaIcon,
+  gut: gutIcon,
+  wit: witIcon,
+  skill: skillIcon,
+};
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
@@ -479,7 +493,7 @@ export default function RaceGamePage({
 
       <section className="race-log-panel">
         <h3>Action Log</h3>
-        <div>
+        <div className="race-log-list">
           {(room.action_logs || []).slice().reverse().map((log) => (
             <RaceLogItem key={log.id} log={log} />
           ))}
@@ -491,10 +505,7 @@ export default function RaceGamePage({
 
 function RaceLogItem({ log }) {
   const summary = log.payload?.roll_summary;
-  const pending = summary?.pending_bonus || {};
-  const aptitude = summary?.aptitude_bonus || {};
-  const path = summary?.path || {};
-  const hasDetails = Boolean(summary || log.payload?.result_text);
+  const bonusRows = getRollBonusRows(summary);
 
   return (
     <article className="race-log-item">
@@ -502,61 +513,75 @@ function RaceLogItem({ log }) {
         <span>T{log.turn}</span>
         {log.message}
       </p>
-      {hasDetails && (
+      {summary && (
         <div className="race-log-detail">
-          {log.payload?.result_text && <strong>{log.payload.result_text}</strong>}
-          {summary && (
-            <>
-              <div>
-                <b>Roll</b>
-                <span>
-                  {summary.dice || "-"} | base {summary.base_total} | total{" "}
-                  {summary.total} | {summary.distance_color}
-                </span>
-              </div>
-              <div>
-                <b>Stats</b>
-                <span>
-                  SPD {summary.stats?.speed || 0}, STA {summary.stats?.stamina || 0},
-                  POW {summary.stats?.power || 0}, GUT {summary.stats?.gut || 0},
-                  WIT {summary.stats?.wit || 0}
-                </span>
-              </div>
-              <div>
-                <b>Aptitude</b>
-                <span>
-                  SPD +{aptitude.speed || 0}, POW +{aptitude.power || 0}, WIT +{aptitude.wit || 0}
-                </span>
-              </div>
-              <div>
-                <b>Pending</b>
-                <span>
-                  Flat {signed(pending.flat)}, Dice {signed(pending.add_d)}, KH{" "}
-                  {signed(pending.add_kh)}, Floor {signed(pending.floor)}, Cap{" "}
-                  {signed(pending.cap)}, Gold {signed(pending.gold_range)}
-                </span>
-              </div>
-              <div>
-                <b>Path</b>
-                <span>
-                  {path.label || "-"} | STA -{path.stamina_cost || 0}/+
-                  {path.stamina_gain || 0} | dice cap {signed(-(path.reduce_dice_value || 0))} |
-                  SPD x{path.spd_multiplier || 1} | POW x{path.power_total_multiplier || 1}
-                </span>
-              </div>
-              <div>
-                <b>Bonus</b>
-                <span>
-                  {summary.bonus_display || "-"} | STA left {summary.stamina_left}
-                  {summary.stamina_note ? ` | ${summary.stamina_note}` : ""}
-                </span>
-              </div>
-            </>
-          )}
+          <div>
+            <b>Roll</b>
+            <span>
+              {summary.dice || summary.base_total || "-"} = {summary.total ?? "-"}
+              {summary.distance_color ? ` | ${summary.distance_color}` : ""}
+            </span>
+          </div>
+          <div>
+            <b>Bonus</b>
+            <span className="race-log-bonus-list">
+              {bonusRows.length > 0
+                ? bonusRows.map((item) => (
+                    <em key={`${item.label}-${item.value}`}>
+                      {item.icon && <img src={item.icon} alt={item.label} />}
+                      {item.note && <span>{item.note}</span>}
+                      <strong>{item.value}</strong>
+                    </em>
+                  ))
+                : <em>ไม่มีโบนัส</em>}
+            </span>
+          </div>
         </div>
       )}
     </article>
   );
+}
+
+function getRollBonusRows(summary) {
+  if (!summary) return [];
+
+  const rows = [];
+  const addNumericBonus = (label, value, icon, note = "") => {
+    const numberValue = Number(value) || 0;
+    if (numberValue !== 0) {
+      rows.push({ icon, label, note, value: signed(numberValue) });
+    }
+  };
+
+  const stats = summary.stats || {};
+  addNumericBonus("Speed", stats.speed, BONUS_ICONS.speed);
+  addNumericBonus("Power", stats.power, BONUS_ICONS.power);
+  addNumericBonus("Stamina", stats.stamina, BONUS_ICONS.stamina);
+  addNumericBonus("Gut", stats.gut, BONUS_ICONS.gut);
+  addNumericBonus("Wit", stats.wit, BONUS_ICONS.wit);
+
+  const aptitude = summary.aptitude_bonus || {};
+  addNumericBonus("Aptitude Speed", aptitude.speed, BONUS_ICONS.speed, "Apt");
+  addNumericBonus("Aptitude Power", aptitude.power, BONUS_ICONS.power, "Apt");
+  addNumericBonus("Aptitude Wit", aptitude.wit, BONUS_ICONS.wit, "Apt");
+
+  const pending = summary.pending_bonus || {};
+  addNumericBonus("Skill", pending.flat, BONUS_ICONS.skill);
+  addNumericBonus("Skill Dice", pending.add_d, BONUS_ICONS.skill, "Dice");
+  addNumericBonus("Skill Keep High", pending.add_kh, BONUS_ICONS.skill, "KH");
+  addNumericBonus("Skill Floor", pending.floor, BONUS_ICONS.skill, "Floor");
+  addNumericBonus("Skill Cap", pending.cap, BONUS_ICONS.skill, "Cap");
+  addNumericBonus("Skill Gold", pending.gold_range, BONUS_ICONS.skill, "Gold");
+
+  if (summary.bonus_display && summary.bonus_display !== "-") {
+    rows.push({ icon: BONUS_ICONS.skill, label: "Effect", value: summary.bonus_display });
+  }
+
+  if (summary.stamina_note) {
+    rows.push({ icon: BONUS_ICONS.stamina, label: "Stamina", value: summary.stamina_note });
+  }
+
+  return rows;
 }
 
 function signed(value = 0) {
