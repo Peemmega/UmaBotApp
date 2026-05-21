@@ -4,6 +4,57 @@
   gap: 16px;
   color: var(--uma-ink);
 }
+.uma-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(63, 199, 134, 0.34) transparent;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.uma-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.uma-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.uma-scroll::-webkit-scrollbar-thumb {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(186, 255, 218, 0.24), rgba(52, 211, 153, 0.54) 48%, rgba(34, 211, 238, 0.36)),
+    rgba(52, 211, 153, 0.28);
+  background-clip: padding-box;
+  box-shadow: 0 0 0 rgba(52, 211, 153, 0);
+  opacity: 0.38;
+  transition: background 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.uma-scroll:hover {
+  scrollbar-color: rgba(46, 191, 115, 0.72) transparent;
+}
+
+.uma-scroll:hover::-webkit-scrollbar-thumb,
+.uma-scroll:focus-within::-webkit-scrollbar-thumb {
+  background:
+    linear-gradient(180deg, rgba(226, 255, 240, 0.52), rgba(48, 214, 136, 0.78) 46%, rgba(54, 219, 230, 0.58)),
+    rgba(52, 211, 153, 0.54);
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.42);
+  opacity: 0.92;
+}
+
+.uma-scroll::-webkit-scrollbar-thumb:active {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.64), rgba(34, 197, 94, 0.86) 48%, rgba(6, 182, 212, 0.72)),
+    rgba(34, 197, 94, 0.72);
+  box-shadow: 0 0 14px rgba(45, 212, 191, 0.58);
+}
+
+.uma-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
 
 .race-hero,
 .race-create-panel,

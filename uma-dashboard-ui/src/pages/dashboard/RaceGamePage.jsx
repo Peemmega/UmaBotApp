@@ -482,7 +482,7 @@ export default function RaceGamePage({
               <b>{Math.round(turnProgress)}%</b>
             </div>
           </div>
-          <div className="race-path-strip" aria-label="Track path">
+          <div className="race-path-strip uma-scroll" aria-label="Track path">
             {room.path?.map((step) => (
               <span
                 key={step.turn}
@@ -519,7 +519,7 @@ export default function RaceGamePage({
               <Zap size={18} />
               {room.race_phase || "Race"}
             </div>
-            <div className="race-runner-stack">
+            <div className="race-runner-stack uma-scroll">
               {room.players?.map((player) => {
                 const latestRoll = latestRollByName.get(normalizeRaceName(player.name));
                 return (
@@ -556,7 +556,7 @@ export default function RaceGamePage({
 
         <aside className="race-score-panel race-hud-panel">
           <PanelTitle icon={<Trophy size={16} />} title="Scoreboard" />
-          <div className="race-score-list">
+          <div className="race-score-list uma-scroll">
             {room.scoreboard?.map((player, index) => {
               const diff = (Number(player.score) || 0) - leaderScore;
               return (
@@ -580,7 +580,7 @@ export default function RaceGamePage({
 
         <section className="race-log-panel race-hud-panel">
           <PanelTitle icon={<Radio size={16} />} title="Race Commentary" />
-          <div className="race-log-list">
+          <div className="race-log-list uma-scroll">
             {(room.action_logs || []).slice().reverse().map((log) => (
               <RaceLogItem key={log.id} log={log} />
             ))}
@@ -713,7 +713,7 @@ export default function RaceGamePage({
            
              
               {showSkills && (
-                <div className="race-skill-list">
+                <div className="race-skill-list uma-scroll">
                   {(myPlayer?.skills || []).map((skill) => (
                     <button
                       key={skill.slot}
