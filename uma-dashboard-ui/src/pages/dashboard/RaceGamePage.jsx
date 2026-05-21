@@ -589,7 +589,7 @@ function parseDiscordBonusDisplay(value = "") {
 }
 
 function formatRollDice(value) {
-  return String(value).replace(/__/g, "");
+  return String(value).replace(/__([^_]+?)__/g, "[$1]");
 }
 
 function signed(value = 0) {
