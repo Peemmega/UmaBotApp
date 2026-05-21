@@ -517,7 +517,7 @@ export default function RaceGamePage({
             <div className="race-live-stage-overlay" />
             <div className="race-phase-banner">
               <Zap size={18} />
-              {room.race_phase || "Race"}
+              {room.race_phase ? `Phase ${room.race_phase}` : "Race"}
             </div>
             <div className="race-runner-stack uma-scroll">
               {room.players?.map((player) => {
