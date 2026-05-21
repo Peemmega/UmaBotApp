@@ -400,10 +400,15 @@ export default function RaceGamePage({
       <header className="race-hero room race-hud-topbar">
         <div className="race-live-brand">
           <Trophy size={32} />
-          <div>
+          {/* <div>
             <span className="race-kicker">Race Live</span>
             <h2>{room.race_name}</h2>
-          </div>
+          </div> */}
+        </div>
+
+        <div className="race-hud-stat">
+          <span>Race Live</span>
+          <h2>{room.race_name}</h2>
         </div>
 
         <div className="race-hud-stat">
