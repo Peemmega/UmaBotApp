@@ -338,26 +338,48 @@
   background: rgba(230, 249, 236, 0.88);
   display: flex;
   align-items: center;
-  gap: 0px;
+  gap: 4px;
   overflow-x: auto;
 }
 
 .race-path-strip span {
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
   border-radius: 10px;
   display: grid;
   place-items: center;
   background: rgba(255, 255, 255, 0.72);
   color: #2b4a3b;
   font-size: 20px;
+  border: 1px solid rgba(47, 184, 106, 0.12);
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
 }
 
 .race-path-strip span.active {
-  background: linear-gradient(180deg, #61de96, #31ba6b);
+  z-index: 1;
+  transform: translateY(-2px) scale(1.12);
+  background: linear-gradient(180deg, #fff7b8 0%, #8af7b9 42%, #2fba6b 100%);
   color: #ffffff;
-  box-shadow: 0 8px 14px rgba(47, 184, 106, 0.26);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 0 0 3px rgba(255, 229, 116, 0.86),
+    0 0 0 6px rgba(47, 184, 106, 0.28),
+    0 10px 18px rgba(47, 184, 106, 0.38);
+}
+
+.race-path-strip span.active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #ffcf47;
+  box-shadow: 0 0 10px rgba(255, 207, 71, 0.86);
+  transform: translateX(-50%);
 }
 
 .race-status-panel {
@@ -1013,6 +1035,13 @@
 .race-hud-page .race-path-strip span {
   background: rgba(255, 255, 255, 0.12);
   color: #dffcef;
+  border-color: rgba(155, 255, 218, 0.14);
+}
+
+.race-hud-page .race-path-strip span.active {
+  background: linear-gradient(180deg, #fff6ad 0%, #74f7ad 38%, #22b46a 100%);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.94);
 }
 
 .race-info-tile-grid,
@@ -1911,16 +1940,31 @@
   .race-fullscreen-page .race-path-strip {
     min-height: 30px;
     margin-top: 4px;
-    padding: 4px;
+    padding: 5px 4px 7px;
     border-radius: 10px;
+    gap: 3px;
   }
 
   .race-fullscreen-page .race-path-strip span {
-    width: 22px;
-    height: 22px;
-    flex-basis: 22px;
+    width: 23px;
+    height: 23px;
+    flex-basis: 23px;
     border-radius: 7px;
     font-size: 14px;
+  }
+
+  .race-fullscreen-page .race-path-strip span.active {
+    transform: translateY(-1px) scale(1.14);
+    box-shadow:
+      0 0 0 2px rgba(255, 229, 116, 0.86),
+      0 0 0 4px rgba(47, 184, 106, 0.24),
+      0 7px 12px rgba(47, 184, 106, 0.32);
+  }
+
+  .race-fullscreen-page .race-path-strip span.active::after {
+    bottom: -6px;
+    width: 5px;
+    height: 5px;
   }
 
   .race-fullscreen-page .race-info-tile-grid {
