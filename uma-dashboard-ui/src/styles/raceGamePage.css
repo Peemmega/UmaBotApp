@@ -1147,9 +1147,9 @@
   z-index: 0;
   background-size: cover;
   background-position: center 54%;
-  transform-origin: 50% 58%;
+  transform-origin: 50% 50%;
   will-change: transform, opacity, filter;
-  animation: raceCameraRun 2.35s ease-in-out infinite;
+  animation: raceCameraSway 3.2s ease-in-out infinite;
 }
 
 .race-speed-burst {
@@ -1276,34 +1276,18 @@
   gap: 9px;
 }
 
-@keyframes raceCameraRun {
+@keyframes raceCameraSway {
   0% {
-    transform: perspective(900px) scale(1.075) translate3d(-1.1%, 0.45%, 0) rotateZ(-0.25deg);
-    filter: saturate(1.04) brightness(1.01);
-  }
-  18% {
-    transform: perspective(900px) scale(1.112) translate3d(0.75%, -0.25%, 0) rotateZ(0.2deg);
-    filter: saturate(1.1) brightness(1.05);
-  }
-  34% {
-    transform: perspective(900px) scale(1.09) translate3d(1.35%, 0.35%, 0) rotateZ(0.34deg);
-    filter: saturate(1.06) brightness(1.03);
+    transform: scale(1.045) translate3d(-0.75%, 0, 0);
+    filter: saturate(1.05) brightness(1.02);
   }
   50% {
-    transform: perspective(900px) scale(1.13) translate3d(0.15%, -0.55%, 0) rotateZ(0deg);
-    filter: saturate(1.12) brightness(1.07);
-  }
-  68% {
-    transform: perspective(900px) scale(1.095) translate3d(-1.25%, 0.25%, 0) rotateZ(-0.32deg);
-    filter: saturate(1.06) brightness(1.03);
-  }
-  84% {
-    transform: perspective(900px) scale(1.118) translate3d(-0.45%, -0.35%, 0) rotateZ(-0.12deg);
-    filter: saturate(1.1) brightness(1.05);
+    transform: scale(1.045) translate3d(0.75%, 0, 0);
+    filter: saturate(1.08) brightness(1.03);
   }
   100% {
-    transform: perspective(900px) scale(1.075) translate3d(-1.1%, 0.45%, 0) rotateZ(-0.25deg);
-    filter: saturate(1.04) brightness(1.01);
+    transform: scale(1.045) translate3d(-0.75%, 0, 0);
+    filter: saturate(1.05) brightness(1.02);
   }
 }
 
