@@ -76,6 +76,27 @@ export function runRaceTurn(roomId, player) {
   });
 }
 
+export function confirmRaceTurn(roomId, player) {
+  return request(`/race/rooms/${roomId}/confirm`, {
+    method: "POST",
+    body: JSON.stringify(player),
+  });
+}
+
+export function rerollRaceTurn(roomId, player) {
+  return request(`/race/rooms/${roomId}/reroll`, {
+    method: "POST",
+    body: JSON.stringify(player),
+  });
+}
+
+export function witRerollRaceTurn(roomId, player) {
+  return request(`/race/rooms/${roomId}/wit-reroll`, {
+    method: "POST",
+    body: JSON.stringify(player),
+  });
+}
+
 export function useRaceSkill(roomId, userId, slot, skillId) {
   return request(`/race/rooms/${roomId}/skill`, {
     method: "POST",

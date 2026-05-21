@@ -21,18 +21,21 @@ import {
 } from "lucide-react";
 import {
   addRaceBot,
+  confirmRaceTurn,
   createRaceRoom,
   getRaceRoom,
   joinRaceRoom,
   leaveRaceRoom,
   listRaceRooms,
   listRaceStages,
+  rerollRaceTurn,
   runRaceTurn,
   startRaceRoom,
   useRaceBlock,
   useRaceRush,
   useRaceSkill,
   useRaceZone,
+  witRerollRaceTurn,
 } from "../../api/raceApi";
 import useRaceSocket from "../../hooks/useRaceSocket";
 import gutIcon from "../../assets/icons/Gut.webp";
@@ -151,9 +154,19 @@ export default function RaceGamePage({
 
   const canRun =
     room?.phase === "running" &&
+    !room?.awaiting_turn_confirm &&
     myPlayer &&
     !myPlayer.is_mob &&
     myPlayer.last_roll_turn !== room.turn;
+  const isConfirmingTurn =
+    room?.phase === "running" &&
+    Boolean(room?.awaiting_turn_confirm) &&
+    myPlayer &&
+    !myPlayer.is_mob &&
+    myPlayer.last_roll_turn === room.turn;
+  const hasConfirmedTurn = room?.turn_confirmations?.some(
+    (confirmedId) => String(confirmedId) === String(userId)
+  );
 
   const roomRaceImage = useMemo(
     () => getRaceImage(roomRaceImageSource(room)),
@@ -290,6 +303,15 @@ export default function RaceGamePage({
 
   const handleRun = () =>
     runAction("run", () => runRaceTurn(room.room_id, playerPayload));
+
+  const handleConfirmTurn = () =>
+    runAction("confirm", () => confirmRaceTurn(room.room_id, playerPayload));
+
+  const handleReroll = () =>
+    runAction("reroll", () => rerollRaceTurn(room.room_id, playerPayload));
+
+  const handleWitReroll = () =>
+    runAction("wit-reroll", () => witRerollRaceTurn(room.room_id, playerPayload));
 
   const handleSkill = (skill) =>
     runAction("skill", () =>
@@ -596,6 +618,72 @@ export default function RaceGamePage({
               <h3>{room.result?.winner?.name || "Race Complete"}</h3>
               <p>Winner | {room.result?.winner?.score || 0} score</p>
             </div>
+          ) : isConfirmingTurn ? (
+            <>
+              <div className="race-confirm-card">
+                <span>Turn {room.turn} Result</span>
+                <strong>+{latestRollByName.get(normalizeRaceName(myPlayer.name))?.total ?? 0}</strong>
+                <p>{hasConfirmedTurn ? "Confirmed. Waiting for racers..." : "Review your score before next turn."}</p>
+              </div>
+              <button
+                type="button"
+                className="race-primary-btn race-confirm-btn"
+                onClick={handleConfirmTurn}
+                disabled={hasConfirmedTurn || Boolean(actionBusy)}
+              >
+                <Play size={20} />
+                {actionBusy === "confirm" ? "Confirming..." : "Confirm Turn"}
+              </button>
+              <div className="race-reroll-actions">
+                <button
+                  type="button"
+                  onClick={handleReroll}
+                  disabled={
+                    hasConfirmedTurn ||
+                    !myPlayer ||
+                    myPlayer.no_reroll_this_turn ||
+                    myPlayer.reroll_left <= 0 ||
+                    Boolean(actionBusy)
+                  }
+                >
+                  Reroll {myPlayer?.reroll_left ?? 0}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleWitReroll}
+                  disabled={
+                    hasConfirmedTurn ||
+                    !myPlayer ||
+                    myPlayer.no_reroll_this_turn ||
+                    myPlayer.wit_reroll_left <= 0 ||
+                    Boolean(actionBusy)
+                  }
+                >
+                  WIT Reroll {myPlayer?.wit_reroll_left ?? 0}
+                </button>
+              </div>
+              <div className="race-special-actions">
+                <button
+                  type="button"
+                  onClick={handleBlock}
+                  disabled={hasConfirmedTurn || !myPlayer || myPlayer.used_block || Boolean(actionBusy)}
+                >
+                  Block
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRush}
+                  disabled={hasConfirmedTurn || !myPlayer || myPlayer.used_rush || Boolean(actionBusy)}
+                >
+                  Rush
+                </button>
+              </div>
+              <div className="race-stamina-readout">
+                <Heart size={18} />
+                <span>Stamina / WIT</span>
+                <strong>{myPlayer?.stamina_left ?? 0} / {myPlayer?.wit_mana ?? 0}</strong>
+              </div>
+            </>
           ) : (
             <>
               <div className="race-main-actions">
@@ -646,10 +734,10 @@ export default function RaceGamePage({
                 </button>
               </div>
               <div className="race-reroll-actions">
-                <button type="button" disabled title="Backend reroll endpoint required">
+                <button type="button" disabled title="Available after all racers run">
                   Reroll
                 </button>
-                <button type="button" disabled title="Backend wit reroll endpoint required">
+                <button type="button" disabled title="Available after all racers run">
                   WIT Reroll
                 </button>
               </div>

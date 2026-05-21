@@ -1241,6 +1241,40 @@
   font-weight: 1000;
 }
 
+.race-confirm-card {
+  border: 1px solid rgba(155, 255, 218, 0.16);
+  border-radius: 14px;
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.09);
+  color: #eafff4;
+}
+
+.race-confirm-card span {
+  color: #8af7b9;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.race-confirm-card strong {
+  color: #ffffff;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.race-confirm-card p {
+  margin: 0;
+  color: rgba(234, 255, 244, 0.72);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.race-confirm-btn {
+  min-height: 54px;
+}
+
 .race-stamina-readout svg {
   color: #55e6d1;
 }
@@ -1409,7 +1443,7 @@
 
 .race-fullscreen-page .race-hud-turn strong {
   color: #28a75a;
-  font-size: clamp(24px, 2.25vw, 38px);
+  font-size: clamp(24px, 2.25vw, 30px);
   line-height: 0.92;
 }
 
@@ -1667,6 +1701,7 @@
 }
 
 .race-fullscreen-page .race-stamina-readout,
+.race-fullscreen-page .race-confirm-card,
 .race-fullscreen-page .race-special-actions button,
 .race-fullscreen-page .race-reroll-actions button,
 .race-fullscreen-page .race-skill-list button,
@@ -1674,6 +1709,18 @@
   border-color: rgba(88, 122, 72, 0.16);
   background: rgba(255, 255, 255, 0.52) !important;
   color: #263729;
+}
+
+.race-fullscreen-page .race-confirm-card span {
+  color: #2f8c4f;
+}
+
+.race-fullscreen-page .race-confirm-card strong {
+  color: #2f8c4f;
+}
+
+.race-fullscreen-page .race-confirm-card p {
+  color: rgba(38, 55, 41, 0.66);
 }
 
 .race-reroll-actions {
