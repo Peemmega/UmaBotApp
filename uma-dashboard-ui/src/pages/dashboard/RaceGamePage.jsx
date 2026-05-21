@@ -707,13 +707,7 @@ export default function RaceGamePage({
                   <Sparkles size={22} />
                   Skill
                 </button>
-              </div>
-              <div className="race-stamina-readout">
-                <Heart size={18} />
-                <span>Stamina</span>
-                <strong>{myPlayer?.stamina_left ?? 0}</strong>
-              </div>
-              <div className="race-special-actions">
+
                 <button
                   type="button"
                   onClick={handleZone}
@@ -721,29 +715,10 @@ export default function RaceGamePage({
                 >
                   Zone
                 </button>
-                <button
-                  type="button"
-                  onClick={handleBlock}
-                  disabled={!myPlayer || myPlayer.used_block || Boolean(actionBusy)}
-                >
-                  Block
-                </button>
-                <button
-                  type="button"
-                  onClick={handleRush}
-                  disabled={!myPlayer || myPlayer.used_rush || Boolean(actionBusy)}
-                >
-                  Rush
-                </button>
               </div>
-              <div className="race-reroll-actions">
-                <button type="button" disabled title="Available after all racers run">
-                  Reroll
-                </button>
-                <button type="button" disabled title="Available after all racers run">
-                  WIT Reroll
-                </button>
-              </div>
+
+           
+             
               {showSkills && (
                 <div className="race-skill-list">
                   {(myPlayer?.skills || []).map((skill) => (
