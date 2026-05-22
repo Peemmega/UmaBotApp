@@ -1176,11 +1176,6 @@ export default function RaceGamePage({
             </button>
           ) : isConfirmingTurn ? (
             <>
-              <div className="race-confirm-card">
-                <span>Turn {room.turn} Result</span>
-                <strong>+{latestRollByName.get(normalizeRaceName(myPlayer.name))?.total ?? 0}</strong>
-                <p>{hasConfirmedTurn ? "Confirmed. Waiting for racers..." : "Review your score before next turn."}</p>
-              </div>
               <button
                 type="button"
                 className="race-primary-btn race-confirm-btn"
@@ -1190,6 +1185,13 @@ export default function RaceGamePage({
                 <Play size={20} />
                 {actionBusy === "confirm" ? "Confirming..." : "Confirm Turn"}
               </button>
+              
+              <div className="race-confirm-card">
+                <span>Turn {room.turn} Result</span>
+                <strong>+{latestRollByName.get(normalizeRaceName(myPlayer.name))?.total ?? 0}</strong>
+                <p>{hasConfirmedTurn ? "Confirmed. Waiting for racers..." : "Review your score before next turn."}</p>
+              </div>
+              
               <div className="race-reroll-actions">
                 <button
                   type="button"
