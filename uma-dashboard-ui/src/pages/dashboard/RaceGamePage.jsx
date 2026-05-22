@@ -418,6 +418,40 @@ export default function RaceGamePage({
     () => Math.max(1, ...(room?.scoreboard || []).map((player) => Number(player.score) || 0)),
     [room?.scoreboard]
   );
+  const raceRunnerCards = raceRunners.map((player) => {
+    const latestRoll = latestRollByName.get(normalizeRaceName(player.name));
+    const maxSpeed = getRunnerMaxSpeed(player, room, latestRoll);
+    const state = getRunnerState(player, room);
+    const avatar = getRunnerAvatar(player);
+
+    return (
+      <motion.article
+        layout
+        className="race-runner-card"
+        key={player.id}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.22 }}
+      >
+        <div className="race-player-avatar">
+          {avatar ? <img src={avatar} alt="" /> : <Bot size={22} />}
+        </div>
+        <div className="race-runner-info">
+          <div className="race-runner-title-row">
+            <h3>{player.name}</h3>
+            <strong>{maxSpeed}</strong>
+          </div>
+          <div className="race-player-meta">
+            <span><img src={staminaIcon} alt="Stamina" />{player.stamina_left}</span>
+            <span><img src={witIcon} alt="Wit" />{player.wit_mana}</span>
+            <span className={`race-runner-state ${state.className}`}>
+              {state.label}
+            </span>
+          </div>
+        </div>
+      </motion.article>
+    );
+  });
 
   const turnProgress = room
     ? Math.min(100, Math.max(0, ((Number(room.turn) || 0) / Math.max(1, Number(room.max_turn) || 1)) * 100))
@@ -859,41 +893,6 @@ export default function RaceGamePage({
               <Zap size={18} />
               {room.race_phase ? `Phase ${room.race_phase}` : "Race"}
             </div>
-            <div className="race-runner-stack uma-scroll">
-              {raceRunners.map((player) => {
-                const latestRoll = latestRollByName.get(normalizeRaceName(player.name));
-                const maxSpeed = getRunnerMaxSpeed(player, room, latestRoll);
-                const state = getRunnerState(player, room);
-                const avatar = getRunnerAvatar(player);
-                return (
-                  <motion.article
-                    layout
-                    className="race-runner-card"
-                    key={player.id}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.22 }}
-                  >
-                    <div className="race-player-avatar">
-                      {avatar ? <img src={avatar} alt="" /> : <Bot size={22} />}
-                    </div>
-                    <div className="race-runner-info">
-                      <div className="race-runner-title-row">
-                        <h3>{player.name}</h3>
-                        <strong>{maxSpeed}</strong>
-                      </div>
-                      <div className="race-player-meta">
-                        <span><img src={staminaIcon} alt="Stamina" />{player.stamina_left}</span>
-                        <span><img src={witIcon} alt="Wit" />{player.wit_mana}</span>
-                        <span className={`race-runner-state ${state.className}`}>
-                          {state.label}
-                        </span>
-                      </div>
-                    </div>
-                  </motion.article>
-                );
-              })}
-            </div>
           </div>
         </main>
 
@@ -1105,6 +1104,10 @@ export default function RaceGamePage({
               )}
             </>
           )}
+        </aside>
+
+        <aside className="race-runner-panel race-hud-panel uma-scroll">
+          {raceRunnerCards}
         </aside>
       </div>
     </section>

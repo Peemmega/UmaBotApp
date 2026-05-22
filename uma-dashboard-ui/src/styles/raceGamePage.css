@@ -62,6 +62,7 @@
 .race-track-panel,
 .race-score-panel,
 .race-command-panel,
+.race-runner-panel,
 .race-log-panel {
   border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 18px;
@@ -1061,7 +1062,8 @@
 .race-live-panel { grid-area: live; }
 .race-hud-page .race-score-panel { grid-area: score; }
 .race-hud-page .race-log-panel { grid-area: log; }
-.race-hud-page .race-command-panel { grid-area: command; }
+.race-hud-page .race-command-panel { grid-area: live; }
+.race-hud-page .race-runner-panel { grid-area: command; }
 
 .race-hud-panel {
   min-width: 0;
@@ -1551,7 +1553,25 @@
 }
 
 .race-hud-page .race-command-panel {
+  position: relative;
+  z-index: 6;
+  justify-self: start;
+  align-self: start;
+  width: min(47%, 420px);
+  max-height: calc(100% - 100px);
+  margin: 86px 0 0 18px;
   gap: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(233, 255, 240, 0.52)),
+    rgba(255, 255, 255, 0.48);
+}
+
+.race-hud-page .race-runner-panel {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
 }
 
 .race-main-actions {
