@@ -612,6 +612,7 @@
 
 .race-skill-list {
   min-height: 0;
+  max-height: min(46vh, 360px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -619,6 +620,7 @@
 }
 
 .race-skill-list button {
+  width: 100%;
   min-height: 52px;
   justify-content: space-between;
   background: rgba(255, 255, 255, 0.82);
@@ -1555,15 +1557,19 @@
 .race-hud-page .race-command-panel {
   position: relative;
   z-index: 6;
-  justify-self: start;
-  align-self: start;
-  width: min(47%, 420px);
-  max-height: calc(100% - 100px);
-  margin: 86px 0 0 18px;
+  justify-self: end;
+  align-self: end;
+  width: min(38%, 360px);
+  max-height: calc(100% - 24px);
+  margin: 0 18px 18px 0;
   gap: 12px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(233, 255, 240, 0.52)),
     rgba(255, 255, 255, 0.48);
+}
+
+.race-hud-page .race-command-panel.is-running {
+  flex-direction: column-reverse;
 }
 
 .race-hud-page .race-runner-panel {
@@ -1578,6 +1584,11 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+.race-skill-action-wrap {
+  min-width: 0;
+  display: block;
 }
 
 .race-hud-page .race-run-btn,
@@ -1619,6 +1630,124 @@
 .race-hud-page .race-skill-btn {
   background: linear-gradient(135deg, #9a7740, #5f3a1f) !important;
   color: #ffffff;
+}
+
+.race-skill-preview {
+  position: absolute;
+  z-index: 5;
+  left: 18px;
+  bottom: 18px;
+  width: min(42%, 390px);
+  padding: 14px;
+  pointer-events: none;
+  text-align: left;
+  border-radius: var(--uma-radius-sm);
+  border: 1px solid rgba(117, 200, 50, 0.38);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 255, 241, 0.95)),
+    #ffffff;
+  color: var(--uma-ink);
+  box-shadow: 0 18px 34px rgba(24, 64, 39, 0.22);
+}
+
+.race-skill-preview .skill-top-row {
+  display: flex;
+  align-items: center;
+  gap: var(--uma-space-2);
+  margin-bottom: 10px;
+}
+
+.race-skill-preview .skill-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(239, 255, 220, 0.9);
+  color: #2f8c4f;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.race-skill-preview .skill-icon-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.race-skill-preview .skill-id {
+  color: var(--uma-primary-dark);
+  font-size: 13px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.race-skill-preview h3 {
+  margin: 3px 0 0;
+  color: var(--uma-ink);
+  font-size: 18px;
+  font-weight: 1000;
+  line-height: 1.1;
+}
+
+.race-skill-preview .content-meta-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--uma-space-2);
+  margin-bottom: 10px;
+}
+
+.race-skill-preview .content-meta-row span {
+  min-height: 30px;
+  border-radius: var(--uma-radius-xs);
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(236, 252, 203, 0.74);
+  color: #287c15;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.race-skill-preview .skill-cost img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.race-skill-preview .skill-trigger {
+  margin-bottom: 8px;
+  color: var(--uma-muted);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.race-skill-preview .skill-effects strong {
+  display: block;
+  margin-top: 8px;
+  color: #4b9c24;
+  font-size: 14px;
+  font-weight: 1000;
+}
+
+.race-skill-preview .skill-effects ul {
+  margin: 0;
+  padding-left: 20px;
+  max-height: 132px;
+  overflow: hidden;
+  color: var(--uma-ink);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.race-skill-preview .skill-effects li b {
+  color: #2f8c4f;
 }
 
 .race-stamina-readout {
@@ -2126,8 +2255,10 @@
 }
 
 .race-fullscreen-page .race-command-panel {
-  display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr);
+  display: flex;
+  width: min(33%, 330px);
+  max-height: calc(100% - 18px);
+  margin: 0 12px 12px 0;
 }
 
 .race-fullscreen-page .race-run-btn,
@@ -2966,7 +3097,7 @@
   }
 
   .race-fullscreen-page .race-command-panel {
-    grid-template-rows: auto auto auto minmax(0, 1fr);
+    display: flex;
     gap: 5px;
     overflow-y: auto;
     padding-right: 7px;

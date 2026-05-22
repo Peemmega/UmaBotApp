@@ -45,6 +45,7 @@ import staminaIcon from "../../assets/icons/Stamina.webp";
 import witIcon from "../../assets/icons/Wit.webp";
 import skillIcon from "../../assets/skill_icon/Velocity.webp";
 import { getRaceImage } from "../../utils/raceSchedule.js";
+import { getSkillIcon } from "../../utils/getSkillIcon";
 import "../../styles/raceGamePage.css";
 
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
@@ -349,6 +350,7 @@ export default function RaceGamePage({
   const [actionBusy, setActionBusy] = useState("");
   const [error, setError] = useState("");
   const [showSkills, setShowSkills] = useState(false);
+  const [skillPreview, setSkillPreview] = useState(null);
   const [hiddenRoomIds, setHiddenRoomIds] = useState(() => new Set());
   const [selectedBot, setSelectedBot] = useState("rookie_front");
   const [selectedBotLevel, setSelectedBotLevel] = useState(1);
@@ -477,6 +479,10 @@ export default function RaceGamePage({
     );
   });
   const raceWinner = useMemo(() => getRaceWinner(room), [room]);
+
+  useEffect(() => {
+    if (!showSkills) setSkillPreview(null);
+  }, [showSkills]);
 
   useEffect(() => {
     if (!isConfirmingTurn || !myPlayer || !room?.room_id) return;
@@ -893,6 +899,11 @@ export default function RaceGamePage({
               <Zap size={18} />
               {room.race_phase ? `Phase ${room.race_phase}` : "Race"}
             </div>
+            <AnimatePresence>
+              {skillPreview && (
+                <RaceSkillPreview preview={skillPreview} />
+              )}
+            </AnimatePresence>
           </div>
         </main>
 
@@ -929,7 +940,7 @@ export default function RaceGamePage({
           </div>
         </section>
 
-        <aside className="race-command-panel race-hud-panel uma-scroll">
+        <aside className={`race-command-panel race-hud-panel uma-scroll ${room.phase === "running" ? "is-running" : ""}`}>
           {room.phase === "waiting" ? (
             <>
               <div className="race-bot-picker">
@@ -1072,36 +1083,55 @@ export default function RaceGamePage({
                 </button>
               </div>
 
-           
-             
-              {showSkills && (
-                <div className="race-skill-list uma-scroll">
-                  <button
-                    type="button"
-                    className="race-zone-btn"
-                    onClick={handleZone}
-                    disabled={!myPlayer || myPlayer.zone_left <= 0 || Boolean(actionBusy)}
+              <AnimatePresence>
+                {showSkills && (
+                  <motion.div
+                    className="race-skill-list uma-scroll"
+                    onMouseLeave={() => setSkillPreview(null)}
+                    initial={{ opacity: 0, y: 18, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 18, scale: 0.96 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
                   >
-                    <span>Zone</span>
-                    <strong>{myPlayer?.zone?.name || "Use Zone"}</strong>
-                    <em>{Math.max(0, Number(myPlayer?.zone_left) || 0)} left</em>
-                  </button>
-                  {(myPlayer?.skills || []).map((skill) => (
-                    <button
-                      key={skill.slot}
-                      type="button"
-                      disabled={!skill.id || skill.cooldown > 0 || Boolean(actionBusy)}
-                      onClick={() => handleSkill(skill)}
+                    <div
+                      className="race-skill-action-wrap"
+                      onMouseEnter={() => setSkillPreview(getRaceActionPreview("zone", myPlayer?.zone))}
+                      onFocus={() => setSkillPreview(getRaceActionPreview("zone", myPlayer?.zone))}
                     >
-                      <span>Slot {skill.slot}</span>
-                      <strong>{skill.name || "Empty"}</strong>
-                      <em>
-                        {skill.cooldown > 0 ? `CD ${skill.cooldown}` : `${skill.cost || 0} WIT`}
-                      </em>
-                    </button>
-                  ))}
-                </div>
-              )}
+                      <button
+                        type="button"
+                        className="race-zone-btn"
+                        onClick={handleZone}
+                        disabled={!myPlayer || myPlayer.zone_left <= 0 || Boolean(actionBusy)}
+                      >
+                        <span>Zone</span>
+                        <strong>{myPlayer?.zone?.name || "Use Zone"}</strong>
+                        <em>{Math.max(0, Number(myPlayer?.zone_left) || 0)} left</em>
+                      </button>
+                    </div>
+                    {(myPlayer?.skills || []).map((skill) => (
+                      <div
+                        className="race-skill-action-wrap"
+                        key={skill.slot}
+                        onMouseEnter={() => setSkillPreview(getRaceActionPreview("skill", skill))}
+                        onFocus={() => setSkillPreview(getRaceActionPreview("skill", skill))}
+                      >
+                        <button
+                          type="button"
+                          disabled={!skill.id || skill.cooldown > 0 || Boolean(actionBusy)}
+                          onClick={() => handleSkill(skill)}
+                        >
+                          <span>Slot {skill.slot}</span>
+                          <strong>{skill.name || "Empty"}</strong>
+                          <em>
+                            {skill.cooldown > 0 ? `CD ${skill.cooldown}` : `${skill.cost || 0} WIT`}
+                          </em>
+                        </button>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </>
           )}
         </aside>
@@ -1120,6 +1150,58 @@ function PanelTitle({ icon, title }) {
       {icon}
       {title}
     </h3>
+  );
+}
+
+function RaceSkillPreview({ preview }) {
+  const effects = preview.effects.length > 0 ? preview.effects : [{ label: "Effect", value: "No effect detail available." }];
+
+  return (
+    <motion.article
+      className="race-skill-preview skill-card"
+      initial={{ opacity: 0, x: -18, scale: 0.96 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, x: -18, scale: 0.96 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+    >
+      <div className="skill-top-row">
+        <div className="skill-icon-box">
+          {preview.kind === "zone" ? <Zap size={22} /> : getSkillIcon(preview.icon)}
+        </div>
+        <div>
+          <div className="skill-id">{preview.id}</div>
+          <h3>{preview.name}</h3>
+        </div>
+      </div>
+
+      <div className="skill-main-row">
+        <div className="skill-content">
+          <div className="content-meta-row">
+            <span>{preview.cooldown}</span>
+            <span className="skill-cost">
+              <img src={witIcon} alt="cost" />
+              {preview.cost}
+            </span>
+            <span>{preview.target}</span>
+          </div>
+
+          <div className="skill-trigger">
+            <strong>Condition:</strong> {preview.trigger}
+          </div>
+
+          <div className="skill-effects">
+            <strong>{preview.kind === "zone" ? "Zone Effect" : "Skill Effect"}</strong>
+            <ul>
+              {effects.map((effect, index) => (
+                <li key={`${effect.label}-${index}`}>
+                  <b>{effect.label}:</b> {effect.value}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </motion.article>
   );
 }
 
@@ -1536,6 +1618,32 @@ function formatEffectRow(key, rawValue) {
   const text = String(rawValue || "").trim();
   if (!text || text === "-") return null;
   return { label, value: text };
+}
+
+function getRaceActionPreview(kind, item = {}) {
+  const action = item || {};
+  const rows = [];
+  [
+    action.effects,
+    action.effect,
+    action.effect_text,
+    action.description,
+    action.build,
+    action.pending_bonus,
+    action.changes,
+  ].forEach((source) => collectEffectRows(source, rows));
+
+  return {
+    kind,
+    id: firstText(action.id, action.skill_id, action.key, kind === "zone" ? "Zone" : `Slot ${action.slot || "-"}`),
+    name: firstText(action.name, action.title, kind === "zone" ? "Use Zone" : "Empty"),
+    icon: action.icon || "Velocity",
+    cooldown: kind === "zone" ? "Zone" : `CD ${Number(action.cooldown) || 0}`,
+    cost: kind === "zone" ? "-" : Number(action.cost) || 0,
+    target: firstText(action.target, action.scope, kind === "zone" ? "Self" : "Target"),
+    trigger: firstText(action.trigger, action.condition, action.timing, kind === "zone" ? "Available while Zone remains." : "Available when the skill is ready."),
+    effects: rows.slice(0, 8),
+  };
 }
 
 function firstText(...values) {
