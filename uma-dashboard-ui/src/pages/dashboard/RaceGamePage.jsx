@@ -355,6 +355,10 @@ export default function RaceGamePage({
     () => room?.players?.find((player) => player.id === String(userId)),
     [room?.players, userId]
   );
+  const myRunDiceColor = useMemo(
+    () => getRunnerCurrentDiceColor(myPlayer, room),
+    [myPlayer, room]
+  );
 
   const canRun =
     room?.phase === "running" &&
@@ -790,7 +794,7 @@ export default function RaceGamePage({
             <div className="race-runner-stack uma-scroll">
               {room.players?.map((player) => {
                 const latestRoll = latestRollByName.get(normalizeRaceName(player.name));
-                const turnScore = getRunnerTurnScore(player, room, latestRoll);
+                const maxSpeed = getRunnerMaxSpeed(player, room, latestRoll);
                 const state = getRunnerState(player, room);
                 const avatar = getRunnerAvatar(player);
                 return (
@@ -808,7 +812,7 @@ export default function RaceGamePage({
                     <div className="race-runner-info">
                       <div className="race-runner-title-row">
                         <h3>{player.name}</h3>
-                        <strong>{turnScore}</strong>
+                        <strong>{maxSpeed}</strong>
                       </div>
                       <div className="race-player-meta">
                         <span><img src={staminaIcon} alt="Stamina" />{player.stamina_left}</span>
@@ -982,7 +986,7 @@ export default function RaceGamePage({
               <div className="race-main-actions">
                 <button
                   type="button"
-                  className="race-primary-btn race-run-btn"
+                  className={`race-primary-btn race-run-btn ${myRunDiceColor === "gold" ? "is-gold" : "is-white"}`}
                   onClick={handleRun}
                   disabled={!canRun || Boolean(actionBusy)}
                 >
@@ -1105,6 +1109,7 @@ function getLatestRollByName(logs) {
     entries.set(name, {
       total: summary.total ?? getScoreFromLogMessage(log.message),
       turn: log.turn,
+      current_max_speed: summary.current_max_speed,
     });
   });
 
@@ -1129,6 +1134,85 @@ function getRunnerTurnScore(player, room, latestRoll) {
   }
 
   return "0";
+}
+
+function getRunnerMaxSpeed(player, room, latestRoll) {
+  const speed = firstFiniteNumber(
+    player?.current_max_speed,
+    player?.currentMaxSpeed,
+    player?.max_speed,
+    player?.maxSpeed,
+    player?.last_roll?.current_max_speed,
+    latestRoll?.current_max_speed
+  );
+
+  if (speed === null) return "Max -";
+
+  return `Max ${formatCompactNumber(speed)}`;
+}
+
+function getRunnerCurrentDiceColor(player, room) {
+  if (!player || room?.phase !== "running") return "white";
+
+  const explicitColor = normalizeDiceColor(
+    player.current_distance_color ||
+      player.current_dice_color ||
+      player.distance_color ||
+      player.dice_color ||
+      player.pending_distance_color ||
+      player.next_distance_color
+  );
+  if (explicitColor) return explicitColor;
+
+  const rolledThisTurn = Number(player.last_roll_turn) === Number(room?.turn);
+  const rollColor = normalizeDiceColor(player.last_roll?.distance_color);
+  if (rolledThisTurn && rollColor) return rollColor;
+
+  return isRunnerInGoldRange(player, room) ? "gold" : "white";
+}
+
+function normalizeDiceColor(value = "") {
+  const color = String(value || "").trim().toLowerCase();
+  if (color === "gold" || color === "golden") return "gold";
+  if (color === "white") return "white";
+  return "";
+}
+
+function isRunnerInGoldRange(player, room) {
+  const playerScore = Number(player?.score);
+  if (!Number.isFinite(playerScore)) return false;
+
+  const goldRange = Math.max(0, 20 + getRunnerGoldRangeBonus(player));
+  const competitors = (room?.players || []).filter((other) => String(other?.id) !== String(player?.id));
+
+  return competitors.some((other) => {
+    const otherScore = Number(other?.score);
+    return Number.isFinite(otherScore) && Math.abs(otherScore - playerScore) <= goldRange;
+  });
+}
+
+function getRunnerGoldRangeBonus(player) {
+  return firstFiniteNumber(
+    player?.pending_bonus?.gold_range,
+    player?.buffs?.gold_range,
+    player?.buffs?.pending_bonus?.gold_range,
+    player?.last_roll?.pending_bonus?.gold_range
+  ) ?? 0;
+}
+
+function firstFiniteNumber(...values) {
+  for (const value of values) {
+    const number = Number(value);
+    if (Number.isFinite(number)) return number;
+  }
+
+  return null;
+}
+
+function formatCompactNumber(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "-";
+  return Number.isInteger(number) ? String(number) : number.toFixed(2).replace(/\.?0+$/, "");
 }
 
 function getRunnerState(player, room) {
