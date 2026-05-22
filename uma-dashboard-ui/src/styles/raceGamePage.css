@@ -2557,7 +2557,7 @@
 .race-fullscreen-page .race-bot-row button,
 .race-fullscreen-page .race-bot-picker select {
   border-color: rgba(88, 122, 72, 0.16);
-  background: rgba(255, 255, 255, 0.737) !important;
+  background: rgba(255, 255, 255, 1) !important;
   color: #263729;
 }
 
