@@ -195,11 +195,12 @@ const LOCAL_MOB_AVATAR_FILES = new Set([
   "verxina.png",
 ]);
 const RACE_STAGE_BG_BY_PATH_TYPE = {
-  1: "/race_bg/path_1_bg.png",
-  2: "/race_bg/path_2_bg.png",
-  3: "/race_bg/path_3_bg.png",
-  4: "/race_bg/path_4_bg.png",
-  end: "/race_bg/path_end.png",
+  main: "/race_bg/main.webp",
+  1: "/race_bg/path_1_bg.webp",
+  2: "/race_bg/path_2_bg.webp",
+  3: "/race_bg/path_3_bg.webp",
+  4: "/race_bg/path_4_bg.webp",
+  end: "/race_bg/path_end.webp",
 };
 
 function stageName(stage) {
@@ -253,6 +254,10 @@ function getAptitudeRows(roomData, player) {
 
 function getRaceStageBackground(roomData, fallback) {
   if (!roomData) return { key: "fallback", src: fallback };
+  if (roomData.phase === "waiting") {
+    return { key: "waiting-main", src: RACE_STAGE_BG_BY_PATH_TYPE.main };
+  }
+
   const turn = Number(roomData.turn) || 0;
   const maxTurn = Number(roomData.max_turn) || 0;
   const isFinalTurn = maxTurn > 0 && turn >= maxTurn;
@@ -395,6 +400,7 @@ export default function RaceGamePage({
     () => getRaceImage(roomRaceImageSource(room)),
     [room]
   );
+  const isRaceWaiting = room?.phase === "waiting";
   const raceStageBackground = useMemo(
     () => getRaceStageBackground(room, roomRaceImage),
     [room, roomRaceImage]
@@ -810,31 +816,33 @@ export default function RaceGamePage({
             <AnimatePresence mode="wait">
               <motion.div
                 key={raceStageBackground.key}
-                className="race-live-bg"
+                className={`race-live-bg ${isRaceWaiting ? "is-static" : ""}`}
                 style={{ backgroundImage: `url(${raceStageBackground.src})` }}
-                initial={{ opacity: 0, scale: 1.1 }}
+                initial={isRaceWaiting ? false : { opacity: 0, scale: 1.1 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.18 }}
+                exit={isRaceWaiting ? undefined : { opacity: 0, scale: 1.18 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
               />
             </AnimatePresence>
-            <div className="race-speed-burst" aria-hidden="true">
-              {Array.from({ length: 34 }, (_, index) => (
-                <span
-                  key={index}
-                  style={{
-                    "--i": index,
-                    "--angle": `${(index * 137.5) % 360}deg`,
-                    "--delay": `${-((index * 0.073) % 1.35)}s`,
-                    "--duration": `${0.58 + (index % 7) * 0.055}s`,
-                    "--length": `${150 + (index % 6) * 38}px`,
-                    "--thickness": `${2 + (index % 4)}px`,
-                    "--start": `${34 + (index % 5) * 16}px`,
-                    "--end": `${330 + (index % 8) * 56}px`,
-                  }}
-                />
-              ))}
-            </div>
+            {!isRaceWaiting && (
+              <div className="race-speed-burst" aria-hidden="true">
+                {Array.from({ length: 34 }, (_, index) => (
+                  <span
+                    key={index}
+                    style={{
+                      "--i": index,
+                      "--angle": `${(index * 137.5) % 360}deg`,
+                      "--delay": `${-((index * 0.073) % 1.35)}s`,
+                      "--duration": `${0.58 + (index % 7) * 0.055}s`,
+                      "--length": `${150 + (index % 6) * 38}px`,
+                      "--thickness": `${2 + (index % 4)}px`,
+                      "--start": `${34 + (index % 5) * 16}px`,
+                      "--end": `${330 + (index % 8) * 56}px`,
+                    }}
+                  />
+                ))}
+              </div>
+            )}
             <div className="race-live-stage-overlay" />
             <div className="race-path-strip uma-scroll" aria-label="Track path">
               {room.path?.map((step) => (

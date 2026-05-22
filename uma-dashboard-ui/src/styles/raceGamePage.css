@@ -1207,6 +1207,12 @@
   animation: raceCameraSway 0.6s ease-in-out infinite;
 }
 
+.race-live-bg.is-static {
+  inset: 0;
+  animation: none;
+  will-change: auto;
+}
+
 .race-speed-burst {
   position: absolute;
   inset: -26%;
