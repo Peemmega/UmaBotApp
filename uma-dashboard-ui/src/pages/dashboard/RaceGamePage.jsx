@@ -295,18 +295,12 @@ function getRaceWinner(roomData) {
 
 function isRaceEnded(roomData) {
   if (!roomData) return false;
-  const turn = Number(roomData.turn) || 0;
-  const maxTurn = Number(roomData.max_turn) || 0;
-  const isFinalTurn = maxTurn > 0 && turn >= maxTurn;
-  const allPlayersRolled = (roomData.players || []).length > 0 && (roomData.players || []).every(
-    (player) => Number(player.last_roll_turn) === turn
-  );
+  if (roomData.awaiting_turn_confirm) return false;
 
   return (
     roomData.phase === "ended" ||
     roomData.status === "ended" ||
-    Boolean(roomData.result?.winner) ||
-    (isFinalTurn && (roomData.awaiting_turn_confirm || allPlayersRolled))
+    Boolean(roomData.result?.winner)
   );
 }
 
@@ -414,6 +408,10 @@ export default function RaceGamePage({
   const myRunDiceColor = useMemo(
     () => runDiceColorCache[myRunDiceColorKey] || getRunnerCurrentDiceColor(myPlayer, room, myLatestRoll),
     [myLatestRoll, myPlayer, myRunDiceColorKey, room, runDiceColorCache]
+  );
+  const raceRunners = useMemo(
+    () => getRaceRunnersByCurrentSpeed(room?.players || [], latestRollByName),
+    [latestRollByName, room?.players]
   );
   const raceWinner = useMemo(() => getRaceWinner(room), [room]);
 
@@ -821,7 +819,7 @@ export default function RaceGamePage({
               {room.race_phase ? `Phase ${room.race_phase}` : "Race"}
             </div>
             <div className="race-runner-stack uma-scroll">
-              {room.players?.map((player) => {
+              {raceRunners.map((player) => {
                 const latestRoll = latestRollByName.get(normalizeRaceName(player.name));
                 const maxSpeed = getRunnerMaxSpeed(player, room, latestRoll);
                 const state = getRunnerState(player, room);
@@ -1167,7 +1165,15 @@ function getRunnerTurnScore(player, room, latestRoll) {
 }
 
 function getRunnerMaxSpeed(player, room, latestRoll) {
-  const speed = firstFiniteNumber(
+  const speed = getRunnerMaxSpeedValue(player, latestRoll);
+
+  if (speed === null) return "Max -";
+
+  return `Max ${formatCompactNumber(speed)}`;
+}
+
+function getRunnerMaxSpeedValue(player, latestRoll) {
+  return firstFiniteNumber(
     player?.current_max_speed,
     player?.currentMaxSpeed,
     player?.max_speed,
@@ -1175,10 +1181,25 @@ function getRunnerMaxSpeed(player, room, latestRoll) {
     player?.last_roll?.current_max_speed,
     latestRoll?.current_max_speed
   );
+}
 
-  if (speed === null) return "Max -";
+function getRaceRunnersByCurrentSpeed(players, latestRollByName) {
+  return [...players].sort((left, right) => {
+    const leftRoll = latestRollByName.get(normalizeRaceName(left.name));
+    const rightRoll = latestRollByName.get(normalizeRaceName(right.name));
+    const leftSpeed = getRunnerMaxSpeedValue(left, leftRoll) ?? -Infinity;
+    const rightSpeed = getRunnerMaxSpeedValue(right, rightRoll) ?? -Infinity;
 
-  return `Max ${formatCompactNumber(speed)}`;
+    if (rightSpeed !== leftSpeed) return rightSpeed - leftSpeed;
+
+    const leftRank = Number(left.rank);
+    const rightRank = Number(right.rank);
+    if (Number.isFinite(leftRank) && Number.isFinite(rightRank) && leftRank !== rightRank) {
+      return leftRank - rightRank;
+    }
+
+    return (Number(right.score) || 0) - (Number(left.score) || 0);
+  });
 }
 
 function getRunnerCurrentDiceColor(player, room, latestRoll) {
