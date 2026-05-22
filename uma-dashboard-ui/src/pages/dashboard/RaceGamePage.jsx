@@ -50,6 +50,7 @@ import { getSkillIcon } from "../../utils/getSkillIcon";
 import "../../styles/raceGamePage.css";
 
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
+const DICE_COLOR_OPTIONS = ["white", "gold"];
 const ROOKIE_BOT_IDS = [
   "rookie_front",
   "rookie_pace",
@@ -254,6 +255,67 @@ function getAptitudeRows(roomData, player) {
   ];
 }
 
+function getRaceDicePresetRows(roomData, color) {
+  const table = getRaceDicePresetTable(roomData);
+  const colorTable = table?.[color] || table?.[color?.toUpperCase?.()] || table?.[capitalize(color)] || null;
+  if (!colorTable || typeof colorTable !== "object") return [];
+
+  return STYLE_OPTIONS.map((style) => ({
+    style,
+    values: normalizeDicePresetValues(
+      colorTable[style] ||
+        colorTable[style.toLowerCase()] ||
+        colorTable[style.toUpperCase()] ||
+        colorTable[snakeCase(style)]
+    ),
+  })).filter((row) => row.values.some(Boolean));
+}
+
+function getRaceDicePresetTable(roomData) {
+  return (
+    roomData?.dice_presets ||
+    roomData?.dicePresets ||
+    roomData?.dice_table ||
+    roomData?.diceTable ||
+    roomData?.dice_preset ||
+    roomData?.dicePreset ||
+    null
+  );
+}
+
+function normalizeDicePresetValues(value) {
+  if (Array.isArray(value)) return value.slice(0, 4).map(formatDicePresetValue);
+  if (!value || typeof value !== "object") return [];
+
+  return [1, 2, 3, 4].map((phase) => (
+    formatDicePresetValue(
+      value[phase] ||
+      value[`phase_${phase}`] ||
+      value[`phase${phase}`] ||
+      value[`p${phase}`] ||
+      value[`P${phase}`]
+    )
+  ));
+}
+
+function formatDicePresetValue(value) {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  if (typeof value !== "object") return String(value);
+
+  const dice = firstText(value.formula, value.dice, value.roll, value.expression);
+  if (dice) return dice;
+
+  const d = firstFiniteNumber(value.d, value.dice_count, value.diceCount, value.add_d);
+  const cap = firstFiniteNumber(value.cap, value.sides, value.max, value.dice_cap);
+  const kh = firstFiniteNumber(value.kh, value.keep_highest, value.keepHighest, value.selected);
+  if (d && cap && kh) return `${d}d${cap}kh${kh}`;
+  if (d && cap) return `${d}d${cap}`;
+
+  return "";
+}
+
 function getRaceStageBackground(roomData, fallback) {
   if (!roomData) return { key: "fallback", src: fallback };
   if (roomData.phase === "waiting") {
@@ -353,6 +415,7 @@ export default function RaceGamePage({
   const [showSkills, setShowSkills] = useState(false);
   const [skillPreview, setSkillPreview] = useState(null);
   const [skillLibrary, setSkillLibrary] = useState([]);
+  const [diceTableColor, setDiceTableColor] = useState("white");
   const [hiddenRoomIds, setHiddenRoomIds] = useState(() => new Set());
   const [selectedBot, setSelectedBot] = useState("rookie_front");
   const [selectedBotLevel, setSelectedBotLevel] = useState(1);
@@ -522,6 +585,10 @@ export default function RaceGamePage({
       </motion.article>
     );
   });
+  const dicePresetRows = useMemo(
+    () => getRaceDicePresetRows(room, diceTableColor),
+    [diceTableColor, room]
+  );
   const raceWinner = useMemo(() => getRaceWinner(room), [room]);
 
   useEffect(() => {
@@ -908,6 +975,53 @@ export default function RaceGamePage({
                 </em>
               ))}
             </div>
+          </div>
+          <div className="race-dice-preset-panel">
+            <div className="race-dice-preset-head">
+              <span>Dice Preset</span>
+              <div className="race-dice-color-toggle" aria-label="Dice preset color">
+                {DICE_COLOR_OPTIONS.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    className={diceTableColor === color ? "active" : ""}
+                    onClick={() => setDiceTableColor(color)}
+                  >
+                    {color}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {dicePresetRows.length > 0 ? (
+              <div className="race-dice-preset-table">
+                <div className="race-dice-preset-row is-head">
+                  <span>Style</span>
+                  {[1, 2, 3, 4].map((phase) => (
+                    <span
+                      key={phase}
+                      className={Number(room.race_phase) === phase ? "active" : ""}
+                    >
+                      P{phase}
+                    </span>
+                  ))}
+                </div>
+                {dicePresetRows.map((row) => (
+                  <div className="race-dice-preset-row" key={row.style}>
+                    <strong>{row.style}</strong>
+                    {row.values.map((value, index) => (
+                      <span
+                        key={`${row.style}-${index}`}
+                        className={Number(room.race_phase) === index + 1 ? "active" : ""}
+                      >
+                        {value || "-"}
+                      </span>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="race-dice-preset-empty">No preset data from backend.</p>
+            )}
           </div>
         </aside>
 
@@ -1731,6 +1845,11 @@ function firstText(...values) {
 
 function snakeCase(value) {
   return String(value || "").replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`).replace(/^_/, "");
+}
+
+function capitalize(value) {
+  const text = String(value || "");
+  return text ? `${text.charAt(0).toUpperCase()}${text.slice(1).toLowerCase()}` : "";
 }
 
 function prettifyEffectKey(value) {
