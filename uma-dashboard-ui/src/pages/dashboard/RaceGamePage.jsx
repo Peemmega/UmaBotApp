@@ -455,21 +455,33 @@ export default function RaceGamePage({
     });
     return entries;
   }, [skillLibrary]);
-  const raceRunnerCards = raceRunners.map((player) => {
+  const scoreboardByName = useMemo(() => {
+    const entries = new Map();
+    (room?.scoreboard || []).forEach((player, index) => {
+      const key = normalizeRaceName(player.name);
+      if (key) entries.set(key, { ...player, rank: player.rank || index + 1 });
+    });
+    return entries;
+  }, [room?.scoreboard]);
+  const raceScoreCards = raceRunners.map((player, index) => {
     const latestRoll = latestRollByName.get(normalizeRaceName(player.name));
     const maxSpeed = getRunnerMaxSpeed(player, room, latestRoll);
     const state = getRunnerState(player, room);
     const avatar = getRunnerAvatar(player);
+    const scoreEntry = scoreboardByName.get(normalizeRaceName(player.name)) || {};
+    const score = Number(scoreEntry.score ?? player.score) || 0;
+    const diff = score - leaderScore;
 
     return (
       <motion.article
         layout
-        className="race-runner-card"
+        className="race-score-runner-card"
         key={player.id}
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.22 }}
       >
+        <span className="race-score-rank">{scoreEntry.rank || index + 1}</span>
         <div className="race-player-avatar">
           {avatar ? <img src={avatar} alt="" /> : <Bot size={22} />}
         </div>
@@ -485,6 +497,13 @@ export default function RaceGamePage({
               {state.label}
             </span>
           </div>
+        </div>
+        <div className="race-score-card-total">
+          <em>{scoreEntry.style || player.style}</em>
+          <strong>{score}</strong>
+          <i className={diff === 0 ? "lead" : ""}>
+            {diff === 0 ? <ChevronUp size={14} /> : diff}
+          </i>
         </div>
       </motion.article>
     );
@@ -937,20 +956,7 @@ export default function RaceGamePage({
         <aside className="race-score-panel race-hud-panel">
           <PanelTitle icon={<Trophy size={16} />} title="Scoreboard" />
           <div className="race-score-list uma-scroll">
-            {room.scoreboard?.map((player, index) => {
-              const diff = (Number(player.score) || 0) - leaderScore;
-              return (
-                <motion.div layout className="race-score-row" key={player.id}>
-                  <span>{player.rank || index + 1}</span>
-                  <strong>{player.name}</strong>
-                  <em>{player.style}</em>
-                  <b>{player.score}</b>
-                  <i className={diff === 0 ? "lead" : ""}>
-                    {diff === 0 ? <ChevronUp size={14} /> : diff}
-                  </i>
-                </motion.div>
-              );
-            })}
+            {raceScoreCards}
           </div>
           <div className="race-status-panel">
             <div><Activity size={16} /><span>{room.phase}</span></div>
@@ -1163,9 +1169,6 @@ export default function RaceGamePage({
           )}
         </aside>
 
-        <aside className="race-runner-panel race-hud-panel uma-scroll">
-          {raceRunnerCards}
-        </aside>
       </div>
     </section>
   );

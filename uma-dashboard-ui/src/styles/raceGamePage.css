@@ -1055,7 +1055,7 @@
   grid-template-rows: minmax(0, 1fr) minmax(210px, 0.42fr);
   grid-template-areas:
     "track live score"
-    "log log command";
+    "log log score";
   gap: 10px;
   padding: 0 10px 10px;
 }
@@ -1065,7 +1065,6 @@
 .race-hud-page .race-score-panel { grid-area: score; }
 .race-hud-page .race-log-panel { grid-area: log; }
 .race-hud-page .race-command-panel { grid-area: live; }
-.race-hud-page .race-runner-panel { grid-area: command; }
 
 .race-hud-panel {
   min-width: 0;
@@ -1406,6 +1405,81 @@
   background: linear-gradient(90deg, rgba(5, 31, 36, 0.82), rgba(17, 65, 48, 0.42));
   color: #ffffff;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+}
+
+.race-score-runner-card {
+  min-width: 0;
+  border: 1px solid rgba(66, 93, 59, 0.16);
+  border-radius: 14px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 34px 52px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.76);
+  color: #263729;
+  box-shadow: 0 10px 20px rgba(73, 80, 54, 0.08);
+}
+
+.race-score-rank {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.86);
+  color: #5ac16e;
+  font-size: 18px;
+  font-weight: 1000;
+}
+
+.race-score-runner-card:first-child .race-score-rank {
+  background: linear-gradient(135deg, #fff2a8, #e9cd61);
+  color: #2f8c4f;
+}
+
+.race-score-runner-card .race-player-avatar {
+  width: 52px;
+  height: 52px;
+}
+
+.race-score-card-total {
+  grid-column: 3;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.race-score-card-total em {
+  min-width: 0;
+  color: rgba(38, 55, 41, 0.6);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.race-score-card-total strong {
+  color: #263729;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.race-score-card-total i {
+  min-width: 38px;
+  color: #ff6b8b;
+  font-style: normal;
+  font-weight: 1000;
+  text-align: right;
+}
+
+.race-score-card-total i.lead {
+  color: #5ac16e;
+  display: inline-flex;
+  justify-content: flex-end;
 }
 
 .race-runner-info {
@@ -1855,7 +1929,6 @@
       "live"
       "track"
       "score"
-      "command"
       "log";
   }
 
@@ -2110,6 +2183,16 @@
   border-color: rgba(66, 93, 59, 0.16);
   background: rgba(255, 255, 255, 0.76);
   color: #263729;
+}
+
+.race-fullscreen-page .race-score-runner-card {
+  grid-template-columns: 34px 58px minmax(0, 1fr);
+  padding: 8px;
+}
+
+.race-fullscreen-page .race-score-runner-card .race-player-avatar {
+  width: 58px;
+  height: 58px;
 }
 
 .race-fullscreen-page .race-runner-title-row {
@@ -2636,7 +2719,7 @@
     grid-template-rows: minmax(0, 1fr) minmax(156px, 0.4fr);
     grid-template-areas:
       "track live score"
-      "log log command";
+      "log log score";
     gap: 6px;
     padding: 0;
   }
@@ -2708,6 +2791,18 @@
     padding: 5px 7px;
     gap: 7px;
     border-radius: 10px;
+  }
+
+  .race-fullscreen-page .race-score-runner-card {
+    grid-template-columns: 28px 42px minmax(0, 1fr);
+    padding: 5px 7px;
+    gap: 6px;
+    border-radius: 10px;
+  }
+
+  .race-fullscreen-page .race-score-runner-card .race-player-avatar {
+    width: 42px;
+    height: 42px;
   }
 
   .race-fullscreen-page .race-player-avatar {
@@ -2870,7 +2965,7 @@
     grid-template-rows: minmax(0, 1fr) 132px;
     grid-template-areas:
       "track live score"
-      "log log command";
+      "log log score";
     gap: 5px;
     padding: 0;
   }
@@ -2993,6 +3088,18 @@
     gap: 6px;
     border-radius: 9px;
     padding: 4px 6px;
+  }
+
+  .race-fullscreen-page .race-score-runner-card {
+    grid-template-columns: 24px 34px minmax(0, 1fr);
+    gap: 5px;
+    border-radius: 9px;
+    padding: 4px 6px;
+  }
+
+  .race-fullscreen-page .race-score-runner-card .race-player-avatar {
+    width: 34px;
+    height: 34px;
   }
 
   .race-fullscreen-page .race-player-avatar {
