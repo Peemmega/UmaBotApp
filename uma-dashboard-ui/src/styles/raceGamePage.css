@@ -1636,11 +1636,14 @@
   position: absolute;
   z-index: 5;
   left: 18px;
-  bottom: 18px;
-  width: min(42%, 390px);
+  top: 92px;
+  width: min(34%, 340px);
+  max-height: calc(100% - 116px);
   padding: 14px;
+  overflow: hidden;
   pointer-events: none;
   text-align: left;
+  min-height: 0;
   border-radius: var(--uma-radius-sm);
   border: 1px solid rgba(117, 200, 50, 0.38);
   background:
@@ -1738,8 +1741,8 @@
 .race-skill-preview .skill-effects ul {
   margin: 0;
   padding-left: 20px;
-  max-height: 132px;
-  overflow: hidden;
+  max-height: 128px;
+  overflow-y: auto;
   color: var(--uma-ink);
   font-size: 13px;
   font-weight: 800;

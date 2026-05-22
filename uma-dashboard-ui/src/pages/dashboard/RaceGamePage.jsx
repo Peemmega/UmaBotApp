@@ -36,6 +36,7 @@ import {
   useRaceSkill,
   useRaceZone,
   witRerollRaceTurn,
+  RACE_API_BASE,
 } from "../../api/raceApi";
 import useRaceSocket from "../../hooks/useRaceSocket";
 import gutIcon from "../../assets/icons/Gut.webp";
@@ -351,6 +352,7 @@ export default function RaceGamePage({
   const [error, setError] = useState("");
   const [showSkills, setShowSkills] = useState(false);
   const [skillPreview, setSkillPreview] = useState(null);
+  const [skillLibrary, setSkillLibrary] = useState([]);
   const [hiddenRoomIds, setHiddenRoomIds] = useState(() => new Set());
   const [selectedBot, setSelectedBot] = useState("rookie_front");
   const [selectedBotLevel, setSelectedBotLevel] = useState(1);
@@ -444,6 +446,15 @@ export default function RaceGamePage({
     () => getRaceRunnersByCurrentSpeed(room?.players || [], latestRollByName),
     [latestRollByName, room?.players]
   );
+  const skillDetailsById = useMemo(() => {
+    const entries = new Map();
+    skillLibrary.forEach((skill) => {
+      [skill.id, skill.skill_id, skill.name].filter(Boolean).forEach((key) => {
+        entries.set(normalizeSkillKey(key), skill);
+      });
+    });
+    return entries;
+  }, [skillLibrary]);
   const raceRunnerCards = raceRunners.map((player) => {
     const latestRoll = latestRollByName.get(normalizeRaceName(player.name));
     const maxSpeed = getRunnerMaxSpeed(player, room, latestRoll);
@@ -483,6 +494,22 @@ export default function RaceGamePage({
   useEffect(() => {
     if (!showSkills) setSkillPreview(null);
   }, [showSkills]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${RACE_API_BASE}/skills?tag=all`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (!cancelled) setSkillLibrary(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {
+        if (!cancelled) setSkillLibrary([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!isConfirmingTurn || !myPlayer || !room?.room_id) return;
@@ -1095,8 +1122,8 @@ export default function RaceGamePage({
                   >
                     <div
                       className="race-skill-action-wrap"
-                      onMouseEnter={() => setSkillPreview(getRaceActionPreview("zone", myPlayer?.zone))}
-                      onFocus={() => setSkillPreview(getRaceActionPreview("zone", myPlayer?.zone))}
+                      onMouseEnter={() => setSkillPreview(getRaceActionPreview("zone", myPlayer?.zone, skillDetailsById))}
+                      onFocus={() => setSkillPreview(getRaceActionPreview("zone", myPlayer?.zone, skillDetailsById))}
                     >
                       <button
                         type="button"
@@ -1113,8 +1140,8 @@ export default function RaceGamePage({
                       <div
                         className="race-skill-action-wrap"
                         key={skill.slot}
-                        onMouseEnter={() => setSkillPreview(getRaceActionPreview("skill", skill))}
-                        onFocus={() => setSkillPreview(getRaceActionPreview("skill", skill))}
+                        onMouseEnter={() => setSkillPreview(getRaceActionPreview("skill", skill, skillDetailsById))}
+                        onFocus={() => setSkillPreview(getRaceActionPreview("skill", skill, skillDetailsById))}
                       >
                         <button
                           type="button"
@@ -1158,7 +1185,7 @@ function RaceSkillPreview({ preview }) {
 
   return (
     <motion.article
-      className="race-skill-preview skill-card"
+      className="race-skill-preview"
       initial={{ opacity: 0, x: -18, scale: 0.96 }}
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, x: -18, scale: 0.96 }}
@@ -1620,30 +1647,41 @@ function formatEffectRow(key, rawValue) {
   return { label, value: text };
 }
 
-function getRaceActionPreview(kind, item = {}) {
+function getRaceActionPreview(kind, item = {}, skillDetailsById = new Map()) {
   const action = item || {};
+  const details = findSkillDetails(action, skillDetailsById);
+  const merged = { ...details, ...action };
   const rows = [];
   [
-    action.effects,
-    action.effect,
-    action.effect_text,
-    action.description,
-    action.build,
-    action.pending_bonus,
-    action.changes,
+    merged.effects,
+    merged.effect,
+    merged.effect_text,
+    merged.description,
+    merged.build,
+    merged.pending_bonus,
+    merged.changes,
   ].forEach((source) => collectEffectRows(source, rows));
 
   return {
     kind,
-    id: firstText(action.id, action.skill_id, action.key, kind === "zone" ? "Zone" : `Slot ${action.slot || "-"}`),
-    name: firstText(action.name, action.title, kind === "zone" ? "Use Zone" : "Empty"),
-    icon: action.icon || "Velocity",
-    cooldown: kind === "zone" ? "Zone" : `CD ${Number(action.cooldown) || 0}`,
-    cost: kind === "zone" ? "-" : Number(action.cost) || 0,
-    target: firstText(action.target, action.scope, kind === "zone" ? "Self" : "Target"),
-    trigger: firstText(action.trigger, action.condition, action.timing, kind === "zone" ? "Available while Zone remains." : "Available when the skill is ready."),
+    id: firstText(merged.id, merged.skill_id, merged.key, kind === "zone" ? "Zone" : `Slot ${merged.slot || "-"}`),
+    name: firstText(merged.name, merged.title, kind === "zone" ? "Use Zone" : "Empty"),
+    icon: merged.icon || "Velocity",
+    cooldown: kind === "zone" ? "Zone" : `CD ${Number(merged.cooldown) || 0}`,
+    cost: kind === "zone" ? "-" : Number(merged.cost) || 0,
+    target: firstText(merged.target, merged.scope, kind === "zone" ? "Self" : "Target"),
+    trigger: firstText(merged.trigger, merged.condition, merged.timing, kind === "zone" ? "Available while Zone remains." : "Available when the skill is ready."),
     effects: rows.slice(0, 8),
   };
+}
+
+function findSkillDetails(action = {}, skillDetailsById = new Map()) {
+  const keys = [action.id, action.skill_id, action.key, action.name].map(normalizeSkillKey);
+  return keys.map((key) => skillDetailsById.get(key)).find(Boolean) || {};
+}
+
+function normalizeSkillKey(value) {
+  return String(value || "").trim().toLowerCase();
 }
 
 function firstText(...values) {
