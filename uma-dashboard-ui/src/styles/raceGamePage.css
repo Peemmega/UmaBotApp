@@ -616,7 +616,7 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .race-skill-list button {
@@ -1563,9 +1563,10 @@
   max-height: calc(100% - 24px);
   margin: 0 18px 18px 0;
   gap: 12px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(233, 255, 240, 0.52)),
-    rgba(255, 255, 255, 0.48);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .race-hud-page .race-command-panel.is-running {
@@ -1636,9 +1637,9 @@
   position: absolute;
   z-index: 5;
   left: 18px;
-  top: 92px;
+  bottom: 18px;
   width: min(34%, 340px);
-  max-height: calc(100% - 116px);
+  max-height: calc(100% - 36px);
   padding: 14px;
   overflow: hidden;
   pointer-events: none;
@@ -1751,6 +1752,14 @@
 
 .race-skill-preview .skill-effects li b {
   color: #2f8c4f;
+}
+
+.race-inline-effect-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  vertical-align: -4px;
+  margin: 0 2px;
 }
 
 .race-stamina-readout {
@@ -2259,15 +2268,15 @@
 
 .race-fullscreen-page .race-command-panel {
   display: flex;
-  width: min(33%, 330px);
-  max-height: calc(100% - 18px);
+  width: min(35%, 330px);
+  max-height: calc(60% - 18px);
   margin: 0 12px 12px 0;
 }
 
 .race-fullscreen-page .race-run-btn,
 .race-fullscreen-page .race-skill-btn {
-  min-height: 54px;
-  font-size: 18px;
+  min-height: 32px;
+  font-size: 14px;
 }
 
 .race-fullscreen-page .race-run-btn {

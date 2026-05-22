@@ -1221,7 +1221,7 @@ function RaceSkillPreview({ preview }) {
             <ul>
               {effects.map((effect, index) => (
                 <li key={`${effect.label}-${index}`}>
-                  <b>{effect.label}:</b> {effect.value}
+                  <b>{effect.label}:</b> {renderRaceTextWithIcons(effect.value)}
                 </li>
               ))}
             </ul>
@@ -1678,6 +1678,30 @@ function getRaceActionPreview(kind, item = {}, skillDetailsById = new Map()) {
 function findSkillDetails(action = {}, skillDetailsById = new Map()) {
   const keys = [action.id, action.skill_id, action.key, action.name].map(normalizeSkillKey);
   return keys.map((key) => skillDetailsById.get(key)).find(Boolean) || {};
+}
+
+function renderRaceTextWithIcons(value) {
+  const text = String(value || "");
+  if (!text) return null;
+
+  const parts = text.split(/(<:[^:>]+:\d+>)/g);
+  return parts.map((part, index) => {
+    const match = part.match(/^<:([^:>]+):\d+>$/);
+    if (!match) return part;
+
+    const iconName = match[1];
+    const icon = DISCORD_BONUS_ICON_MAP[iconName] || BONUS_ICONS[snakeCase(iconName)] || null;
+    return icon ? (
+      <img
+        key={`${iconName}-${index}`}
+        className="race-inline-effect-icon"
+        src={icon}
+        alt={iconName}
+      />
+    ) : (
+      iconName
+    );
+  });
 }
 
 function normalizeSkillKey(value) {
