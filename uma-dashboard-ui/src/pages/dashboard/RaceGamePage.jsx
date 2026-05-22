@@ -98,6 +98,30 @@ const DISCORD_BONUS_ICON_MAP = {
   Wits: BONUS_ICONS.wit,
   Skill: BONUS_ICONS.skill,
 };
+const EFFECT_LABELS = {
+  flat: "Pts",
+  points: "Pts",
+  score: "Pts",
+  total: "Pts",
+  add_d: "Dice",
+  addDice: "Dice",
+  dice: "Dice",
+  add_kh: "Keep",
+  keep_highest: "Keep",
+  add_dkh: "Dice/Keep",
+  floor: "Floor",
+  cap: "Cap",
+  selected: "Selected",
+  gold_range: "Gold range",
+  modify_current_speed: "Max speed",
+  current_max_speed: "Max speed",
+  max_speed: "Max speed",
+  self_heal_stamina: "Stamina",
+  heal_stamina: "Stamina",
+  stamina: "Stamina",
+  wit: "WIT",
+  cooldown: "Cooldown",
+};
 const LOCAL_MOB_AVATAR_BY_ID = {
   rookie_front: "/mobs/rookie_front.png",
   rookie_pace: "/mobs/rookie_pace.png",
@@ -890,6 +914,9 @@ export default function RaceGamePage({
         </section>
 
         <aside className="race-command-panel race-hud-panel uma-scroll">
+          <button type="button" className="race-menu-home-btn" onClick={onBackToDashboard}>
+            Main Site
+          </button>
           {room.phase === "waiting" ? (
             <>
               <div className="race-bot-picker">
@@ -994,6 +1021,7 @@ export default function RaceGamePage({
               <div className="race-reroll-actions">
                 <button
                   type="button"
+                  className="race-block-btn"
                   onClick={handleBlock}
                   disabled={hasConfirmedTurn || !myPlayer || myPlayer.used_block || Boolean(actionBusy)}
                 >
@@ -1001,6 +1029,7 @@ export default function RaceGamePage({
                 </button>
                 <button
                   type="button"
+                  className="race-rush-btn"
                   onClick={handleRush}
                   disabled={hasConfirmedTurn || !myPlayer || myPlayer.used_rush || Boolean(actionBusy)}
                 >
@@ -1028,20 +1057,22 @@ export default function RaceGamePage({
                   <Sparkles size={22} />
                   Skill
                 </button>
-
-                <button
-                  type="button"
-                  onClick={handleZone}
-                  disabled={!myPlayer || myPlayer.zone_left <= 0 || Boolean(actionBusy)}
-                >
-                  Zone
-                </button>
               </div>
 
            
              
               {showSkills && (
                 <div className="race-skill-list uma-scroll">
+                  <button
+                    type="button"
+                    className="race-zone-btn"
+                    onClick={handleZone}
+                    disabled={!myPlayer || myPlayer.zone_left <= 0 || Boolean(actionBusy)}
+                  >
+                    <span>Zone</span>
+                    <strong>{myPlayer?.zone?.name || "Use Zone"}</strong>
+                    <em>{Math.max(0, Number(myPlayer?.zone_left) || 0)} left</em>
+                  </button>
                   {(myPlayer?.skills || []).map((skill) => (
                     <button
                       key={skill.slot}
@@ -1336,6 +1367,7 @@ function isUsableImageSrc(value) {
 function RaceLogItem({ log }) {
   const summary = log.payload?.roll_summary;
   const bonusRows = getRollBonusRows(summary);
+  const actionEffectRows = summary ? [] : getActionEffectRows(log);
   const playerName = getLogPlayerName(log);
   const turnScore = summary?.total ?? getScoreFromLogMessage(log.message);
 
@@ -1365,10 +1397,22 @@ function RaceLogItem({ log }) {
           </div>
         </div>
       ) : (
-        <p>
-          <span>T{log.turn}</span>
-          {log.message}
-        </p>
+        <>
+          <p>
+            <span>T{log.turn}</span>
+            {log.message}
+          </p>
+          {actionEffectRows.length > 0 ? (
+            <div className="race-log-action-effects">
+              {actionEffectRows.map((item, index) => (
+                <em key={`${item.label}-${item.value}-${index}`}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </em>
+              ))}
+            </div>
+          ) : null}
+        </>
       )}
     </article>
   );
@@ -1393,6 +1437,103 @@ function getRollBonusRows(summary) {
   if (!summary) return [];
 
   return parseDiscordBonusDisplay(summary.bonus_display);
+}
+
+function getActionEffectRows(log) {
+  const payload = log?.payload || {};
+  const message = String(log?.message || "");
+  const isSkillOrZone = /skill|zone/i.test(message) || payload.skill || payload.zone;
+  if (!isSkillOrZone) return [];
+
+  const rows = [];
+  const sources = [
+    payload.effect,
+    payload.effects,
+    payload.build,
+    payload.changes,
+    payload.applied,
+    payload.pending_bonus,
+    payload.skill?.effect,
+    payload.skill?.effects,
+    payload.skill?.build,
+    payload.zone?.effect,
+    payload.zone?.effects,
+    payload.zone?.build,
+    payload.zone?.pending_bonus,
+    payload.result?.effect,
+    payload.result?.effects,
+    payload.result?.build,
+    payload.result?.pending_bonus,
+  ];
+
+  sources.forEach((source) => collectEffectRows(source, rows));
+
+  const text = firstText(
+    payload.effect_text,
+    payload.description,
+    payload.skill?.effect_text,
+    payload.skill?.description,
+    payload.zone?.effect_text,
+    payload.zone?.description,
+    payload.result?.effect_text
+  );
+  if (text && rows.length === 0) {
+    rows.push({ label: "Effect", value: text });
+  }
+
+  return rows.slice(0, 8);
+}
+
+function collectEffectRows(source, rows) {
+  if (!source) return;
+  if (Array.isArray(source)) {
+    source.forEach((item) => collectEffectRows(item, rows));
+    return;
+  }
+  if (typeof source === "string") {
+    if (source.trim()) rows.push({ label: "Effect", value: source.trim() });
+    return;
+  }
+  if (typeof source !== "object") return;
+
+  Object.entries(source).forEach(([key, rawValue]) => {
+    if (rawValue && typeof rawValue === "object") {
+      collectEffectRows(rawValue, rows);
+      return;
+    }
+
+    const row = formatEffectRow(key, rawValue);
+    if (row) rows.push(row);
+  });
+}
+
+function formatEffectRow(key, rawValue) {
+  const number = Number(rawValue);
+  const label = EFFECT_LABELS[key] || EFFECT_LABELS[snakeCase(key)] || prettifyEffectKey(key);
+
+  if (Number.isFinite(number)) {
+    if (number === 0) return null;
+    return { label, value: signed(number) };
+  }
+
+  const text = String(rawValue || "").trim();
+  if (!text || text === "-") return null;
+  return { label, value: text };
+}
+
+function firstText(...values) {
+  return values.map((value) => String(value || "").trim()).find(Boolean) || "";
+}
+
+function snakeCase(value) {
+  return String(value || "").replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`).replace(/^_/, "");
+}
+
+function prettifyEffectKey(value) {
+  return String(value || "")
+    .replace(/_/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function parseDiscordBonusDisplay(value = "") {
