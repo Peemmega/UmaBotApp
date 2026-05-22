@@ -621,6 +621,9 @@ export default function RaceGamePage({
             <h2>Race Lobby</h2>
           </div>
           <div className="race-toolbar">
+            <button type="button" className="race-menu-home-btn" onClick={onBackToDashboard}>
+              Main Site
+            </button>
             <button type="button" onClick={refreshRooms} disabled={loading}>
               <RefreshCw size={16} />
               Refresh
@@ -914,9 +917,6 @@ export default function RaceGamePage({
         </section>
 
         <aside className="race-command-panel race-hud-panel uma-scroll">
-          <button type="button" className="race-menu-home-btn" onClick={onBackToDashboard}>
-            Main Site
-          </button>
           {room.phase === "waiting" ? (
             <>
               <div className="race-bot-picker">
