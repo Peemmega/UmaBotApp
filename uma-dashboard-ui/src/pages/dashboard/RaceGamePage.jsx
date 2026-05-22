@@ -548,6 +548,7 @@ export default function RaceGamePage({
     () => latestRollByName.get(normalizeRaceName(myPlayer?.name)),
     [latestRollByName, myPlayer?.name]
   );
+  const myConfirmTurnScore = getRunnerTurnScore(myPlayer, room, myLatestRoll);
   const myRunDiceColorKey = getRunDiceColorKey(room, myPlayer, room?.turn);
   const myRunDiceColor = useMemo(
     () => runDiceColorCache[myRunDiceColorKey] || getRunnerCurrentDiceColor(myPlayer, room, myLatestRoll),
@@ -1225,7 +1226,7 @@ export default function RaceGamePage({
               
               <div className="race-confirm-card">
                 <span>Turn {room.turn} Result</span>
-                <strong>+{latestRollByName.get(normalizeRaceName(myPlayer.name))?.total ?? 0}</strong>
+                <strong>{myConfirmTurnScore}</strong>
                 <p>{hasConfirmedTurn ? "Confirmed. Waiting for racers..." : "Review your score before next turn."}</p>
               </div>
               
@@ -1736,11 +1737,13 @@ function getLogPlayerName(log) {
     log.payload?.player?.name;
   if (payloadName) return payloadName;
 
-  return String(log.message || "").replace(/\s+(?:auto\s+)?ran\s+[+-]?\d+.*/i, "").trim() || "Racer";
+  return String(log.message || "")
+    .replace(/\s+(?:(?:auto\s+)?ran|(?:wit\s+)?rerolled)\s+[+-]?\d+.*/i, "")
+    .trim() || "Racer";
 }
 
 function getScoreFromLogMessage(message = "") {
-  const match = String(message).match(/ran\s+\+?(-?\d+)/i);
+  const match = String(message).match(/(?:ran|rerolled)\s+\+?(-?\d+)/i);
   return match ? Number(match[1]) : "-";
 }
 
