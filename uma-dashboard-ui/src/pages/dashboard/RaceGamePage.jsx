@@ -1169,7 +1169,7 @@ function getRunnerMaxSpeed(player, room, latestRoll) {
 
   if (speed === null) return "Max -";
 
-  return `(${formatCompactNumber(speed)}) ${formatCompactNumber(speed)*3} km/s.`;
+  return `(${Math.floor(formatCompactNumber(speed))}) ${formatCompactNumber(speed)*3} km/s.`;
 }
 
 function getRunnerMaxSpeedValue(player, latestRoll) {
