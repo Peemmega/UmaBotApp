@@ -11,7 +11,7 @@ const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const ZONE_FIELDS = [
   ["flat", "เพิ่มแต้มผลรวม"],
-  ["add_dkh", "เพิ่มจำนวนลูกเต๋า d/kh (3 แต้ม)"],
+  ["add_dkh", "เพิ่มจำนวนลูกเต๋า d/kh"],
   ["floor", "เพิ่มค่าทอยลูกเต๋าต่ำสุด"],
   ["cap", "เพิ่มค่าทอยลูกเต๋าสูงสุด"],
   ["self_heal_stamina", "ฟื้นฟู Stamina"],
@@ -48,7 +48,7 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
       draft.cap +
       draft.self_heal_stamina +
       draft.modify_current_speed +
-      draft.add_dkh * 3
+      draft.add_dkh
     );
   }, [draft]);
 
@@ -59,7 +59,7 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
       originalBuild.cap +
       originalBuild.self_heal_stamina +
       originalBuild.modify_current_speed +
-      originalBuild.add_dkh * 3
+      originalBuild.add_dkh
     );
   }, [originalBuild]);
 
@@ -81,7 +81,7 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
   };
 
   const changeValue = (key, amount) => {
-    const cost = key === "add_dkh" ? 3 : 1;
+    const cost = 1;
 
     setDraft((prev) => {
       if (amount > 0 && remaining < cost) return prev;
@@ -223,7 +223,7 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
                 <button
                   className="zone-adjust-btn plus"
                   onClick={() => changeValue(key, 1)}
-                  disabled={remaining < (key === "add_dkh" ? 3 : 1) || saving}
+                  disabled={remaining < 1 || saving}
                 >
                   <img src={plusIcon} />
                 </button>

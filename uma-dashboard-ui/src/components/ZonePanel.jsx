@@ -9,7 +9,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
 
   const ZONE_VALUE = {
     flat: 25,
-    add_dkh: 2,
+    add_dkh: 1,
     floor: 7,
     cap: 7,
     self_heal_stamina: 1,

@@ -532,7 +532,13 @@ export default function RaceGamePage({
       setError("");
       const shouldCloseAfterLeave = label === "leave" && hasOnlyBotsAfterLeave(room, userId);
       const nextRoom = await action();
-      if (nextRoom?.phase === "closed" || shouldCloseAfterLeave) {
+      if (label === "leave") {
+        if (shouldCloseAfterLeave && room?.room_id) {
+          setHiddenRoomIds((current) => new Set(current).add(room.room_id));
+        }
+        setRoom(null);
+        await refreshRooms(shouldCloseAfterLeave && room?.room_id ? [room.room_id] : []);
+      } else if (nextRoom?.phase === "closed" || shouldCloseAfterLeave) {
         if (shouldCloseAfterLeave && room?.room_id) {
           setHiddenRoomIds((current) => new Set(current).add(room.room_id));
         }
