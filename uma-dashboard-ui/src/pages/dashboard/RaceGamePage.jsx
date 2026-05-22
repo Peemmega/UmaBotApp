@@ -993,7 +993,7 @@ export default function RaceGamePage({
           </div>
           <div className="race-dice-preset-panel">
             <div className="race-dice-preset-head">
-              <span>Dice Preset</span>
+              <span>Dice</span>
               <div className="race-dice-color-toggle" aria-label="Dice preset color">
                 {DICE_COLOR_OPTIONS.map((color) => (
                   <button
