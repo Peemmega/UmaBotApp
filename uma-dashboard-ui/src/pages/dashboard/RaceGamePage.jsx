@@ -329,6 +329,7 @@ export default function RaceGamePage({
   const [hiddenRoomIds, setHiddenRoomIds] = useState(() => new Set());
   const [selectedBot, setSelectedBot] = useState("rookie_front");
   const [selectedBotLevel, setSelectedBotLevel] = useState(1);
+  const [runDiceColorCache, setRunDiceColorCache] = useState({});
   const requestRef = useRef(false);
 
   const playerPayload = useMemo(
@@ -409,11 +410,26 @@ export default function RaceGamePage({
     () => latestRollByName.get(normalizeRaceName(myPlayer?.name)),
     [latestRollByName, myPlayer?.name]
   );
+  const myRunDiceColorKey = getRunDiceColorKey(room, myPlayer, room?.turn);
   const myRunDiceColor = useMemo(
-    () => getRunnerCurrentDiceColor(myPlayer, room, myLatestRoll),
-    [myLatestRoll, myPlayer, room]
+    () => runDiceColorCache[myRunDiceColorKey] || getRunnerCurrentDiceColor(myPlayer, room, myLatestRoll),
+    [myLatestRoll, myPlayer, myRunDiceColorKey, room, runDiceColorCache]
   );
   const raceWinner = useMemo(() => getRaceWinner(room), [room]);
+
+  useEffect(() => {
+    if (!isConfirmingTurn || !myPlayer || !room?.room_id) return;
+
+    const nextTurnKey = getRunDiceColorKey(room, myPlayer, Number(room.turn) + 1);
+    if (!nextTurnKey) return;
+
+    const nextTurnColor = getRunnerPreRollDiceColor(myPlayer, room);
+    setRunDiceColorCache((current) => (
+      current[nextTurnKey] === nextTurnColor
+        ? current
+        : { ...current, [nextTurnKey]: nextTurnColor }
+    ));
+  }, [isConfirmingTurn, myPlayer, room]);
 
   const refreshRooms = useCallback(async (extraHiddenRoomIds = []) => {
     try {
@@ -542,8 +558,17 @@ export default function RaceGamePage({
   const handleRun = () =>
     runAction("run", () => runRaceTurn(room.room_id, playerPayload));
 
-  const handleConfirmTurn = () =>
-    runAction("confirm", () => confirmRaceTurn(room.room_id, playerPayload));
+  const handleConfirmTurn = () => {
+    const nextTurnKey = getRunDiceColorKey(room, myPlayer, Number(room?.turn) + 1);
+    if (nextTurnKey) {
+      setRunDiceColorCache((current) => ({
+        ...current,
+        [nextTurnKey]: getRunnerPreRollDiceColor(myPlayer, room),
+      }));
+    }
+
+    return runAction("confirm", () => confirmRaceTurn(room.room_id, playerPayload));
+  };
 
   const handleReroll = () =>
     runAction("reroll", () => rerollRaceTurn(room.room_id, playerPayload));
@@ -1169,6 +1194,10 @@ function getRunnerCurrentDiceColor(player, room, latestRoll) {
   );
   if (explicitColor) return explicitColor;
 
+  if (Number(player.last_roll_turn) !== Number(room?.turn)) {
+    return getRunnerPreRollDiceColor(player, room);
+  }
+
   const rolledThisTurn = Number(player.last_roll_turn) === Number(room?.turn);
   const rollColor = normalizeDiceColor(player.last_roll?.distance_color);
   if (rolledThisTurn && rollColor) return rollColor;
@@ -1179,6 +1208,15 @@ function getRunnerCurrentDiceColor(player, room, latestRoll) {
   }
 
   return isRunnerInGoldRange(player, room) ? "gold" : "white";
+}
+
+function getRunnerPreRollDiceColor(player, room) {
+  return isRunnerInGoldRange(player, room) ? "gold" : "white";
+}
+
+function getRunDiceColorKey(room, player, turn) {
+  if (!room?.room_id || !player?.id || turn === undefined || turn === null) return "";
+  return `${room.room_id}:${player.id}:${turn}`;
 }
 
 function normalizeDiceColor(value = "") {
