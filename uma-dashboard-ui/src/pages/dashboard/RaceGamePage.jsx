@@ -51,6 +51,8 @@ import "../../styles/raceGamePage.css";
 
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
 const DICE_COLOR_OPTIONS = ["white", "gold"];
+const RACE_STYLE_COOKIE = "uma_race_last_style";
+const RACE_STYLE_COOKIE_MAX_AGE = 60 * 60 * 24 * 180;
 const ROOKIE_BOT_IDS = [
   "rookie_front",
   "rookie_pace",
@@ -83,6 +85,31 @@ const BOT_OPTIONS = [
   { id: "almond_eye", label: "Almond Eye" },
   { id: "equinox", label: "Equinox" },
 ];
+
+function normalizeRaceStyle(value) {
+  const text = String(value || "").trim().toLowerCase();
+  return STYLE_OPTIONS.find((item) => item.toLowerCase() === text) || "Pace";
+}
+
+function getCookieValue(name) {
+  if (typeof document === "undefined") return "";
+  const prefix = `${encodeURIComponent(name)}=`;
+  const item = document.cookie
+    .split("; ")
+    .find((entry) => entry.startsWith(prefix));
+  return item ? decodeURIComponent(item.slice(prefix.length)) : "";
+}
+
+function saveRaceStyleCookie(value) {
+  if (typeof document === "undefined") return;
+  const style = normalizeRaceStyle(value);
+  document.cookie = `${encodeURIComponent(RACE_STYLE_COOKIE)}=${encodeURIComponent(style)}; max-age=${RACE_STYLE_COOKIE_MAX_AGE}; path=/; SameSite=Lax`;
+}
+
+function getSavedRaceStyle() {
+  return normalizeRaceStyle(getCookieValue(RACE_STYLE_COOKIE));
+}
+
 const BONUS_ICONS = {
   speed: speedIcon,
   power: powerIcon,
@@ -422,7 +449,7 @@ export default function RaceGamePage({
   const [rooms, setRooms] = useState([]);
   const [stages, setStages] = useState([]);
   const [selectedStage, setSelectedStage] = useState("Debut");
-  const [style, setStyle] = useState("Pace");
+  const [style, setStyle] = useState(getSavedRaceStyle);
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(false);
   const [actionBusy, setActionBusy] = useState("");
@@ -446,6 +473,12 @@ export default function RaceGamePage({
     }),
     [avatarUrl, style, userId, username]
   );
+
+  const handleStyleSelect = useCallback((nextStyle) => {
+    const normalizedStyle = normalizeRaceStyle(nextStyle);
+    setStyle(normalizedStyle);
+    saveRaceStyleCookie(normalizedStyle);
+  }, []);
 
   const handleRoomState = useCallback((nextRoom) => {
     setRoom(nextRoom);
@@ -743,15 +776,19 @@ export default function RaceGamePage({
     }
   };
 
-  const handleCreate = () =>
-    runAction("create", () => createRaceRoom(playerPayload, selectedStage));
+  const handleCreate = () => {
+    saveRaceStyleCookie(style);
+    return runAction("create", () => createRaceRoom(playerPayload, selectedStage));
+  };
 
-  const handleJoin = (roomItem) =>
-    runAction("join", () =>
+  const handleJoin = (roomItem) => {
+    saveRaceStyleCookie(style);
+    return runAction("join", () =>
       roomItem?.is_joined
         ? getRaceRoom(roomItem.room_id, userId)
         : joinRaceRoom(roomItem.room_id, playerPayload)
     );
+  };
 
   const handleLeave = () =>
     runAction("leave", () => leaveRaceRoom(room.room_id, playerPayload));
@@ -847,7 +884,7 @@ export default function RaceGamePage({
                 key={item}
                 type="button"
                 className={style === item ? "active" : ""}
-                onClick={() => setStyle(item)}
+                onClick={() => handleStyleSelect(item)}
               >
                 {item}
               </button>
