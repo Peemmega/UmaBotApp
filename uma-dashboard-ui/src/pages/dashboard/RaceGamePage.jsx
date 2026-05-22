@@ -325,6 +325,8 @@ function formatDicePresetValue(value) {
   const kh = firstFiniteNumber(value.kh, value.keep_highest, value.keepHighest, value.selected);
   if (d && cap && kh) return `${d}d${cap}kh${kh}`;
   if (d && cap) return `${d}d${cap}`;
+  if (d && kh) return `${d}dkh${kh}`;
+  if (d) return `${d}d`;
 
   return "";
 }
