@@ -1518,18 +1518,20 @@
 
 .race-hud-page .race-run-btn.is-gold,
 .race-fullscreen-page .race-run-btn.is-gold {
-  border-color: rgba(255, 229, 123, 0.96);
+  border: 2px solid rgba(20, 15, 8, 0.92);
   background: linear-gradient(135deg, #ffe88a, #d59a22) !important;
   color: #3d2a06;
   box-shadow: 0 16px 34px rgba(221, 164, 31, 0.34);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .race-hud-page .race-run-btn.is-white,
 .race-fullscreen-page .race-run-btn.is-white {
-  border-color: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(20, 28, 24, 0.9);
   background: linear-gradient(135deg, #ffffff, #e4edf2) !important;
   color: #203329;
   box-shadow: 0 14px 30px rgba(255, 255, 255, 0.16);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .race-hud-page .race-run-btn.is-gold:disabled,
@@ -2036,6 +2038,22 @@
 
 .race-fullscreen-page .race-run-btn {
   background: linear-gradient(135deg, #4dcf71, #2f8c4f) !important;
+}
+
+.race-fullscreen-page .race-run-btn.is-gold {
+  border: 2px solid rgba(20, 15, 8, 0.92);
+  background: linear-gradient(135deg, #ffe88a, #d59a22) !important;
+  color: #3d2a06;
+  box-shadow: 0 16px 34px rgba(221, 164, 31, 0.34);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.race-fullscreen-page .race-run-btn.is-white {
+  border: 2px solid rgba(20, 28, 24, 0.9);
+  background: linear-gradient(135deg, #ffffff, #e4edf2) !important;
+  color: #203329;
+  box-shadow: 0 14px 30px rgba(255, 255, 255, 0.16);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .race-fullscreen-page .race-skill-btn {

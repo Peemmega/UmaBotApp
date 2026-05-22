@@ -355,10 +355,6 @@ export default function RaceGamePage({
     () => room?.players?.find((player) => player.id === String(userId)),
     [room?.players, userId]
   );
-  const myRunDiceColor = useMemo(
-    () => getRunnerCurrentDiceColor(myPlayer, room),
-    [myPlayer, room]
-  );
 
   const canRun =
     room?.phase === "running" &&
@@ -408,6 +404,14 @@ export default function RaceGamePage({
   const latestRollByName = useMemo(
     () => getLatestRollByName(room?.action_logs || []),
     [room?.action_logs]
+  );
+  const myLatestRoll = useMemo(
+    () => latestRollByName.get(normalizeRaceName(myPlayer?.name)),
+    [latestRollByName, myPlayer?.name]
+  );
+  const myRunDiceColor = useMemo(
+    () => getRunnerCurrentDiceColor(myPlayer, room, myLatestRoll),
+    [myLatestRoll, myPlayer, room]
   );
   const raceWinner = useMemo(() => getRaceWinner(room), [room]);
 
@@ -1110,6 +1114,7 @@ function getLatestRollByName(logs) {
       total: summary.total ?? getScoreFromLogMessage(log.message),
       turn: log.turn,
       current_max_speed: summary.current_max_speed,
+      distance_color: summary.distance_color,
     });
   });
 
@@ -1151,7 +1156,7 @@ function getRunnerMaxSpeed(player, room, latestRoll) {
   return `Max ${formatCompactNumber(speed)}`;
 }
 
-function getRunnerCurrentDiceColor(player, room) {
+function getRunnerCurrentDiceColor(player, room, latestRoll) {
   if (!player || room?.phase !== "running") return "white";
 
   const explicitColor = normalizeDiceColor(
@@ -1167,6 +1172,11 @@ function getRunnerCurrentDiceColor(player, room) {
   const rolledThisTurn = Number(player.last_roll_turn) === Number(room?.turn);
   const rollColor = normalizeDiceColor(player.last_roll?.distance_color);
   if (rolledThisTurn && rollColor) return rollColor;
+
+  const latestRollColor = normalizeDiceColor(latestRoll?.distance_color);
+  if (Number(latestRoll?.turn) === Number(room?.turn) && latestRollColor) {
+    return latestRollColor;
+  }
 
   return isRunnerInGoldRange(player, room) ? "gold" : "white";
 }
