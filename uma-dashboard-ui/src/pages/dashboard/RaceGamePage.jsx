@@ -418,6 +418,30 @@ export default function RaceGamePage({
     () => Math.max(1, ...(room?.scoreboard || []).map((player) => Number(player.score) || 0)),
     [room?.scoreboard]
   );
+  const turnProgress = room
+    ? Math.min(100, Math.max(0, ((Number(room.turn) || 0) / Math.max(1, Number(room.max_turn) || 1)) * 100))
+    : 0;
+  const aptitudeRows = useMemo(
+    () => getAptitudeRows(room, myPlayer),
+    [myPlayer, room]
+  );
+  const latestRollByName = useMemo(
+    () => getLatestRollByName(room?.action_logs || []),
+    [room?.action_logs]
+  );
+  const myLatestRoll = useMemo(
+    () => latestRollByName.get(normalizeRaceName(myPlayer?.name)),
+    [latestRollByName, myPlayer?.name]
+  );
+  const myRunDiceColorKey = getRunDiceColorKey(room, myPlayer, room?.turn);
+  const myRunDiceColor = useMemo(
+    () => runDiceColorCache[myRunDiceColorKey] || getRunnerCurrentDiceColor(myPlayer, room, myLatestRoll),
+    [myLatestRoll, myPlayer, myRunDiceColorKey, room, runDiceColorCache]
+  );
+  const raceRunners = useMemo(
+    () => getRaceRunnersByCurrentSpeed(room?.players || [], latestRollByName),
+    [latestRollByName, room?.players]
+  );
   const raceRunnerCards = raceRunners.map((player) => {
     const latestRoll = latestRollByName.get(normalizeRaceName(player.name));
     const maxSpeed = getRunnerMaxSpeed(player, room, latestRoll);
@@ -452,31 +476,6 @@ export default function RaceGamePage({
       </motion.article>
     );
   });
-
-  const turnProgress = room
-    ? Math.min(100, Math.max(0, ((Number(room.turn) || 0) / Math.max(1, Number(room.max_turn) || 1)) * 100))
-    : 0;
-  const aptitudeRows = useMemo(
-    () => getAptitudeRows(room, myPlayer),
-    [myPlayer, room]
-  );
-  const latestRollByName = useMemo(
-    () => getLatestRollByName(room?.action_logs || []),
-    [room?.action_logs]
-  );
-  const myLatestRoll = useMemo(
-    () => latestRollByName.get(normalizeRaceName(myPlayer?.name)),
-    [latestRollByName, myPlayer?.name]
-  );
-  const myRunDiceColorKey = getRunDiceColorKey(room, myPlayer, room?.turn);
-  const myRunDiceColor = useMemo(
-    () => runDiceColorCache[myRunDiceColorKey] || getRunnerCurrentDiceColor(myPlayer, room, myLatestRoll),
-    [myLatestRoll, myPlayer, myRunDiceColorKey, room, runDiceColorCache]
-  );
-  const raceRunners = useMemo(
-    () => getRaceRunnersByCurrentSpeed(room?.players || [], latestRollByName),
-    [latestRollByName, room?.players]
-  );
   const raceWinner = useMemo(() => getRaceWinner(room), [room]);
 
   useEffect(() => {
@@ -498,7 +497,8 @@ export default function RaceGamePage({
       setLoading(true);
       setError("");
       const data = await listRaceRooms();
-      const hiddenIds = new Set([...hiddenRoomIds, ...extraHiddenRoomIds]);
+      const extraHiddenIds = Array.isArray(extraHiddenRoomIds) ? extraHiddenRoomIds : [];
+      const hiddenIds = new Set([...hiddenRoomIds, ...extraHiddenIds]);
       const nextRooms = (data.rooms || []).filter((item) => !hiddenIds.has(item.room_id));
       const visibleRooms = await Promise.all(
         nextRooms.map(async (item) => {
@@ -670,7 +670,7 @@ export default function RaceGamePage({
             <button type="button" className="race-menu-home-btn" onClick={onBackToDashboard}>
               Main Site
             </button>
-            <button type="button" onClick={refreshRooms} disabled={loading}>
+            <button type="button" onClick={() => refreshRooms()} disabled={loading}>
               <RefreshCw size={16} />
               Refresh
             </button>
