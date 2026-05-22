@@ -463,7 +463,21 @@ export default function RaceGamePage({
     });
     return entries;
   }, [room?.scoreboard]);
-  const raceScoreCards = raceRunners.map((player, index) => {
+  const raceScorePlayers = useMemo(
+    () => [...(room?.players || [])].sort((left, right) => {
+      const leftScore = Number(scoreboardByName.get(normalizeRaceName(left.name))?.score ?? left.score) || 0;
+      const rightScore = Number(scoreboardByName.get(normalizeRaceName(right.name))?.score ?? right.score) || 0;
+      if (rightScore !== leftScore) return rightScore - leftScore;
+
+      const leftRoll = latestRollByName.get(normalizeRaceName(left.name));
+      const rightRoll = latestRollByName.get(normalizeRaceName(right.name));
+      const leftSpeed = getRunnerMaxSpeedValue(left, leftRoll) ?? -Infinity;
+      const rightSpeed = getRunnerMaxSpeedValue(right, rightRoll) ?? -Infinity;
+      return rightSpeed - leftSpeed;
+    }),
+    [latestRollByName, room?.players, scoreboardByName]
+  );
+  const raceScoreCards = raceScorePlayers.map((player, index) => {
     const latestRoll = latestRollByName.get(normalizeRaceName(player.name));
     const maxSpeed = getRunnerMaxSpeed(player, room, latestRoll);
     const state = getRunnerState(player, room);
@@ -488,22 +502,22 @@ export default function RaceGamePage({
         <div className="race-runner-info">
           <div className="race-runner-title-row">
             <h3>{player.name}</h3>
-            <strong>{maxSpeed}</strong>
+            <em>{scoreEntry.style || player.style}</em>
           </div>
           <div className="race-player-meta">
             <span><img src={staminaIcon} alt="Stamina" />{player.stamina_left}</span>
             <span><img src={witIcon} alt="Wit" />{player.wit_mana}</span>
+            <span className="race-score-speed">{maxSpeed}</span>
+            <span className={`race-score-diff ${diff === 0 ? "lead" : ""}`}>
+              {diff === 0 ? <ChevronUp size={14} /> : diff}
+            </span>
             <span className={`race-runner-state ${state.className}`}>
               {state.label}
             </span>
           </div>
         </div>
         <div className="race-score-card-total">
-          <em>{scoreEntry.style || player.style}</em>
           <strong>{score}</strong>
-          <i className={diff === 0 ? "lead" : ""}>
-            {diff === 0 ? <ChevronUp size={14} /> : diff}
-          </i>
         </div>
       </motion.article>
     );
