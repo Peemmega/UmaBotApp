@@ -258,17 +258,30 @@ function getAptitudeRows(roomData, player) {
 function getRaceDicePresetRows(roomData, color) {
   const table = getRaceDicePresetTable(roomData);
   const colorTable = table?.[color] || table?.[color?.toUpperCase?.()] || table?.[capitalize(color)] || null;
-  if (!colorTable || typeof colorTable !== "object") return [];
+  const styleFirstTable = table && typeof table === "object" && !colorTable;
+  if ((!colorTable || typeof colorTable !== "object") && !styleFirstTable) return [];
 
   return STYLE_OPTIONS.map((style) => ({
     style,
     values: normalizeDicePresetValues(
-      colorTable[style] ||
-        colorTable[style.toLowerCase()] ||
-        colorTable[style.toUpperCase()] ||
-        colorTable[snakeCase(style)]
+      styleFirstTable
+        ? getDicePresetStyleColorValues(table, style, color)
+        : colorTable[style] ||
+            colorTable[style.toLowerCase()] ||
+            colorTable[style.toUpperCase()] ||
+            colorTable[snakeCase(style)]
     ),
   })).filter((row) => row.values.some(Boolean));
+}
+
+function getDicePresetStyleColorValues(table, style, color) {
+  const styleTable =
+    table?.[style] ||
+    table?.[style.toLowerCase()] ||
+    table?.[style.toUpperCase()] ||
+    table?.[snakeCase(style)];
+  if (!styleTable || typeof styleTable !== "object") return null;
+  return styleTable[color] || styleTable[color?.toUpperCase?.()] || styleTable[capitalize(color)];
 }
 
 function getRaceDicePresetTable(roomData) {
