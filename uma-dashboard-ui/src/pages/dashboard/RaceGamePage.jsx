@@ -1334,7 +1334,6 @@ export default function RaceGamePage({
                       >
                         <button
                           type="button"
-                          className="race-skill-list-num"
                           disabled={!skill.id || skill.cooldown > 0 || Boolean(actionBusy)}
                           onClick={() => handleSkill(skill)}
                         >

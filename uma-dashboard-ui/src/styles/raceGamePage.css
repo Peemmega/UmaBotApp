@@ -643,6 +643,7 @@
   font-size: 12px;
   font-style: normal;
   font-weight: 900;
+  padding: 0px 8px;
 }
 
 .race-result-panel {
@@ -1787,17 +1788,6 @@
   font-size: 22px;
 }
 
-.race-skill-list-num {
-    color: #5ac16e;
-    background: #ffffffdb;
-    border-radius: 10px;
-    place-items: center;
-    width: 30px;
-    height: 30px;
-    font-size: 18px;
-    font-weight: 1000;
-    display: grid;
-}
 
 
 .race-hud-page .race-run-btn {
