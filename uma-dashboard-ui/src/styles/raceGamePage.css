@@ -1776,6 +1776,7 @@
 
 .race-skill-action-wrap {
   min-width: 0;
+  place-items: center;
   display: block;
 }
 
@@ -1797,6 +1798,7 @@
     font-weight: 1000;
     display: grid;
 }
+
 
 .race-hud-page .race-run-btn {
   background: linear-gradient(135deg, #48f074, #15a85c) !important;
