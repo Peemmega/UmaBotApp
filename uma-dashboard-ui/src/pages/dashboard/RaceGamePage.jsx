@@ -1257,7 +1257,7 @@ export default function RaceGamePage({
                 src="/music/music_panel.gif"
                 alt=""
                 onError={(event) => {
-                  event.currentTarget.hidden = true;
+                  event.currentTarget.src = "/uma-icon.webp";
                 }}
               />
               <div>
