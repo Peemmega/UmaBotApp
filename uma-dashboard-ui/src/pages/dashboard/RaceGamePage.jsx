@@ -232,6 +232,7 @@ const RACE_STAGE_BG_BY_PATH_TYPE = {
   4: "/race_bg/path_4_bg.webp",
   end: "/race_bg/path_end.webp",
 };
+const MAX_RACE_RANK_IMAGE_INDEX = 17;
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
@@ -404,6 +405,15 @@ function preloadImages(sources = []) {
     const image = new Image();
     image.src = source;
   });
+}
+
+function getRaceRankImageSrc(rank, small = false) {
+  const rankNumber = Number(rank);
+  const imageIndex = Number.isFinite(rankNumber)
+    ? Math.min(MAX_RACE_RANK_IMAGE_INDEX, Math.max(0, Math.floor(rankNumber) - 1))
+    : 0;
+  const prefix = small ? "utx_txt_order_s_" : "utx_txt_order_";
+  return `/race_ranking/${prefix}${String(imageIndex).padStart(2, "0")}.webp`;
 }
 
 function getRaceWinner(roomData) {
@@ -589,6 +599,13 @@ export default function RaceGamePage({
     }),
     [latestRollByName, room?.players, scoreboardByName]
   );
+  const myRaceRank = useMemo(() => {
+    const scoreEntry = scoreboardByName.get(normalizeRaceName(myPlayer?.name));
+    if (scoreEntry?.rank) return scoreEntry.rank;
+
+    const playerIndex = raceScorePlayers.findIndex((player) => String(player.id) === String(userId));
+    return playerIndex >= 0 ? playerIndex + 1 : null;
+  }, [myPlayer?.name, raceScorePlayers, scoreboardByName, userId]);
   const raceScoreCards = raceScorePlayers.map((player, index) => {
     const latestRoll = latestRollByName.get(normalizeRaceName(player.name));
     const maxSpeed = getRunnerMaxSpeed(player, room, latestRoll);
@@ -597,6 +614,7 @@ export default function RaceGamePage({
     const scoreEntry = scoreboardByName.get(normalizeRaceName(player.name)) || {};
     const score = Number(scoreEntry.score ?? player.score) || 0;
     const diff = score - leaderScore;
+    const rank = scoreEntry.rank || index + 1;
 
     return (
       <motion.article
@@ -607,7 +625,9 @@ export default function RaceGamePage({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.22 }}
       >
-        <span className="race-score-rank">{scoreEntry.rank || index + 1}</span>
+        <span className="race-score-rank">
+          <img src={getRaceRankImageSrc(rank, true)} alt={`Rank ${rank}`} />
+        </span>
         <div className="race-player-avatar">
           {avatar ? <img src={avatar} alt="" /> : <Bot size={22} />}
         </div>
@@ -1126,6 +1146,11 @@ export default function RaceGamePage({
               <Zap size={18} />
               {room.race_phase ? `Phase ${room.race_phase}` : "Race"}
             </div>
+            {myRaceRank ? (
+              <div className="race-my-rank-badge" aria-label={`Your rank ${myRaceRank}`}>
+                <img src={getRaceRankImageSrc(myRaceRank)} alt={`Your rank ${myRaceRank}`} />
+              </div>
+            ) : null}
             <AnimatePresence>
               {skillPreview && (
                 <RaceSkillPreview preview={skillPreview} />
@@ -1407,7 +1432,7 @@ function RaceSkillPreview({ preview }) {
             <ul>
               {effects.map((effect, index) => (
                 <li key={`${effect.label}-${index}`}>
-                  <b>{effect.label}:</b> {renderRaceTextWithIcons(effect.value)}
+                  <b>{renderEffectLabel(effect.label)}:</b> {renderRaceTextWithIcons(effect.value)}
                 </li>
               ))}
             </ul>
@@ -1718,7 +1743,7 @@ function RaceLogItem({ log }) {
             <div className="race-log-action-effects">
               {actionEffectRows.map((item, index) => (
                 <em key={`${item.label}-${item.value}-${index}`}>
-                  <span>{item.label}</span>
+                  <span>{renderEffectLabel(item.label)}</span>
                   <strong>{item.value}</strong>
                 </em>
               ))}
@@ -1890,6 +1915,14 @@ function renderRaceTextWithIcons(value) {
       iconName
     );
   });
+}
+
+function renderEffectLabel(label) {
+  return label === EFFECT_LABELS.wit ? (
+    <img className="race-effect-label-icon" src={witIcon} alt="WIT" />
+  ) : (
+    label
+  );
 }
 
 function normalizeSkillKey(value) {

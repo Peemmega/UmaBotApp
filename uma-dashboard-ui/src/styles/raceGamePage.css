@@ -1441,6 +1441,23 @@
   box-shadow: 0 0 28px rgba(255, 99, 171, 0.35);
 }
 
+.race-my-rank-badge {
+  position: absolute;
+  z-index: 5;
+  top: 50px;
+  right: 18px;
+  width: clamp(92px, 15vw, 148px);
+  pointer-events: none;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.38));
+}
+
+.race-my-rank-badge img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
 .race-runner-stack {
   position: relative;
   z-index: 3;
@@ -1535,18 +1552,17 @@
 .race-score-rank {
   width: 30px;
   height: 30px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: rgba(255, 255, 255, 0.86);
-  color: #5ac16e;
-  font-size: 18px;
-  font-weight: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.race-score-runner-card:first-child .race-score-rank {
-  background: linear-gradient(135deg, #fff2a8, #e9cd61);
-  color: #2f8c4f;
+.race-score-rank img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.16));
 }
 
 .race-score-runner-card .race-player-avatar {
@@ -1945,6 +1961,13 @@
   color: #2f8c4f;
 }
 
+.race-effect-label-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  vertical-align: -4px;
+}
+
 .race-inline-effect-icon {
   width: 18px;
   height: 18px;
@@ -2272,6 +2295,12 @@
   color: #ffffff;
   font-size: 16px;
   box-shadow: 0 8px 22px rgba(47, 140, 79, 0.22);
+}
+
+.race-fullscreen-page .race-my-rank-badge {
+  top: 48px;
+  right: 14px;
+  width: clamp(86px, 10vw, 128px);
 }
 
 .race-fullscreen-page .race-live-stage > .race-path-strip {
@@ -2935,6 +2964,12 @@
     font-size: 12px;
   }
 
+  .race-fullscreen-page .race-my-rank-badge {
+    top: 37px;
+    right: 8px;
+    width: 76px;
+  }
+
   .race-fullscreen-page .race-runner-stack {
     width: min(58%, 430px);
     max-height: calc(100% - 70px);
@@ -3221,6 +3256,12 @@
     padding: 4px 10px;
     gap: 5px;
     font-size: 11px;
+  }
+
+  .race-fullscreen-page .race-my-rank-badge {
+    top: 34px;
+    right: 6px;
+    width: 68px;
   }
 
   .race-fullscreen-page .race-live-stage > .race-path-strip {
