@@ -9,6 +9,7 @@ import {
   Gauge,
   Heart,
   Map as MapIcon,
+  Music2,
   Play,
   Plus,
   Radio,
@@ -39,6 +40,7 @@ import {
   RACE_API_BASE,
 } from "../../api/raceApi";
 import useRaceSocket from "../../hooks/useRaceSocket";
+import { playSound } from "../../utils/soundManager";
 import gutIcon from "../../assets/icons/Gut.webp";
 import powerIcon from "../../assets/icons/Power.webp";
 import speedIcon from "../../assets/icons/Speed.webp";
@@ -233,6 +235,19 @@ const RACE_STAGE_BG_BY_PATH_TYPE = {
   end: "/race_bg/path_end.webp",
 };
 const MAX_RACE_RANK_IMAGE_INDEX = 17;
+const RACE_BGM_TRACKS = [
+  "arima_kinen.mp3",
+  "g1_race.mp3",
+  "L'arc Trial Race.mp3",
+  "アオハル杯 決勝.mp3",
+  "ユメヲカケル -トレセン学園応援団 Ver-.mp3",
+];
+const ZONE_TRACKS = [
+  "glorious_moment.mp3",
+  "Last Spurt.mp3",
+  "グランドマスターズ シニア級.mp3",
+  "スターの走り.mp3",
+];
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
@@ -416,6 +431,20 @@ function getRaceRankImageSrc(rank, small = false) {
   return `/race_ranking/${prefix}${String(imageIndex).padStart(2, "0")}.webp`;
 }
 
+function getRandomItem(items = []) {
+  return items[Math.floor(Math.random() * items.length)] || "";
+}
+
+function getMusicSrc(folder, fileName) {
+  return encodeURI(`/music/${folder}/${fileName}`);
+}
+
+function getMusicTitle(fileName = "") {
+  return String(fileName)
+    .replace(/\.[^.]+$/, "")
+    .replace(/_/g, " ");
+}
+
 function getRaceWinner(roomData) {
   const winner = (
     roomData?.result?.winner ||
@@ -472,7 +501,11 @@ export default function RaceGamePage({
   const [selectedBot, setSelectedBot] = useState("rookie_front");
   const [selectedBotLevel, setSelectedBotLevel] = useState(1);
   const [runDiceColorCache, setRunDiceColorCache] = useState({});
+  const [musicNowPlaying, setMusicNowPlaying] = useState(null);
   const requestRef = useRef(false);
+  const raceBgmRef = useRef(null);
+  const zoneAudioRef = useRef(null);
+  const raceBgmTrackRef = useRef(null);
 
   const playerPayload = useMemo(
     () => ({
@@ -538,6 +571,84 @@ export default function RaceGamePage({
   useEffect(() => {
     preloadImages([raceStageBackground.src, ...nextRaceStageBackgrounds]);
   }, [nextRaceStageBackgrounds, raceStageBackground.src]);
+
+  const stopZoneMusic = useCallback(() => {
+    const zoneAudio = zoneAudioRef.current;
+    if (!zoneAudio) return;
+    zoneAudio.onended = null;
+    zoneAudio.pause();
+    zoneAudio.currentTime = 0;
+    zoneAudioRef.current = null;
+  }, []);
+
+  const stopRaceMusic = useCallback(() => {
+    stopZoneMusic();
+    const raceAudio = raceBgmRef.current;
+    if (raceAudio) {
+      raceAudio.pause();
+      raceAudio.currentTime = 0;
+    }
+    raceBgmRef.current = null;
+    raceBgmTrackRef.current = null;
+    setMusicNowPlaying(null);
+  }, [stopZoneMusic]);
+
+  const playRaceMusic = useCallback(() => {
+    if (typeof Audio === "undefined") return;
+
+    const track = raceBgmTrackRef.current || getRandomItem(RACE_BGM_TRACKS);
+    if (!track) return;
+    raceBgmTrackRef.current = track;
+
+    let raceAudio = raceBgmRef.current;
+    if (!raceAudio) {
+      raceAudio = new Audio(getMusicSrc("race_bgm", track));
+      raceAudio.loop = true;
+      raceAudio.volume = 0.32;
+      raceBgmRef.current = raceAudio;
+    }
+
+    setMusicNowPlaying({ title: getMusicTitle(track), mode: "Race BGM" });
+    raceAudio.play().catch(() => {});
+  }, []);
+
+  const playZoneMusic = useCallback(() => {
+    if (typeof Audio === "undefined") return;
+    const track = getRandomItem(ZONE_TRACKS);
+    if (!track) return;
+
+    stopZoneMusic();
+    const raceAudio = raceBgmRef.current;
+    if (raceAudio) raceAudio.pause();
+
+    const zoneAudio = new Audio(getMusicSrc("zone", track));
+    zoneAudio.loop = false;
+    zoneAudio.volume = 0.38;
+    zoneAudio.onended = () => {
+      zoneAudioRef.current = null;
+      if (room?.phase === "running" && !isRaceEnded(room)) {
+        playRaceMusic();
+      }
+    };
+    zoneAudioRef.current = zoneAudio;
+    setMusicNowPlaying({ title: getMusicTitle(track), mode: "Zone" });
+    zoneAudio.play().catch(() => {
+      zoneAudioRef.current = null;
+      playRaceMusic();
+    });
+  }, [playRaceMusic, room, stopZoneMusic]);
+
+  useEffect(() => {
+    if (room?.phase === "running" && !isRaceEnded(room)) {
+      if (!zoneAudioRef.current) playRaceMusic();
+      return undefined;
+    }
+
+    stopRaceMusic();
+    return undefined;
+  }, [playRaceMusic, room, stopRaceMusic]);
+
+  useEffect(() => stopRaceMusic, [stopRaceMusic]);
 
   const leaderScore = useMemo(
     () => Math.max(1, ...(room?.scoreboard || []).map((player) => Number(player.score) || 0)),
@@ -789,13 +900,25 @@ export default function RaceGamePage({
       } else {
         setRoom(nextRoom);
       }
+      return nextRoom;
     } catch (err) {
       setError(String(err.message || err));
+      return null;
     } finally {
       requestRef.current = false;
       setActionBusy("");
     }
   };
+
+  const handleRaceButtonSound = useCallback((event) => {
+    const button = event.target.closest?.("button");
+    if (!button || event.currentTarget.contains(button) === false || button.disabled) return;
+    const isCloseAction =
+      button.classList.contains("race-leave-btn") ||
+      button.classList.contains("race-ghost-btn") ||
+      (button.classList.contains("race-skill-toggle") && showSkills);
+    playSound(isCloseAction ? "close" : "click");
+  }, [showSkills]);
 
   const handleCreate = () => {
     saveRaceStyleCookie(style);
@@ -855,8 +978,10 @@ export default function RaceGamePage({
       useRaceSkill(room.room_id, userId, skill.slot, skill.id)
     );
 
-  const handleZone = () =>
-    runAction("zone", () => useRaceZone(room.room_id, playerPayload));
+  const handleZone = async () => {
+    const nextRoom = await runAction("zone", () => useRaceZone(room.room_id, playerPayload));
+    if (nextRoom) playZoneMusic();
+  };
 
   const handleBlock = () =>
     runAction("block", () => useRaceBlock(room.room_id, playerPayload));
@@ -866,7 +991,7 @@ export default function RaceGamePage({
 
   if (!room) {
     return (
-    <section className={`race-page ${fullscreen ? "race-fullscreen-page" : ""}`}>
+    <section className={`race-page ${fullscreen ? "race-fullscreen-page" : ""}`} onClickCapture={handleRaceButtonSound}>
         <header className="race-hero">
           <div>
             <span className="race-kicker">Online Race</span>
@@ -963,14 +1088,14 @@ export default function RaceGamePage({
 
   if (isRaceEnded(room)) {
     return (
-      <section className={`race-page race-winner-page ${fullscreen ? "race-fullscreen-page" : ""}`}>
+      <section className={`race-page race-winner-page ${fullscreen ? "race-fullscreen-page" : ""}`} onClickCapture={handleRaceButtonSound}>
         <RaceWinnerModal winner={raceWinner} onLeave={handleLeave} />
       </section>
     );
   }
 
   return (
-    <section className={`race-page race-hud-page ${fullscreen ? "race-fullscreen-page" : ""}`}>
+    <section className={`race-page race-hud-page ${fullscreen ? "race-fullscreen-page" : ""}`} onClickCapture={handleRaceButtonSound}>
       <header className="race-hero room race-hud-topbar">
         <div className="race-live-brand">
           <Trophy size={32} />
@@ -1095,6 +1220,13 @@ export default function RaceGamePage({
             ) : (
               <p className="race-dice-preset-empty">No preset data from backend.</p>
             )}
+            <div className={`race-now-playing ${musicNowPlaying ? "is-playing" : ""}`}>
+              <Music2 size={16} />
+              <div>
+                <span>{musicNowPlaying?.mode || "Race Audio"}</span>
+                <strong>{musicNowPlaying?.title || "Waiting for start"}</strong>
+              </div>
+            </div>
           </div>
         </aside>
 

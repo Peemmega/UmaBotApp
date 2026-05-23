@@ -323,6 +323,11 @@
   overflow: hidden;
 }
 
+.race-hud-page .race-track-panel {
+  display: flex;
+  flex-direction: column;
+}
+
 .race-track-image {
   width: 100%;
   aspect-ratio: 16 / 8;
@@ -1056,7 +1061,7 @@
   grid-template-rows: minmax(0, 1fr) minmax(210px, 0.42fr);
   grid-template-areas:
     "track live score"
-    "log log score";
+    "track log score";
   gap: 10px;
   padding: 0 10px 10px;
 }
@@ -1294,6 +1299,51 @@
   font-size: 12px;
   font-weight: 900;
   line-height: 1.25;
+}
+
+.race-now-playing {
+  margin-top: auto;
+  min-height: 58px;
+  border: 1px solid rgba(155, 255, 218, 0.14);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(247, 255, 251, 0.76);
+}
+
+.race-now-playing svg {
+  flex: 0 0 auto;
+  color: #8af7b9;
+}
+
+.race-now-playing span,
+.race-now-playing strong {
+  display: block;
+  min-width: 0;
+}
+
+.race-now-playing span {
+  color: #8af7b9;
+  font-size: 11px;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.race-now-playing strong {
+  margin-top: 2px;
+  overflow: hidden;
+  color: #f7fffb;
+  font-size: 13px;
+  font-weight: 1000;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.race-now-playing.is-playing {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.2), rgba(255, 255, 255, 0.08));
 }
 
 .race-live-panel {
@@ -2482,6 +2532,21 @@
   color: rgba(38, 55, 41, 0.62);
 }
 
+.race-fullscreen-page .race-now-playing {
+  border-color: rgba(88, 122, 72, 0.16);
+  background: rgba(255, 255, 255, 0.52);
+  color: rgba(38, 55, 41, 0.66);
+}
+
+.race-fullscreen-page .race-now-playing svg,
+.race-fullscreen-page .race-now-playing span {
+  color: #2f8c4f;
+}
+
+.race-fullscreen-page .race-now-playing strong {
+  color: #263729;
+}
+
 .race-fullscreen-page .race-score-row {
   min-height: 38px;
   background: rgba(255, 255, 255, 0.46);
@@ -2904,7 +2969,7 @@
     grid-template-rows: minmax(0, 1fr) minmax(156px, 0.4fr);
     grid-template-areas:
       "track live score"
-      "log log score";
+      "track log score";
     gap: 6px;
     padding: 0;
   }
@@ -3156,7 +3221,7 @@
     grid-template-rows: minmax(0, 1fr) 132px;
     grid-template-areas:
       "track live score"
-      "log log score";
+      "track log score";
     gap: 5px;
     padding: 0;
   }
