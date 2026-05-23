@@ -143,6 +143,8 @@ if os.path.exists(FRONTEND_DIST):
         app.mount("/mobs", StaticFiles(directory=os.path.join(FRONTEND_DIST, "mobs")), name="mob-assets")
     if os.path.exists(os.path.join(FRONTEND_DIST, "race_bg")):
         app.mount("/race_bg", StaticFiles(directory=os.path.join(FRONTEND_DIST, "race_bg")), name="race-bg-assets")
+    if os.path.exists(os.path.join(FRONTEND_DIST, "race_ranking")):
+        app.mount("/race_ranking", StaticFiles(directory=os.path.join(FRONTEND_DIST, "race_ranking")), name="race-ranking-assets")
 
     @app.get("/{full_path:path}")
     async def serve_react(full_path: str):
