@@ -267,6 +267,7 @@ const ZONE_TRACKS = [
   "グランドマスターズ シニア級.mp3",
   "スターの走り.mp3",
 ];
+const MUSIC_PANEL_ART_SRC = "/music/music_panel.png";
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
@@ -1254,11 +1255,8 @@ export default function RaceGamePage({
             <div className={`race-now-playing ${musicNowPlaying ? "is-playing" : ""}`}>
               <img
                 className="race-now-playing-art"
-                src="/music/music_panel.gif"
+                src={MUSIC_PANEL_ART_SRC}
                 alt=""
-                onError={(event) => {
-                  event.currentTarget.src = "/uma-icon.webp";
-                }}
               />
               <div>
                 <div className="race-now-playing-title">
