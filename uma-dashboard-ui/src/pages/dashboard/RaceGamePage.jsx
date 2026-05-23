@@ -55,6 +55,8 @@ const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
 const DICE_COLOR_OPTIONS = ["white", "gold"];
 const RACE_STYLE_COOKIE = "uma_race_last_style";
 const RACE_STYLE_COOKIE_MAX_AGE = 60 * 60 * 24 * 180;
+const RACE_MUSIC_VOLUME_COOKIE = "uma_race_music_volume";
+const RACE_MUSIC_VOLUME_COOKIE_MAX_AGE = 60 * 60 * 24 * 180;
 const ROOKIE_BOT_IDS = [
   "rookie_front",
   "rookie_pace",
@@ -110,6 +112,23 @@ function saveRaceStyleCookie(value) {
 
 function getSavedRaceStyle() {
   return normalizeRaceStyle(getCookieValue(RACE_STYLE_COOKIE));
+}
+
+function normalizeMusicVolume(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 0.32;
+  return Math.max(0, Math.min(1, number));
+}
+
+function saveRaceMusicVolumeCookie(value) {
+  if (typeof document === "undefined") return;
+  const volume = normalizeMusicVolume(value);
+  document.cookie = `${encodeURIComponent(RACE_MUSIC_VOLUME_COOKIE)}=${encodeURIComponent(volume)}; max-age=${RACE_MUSIC_VOLUME_COOKIE_MAX_AGE}; path=/; SameSite=Lax`;
+}
+
+function getSavedRaceMusicVolume() {
+  const value = getCookieValue(RACE_MUSIC_VOLUME_COOKIE);
+  return value ? normalizeMusicVolume(value) : 0.32;
 }
 
 const BONUS_ICONS = {
@@ -502,6 +521,7 @@ export default function RaceGamePage({
   const [selectedBotLevel, setSelectedBotLevel] = useState(1);
   const [runDiceColorCache, setRunDiceColorCache] = useState({});
   const [musicNowPlaying, setMusicNowPlaying] = useState(null);
+  const [musicVolume, setMusicVolume] = useState(getSavedRaceMusicVolume);
   const requestRef = useRef(false);
   const raceBgmRef = useRef(null);
   const zoneAudioRef = useRef(null);
@@ -572,6 +592,11 @@ export default function RaceGamePage({
     preloadImages([raceStageBackground.src, ...nextRaceStageBackgrounds]);
   }, [nextRaceStageBackgrounds, raceStageBackground.src]);
 
+  useEffect(() => {
+    if (raceBgmRef.current) raceBgmRef.current.volume = musicVolume;
+    if (zoneAudioRef.current) zoneAudioRef.current.volume = musicVolume;
+  }, [musicVolume]);
+
   const stopZoneMusic = useCallback(() => {
     const zoneAudio = zoneAudioRef.current;
     if (!zoneAudio) return;
@@ -604,13 +629,13 @@ export default function RaceGamePage({
     if (!raceAudio) {
       raceAudio = new Audio(getMusicSrc("race_bgm", track));
       raceAudio.loop = true;
-      raceAudio.volume = 0.32;
+      raceAudio.volume = musicVolume;
       raceBgmRef.current = raceAudio;
     }
 
     setMusicNowPlaying({ title: getMusicTitle(track), mode: "Race BGM" });
     raceAudio.play().catch(() => {});
-  }, []);
+  }, [musicVolume]);
 
   const playZoneMusic = useCallback(() => {
     if (typeof Audio === "undefined") return;
@@ -623,7 +648,7 @@ export default function RaceGamePage({
 
     const zoneAudio = new Audio(getMusicSrc("zone", track));
     zoneAudio.loop = false;
-    zoneAudio.volume = 0.38;
+    zoneAudio.volume = musicVolume;
     zoneAudio.onended = () => {
       zoneAudioRef.current = null;
       if (room?.phase === "running" && !isRaceEnded(room)) {
@@ -636,7 +661,7 @@ export default function RaceGamePage({
       zoneAudioRef.current = null;
       playRaceMusic();
     });
-  }, [playRaceMusic, room, stopZoneMusic]);
+  }, [musicVolume, playRaceMusic, room, stopZoneMusic]);
 
   useEffect(() => {
     if (room?.phase === "running" && !isRaceEnded(room)) {
@@ -919,6 +944,12 @@ export default function RaceGamePage({
       (button.classList.contains("race-skill-toggle") && showSkills);
     playSound(isCloseAction ? "close" : "click");
   }, [showSkills]);
+
+  const handleMusicVolumeChange = useCallback((event) => {
+    const nextVolume = normalizeMusicVolume(Number(event.target.value) / 100);
+    setMusicVolume(nextVolume);
+    saveRaceMusicVolumeCookie(nextVolume);
+  }, []);
 
   const handleCreate = () => {
     saveRaceStyleCookie(style);
@@ -1221,10 +1252,31 @@ export default function RaceGamePage({
               <p className="race-dice-preset-empty">No preset data from backend.</p>
             )}
             <div className={`race-now-playing ${musicNowPlaying ? "is-playing" : ""}`}>
-              <Music2 size={16} />
+              <img
+                className="race-now-playing-art"
+                src="/music/music_panel.gif"
+                alt=""
+                onError={(event) => {
+                  event.currentTarget.hidden = true;
+                }}
+              />
               <div>
-                <span>{musicNowPlaying?.mode || "Race Audio"}</span>
+                <div className="race-now-playing-title">
+                  <Music2 size={16} />
+                  <span>{musicNowPlaying?.mode || "Race Audio"}</span>
+                </div>
                 <strong>{musicNowPlaying?.title || "Waiting for start"}</strong>
+                <label className="race-volume-control">
+                  <span>{Math.round(musicVolume * 100)}%</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={Math.round(musicVolume * 100)}
+                    onChange={handleMusicVolumeChange}
+                    aria-label="Race music volume"
+                  />
+                </label>
               </div>
             </div>
           </div>

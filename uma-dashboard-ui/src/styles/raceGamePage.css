@@ -1303,7 +1303,7 @@
 
 .race-now-playing {
   margin-top: auto;
-  min-height: 58px;
+  min-height: 76px;
   border: 1px solid rgba(155, 255, 218, 0.14);
   border-radius: 12px;
   padding: 10px;
@@ -1314,7 +1314,28 @@
   color: rgba(247, 255, 251, 0.76);
 }
 
-.race-now-playing svg {
+.race-now-playing-art {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.race-now-playing > div {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.race-now-playing-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.race-now-playing-title svg {
   flex: 0 0 auto;
   color: #8af7b9;
 }
@@ -1344,6 +1365,26 @@
 
 .race-now-playing.is-playing {
   background: linear-gradient(135deg, rgba(52, 211, 153, 0.2), rgba(255, 255, 255, 0.08));
+}
+
+.race-volume-control {
+  margin-top: 7px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.race-volume-control span {
+  color: rgba(247, 255, 251, 0.72);
+  font-size: 11px;
+  font-weight: 1000;
+  text-align: right;
+}
+
+.race-volume-control input {
+  width: 100%;
+  accent-color: #56d27c;
 }
 
 .race-live-panel {
@@ -2538,13 +2579,17 @@
   color: rgba(38, 55, 41, 0.66);
 }
 
-.race-fullscreen-page .race-now-playing svg,
+.race-fullscreen-page .race-now-playing-title svg,
 .race-fullscreen-page .race-now-playing span {
   color: #2f8c4f;
 }
 
 .race-fullscreen-page .race-now-playing strong {
   color: #263729;
+}
+
+.race-fullscreen-page .race-volume-control span {
+  color: rgba(38, 55, 41, 0.62);
 }
 
 .race-fullscreen-page .race-score-row {
