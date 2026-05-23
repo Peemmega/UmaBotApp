@@ -1992,9 +1992,9 @@
 .race-confirm-card {
   border: 1px solid rgba(155, 255, 218, 0.16);
   border-radius: 14px;
-  padding: 8px;
+  padding: 4px;
   display: grid;
-  gap: 6px;
+  gap: 4px;
   background: rgba(255, 255, 255, 0.09);
   color: #eafff4;
 }
@@ -2008,14 +2008,14 @@
 
 .race-confirm-card strong {
   color: #ffffff;
-  font-size: 34px;
+  font-size: 24px;
   line-height: 1;
 }
 
 .race-confirm-card p {
   margin: 0;
   color: rgba(234, 255, 244, 0.72);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
 }
 
