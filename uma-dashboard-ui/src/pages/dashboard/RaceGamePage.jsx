@@ -1334,10 +1334,11 @@ export default function RaceGamePage({
                       >
                         <button
                           type="button"
+                          className="race-skill-list-num"
                           disabled={!skill.id || skill.cooldown > 0 || Boolean(actionBusy)}
                           onClick={() => handleSkill(skill)}
                         >
-                          <span>Slot {skill.slot}</span>
+                          <span>{skill.slot}</span>
                           <strong>{skill.name || "Empty"}</strong>
                           <em>
                             {skill.cooldown > 0 ? `CD ${skill.cooldown}` : `${skill.cost || 0} WIT`}
