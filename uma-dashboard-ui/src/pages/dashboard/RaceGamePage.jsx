@@ -267,7 +267,7 @@ const ZONE_TRACKS = [
   "グランドマスターズ シニア級.mp3",
   "スターの走り.mp3",
 ];
-const MUSIC_PANEL_ART_SRC = "/music/music_panel.webp";
+const MUSIC_PANEL_ART_SRC = "/music/uma_music.webp";
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
