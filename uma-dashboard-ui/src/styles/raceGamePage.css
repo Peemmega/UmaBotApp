@@ -2298,9 +2298,9 @@
 }
 
 .race-fullscreen-page .race-my-rank-badge {
-  top: 48px;
+  top: 65px;
   right: 14px;
-  width: clamp(86px, 10vw, 128px);
+  width: clamp(60px, 10vw, 80px);
 }
 
 .race-fullscreen-page .race-live-stage > .race-path-strip {
