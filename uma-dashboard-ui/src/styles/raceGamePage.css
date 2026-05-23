@@ -370,7 +370,7 @@
     0 10px 18px rgba(47, 184, 106, 0.38);
 }
 
-.race-path-strip span.active::after {
+/* .race-path-strip span.active::after {
   content: "";
   position: absolute;
   left: 50%;
@@ -381,7 +381,7 @@
   background: #ffcf47;
   box-shadow: 0 0 10px rgba(255, 207, 71, 0.86);
   transform: translateX(-50%);
-}
+} */
 
 .race-status-panel {
   margin-top: 12px;
