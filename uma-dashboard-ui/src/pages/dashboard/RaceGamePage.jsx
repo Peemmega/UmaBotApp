@@ -402,9 +402,11 @@ function getRaceStageBackground(roomData, fallback) {
     return { key: "waiting-main", src: RACE_STAGE_BG_BY_PATH_TYPE.main };
   }
 
-  const turn = Number(roomData.turn) || 0;
+  const turn = roomData.race_mode === "web_timing"
+    ? Number(roomData.leader_distance) || 0
+    : Number(roomData.turn) || 0;
   const maxTurn = Number(roomData.max_turn) || 0;
-  const isFinalTurn = maxTurn > 0 && turn >= maxTurn;
+  const isFinalTurn = roomData.race_mode !== "web_timing" && maxTurn > 0 && turn >= maxTurn;
   const pathType = Number(roomData.current_path?.type) || 1;
   const bgKey = roomData.phase === "ended" || isFinalTurn ? "end" : pathType;
 
@@ -561,6 +563,7 @@ export default function RaceGamePage({
     () => room?.players?.find((player) => player.id === String(userId)),
     [room?.players, userId]
   );
+  const isWebTiming = room?.race_mode === "web_timing";
 
   const canRun =
     room?.phase === "running" &&
@@ -679,12 +682,13 @@ export default function RaceGamePage({
 
   useEffect(() => stopRaceMusic, [stopRaceMusic]);
 
-  const leaderScore = useMemo(
-    () => Math.max(1, ...(room?.scoreboard || []).map((player) => Number(player.score) || 0)),
-    [room?.scoreboard]
-  );
+  const leaderScore = isWebTiming
+    ? Number(room?.leader_distance) || 0
+    : Math.max(1, ...(room?.scoreboard || []).map((player) => Number(player.score) || 0));
   const turnProgress = room
-    ? Math.min(100, Math.max(0, ((Number(room.turn) || 0) / Math.max(1, Number(room.max_turn) || 1)) * 100))
+    ? isWebTiming
+      ? Math.min(100, Math.max(0, (Number(room.leader_distance) || 0) / Math.max(1, Number(room.finish_distance) || 1) * 100))
+      : Math.min(100, Math.max(0, ((Number(room.turn) || 0) / Math.max(1, Number(room.max_turn) || 1)) * 100))
     : 0;
   const aptitudeRows = useMemo(
     () => getAptitudeRows(room, myPlayer),
@@ -727,8 +731,8 @@ export default function RaceGamePage({
   }, [room?.scoreboard]);
   const raceScorePlayers = useMemo(
     () => [...(room?.players || [])].sort((left, right) => {
-      const leftScore = Number(scoreboardByName.get(normalizeRaceName(left.name))?.score ?? left.score) || 0;
-      const rightScore = Number(scoreboardByName.get(normalizeRaceName(right.name))?.score ?? right.score) || 0;
+      const leftScore = Number(isWebTiming ? left.distance : scoreboardByName.get(normalizeRaceName(left.name))?.score ?? left.score) || 0;
+      const rightScore = Number(isWebTiming ? right.distance : scoreboardByName.get(normalizeRaceName(right.name))?.score ?? right.score) || 0;
       if (rightScore !== leftScore) return rightScore - leftScore;
 
       const leftRoll = latestRollByName.get(normalizeRaceName(left.name));
@@ -737,7 +741,7 @@ export default function RaceGamePage({
       const rightSpeed = getRunnerMaxSpeedValue(right, rightRoll) ?? -Infinity;
       return rightSpeed - leftSpeed;
     }),
-    [latestRollByName, room?.players, scoreboardByName]
+    [isWebTiming, latestRollByName, room?.players, scoreboardByName]
   );
   const myRaceRank = useMemo(() => {
     const scoreEntry = scoreboardByName.get(normalizeRaceName(myPlayer?.name));
@@ -752,7 +756,7 @@ export default function RaceGamePage({
     const state = getRunnerState(player, room);
     const avatar = getRunnerAvatar(player);
     const scoreEntry = scoreboardByName.get(normalizeRaceName(player.name)) || {};
-    const score = Number(scoreEntry.score ?? player.score) || 0;
+    const score = Number(isWebTiming ? player.distance : scoreEntry.score ?? player.score) || 0;
     const diff = score - leaderScore;
     const rank = scoreEntry.rank || index + 1;
 
@@ -777,9 +781,19 @@ export default function RaceGamePage({
             <em>{scoreEntry.style || player.style}</em>
           </div>
           <div className="race-player-meta">
-            <span><img src={staminaIcon} alt="Stamina" />{player.stamina_left}</span>
-            <span><img src={witIcon} alt="Wit" />{player.wit_mana}</span>
-            <span className="race-score-speed">{maxSpeed}</span>
+            {isWebTiming ? (
+              <>
+                <span>{player.distance_left}m left</span>
+                <span>{player.progress_percent}%</span>
+                <span className="race-score-speed">{player.phase}</span>
+              </>
+            ) : (
+              <>
+                <span><img src={staminaIcon} alt="Stamina" />{player.stamina_left}</span>
+                <span><img src={witIcon} alt="Wit" />{player.wit_mana}</span>
+                <span className="race-score-speed">{maxSpeed}</span>
+              </>
+            )}
             <span className={`race-score-diff ${diff === 0 ? "lead" : ""}`}>
               {diff === 0 ? <ChevronUp size={14} /> : diff}
             </span>
@@ -789,7 +803,10 @@ export default function RaceGamePage({
           </div>
         </div>
         <div className="race-score-card-total">
-          <strong>{score}</strong>
+          <strong>{score}{isWebTiming ? "m" : ""}</strong>
+          {isWebTiming && player.latest_timing_result ? (
+            <small>{player.latest_timing_result.tier} +{player.latest_timing_result.distance_gain}m</small>
+          ) : null}
         </div>
       </motion.article>
     );
@@ -1127,7 +1144,9 @@ export default function RaceGamePage({
                     </span>
                     <h3>{item.race_name}</h3>
                     <p>
-                      Turn {item.max_turn} | {item.player_count} racers
+                      {item.race_mode === "web_timing"
+                        ? `${item.finish_distance || "Standard"}m finish`
+                        : `Turn ${item.max_turn}`} | {item.player_count} racers
                     </p>
                   </div>
 
@@ -1180,18 +1199,21 @@ export default function RaceGamePage({
 
         <div className="race-hud-stat">
           <span>Distance</span>
-          <strong>{room.distance}</strong>
+          <strong>{isWebTiming ? `${room.finish_distance}m` : room.distance}</strong>
         </div>
 
         <div className="race-hud-stat race-hud-turn">
-          <span>Turn</span>
-          <strong>{room.turn}<small>/{room.max_turn}</small></strong>
+          <span>{isWebTiming ? "Leader" : "Turn"}</span>
+          <strong>
+            {isWebTiming ? `${room.leader_distance || 0}m` : room.turn}
+            <small>/{isWebTiming ? `${room.finish_distance}m` : room.max_turn}</small>
+          </strong>
           <div><span style={{ width: `${turnProgress}%` }} /></div>
         </div>
 
         <div className="race-hud-stat">
           <span>Phase</span>
-          <strong>{room.race_phase || room.phase}</strong>
+          <strong>{isWebTiming ? room.leader_phase : room.race_phase || room.phase}</strong>
         </div>
 
         <div className="race-top-actions">
@@ -1238,50 +1260,54 @@ export default function RaceGamePage({
             </div>
           </div>
           <div className="race-dice-preset-panel">
-            <div className="race-dice-preset-head">
-              <span>Dice</span>
-              <div className="race-dice-color-toggle" aria-label="Dice preset color">
-                {DICE_COLOR_OPTIONS.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    className={diceTableColor === color ? "active" : ""}
-                    onClick={() => setDiceTableColor(color)}
-                  >
-                    {color}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {dicePresetRows.length > 0 ? (
-              <div className="race-dice-preset-table">
-                <div className="race-dice-preset-row is-head">
-                  <span>Style</span>
-                  {[1, 2, 3, 4].map((phase) => (
-                    <span
-                      key={phase}
-                      className={Number(room.race_phase) === phase ? "active" : ""}
-                    >
-                      P{phase}
-                    </span>
-                  ))}
-                </div>
-                {dicePresetRows.map((row) => (
-                  <div className="race-dice-preset-row" key={row.style}>
-                    <strong>{row.style}</strong>
-                    {row.values.map((value, index) => (
-                      <span
-                        key={`${row.style}-${index}`}
-                        className={Number(room.race_phase) === index + 1 ? "active" : ""}
-                      >
-                        {value || "-"}
-                      </span>
-                    ))}
-                  </div>
-                ))}
+            {isWebTiming ? (
+              <div className="race-distance-summary">
+                <span>Distance Race</span>
+                <strong>{myPlayer?.distance || 0} / {room.finish_distance}m</strong>
+                <em>{myPlayer?.distance_left ?? room.finish_distance}m left | {myPlayer?.phase || "Start"}</em>
               </div>
             ) : (
-              <p className="race-dice-preset-empty">No preset data from backend.</p>
+              <>
+                <div className="race-dice-preset-head">
+                  <span>Dice</span>
+                  <div className="race-dice-color-toggle" aria-label="Dice preset color">
+                    {DICE_COLOR_OPTIONS.map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        className={diceTableColor === color ? "active" : ""}
+                        onClick={() => setDiceTableColor(color)}
+                      >
+                        {color}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {dicePresetRows.length > 0 ? (
+                  <div className="race-dice-preset-table">
+                    <div className="race-dice-preset-row is-head">
+                      <span>Style</span>
+                      {[1, 2, 3, 4].map((phase) => (
+                        <span key={phase} className={Number(room.race_phase) === phase ? "active" : ""}>
+                          P{phase}
+                        </span>
+                      ))}
+                    </div>
+                    {dicePresetRows.map((row) => (
+                      <div className="race-dice-preset-row" key={row.style}>
+                        <strong>{row.style}</strong>
+                        {row.values.map((value, index) => (
+                          <span key={`${row.style}-${index}`} className={Number(room.race_phase) === index + 1 ? "active" : ""}>
+                            {value || "-"}
+                          </span>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="race-dice-preset-empty">No preset data from backend.</p>
+                )}
+              </>
             )}
             <div className={`race-now-playing ${musicNowPlaying ? "is-playing" : ""}`}>
               <img
@@ -1346,7 +1372,6 @@ export default function RaceGamePage({
             <div className="race-live-stage-overlay" />
             <TimingRaceGauge
               active={room.phase === "running" && room.gameplay_mode === "timing"}
-              cycleId={room.cycle_id}
               gauge={room.timing_gauges?.[String(userId)] || room.timing_gauge}
               runningStyle={myPlayer?.style || style}
               onSubmit={handleTiming}
@@ -1364,7 +1389,7 @@ export default function RaceGamePage({
             </div>
             <div className="race-phase-banner">
               <Zap size={18} />
-              {room.race_phase ? `Phase ${room.race_phase}` : "Race"}
+              {isWebTiming ? `Leader: ${room.leader_phase}` : room.race_phase ? `Phase ${room.race_phase}` : "Race"}
             </div>
             {myRaceRank ? (
               <div className="race-my-rank-badge" aria-label={`Your rank ${myRaceRank}`}>
@@ -1713,7 +1738,8 @@ function RaceSkillPreview({ preview }) {
 function RaceWinnerModal({ winner, onLeave }) {
   const winnerName = winner?.name || winner?.username || "Winner";
   const winnerStyle = winner?.style || winner?.running_style || "-";
-  const winnerScore = winner?.score ?? winner?.total_score ?? 0;
+  const winnerScore = winner?.distance ?? winner?.score ?? winner?.total_score ?? 0;
+  const winnerUnit = winner?.distance !== undefined ? "m" : " score";
   const winnerAvatar = winner?.avatar || getRunnerAvatar(winner);
 
   return (
@@ -1747,7 +1773,7 @@ function RaceWinnerModal({ winner, onLeave }) {
         <h2>{winnerName}</h2>
         <div className="race-winner-meta">
           <em>{winnerStyle}</em>
-          <strong>{winnerScore} score</strong>
+          <strong>{winnerScore}{winnerUnit}</strong>
         </div>
         <button type="button" className="race-primary-btn race-run-btn" onClick={onLeave}>
           <DoorOpen size={20} />

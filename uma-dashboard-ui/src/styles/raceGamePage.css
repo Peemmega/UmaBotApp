@@ -1032,6 +1032,39 @@
   font-weight: 800;
 }
 
+.race-score-card-total small {
+  display: block;
+  margin-top: 3px;
+  color: #8affbd;
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.race-distance-summary {
+  border: 1px solid rgba(138, 255, 189, 0.24);
+  border-radius: 12px;
+  padding: 10px;
+  display: grid;
+  gap: 4px;
+  background: rgba(38, 177, 111, 0.12);
+}
+
+.race-distance-summary span,
+.race-distance-summary em {
+  color: rgba(224, 255, 241, 0.72);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.race-distance-summary strong {
+  color: #8affbd;
+  font-size: 20px;
+}
+
 @keyframes timingCountdownPulse {
   from { opacity: 0; transform: scale(1.5); }
   to { opacity: 1; transform: scale(1); }
