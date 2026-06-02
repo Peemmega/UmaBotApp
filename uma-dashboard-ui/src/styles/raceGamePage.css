@@ -2090,10 +2090,9 @@
   width: 100%;
   min-height: 0;
   border-radius: 14px;
-  border-color: rgba(91, 143, 118, 0.42);
+  border-color: rgba(#00371a);
   background:
-    linear-gradient(180deg, rgba(239, 248, 239, 0.98), rgba(211, 231, 215, 0.96)),
-    #e6f1e5;
+    linear-gradient(#68b900, #fffffff5), #e6f1e5;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86), 0 12px 24px rgba(54, 84, 64, 0.2);
   color: #294838;
 }
@@ -2104,8 +2103,8 @@
 }
 
 .race-timing-page .timing-gauge-track {
-  border-color: rgba(71, 107, 95, 0.72);
-  background: linear-gradient(90deg, #aabfc2, #73bf9d 42%, #f4dc79 50%, #73bf9d 58%, #aabfc2);
+  border-color: rgba(#3b3b3bb8);
+  background: linear-gradient(90deg, #ff9d00, #66ffba 42%, #ffffff 50%, #62ffb9 58%, #ff9d00);
   box-shadow: inset 0 0 14px rgba(38, 77, 72, 0.34), 0 0 18px rgba(101, 179, 140, 0.34);
 }
 
