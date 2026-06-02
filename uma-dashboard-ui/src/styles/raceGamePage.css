@@ -2061,6 +2061,12 @@
   flex-direction: column-reverse;
 }
 
+.race-hud-page .race-command-panel.is-timing {
+  align-self: start;
+  max-height: calc(100% - 108px);
+  margin-top: 72px;
+}
+
 .race-hud-page .race-runner-panel {
   padding: 12px;
   display: flex;

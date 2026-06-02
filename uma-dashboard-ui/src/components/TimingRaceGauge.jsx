@@ -61,35 +61,34 @@ export default function TimingRaceGauge({
   }, [active, gauge?.phase, isRunning, onSubmit, runningStyle]);
 
   useEffect(() => {
-    if (!active) {
-      const resetId = window.setTimeout(() => {
-        setCountdownIndex(0);
-        setIsRunning(false);
-        setMarkerPosition(0);
-        setDirection(1);
-        setCycleId(1);
-        setSubmittedCycleId(null);
-        setLastResult(null);
-        positionRef.current = 0;
-        directionRef.current = 1;
-        cycleRef.current = 1;
-        submittedCycleRef.current = null;
-      }, 0);
-      return () => window.clearTimeout(resetId);
+    const timerIds = [];
+    const schedule = (callback, delay) => {
+      timerIds.push(window.setTimeout(callback, delay));
+    };
+    const resetGauge = () => {
+      setCountdownIndex(0);
+      setIsRunning(false);
+      setMarkerPosition(0);
+      setDirection(1);
+      setCycleId(1);
+      setSubmittedCycleId(null);
+      setLastResult(null);
+      lastFrameRef.current = 0;
+      positionRef.current = 0;
+      directionRef.current = 1;
+      cycleRef.current = 1;
+      submittedCycleRef.current = null;
+    };
+
+    schedule(resetGauge, 0);
+    if (active) {
+      COUNTDOWN_STEPS.slice(1).forEach((_, index) => {
+        schedule(() => setCountdownIndex(index + 1), (index + 1) * 780);
+      });
+      schedule(() => setIsRunning(true), (COUNTDOWN_STEPS.length - 1) * 780 + 520);
     }
 
-    const intervalId = window.setInterval(() => {
-      setCountdownIndex((current) => {
-        if (current >= COUNTDOWN_STEPS.length - 1) {
-          window.clearInterval(intervalId);
-          window.setTimeout(() => setIsRunning(true), 520);
-          return current;
-        }
-        return current + 1;
-      });
-    }, 780);
-
-    return () => window.clearInterval(intervalId);
+    return () => timerIds.forEach((timerId) => window.clearTimeout(timerId));
   }, [active]);
 
   useEffect(() => {

@@ -1424,7 +1424,7 @@ export default function RaceGamePage({
           </div>
         </section>
 
-        <aside className={`race-command-panel race-hud-panel uma-scroll ${room.phase === "running" ? "is-running" : ""}`}>
+        <aside className={`race-command-panel race-hud-panel uma-scroll ${room.phase === "running" ? "is-running" : ""} ${room.gameplay_mode === "timing" ? "is-timing" : ""}`}>
           {room.phase === "waiting" ? (
             <>
               <div className="race-bot-picker">
