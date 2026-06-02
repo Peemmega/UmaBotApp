@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const COUNTDOWN_STEPS = ["3", "2", "1", "GO!"];
+const COUNTDOWN_STEP_MS = 780;
+const GO_HOLD_MS = 520;
+const TIMING_START_DELAY_MS = 500;
 
 function getTier(score) {
   if (score >= 0.92) return "Perfect";
@@ -83,9 +86,12 @@ export default function TimingRaceGauge({
     schedule(resetGauge, 0);
     if (active) {
       COUNTDOWN_STEPS.slice(1).forEach((_, index) => {
-        schedule(() => setCountdownIndex(index + 1), (index + 1) * 780);
+        schedule(() => setCountdownIndex(index + 1), (index + 1) * COUNTDOWN_STEP_MS);
       });
-      schedule(() => setIsRunning(true), (COUNTDOWN_STEPS.length - 1) * 780 + 520);
+      schedule(
+        () => setIsRunning(true),
+        (COUNTDOWN_STEPS.length - 1) * COUNTDOWN_STEP_MS + GO_HOLD_MS + TIMING_START_DELAY_MS
+      );
     }
 
     return () => timerIds.forEach((timerId) => window.clearTimeout(timerId));
