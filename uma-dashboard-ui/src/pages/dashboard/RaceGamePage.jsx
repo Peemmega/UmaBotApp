@@ -1360,7 +1360,7 @@ export default function RaceGamePage({
             </AnimatePresence>
             {!isRaceWaiting && (
               <div className="race-speed-burst" aria-hidden="true">
-                {Array.from({ length: 34 }, (_, index) => (
+                {Array.from({ length: 18 }, (_, index) => (
                   <span
                     key={index}
                     style={{

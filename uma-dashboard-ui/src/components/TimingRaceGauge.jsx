@@ -33,12 +33,14 @@ export default function TimingRaceGauge({
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [countdownIndex, setCountdownIndex] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [markerPosition, setMarkerPosition] = useState(0);
   const [direction, setDirection] = useState(1);
   const [cycleId, setCycleId] = useState(1);
   const [submittedCycleId, setSubmittedCycleId] = useState(null);
   const [hitStamps, setHitStamps] = useState([]);
   const animationRef = useRef(0);
+  const trackRef = useRef(null);
+  const markerRef = useRef(null);
+  const trackWidthRef = useRef(0);
   const lastFrameRef = useRef(0);
   const positionRef = useRef(0);
   const directionRef = useRef(1);
@@ -106,12 +108,12 @@ export default function TimingRaceGauge({
     const resetGauge = () => {
       setCountdownIndex(0);
       setIsRunning(false);
-      setMarkerPosition(0);
       setDirection(1);
       setCycleId(1);
       setSubmittedCycleId(null);
       lastFrameRef.current = 0;
       positionRef.current = 0;
+      if (markerRef.current) markerRef.current.style.transform = "translate3d(0, 0, 0) translateX(-50%)";
       directionRef.current = 1;
       cycleRef.current = 1;
       submittedCycleRef.current = null;
@@ -135,6 +137,9 @@ export default function TimingRaceGauge({
   useEffect(() => {
     if (!isSessionActive || !isRunning) return undefined;
 
+    const updateTrackWidth = () => {
+      trackWidthRef.current = trackRef.current?.clientWidth || 0;
+    };
     const animate = (timestamp) => {
       if (!lastFrameRef.current) lastFrameRef.current = timestamp;
       const elapsed = timestamp - lastFrameRef.current;
@@ -154,13 +159,20 @@ export default function TimingRaceGauge({
       }
 
       positionRef.current = nextPosition;
-      setMarkerPosition(nextPosition);
+      if (markerRef.current) {
+        markerRef.current.style.transform = `translate3d(${nextPosition * trackWidthRef.current}px, 0, 0) translateX(-50%)`;
+      }
       animationRef.current = window.requestAnimationFrame(animate);
     };
 
+    updateTrackWidth();
+    window.addEventListener("resize", updateTrackWidth);
     lastFrameRef.current = 0;
     animationRef.current = window.requestAnimationFrame(animate);
-    return () => window.cancelAnimationFrame(animationRef.current);
+    return () => {
+      window.removeEventListener("resize", updateTrackWidth);
+      window.cancelAnimationFrame(animationRef.current);
+    };
   }, [halfCycleMs, isRunning, isSessionActive]);
 
   const hit = useCallback(() => {
@@ -220,10 +232,10 @@ export default function TimingRaceGauge({
             <span>Phase {gauge?.phase || "-"} | Tempo {tempoLevel} {gauge?.tempo_label || ""} | Cycle {cycleId}</span>
             <em>{zoneActive ? `${gauge?.zone_name || "Zone"} ${gauge?.zone_remaining_seconds ?? 0}s` : `${runningStyle} | ${gauge?.track_segment || "Track"}`}</em>
           </div>
-          <div className="timing-gauge-track">
+          <div ref={trackRef} className="timing-gauge-track">
             <div className="timing-gauge-speed-lines" />
             {/* <div className="timing-gauge-sweet-spot" /> */}
-            <div className="timing-gauge-marker" style={{ left: `${markerPosition * 100}%` }} />
+            <div ref={markerRef} className="timing-gauge-marker" />
           </div>
           <div className="timing-gauge-foot">
             <span>{submittedCycleId === cycleId ? "Locked until edge" : "SPACE / ENTER / CLICK / TAP"}</span>

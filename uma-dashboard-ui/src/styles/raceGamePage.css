@@ -1032,13 +1032,15 @@
 
 .timing-gauge-marker {
   position: absolute;
+  left: 0;
   top: -9px;
   width: 8px;
   height: 54px;
   border-radius: 999px;
   background: #ffffff;
   box-shadow: 0 0 0 3px rgba(77, 255, 177, 0.82), 0 0 24px rgba(255, 255, 255, 0.94);
-  transform: translateX(-50%);
+  transform: translate3d(0, 0, 0) translateX(-50%);
+  will-change: transform;
 }
 
 .timing-race-gauge.is-perfect {
@@ -1670,7 +1672,7 @@
   background-size: cover;
   background-position: center 54%;
   transform-origin: 50% 50%;
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
   animation: raceCameraSway 0.6s ease-in-out infinite;
 }
 
@@ -1687,7 +1689,6 @@
   pointer-events: none;
   overflow: hidden;
   opacity: 0.78;
-  mix-blend-mode: screen;
 }
 
 .race-speed-burst::before,
@@ -1721,10 +1722,7 @@
   transform-origin: 0 50%;
   transform: rotate(var(--angle)) translateX(var(--start)) scaleX(0.12);
   opacity: 0;
-  filter:
-    blur(0.1px)
-    drop-shadow(0 0 7px rgba(255, 255, 255, 0.62))
-    drop-shadow(0 0 12px rgba(72, 255, 174, 0.58));
+  will-change: transform, opacity;
   animation: raceRadialSpeed var(--duration) cubic-bezier(0.08, 0.72, 0.32, 1) infinite;
   animation-delay: var(--delay);
 }
@@ -1735,9 +1733,6 @@
 
 .race-speed-burst span:nth-child(4n) {
   opacity: 0;
-  filter:
-    blur(0.35px)
-    drop-shadow(0 0 8px rgba(255, 255, 255, 0.78));
 }
 
 .race-speed-burst span:nth-child(5n) {
@@ -1824,23 +1819,18 @@
 @keyframes raceCameraSway {
   0% {
     transform: scale(1) translate3d(-0.65%, -0.30%, 0);
-    filter: saturate(1.05) brightness(1.02);
   }
   25% {
     transform: scale(1.01) translate3d(0%, 0.30%, 0);
-    filter: saturate(1.08) brightness(1.03);
   }
   50% {
     transform: scale(1) translate3d(0.65%, -0.30%, 0);
-    filter: saturate(1.05) brightness(1.02);
   }
   75% {
     transform: scale(1.01) translate3d(0%, 0.30%, 0);
-    filter: saturate(1.08) brightness(1.03);
   }
   100% {
     transform: scale(1) translate3d(-0.65%, -0.30%, 0);
-    filter: saturate(1.05) brightness(1.02);
   }
 }
 
