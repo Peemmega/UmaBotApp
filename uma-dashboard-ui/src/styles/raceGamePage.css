@@ -942,7 +942,7 @@
 
 .timing-gauge-track {
   position: relative;
-  height: 34px;
+  height: 44px;
   margin: 10px 4px 8px;
   border: 2px solid rgba(255, 255, 255, 0.68);
   border-radius: 999px;
@@ -973,7 +973,7 @@
   position: absolute;
   top: -9px;
   width: 8px;
-  height: 48px;
+  height: 54px;
   border-radius: 999px;
   background: #ffffff;
   box-shadow: 0 0 0 3px rgba(77, 255, 177, 0.82), 0 0 24px rgba(255, 255, 255, 0.94);
