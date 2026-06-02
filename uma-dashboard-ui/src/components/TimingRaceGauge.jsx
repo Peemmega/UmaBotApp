@@ -182,7 +182,7 @@ export default function TimingRaceGauge({
           </div>
           <div className="timing-gauge-track">
             <div className="timing-gauge-speed-lines" />
-            <div className="timing-gauge-sweet-spot" />
+            {/* <div className="timing-gauge-sweet-spot" /> */}
             <div className="timing-gauge-marker" style={{ left: `${markerPosition * 100}%` }} />
           </div>
           <div className="timing-gauge-foot">
