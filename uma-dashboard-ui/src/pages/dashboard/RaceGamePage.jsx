@@ -32,6 +32,7 @@ import {
   rerollRaceTurn,
   runRaceTurn,
   startRaceRoom,
+  submitRaceTiming,
   useRaceBlock,
   useRaceRush,
   useRaceSkill,
@@ -49,6 +50,7 @@ import witIcon from "../../assets/icons/Wit.webp";
 import skillIcon from "../../assets/skill_icon/Velocity.webp";
 import { getRaceImage } from "../../utils/raceSchedule.js";
 import { getSkillIcon } from "../../utils/getSkillIcon";
+import TimingRaceGauge from "../../components/TimingRaceGauge";
 import "../../styles/raceGamePage.css";
 
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
@@ -508,6 +510,7 @@ export default function RaceGamePage({
   const [rooms, setRooms] = useState([]);
   const [stages, setStages] = useState([]);
   const [selectedStage, setSelectedStage] = useState("Debut");
+  const [gameplayMode, setGameplayMode] = useState("timing");
   const [style, setStyle] = useState(getSavedRaceStyle);
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -954,7 +957,9 @@ export default function RaceGamePage({
 
   const handleCreate = () => {
     saveRaceStyleCookie(style);
-    return runAction("create", () => createRaceRoom(playerPayload, selectedStage));
+    return runAction("create", () =>
+      createRaceRoom({ ...playerPayload, gameplay_mode: gameplayMode }, selectedStage)
+    );
   };
 
   const handleJoin = (roomItem) => {
@@ -986,6 +991,25 @@ export default function RaceGamePage({
 
   const handleRun = () =>
     runAction("run", () => runRaceTurn(room.room_id, playerPayload));
+
+  const timingRoomId = room?.room_id;
+  const handleTiming = useCallback(
+    async (timing) => {
+      try {
+        setError("");
+        const nextRoom = await submitRaceTiming(timingRoomId, {
+          ...timing,
+          user_id: String(userId),
+        });
+        setRoom(nextRoom);
+        return nextRoom;
+      } catch (err) {
+        setError(String(err.message || err));
+        throw err;
+      }
+    },
+    [timingRoomId, userId]
+  );
 
   const handleConfirmTurn = () => {
     const nextTurnKey = getRunDiceColorKey(room, myPlayer, Number(room?.turn) + 1);
@@ -1054,6 +1078,13 @@ export default function RaceGamePage({
                   {stageName(stage)}
                 </option>
               ))}
+            </select>
+          </label>
+          <label>
+            Gameplay
+            <select value={gameplayMode} onChange={(event) => setGameplayMode(event.target.value)}>
+              <option value="timing">Timing Gauge</option>
+              <option value="manual">Legacy Manual</option>
             </select>
           </label>
           <div className="race-style-tabs">
@@ -1313,6 +1344,13 @@ export default function RaceGamePage({
               </div>
             )}
             <div className="race-live-stage-overlay" />
+            <TimingRaceGauge
+              active={room.phase === "running" && room.gameplay_mode === "timing"}
+              cycleId={room.cycle_id}
+              gauge={room.timing_gauges?.[String(userId)] || room.timing_gauge}
+              runningStyle={myPlayer?.style || style}
+              onSubmit={handleTiming}
+            />
             <div className="race-path-strip uma-scroll" aria-label="Track path">
               {room.path?.map((step) => (
                 <span
@@ -1419,6 +1457,33 @@ export default function RaceGamePage({
               <DoorOpen size={20} />
               Leave Room
             </button>
+          ) : room.gameplay_mode === "timing" ? (
+            <>
+              <div className="race-auto-run-card">
+                <Flag size={20} />
+                <div>
+                  <strong>Auto Running</strong>
+                  <span>Hit the timing gauge once each cycle.</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="race-skill-toggle race-skill-btn"
+                onClick={() => setShowSkills((value) => !value)}
+              >
+                <Sparkles size={22} />
+                Skill
+              </button>
+              <RaceSkillMenu
+                actionBusy={actionBusy}
+                myPlayer={myPlayer}
+                onSkill={handleSkill}
+                onZone={handleZone}
+                setSkillPreview={setSkillPreview}
+                showSkills={showSkills}
+                skillDetailsById={skillDetailsById}
+              />
+            </>
           ) : isConfirmingTurn ? (
             <>
               <button
@@ -1506,55 +1571,15 @@ export default function RaceGamePage({
                 </button>
               </div>
 
-              <AnimatePresence>
-                {showSkills && (
-                  <motion.div
-                    className="race-skill-list uma-scroll"
-                    onMouseLeave={() => setSkillPreview(null)}
-                    initial={{ opacity: 0, y: 18, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 18, scale: 0.96 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                  >
-                    <div
-                      className="race-skill-action-wrap"
-                      onMouseEnter={() => setSkillPreview(getRaceActionPreview("zone", myPlayer?.zone, skillDetailsById))}
-                      onFocus={() => setSkillPreview(getRaceActionPreview("zone", myPlayer?.zone, skillDetailsById))}
-                    >
-                      <button
-                        type="button"
-                        className="race-zone-btn"
-                        onClick={handleZone}
-                        disabled={!myPlayer || myPlayer.zone_left <= 0 || Boolean(actionBusy)}
-                      >
-                        <span>Zone</span>
-                        <strong>{myPlayer?.zone?.name || "Use Zone"}</strong>
-                        <em>{Math.max(0, Number(myPlayer?.zone_left) || 0)} left</em>
-                      </button>
-                    </div>
-                    {(myPlayer?.skills || []).map((skill) => (
-                      <div
-                        className="race-skill-action-wrap"
-                        key={skill.slot}
-                        onMouseEnter={() => setSkillPreview(getRaceActionPreview("skill", skill, skillDetailsById))}
-                        onFocus={() => setSkillPreview(getRaceActionPreview("skill", skill, skillDetailsById))}
-                      >
-                        <button
-                          type="button"
-                          disabled={!skill.id || skill.cooldown > 0 || Boolean(actionBusy)}
-                          onClick={() => handleSkill(skill)}
-                        >
-                          <span>{skill.slot}</span>
-                          <strong>{skill.name || "Empty"}</strong>
-                          <em>
-                            {skill.cooldown > 0 ? `CD ${skill.cooldown}` : `${skill.cost || 0} WIT`}
-                          </em>
-                        </button>
-                      </div>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <RaceSkillMenu
+                actionBusy={actionBusy}
+                myPlayer={myPlayer}
+                onSkill={handleSkill}
+                onZone={handleZone}
+                setSkillPreview={setSkillPreview}
+                showSkills={showSkills}
+                skillDetailsById={skillDetailsById}
+              />
             </>
           )}
         </aside>
@@ -1570,6 +1595,66 @@ function PanelTitle({ icon, title }) {
       {icon}
       {title}
     </h3>
+  );
+}
+
+function RaceSkillMenu({
+  actionBusy,
+  myPlayer,
+  onSkill,
+  onZone,
+  setSkillPreview,
+  showSkills,
+  skillDetailsById,
+}) {
+  return (
+    <AnimatePresence>
+      {showSkills && (
+        <motion.div
+          className="race-skill-list uma-scroll"
+          onMouseLeave={() => setSkillPreview(null)}
+          initial={{ opacity: 0, y: 18, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 18, scale: 0.96 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+        >
+          <div
+            className="race-skill-action-wrap"
+            onMouseEnter={() => setSkillPreview(getRaceActionPreview("zone", myPlayer?.zone, skillDetailsById))}
+            onFocus={() => setSkillPreview(getRaceActionPreview("zone", myPlayer?.zone, skillDetailsById))}
+          >
+            <button
+              type="button"
+              className="race-zone-btn"
+              onClick={onZone}
+              disabled={!myPlayer || myPlayer.zone_left <= 0 || Boolean(actionBusy)}
+            >
+              <span>Zone</span>
+              <strong>{myPlayer?.zone?.name || "Use Zone"}</strong>
+              <em>{Math.max(0, Number(myPlayer?.zone_left) || 0)} left</em>
+            </button>
+          </div>
+          {(myPlayer?.skills || []).map((skill) => (
+            <div
+              className="race-skill-action-wrap"
+              key={skill.slot}
+              onMouseEnter={() => setSkillPreview(getRaceActionPreview("skill", skill, skillDetailsById))}
+              onFocus={() => setSkillPreview(getRaceActionPreview("skill", skill, skillDetailsById))}
+            >
+              <button
+                type="button"
+                disabled={!skill.id || skill.cooldown > 0 || Boolean(actionBusy)}
+                onClick={() => onSkill(skill)}
+              >
+                <span>{skill.slot}</span>
+                <strong>{skill.name || "Empty"}</strong>
+                <em>{skill.cooldown > 0 ? `CD ${skill.cooldown}` : `${skill.cost || 0} WIT`}</em>
+              </button>
+            </div>
+          ))}
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

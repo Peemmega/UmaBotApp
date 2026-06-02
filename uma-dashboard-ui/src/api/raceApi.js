@@ -76,6 +76,13 @@ export function runRaceTurn(roomId, player) {
   });
 }
 
+export function submitRaceTiming(roomId, timing) {
+  return request(`/race/rooms/${roomId}/timing`, {
+    method: "POST",
+    body: JSON.stringify(timing),
+  });
+}
+
 export function confirmRaceTurn(roomId, player) {
   return request(`/race/rooms/${roomId}/confirm`, {
     method: "POST",

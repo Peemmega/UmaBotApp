@@ -893,6 +893,166 @@
   color: #f7e27a;
 }
 
+.timing-race-gauge {
+  position: absolute;
+  z-index: 8;
+  left: 7%;
+  right: 7%;
+  bottom: 7%;
+  min-height: 118px;
+  border: 1px solid rgba(165, 255, 220, 0.48);
+  border-radius: 18px;
+  padding: 13px 16px;
+  background: linear-gradient(180deg, rgba(4, 24, 38, 0.9), rgba(5, 48, 52, 0.84));
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  color: #effff8;
+  cursor: crosshair;
+  overflow: hidden;
+  user-select: none;
+}
+
+.timing-countdown {
+  min-height: 90px;
+  display: grid;
+  place-items: center;
+  color: #fff4a8;
+  font-size: clamp(50px, 9vw, 96px);
+  font-weight: 1000;
+  line-height: 1;
+  text-shadow: 0 0 28px rgba(255, 224, 101, 0.78);
+  animation: timingCountdownPulse 780ms ease-out infinite;
+}
+
+.timing-gauge-head,
+.timing-gauge-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.timing-gauge-head em,
+.timing-gauge-foot em {
+  color: rgba(198, 255, 230, 0.7);
+  font-style: normal;
+}
+
+.timing-gauge-track {
+  position: relative;
+  height: 34px;
+  margin: 10px 4px 8px;
+  border: 2px solid rgba(255, 255, 255, 0.68);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #335066, #4abf98 42%, #fff49a 50%, #4abf98 58%, #335066);
+  box-shadow: inset 0 0 18px rgba(4, 22, 32, 0.66), 0 0 22px rgba(79, 255, 181, 0.3);
+}
+
+.timing-gauge-speed-lines {
+  position: absolute;
+  inset: 4px 0;
+  opacity: 0.34;
+  background: repeating-linear-gradient(110deg, transparent 0 18px, rgba(255, 255, 255, 0.72) 19px 21px, transparent 22px 38px);
+  animation: timingSpeedLines 440ms linear infinite;
+}
+
+.timing-gauge-sweet-spot {
+  position: absolute;
+  top: -7px;
+  bottom: -7px;
+  left: 46%;
+  width: 8%;
+  border-radius: 12px;
+  background: rgba(255, 238, 116, 0.32);
+  box-shadow: 0 0 22px rgba(255, 228, 80, 0.98);
+}
+
+.timing-gauge-marker {
+  position: absolute;
+  top: -9px;
+  width: 8px;
+  height: 48px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(77, 255, 177, 0.82), 0 0 24px rgba(255, 255, 255, 0.94);
+  transform: translateX(-50%);
+}
+
+.timing-result {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: clamp(30px, 6vw, 58px);
+  text-shadow: 0 0 22px currentColor;
+  pointer-events: none;
+  animation: timingResultPop 620ms ease-out both;
+}
+
+.timing-result.is-perfect,
+.timing-result.is-great {
+  color: #fff192;
+}
+
+.timing-result.is-good {
+  color: #8affbd;
+}
+
+.timing-result.is-bad,
+.timing-result.is-miss {
+  color: #ff9d9d;
+}
+
+.timing-race-gauge.is-perfect {
+  animation: timingPerfectShake 340ms ease-out;
+}
+
+.race-auto-run-card {
+  border: 1px solid rgba(120, 255, 190, 0.28);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: rgba(38, 177, 111, 0.15);
+  color: #8affbd;
+}
+
+.race-auto-run-card div {
+  display: grid;
+  gap: 3px;
+}
+
+.race-auto-run-card span {
+  color: rgba(224, 255, 241, 0.7);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+@keyframes timingCountdownPulse {
+  from { opacity: 0; transform: scale(1.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes timingSpeedLines {
+  to { background-position: 42px 0; }
+}
+
+@keyframes timingResultPop {
+  0% { opacity: 0; transform: scale(0.56); }
+  28% { opacity: 1; transform: scale(1.14); }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+@keyframes timingPerfectShake {
+  25% { transform: translateX(-7px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+}
+
 @media (max-width: 980px) {
   .race-room-grid,
   .race-game-grid,
