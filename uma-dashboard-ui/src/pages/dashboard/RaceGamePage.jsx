@@ -498,6 +498,7 @@ function isRaceEnded(roomData) {
   return (
     roomData.phase === "ended" ||
     roomData.status === "ended" ||
+    Boolean(roomData.winner_id) ||
     Boolean(roomData.result?.winner)
   );
 }
@@ -790,7 +791,9 @@ export default function RaceGamePage({
               <>
                 <span>{player.distance_left}m left</span>
                 <span>{player.progress_percent}%</span>
-                <span className="race-score-speed">{player.phase}</span>
+                <span className="race-score-speed">P{player.phase} {player.tempo_level}</span>
+                <span>{player.current_speed} SPD</span>
+                {player.zone_active ? <span>Zone {player.zone_remaining_seconds}s</span> : null}
               </>
             ) : (
               <>

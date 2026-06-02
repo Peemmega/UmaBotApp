@@ -46,6 +46,8 @@ export default function TimingRaceGauge({
   const submittedCycleRef = useRef(null);
   const hasSubmittedTimingRef = useRef(false);
   const halfCycleMs = Math.max(520, Number(gauge?.half_cycle_ms) || 1450);
+  const tempoLevel = gauge?.tempo_level || "N";
+  const zoneActive = Boolean(gauge?.zone_active);
 
   const pushHitStamp = useCallback((score, position, targetCycle) => {
     const tier = getTier(score);
@@ -181,7 +183,7 @@ export default function TimingRaceGauge({
 
   return (
     <section
-      className="timing-race-gauge"
+      className={`timing-race-gauge tempo-${tempoLevel.toLowerCase()} ${zoneActive ? "is-zone-active" : ""}`}
       onPointerDown={hit}
       role="button"
       tabIndex={0}
@@ -209,8 +211,8 @@ export default function TimingRaceGauge({
       ) : (
         <>
           <div className="timing-gauge-head">
-            <span>{gauge?.phase || "Race"} | Cycle {cycleId}</span>
-            <em>{runningStyle} | {gauge?.track_segment || "Track"}</em>
+            <span>Phase {gauge?.phase || "-"} | Tempo {tempoLevel} {gauge?.tempo_label || ""} | Cycle {cycleId}</span>
+            <em>{zoneActive ? `${gauge?.zone_name || "Zone"} ${gauge?.zone_remaining_seconds ?? 0}s` : `${runningStyle} | ${gauge?.track_segment || "Track"}`}</em>
           </div>
           <div className="timing-gauge-track">
             <div className="timing-gauge-speed-lines" />
@@ -219,7 +221,7 @@ export default function TimingRaceGauge({
           </div>
           <div className="timing-gauge-foot">
             <span>{submittedCycleId === cycleId ? "Locked until edge" : "SPACE / ENTER / CLICK / TAP"}</span>
-            <em>Speed {gauge?.current_speed ?? "-"} | Accel +{gauge?.acceleration ?? 0} | {direction > 0 ? ">" : "<"}</em>
+            <em>Speed {gauge?.current_speed ?? "-"} | Accel +{gauge?.acceleration ?? 0} | Gain +{gauge?.last_distance_gain ?? 0}m | {direction > 0 ? ">" : "<"}</em>
           </div>
         </>
       )}
