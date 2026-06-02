@@ -37,7 +37,6 @@ export default function TimingRaceGauge({
   const [direction, setDirection] = useState(1);
   const [cycleId, setCycleId] = useState(1);
   const [submittedCycleId, setSubmittedCycleId] = useState(null);
-  const [lastResult, setLastResult] = useState(null);
   const [hitStamps, setHitStamps] = useState([]);
   const animationRef = useRef(0);
   const lastFrameRef = useRef(0);
@@ -69,8 +68,6 @@ export default function TimingRaceGauge({
     submittedCycleRef.current = targetCycle;
     hasSubmittedTimingRef.current = true;
     setSubmittedCycleId(targetCycle);
-    const tier = getTier(score);
-    setLastResult({ tier, score, cycleId: targetCycle });
     pushHitStamp(score, stampPosition, targetCycle);
     Promise.resolve(onSubmit({
       cycle_id: targetCycle,
@@ -106,7 +103,6 @@ export default function TimingRaceGauge({
       setDirection(1);
       setCycleId(1);
       setSubmittedCycleId(null);
-      setLastResult(null);
       lastFrameRef.current = 0;
       positionRef.current = 0;
       directionRef.current = 1;
@@ -185,7 +181,7 @@ export default function TimingRaceGauge({
 
   return (
     <section
-      className={`timing-race-gauge ${lastResult?.tier === "Perfect" ? "is-perfect" : ""}`}
+      className="timing-race-gauge"
       onPointerDown={hit}
       role="button"
       tabIndex={0}
@@ -225,11 +221,6 @@ export default function TimingRaceGauge({
             <span>{submittedCycleId === cycleId ? "Locked until edge" : "SPACE / ENTER / CLICK / TAP"}</span>
             <em>Speed {gauge?.current_speed ?? "-"} | Accel +{gauge?.acceleration ?? 0} | {direction > 0 ? ">" : "<"}</em>
           </div>
-          {lastResult ? (
-            <strong key={`${lastResult.cycleId}-${lastResult.tier}`} className={`timing-result is-${lastResult.tier.toLowerCase()}`}>
-              {lastResult.tier}
-            </strong>
-          ) : null}
         </>
       )}
     </section>

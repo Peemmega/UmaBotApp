@@ -1041,32 +1041,6 @@
   transform: translateX(-50%);
 }
 
-.timing-result {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: #ffffff;
-  font-size: clamp(30px, 6vw, 58px);
-  text-shadow: 0 0 22px currentColor;
-  pointer-events: none;
-  animation: timingResultPop 620ms ease-out both;
-}
-
-.timing-result.is-perfect,
-.timing-result.is-great {
-  color: #fff192;
-}
-
-.timing-result.is-good {
-  color: #8affbd;
-}
-
-.timing-result.is-bad,
-.timing-result.is-miss {
-  color: #ff9d9d;
-}
-
 .timing-race-gauge.is-perfect {
   animation: timingPerfectShake 340ms ease-out;
 }
@@ -1153,12 +1127,6 @@
 
 @keyframes timingSpeedLines {
   to { background-position: 42px 0; }
-}
-
-@keyframes timingResultPop {
-  0% { opacity: 0; transform: scale(0.56); }
-  28% { opacity: 1; transform: scale(1.14); }
-  100% { opacity: 0; transform: scale(1); }
 }
 
 @keyframes timingPerfectShake {
@@ -2190,7 +2158,7 @@
 
 .race-timing-page .timing-gauge-track {
   border-color: rgba(38, 77, 72, 0.34);
-  background: linear-gradient(90deg, #b5c9cc, #66ffba 48%, #ffffff 49%, #ffffff 51%, #62ffb9 52%, #b5c9cc);
+  background: linear-gradient(90deg, #ff9d00, #66ffba 48%, #ffffff 49%,#ffffff 51%,  #62ffb9 52%, #ff9d00);
   box-shadow: inset 0 0 14px rgba(38, 77, 72, 0.34), 0 0 18px rgba(101, 179, 140, 0.34);
 }
 
