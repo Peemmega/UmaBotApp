@@ -3231,7 +3231,8 @@
 .race-winner-card {
   position: relative;
   z-index: 2;
-  width: min(92vw, 430px);
+  width: min(92vw, 500px);
+  max-height: min(92vh, 760px);
   border: 1px solid rgba(255, 255, 255, 0.78);
   border-radius: 24px;
   padding: 26px;
@@ -3311,6 +3312,72 @@
 .race-winner-meta strong {
   color: #8d6d1f;
   font-size: 18px;
+}
+
+.race-final-scoreboard {
+  width: 100%;
+  min-height: 0;
+  margin-top: 4px;
+}
+
+.race-final-scoreboard h3 {
+  margin: 0 0 7px;
+  color: #2f8c4f;
+  font-size: 12px;
+  font-weight: 1000;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.race-final-score-list {
+  max-height: min(30vh, 230px);
+  display: grid;
+  gap: 6px;
+  overflow-y: auto;
+}
+
+.race-final-score-row {
+  min-width: 0;
+  border: 1px solid rgba(75, 169, 91, 0.14);
+  border-radius: 12px;
+  padding: 7px 10px;
+  display: grid;
+  grid-template-columns: 30px 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  background: rgba(75, 169, 91, 0.07);
+  text-align: left;
+}
+
+.race-final-score-rank,
+.race-final-score-row b {
+  color: #8d6d1f;
+  font-size: 14px;
+  font-weight: 1000;
+}
+
+.race-final-score-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: rgba(75, 169, 91, 0.12);
+}
+
+.race-final-score-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.race-final-score-row strong {
+  overflow: hidden;
+  color: #24382f;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .race-winner-card button {

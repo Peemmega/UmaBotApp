@@ -491,6 +491,37 @@ function getRaceWinner(roomData) {
   };
 }
 
+function getFinalRaceScores(roomData) {
+  const players = roomData?.players || [];
+  const rankings = roomData?.scoreboard?.length
+    ? roomData.scoreboard
+    : roomData?.result?.rankings?.length
+      ? roomData.result.rankings
+      : players;
+  const isWebTiming = roomData?.race_mode === "web_timing";
+
+  return rankings
+    .map((entry, index) => {
+      const player = players.find(
+        (item) =>
+          String(item.id) === String(entry.id) ||
+          normalizeRaceName(item.name) === normalizeRaceName(entry.name)
+      );
+      const racer = { ...player, ...entry };
+
+      return {
+        ...racer,
+        rank: Number(entry.rank) || index + 1,
+        finalScore: Number(
+          isWebTiming
+            ? racer.distance
+            : racer.score ?? racer.total_score
+        ) || 0,
+      };
+    })
+    .sort((left, right) => left.rank - right.rank || right.finalScore - left.finalScore);
+}
+
 function isRaceEnded(roomData) {
   if (!roomData) return false;
   if (roomData.awaiting_turn_confirm) return false;
@@ -1205,7 +1236,7 @@ export default function RaceGamePage({
   if (isRaceEnded(room)) {
     return (
       <section className={`race-page race-winner-page ${fullscreen ? "race-fullscreen-page" : ""}`} onClickCapture={handleRaceButtonSound}>
-        <RaceWinnerModal winner={raceWinner} onLeave={handleLeave} />
+        <RaceWinnerModal winner={raceWinner} room={room} onLeave={handleLeave} />
       </section>
     );
   }
@@ -1780,12 +1811,14 @@ function RaceSkillPreview({ preview }) {
   );
 }
 
-function RaceWinnerModal({ winner, onLeave }) {
+function RaceWinnerModal({ winner, room, onLeave }) {
   const winnerName = winner?.name || winner?.username || "Winner";
   const winnerStyle = winner?.style || winner?.running_style || "-";
   const winnerScore = winner?.distance ?? winner?.score ?? winner?.total_score ?? 0;
   const winnerUnit = winner?.distance !== undefined ? "m" : " score";
   const winnerAvatar = winner?.avatar || getRunnerAvatar(winner);
+  const isWebTiming = room?.race_mode === "web_timing";
+  const finalScores = getFinalRaceScores(room);
 
   return (
     <div className="race-winner-overlay" role="dialog" aria-modal="true" aria-label="Race winner">
@@ -1819,6 +1852,24 @@ function RaceWinnerModal({ winner, onLeave }) {
         <div className="race-winner-meta">
           <em>{winnerStyle}</em>
           <strong>{winnerScore}{winnerUnit}</strong>
+        </div>
+        <div className="race-final-scoreboard">
+          <h3>Final Scores</h3>
+          <div className="race-final-score-list uma-scroll">
+            {finalScores.map((player) => {
+              const avatar = getRunnerAvatar(player);
+              return (
+                <div className="race-final-score-row" key={player.id || player.name}>
+                  <span className="race-final-score-rank">#{player.rank}</span>
+                  <div className="race-final-score-avatar">
+                    {avatar ? <img src={avatar} alt="" /> : <Bot size={18} />}
+                  </div>
+                  <strong>{player.name || player.username || "Racer"}</strong>
+                  <b>{player.finalScore}{isWebTiming ? "m" : " pts"}</b>
+                </div>
+              );
+            })}
+          </div>
         </div>
         <button type="button" className="race-primary-btn race-run-btn" onClick={onLeave}>
           <DoorOpen size={20} />
