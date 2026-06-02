@@ -981,7 +981,7 @@
   font-weight: 1000;
   line-height: 1;
   text-shadow: 0 0 28px rgba(255, 224, 101, 0.78);
-  animation: timingCountdownPulse 780ms ease-out both;
+  animation: timingCountdownPulse var(--timing-countdown-step-ms, 780ms) ease-out both;
 }
 
 .timing-gauge-head,
@@ -1804,6 +1804,94 @@
   width: 100%;
   height: auto;
   object-fit: contain;
+}
+
+.race-live-scoreboard {
+  position: absolute;
+  z-index: 5;
+  left: 18px;
+  right: min(39%, 380px);
+  bottom: 18px;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 16px 8px 8px;
+  pointer-events: none;
+}
+
+.race-live-score-card {
+  width: clamp(74px, 8vw, 94px);
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 14px;
+  padding: 6px 6px 7px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(229, 248, 220, 0.78));
+  box-shadow: 0 10px 22px rgba(53, 79, 51, 0.22);
+  backdrop-filter: blur(8px);
+}
+
+.race-live-score-card.is-player {
+  border-color: rgba(255, 221, 91, 0.94);
+  box-shadow: 0 0 0 2px rgba(255, 226, 99, 0.3), 0 10px 22px rgba(53, 79, 51, 0.22);
+}
+
+.race-live-score-avatar {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #e8ffef, #ffffff);
+  color: #2fb86a;
+}
+
+.race-live-score-avatar > img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
+.race-live-score-rank {
+  position: absolute;
+  top: -13px;
+  left: -11px;
+  width: 40px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.28));
+}
+
+.race-live-score-rank img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.race-live-score-card strong {
+  color: #234f35;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.race-live-score-card small {
+  width: 100%;
+  overflow: hidden;
+  color: rgba(38, 55, 41, 0.72);
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1.1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .race-runner-stack {

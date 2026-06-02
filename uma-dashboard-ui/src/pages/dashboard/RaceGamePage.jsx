@@ -819,6 +819,32 @@ export default function RaceGamePage({
       </motion.article>
     );
   });
+  const raceLiveScoreCards = raceScorePlayers.map((player, index) => {
+    const avatar = getRunnerAvatar(player);
+    const scoreEntry = scoreboardByName.get(normalizeRaceName(player.name)) || {};
+    const score = Number(isWebTiming ? player.distance : scoreEntry.score ?? player.score) || 0;
+    const rank = scoreEntry.rank || index + 1;
+
+    return (
+      <motion.article
+        layout
+        className={`race-live-score-card ${String(player.id) === String(userId) ? "is-player" : ""}`}
+        key={player.id}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.22 }}
+      >
+        <div className="race-live-score-avatar">
+          {avatar ? <img src={avatar} alt="" /> : <Bot size={24} />}
+          <span className="race-live-score-rank">
+            <img src={getRaceRankImageSrc(rank, true)} alt={`Rank ${rank}`} />
+          </span>
+        </div>
+        <strong>{score}m</strong>
+        <small>{player.name}</small>
+      </motion.article>
+    );
+  });
   const dicePresetRows = useMemo(
     () => getRaceDicePresetRows(room, diceTableColor),
     [diceTableColor, room]
@@ -1398,6 +1424,11 @@ export default function RaceGamePage({
                 <img src={getRaceRankImageSrc(myRaceRank)} alt={`Your rank ${myRaceRank}`} />
               </div>
             ) : null}
+            {isWebTiming ? (
+              <div className="race-live-scoreboard uma-scroll" aria-label="Live race scoreboard">
+                {raceLiveScoreCards}
+              </div>
+            ) : null}
             <AnimatePresence>
               {skillPreview && (
                 <RaceSkillPreview preview={skillPreview} />
@@ -1411,6 +1442,7 @@ export default function RaceGamePage({
             <TimingRaceGauge
               active={room.phase === "running" && room.gameplay_mode === "timing"}
               gauge={room.timing_gauges?.[String(userId)] || room.timing_gauge}
+              timingConfig={room.timing_config}
               runningStyle={myPlayer?.style || style}
               onSubmit={handleTiming}
             />

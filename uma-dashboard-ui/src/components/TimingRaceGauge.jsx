@@ -1,10 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const COUNTDOWN_STEPS = ["3", "2", "1", "GO!"];
-const COUNTDOWN_STEP_MS = 780;
-const GO_HOLD_MS = 520;
-const TIMING_START_DELAY_MS = 500;
 const ACTIVE_RESET_GRACE_MS = 1000;
+const DEFAULT_TIMING_CONFIG = {
+  countdown_steps: ["3", "2", "1", "GO!"],
+  countdown_step_ms: 780,
+  go_hold_ms: 520,
+  start_delay_ms: 500,
+  min_half_cycle_ms: 520,
+  default_half_cycle_ms: 1450,
+};
 
 function getTier(score) {
   if (score >= 0.92) return "Perfect";
@@ -27,6 +31,7 @@ function isTypingTarget(target) {
 export default function TimingRaceGauge({
   active,
   gauge,
+  timingConfig,
   runningStyle,
   onSubmit,
 }) {
@@ -47,7 +52,16 @@ export default function TimingRaceGauge({
   const cycleRef = useRef(1);
   const submittedCycleRef = useRef(null);
   const hasSubmittedTimingRef = useRef(false);
-  const halfCycleMs = Math.max(520, Number(gauge?.half_cycle_ms) || 1450);
+  const config = { ...DEFAULT_TIMING_CONFIG, ...timingConfig };
+  const countdownStepsKey = config.countdown_steps.join("|");
+  const countdownSteps = useMemo(() => countdownStepsKey.split("|"), [countdownStepsKey]);
+  const countdownStepMs = Number(config.countdown_step_ms);
+  const goHoldMs = Number(config.go_hold_ms);
+  const timingStartDelayMs = Number(config.start_delay_ms);
+  const halfCycleMs = Math.max(
+    Number(config.min_half_cycle_ms),
+    Number(gauge?.half_cycle_ms) || Number(config.default_half_cycle_ms)
+  );
   const tempoLevel = gauge?.tempo_level || "N";
   const zoneActive = Boolean(gauge?.zone_active);
 
@@ -122,17 +136,17 @@ export default function TimingRaceGauge({
 
     schedule(resetGauge, 0);
     if (isSessionActive) {
-      COUNTDOWN_STEPS.slice(1).forEach((_, index) => {
-        schedule(() => setCountdownIndex(index + 1), (index + 1) * COUNTDOWN_STEP_MS);
+      countdownSteps.slice(1).forEach((_, index) => {
+        schedule(() => setCountdownIndex(index + 1), (index + 1) * countdownStepMs);
       });
       schedule(
         () => setIsRunning(true),
-        (COUNTDOWN_STEPS.length - 1) * COUNTDOWN_STEP_MS + GO_HOLD_MS + TIMING_START_DELAY_MS
+        (countdownSteps.length - 1) * countdownStepMs + goHoldMs + timingStartDelayMs
       );
     }
 
     return () => timerIds.forEach((timerId) => window.clearTimeout(timerId));
-  }, [isSessionActive]);
+  }, [countdownStepMs, countdownSteps, goHoldMs, isSessionActive, timingStartDelayMs]);
 
   useEffect(() => {
     if (!isSessionActive || !isRunning) return undefined;
@@ -202,6 +216,7 @@ export default function TimingRaceGauge({
   return (
     <section
       className={`timing-race-gauge tempo-${tempoLevel.toLowerCase()} ${zoneActive ? "is-zone-active" : ""}`}
+      style={{ "--timing-countdown-step-ms": `${countdownStepMs}ms` }}
       onPointerDown={hit}
       role="button"
       tabIndex={0}
@@ -225,7 +240,7 @@ export default function TimingRaceGauge({
         ))}
       </div>
       {!isRunning ? (
-        <div key={countdownIndex} className="timing-countdown">{COUNTDOWN_STEPS[countdownIndex]}</div>
+        <div key={countdownIndex} className="timing-countdown">{countdownSteps[countdownIndex]}</div>
       ) : (
         <>
           <div className="timing-gauge-head">
