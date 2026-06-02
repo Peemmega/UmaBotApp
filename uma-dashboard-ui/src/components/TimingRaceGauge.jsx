@@ -109,7 +109,8 @@ export default function TimingRaceGauge({
       if (nextPosition >= 1 || nextPosition <= 0) {
         nextPosition = nextPosition >= 1 ? 1 : 0;
         const completedCycle = cycleRef.current;
-        if (submittedCycleRef.current !== completedCycle) {
+        const isInitialGraceCycle = completedCycle === 1;
+        if (!isInitialGraceCycle && submittedCycleRef.current !== completedCycle) {
           submitTiming(0, nextPosition === 1 ? 1 : -1, completedCycle);
         }
         directionRef.current *= -1;

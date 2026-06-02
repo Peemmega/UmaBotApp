@@ -1177,7 +1177,7 @@ export default function RaceGamePage({
   }
 
   return (
-    <section className={`race-page race-hud-page ${fullscreen ? "race-fullscreen-page" : ""}`} onClickCapture={handleRaceButtonSound}>
+    <section className={`race-page race-hud-page ${isWebTiming ? "race-timing-page" : ""} ${fullscreen ? "race-fullscreen-page" : ""}`} onClickCapture={handleRaceButtonSound}>
       <header className="race-hero room race-hud-topbar">
         <div className="race-live-brand">
           <Trophy size={32} />
@@ -1370,12 +1370,6 @@ export default function RaceGamePage({
               </div>
             )}
             <div className="race-live-stage-overlay" />
-            <TimingRaceGauge
-              active={room.phase === "running" && room.gameplay_mode === "timing"}
-              gauge={room.timing_gauges?.[String(userId)] || room.timing_gauge}
-              runningStyle={myPlayer?.style || style}
-              onSubmit={handleTiming}
-            />
             <div className="race-path-strip uma-scroll" aria-label="Track path">
               {room.path?.map((step) => (
                 <span
@@ -1403,6 +1397,17 @@ export default function RaceGamePage({
             </AnimatePresence>
           </div>
         </main>
+
+        {isWebTiming && (
+          <section className="race-timing-control-panel">
+            <TimingRaceGauge
+              active={room.phase === "running" && room.gameplay_mode === "timing"}
+              gauge={room.timing_gauges?.[String(userId)] || room.timing_gauge}
+              runningStyle={myPlayer?.style || style}
+              onSubmit={handleTiming}
+            />
+          </section>
+        )}
 
         <aside className="race-score-panel race-hud-panel">
           <PanelTitle icon={<Trophy size={16} />} title="Scoreboard" />

@@ -2067,6 +2067,31 @@
   margin-top: 130px;
 }
 
+.race-timing-page .race-hud-grid {
+  grid-template-rows: minmax(0, 1fr) minmax(150px, 0.28fr);
+  grid-template-areas:
+    "track live score"
+    "track timing log";
+}
+
+.race-timing-control-panel {
+  grid-area: timing;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+  overflow: hidden;
+}
+
+.race-timing-page .timing-race-gauge {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  min-height: 0;
+  border-radius: 14px;
+}
+
 .race-hud-page .race-runner-panel {
   padding: 12px;
   display: flex;
@@ -3852,5 +3877,35 @@
   .race-fullscreen-page .race-skill-list {
     max-height: 60px;
     overflow-y: auto;
+  }
+}
+
+.race-fullscreen-page.race-timing-page .race-hud-grid {
+  grid-template-rows: minmax(0, 1fr) minmax(150px, 0.3fr);
+  grid-template-areas:
+    "track live score"
+    "track timing log";
+}
+
+@media (max-width: 1180px) {
+  .race-timing-page .race-hud-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "live"
+      "timing"
+      "track"
+      "score"
+      "log";
+  }
+}
+
+@media (orientation: landscape) and (max-width: 1180px) {
+  .race-fullscreen-page.race-timing-page .race-hud-grid {
+    grid-template-columns: minmax(180px, 0.72fr) minmax(360px, 1.42fr) minmax(210px, 0.78fr);
+    grid-template-rows: minmax(0, 1fr) minmax(132px, 0.35fr);
+    grid-template-areas:
+      "track live score"
+      "track timing log";
   }
 }
