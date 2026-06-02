@@ -2190,7 +2190,7 @@
 
 .race-timing-page .timing-gauge-track {
   border-color: rgba(38, 77, 72, 0.34);
-  background: linear-gradient(90deg, #ff9d00, #66ffba 48%, #ffffff 49%,#ffffff 51%,  #62ffb9 52%, #ff9d00);
+  background: linear-gradient(90deg, #b5c9cc, #66ffba 48%, #ffffff 49%, #ffffff 51%, #62ffb9 52%, #b5c9cc);
   box-shadow: inset 0 0 14px rgba(38, 77, 72, 0.34), 0 0 18px rgba(101, 179, 140, 0.34);
 }
 
