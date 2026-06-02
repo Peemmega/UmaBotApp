@@ -44,11 +44,13 @@ export default function TimingRaceGauge({
   const directionRef = useRef(1);
   const cycleRef = useRef(1);
   const submittedCycleRef = useRef(null);
+  const hasSubmittedTimingRef = useRef(false);
   const halfCycleMs = Math.max(520, Number(gauge?.half_cycle_ms) || 1450);
 
   const submitTiming = useCallback((score, offset, targetCycle = cycleRef.current) => {
     if (!isSessionActive || !isRunning || submittedCycleRef.current === targetCycle) return;
     submittedCycleRef.current = targetCycle;
+    hasSubmittedTimingRef.current = true;
     setSubmittedCycleId(targetCycle);
     setLastResult({ tier: getTier(score), score, cycleId: targetCycle });
     Promise.resolve(onSubmit({
@@ -91,6 +93,7 @@ export default function TimingRaceGauge({
       directionRef.current = 1;
       cycleRef.current = 1;
       submittedCycleRef.current = null;
+      hasSubmittedTimingRef.current = false;
     };
 
     schedule(resetGauge, 0);
@@ -119,8 +122,7 @@ export default function TimingRaceGauge({
       if (nextPosition >= 1 || nextPosition <= 0) {
         nextPosition = nextPosition >= 1 ? 1 : 0;
         const completedCycle = cycleRef.current;
-        const isInitialGraceCycle = completedCycle === 1;
-        if (!isInitialGraceCycle && submittedCycleRef.current !== completedCycle) {
+        if (hasSubmittedTimingRef.current && submittedCycleRef.current !== completedCycle) {
           submitTiming(0, nextPosition === 1 ? 1 : -1, completedCycle);
         }
         directionRef.current *= -1;
