@@ -550,7 +550,12 @@ export default function RaceGamePage({
   }, []);
 
   const handleRoomState = useCallback((nextRoom) => {
-    setRoom(nextRoom);
+    setRoom((currentRoom) => {
+      if (!currentRoom || currentRoom.room_id !== nextRoom.room_id) return nextRoom;
+      if (currentRoom.phase === "ended" && nextRoom.phase !== "ended") return currentRoom;
+      if (currentRoom.phase === "running" && nextRoom.phase === "waiting") return currentRoom;
+      return nextRoom;
+    });
   }, []);
 
   const { status: socketStatus } = useRaceSocket({
@@ -1429,7 +1434,7 @@ export default function RaceGamePage({
           </div>
         </section>
 
-        <aside className={`race-command-panel race-hud-panel uma-scroll ${room.phase === "running" ? "is-running" : ""} ${room.gameplay_mode === "timing" ? "is-timing" : ""}`}>
+        <aside className={`race-command-panel race-hud-panel uma-scroll ${room.phase === "running" ? "is-running" : ""} ${room.phase === "running" && room.gameplay_mode === "timing" ? "is-timing" : ""}`}>
           {room.phase === "waiting" ? (
             <>
               <div className="race-bot-picker">

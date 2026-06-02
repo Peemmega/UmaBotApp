@@ -920,7 +920,7 @@
   font-weight: 1000;
   line-height: 1;
   text-shadow: 0 0 28px rgba(255, 224, 101, 0.78);
-  animation: timingCountdownPulse 780ms ease-out infinite;
+  animation: timingCountdownPulse 780ms ease-out both;
 }
 
 .timing-gauge-head,

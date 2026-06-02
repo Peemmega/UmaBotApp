@@ -4,6 +4,7 @@ const COUNTDOWN_STEPS = ["3", "2", "1", "GO!"];
 const COUNTDOWN_STEP_MS = 780;
 const GO_HOLD_MS = 520;
 const TIMING_START_DELAY_MS = 500;
+const ACTIVE_RESET_GRACE_MS = 1000;
 
 function getTier(score) {
   if (score >= 0.92) return "Perfect";
@@ -29,6 +30,7 @@ export default function TimingRaceGauge({
   runningStyle,
   onSubmit,
 }) {
+  const [isSessionActive, setIsSessionActive] = useState(false);
   const [countdownIndex, setCountdownIndex] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [markerPosition, setMarkerPosition] = useState(0);
@@ -45,7 +47,7 @@ export default function TimingRaceGauge({
   const halfCycleMs = Math.max(520, Number(gauge?.half_cycle_ms) || 1450);
 
   const submitTiming = useCallback((score, offset, targetCycle = cycleRef.current) => {
-    if (!active || !isRunning || submittedCycleRef.current === targetCycle) return;
+    if (!isSessionActive || !isRunning || submittedCycleRef.current === targetCycle) return;
     submittedCycleRef.current = targetCycle;
     setSubmittedCycleId(targetCycle);
     setLastResult({ tier: getTier(score), score, cycleId: targetCycle });
@@ -61,7 +63,15 @@ export default function TimingRaceGauge({
         setSubmittedCycleId(null);
       }
     });
-  }, [active, gauge?.phase, isRunning, onSubmit, runningStyle]);
+  }, [gauge?.phase, isRunning, isSessionActive, onSubmit, runningStyle]);
+
+  useEffect(() => {
+    const timerId = window.setTimeout(
+      () => setIsSessionActive(active),
+      active ? 0 : ACTIVE_RESET_GRACE_MS
+    );
+    return () => window.clearTimeout(timerId);
+  }, [active]);
 
   useEffect(() => {
     const timerIds = [];
@@ -84,7 +94,7 @@ export default function TimingRaceGauge({
     };
 
     schedule(resetGauge, 0);
-    if (active) {
+    if (isSessionActive) {
       COUNTDOWN_STEPS.slice(1).forEach((_, index) => {
         schedule(() => setCountdownIndex(index + 1), (index + 1) * COUNTDOWN_STEP_MS);
       });
@@ -95,10 +105,10 @@ export default function TimingRaceGauge({
     }
 
     return () => timerIds.forEach((timerId) => window.clearTimeout(timerId));
-  }, [active]);
+  }, [isSessionActive]);
 
   useEffect(() => {
-    if (!active || !isRunning) return undefined;
+    if (!isSessionActive || !isRunning) return undefined;
 
     const animate = (timestamp) => {
       if (!lastFrameRef.current) lastFrameRef.current = timestamp;
@@ -129,13 +139,13 @@ export default function TimingRaceGauge({
     lastFrameRef.current = 0;
     animationRef.current = window.requestAnimationFrame(animate);
     return () => window.cancelAnimationFrame(animationRef.current);
-  }, [active, halfCycleMs, isRunning, submitTiming]);
+  }, [halfCycleMs, isRunning, isSessionActive, submitTiming]);
 
   const hit = useCallback(() => {
-    if (!active || !isRunning || submittedCycleRef.current === cycleRef.current) return;
+    if (!isSessionActive || !isRunning || submittedCycleRef.current === cycleRef.current) return;
     const offset = (positionRef.current - 0.5) * 2;
     submitTiming(Math.max(0, 1 - Math.abs(offset)), offset);
-  }, [active, isRunning, submitTiming]);
+  }, [isRunning, isSessionActive, submitTiming]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -148,7 +158,7 @@ export default function TimingRaceGauge({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [hit]);
 
-  if (!active) return null;
+  if (!isSessionActive) return null;
 
   return (
     <section
@@ -159,7 +169,7 @@ export default function TimingRaceGauge({
       aria-label="Timing gauge. Press Space, Enter, click, or tap near the center."
     >
       {!isRunning ? (
-        <div className="timing-countdown">{COUNTDOWN_STEPS[countdownIndex]}</div>
+        <div key={countdownIndex} className="timing-countdown">{COUNTDOWN_STEPS[countdownIndex]}</div>
       ) : (
         <>
           <div className="timing-gauge-head">
