@@ -77,9 +77,41 @@ export function runRaceTurn(roomId, player) {
 }
 
 export function submitRaceTiming(roomId, timing) {
-  return request(`/race/rooms/${roomId}/timing`, {
+  const cycleId = Number(timing?.cycle_id);
+  const timingScore = Number(timing?.timing_score);
+  const timingOffset = Number(timing?.timing_offset ?? 0);
+  if (!timing?.user_id || !Number.isInteger(cycleId) || cycleId < 1) {
+    return Promise.reject(new Error("Invalid race timing cycle"));
+  }
+  if (!Number.isFinite(timingScore) || !Number.isFinite(timingOffset)) {
+    return Promise.reject(new Error("Invalid race timing score"));
+  }
+
+  const numericPhase = Number(timing?.phase);
+  const payload = {
+    user_id: String(timing.user_id),
+    cycle_id: cycleId,
+    timing_score: timingScore,
+    timing_offset: timingOffset,
+  };
+  if (timing?.phase !== undefined && timing?.phase !== null && timing.phase !== "") {
+    payload.phase = Number.isFinite(numericPhase) ? `phase_${numericPhase}` : String(timing.phase);
+  }
+  if (timing?.running_style) {
+    payload.running_style = String(timing.running_style).toLowerCase();
+  }
+
+  return fetch(`${RACE_API_BASE}/race/rooms/${roomId}/timing`, {
     method: "POST",
-    body: JSON.stringify(timing),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  }).then(async (res) => {
+    if (!res.ok) {
+      const errorBody = await res.json().catch(() => ({}));
+      console.error("[Race timing failed]", res.status, errorBody, payload);
+      throw new Error(errorBody.detail || `Race API failed: ${res.status}`);
+    }
+    return res.json();
   });
 }
 

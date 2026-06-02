@@ -37,6 +37,7 @@ export default function TimingRaceGauge({
   const [direction, setDirection] = useState(1);
   const [cycleId, setCycleId] = useState(1);
   const [submittedCycleId, setSubmittedCycleId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [hitStamps, setHitStamps] = useState([]);
   const animationRef = useRef(0);
   const lastFrameRef = useRef(0);
@@ -44,6 +45,7 @@ export default function TimingRaceGauge({
   const directionRef = useRef(1);
   const cycleRef = useRef(1);
   const submittedCycleRef = useRef(null);
+  const isSubmittingRef = useRef(false);
   const hasSubmittedTimingRef = useRef(false);
   const halfCycleMs = Math.max(520, Number(gauge?.half_cycle_ms) || 1450);
   const tempoLevel = gauge?.tempo_level || "N";
@@ -66,10 +68,18 @@ export default function TimingRaceGauge({
   }, []);
 
   const submitTiming = useCallback((score, offset, targetCycle = cycleRef.current, stampPosition = positionRef.current) => {
-    if (!isSessionActive || !isRunning || submittedCycleRef.current === targetCycle) return;
+    if (
+      !isSessionActive ||
+      !isRunning ||
+      submittedCycleRef.current === targetCycle ||
+      submittedCycleId === targetCycle ||
+      isSubmittingRef.current
+    ) return;
     submittedCycleRef.current = targetCycle;
+    isSubmittingRef.current = true;
     hasSubmittedTimingRef.current = true;
     setSubmittedCycleId(targetCycle);
+    setIsSubmitting(true);
     pushHitStamp(score, stampPosition, targetCycle);
     Promise.resolve(onSubmit({
       cycle_id: targetCycle,
@@ -82,8 +92,11 @@ export default function TimingRaceGauge({
         submittedCycleRef.current = null;
         setSubmittedCycleId(null);
       }
+    }).finally(() => {
+      isSubmittingRef.current = false;
+      setIsSubmitting(false);
     });
-  }, [gauge?.phase, isRunning, isSessionActive, onSubmit, pushHitStamp, runningStyle]);
+  }, [gauge?.phase, isRunning, isSessionActive, onSubmit, pushHitStamp, runningStyle, submittedCycleId]);
 
   useEffect(() => {
     const timerId = window.setTimeout(
@@ -105,11 +118,13 @@ export default function TimingRaceGauge({
       setDirection(1);
       setCycleId(1);
       setSubmittedCycleId(null);
+      setIsSubmitting(false);
       lastFrameRef.current = 0;
       positionRef.current = 0;
       directionRef.current = 1;
       cycleRef.current = 1;
       submittedCycleRef.current = null;
+      isSubmittingRef.current = false;
       hasSubmittedTimingRef.current = false;
     };
 
@@ -138,10 +153,6 @@ export default function TimingRaceGauge({
 
       if (nextPosition >= 1 || nextPosition <= 0) {
         nextPosition = nextPosition >= 1 ? 1 : 0;
-        const completedCycle = cycleRef.current;
-        if (hasSubmittedTimingRef.current && submittedCycleRef.current !== completedCycle) {
-          submitTiming(0, nextPosition === 1 ? 1 : -1, completedCycle, nextPosition);
-        }
         directionRef.current *= -1;
         setDirection(directionRef.current);
         if (hasSubmittedTimingRef.current) {
@@ -160,13 +171,19 @@ export default function TimingRaceGauge({
     lastFrameRef.current = 0;
     animationRef.current = window.requestAnimationFrame(animate);
     return () => window.cancelAnimationFrame(animationRef.current);
-  }, [halfCycleMs, isRunning, isSessionActive, submitTiming]);
+  }, [halfCycleMs, isRunning, isSessionActive]);
 
   const hit = useCallback(() => {
-    if (!isSessionActive || !isRunning || submittedCycleRef.current === cycleRef.current) return;
+    if (
+      !isSessionActive ||
+      !isRunning ||
+      submittedCycleRef.current === cycleRef.current ||
+      submittedCycleId === cycleId ||
+      isSubmitting
+    ) return;
     const offset = (positionRef.current - 0.5) * 2;
     submitTiming(Math.max(0, 1 - Math.abs(offset)), offset, cycleRef.current, positionRef.current);
-  }, [isRunning, isSessionActive, submitTiming]);
+  }, [cycleId, isRunning, isSessionActive, isSubmitting, submitTiming, submittedCycleId]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
