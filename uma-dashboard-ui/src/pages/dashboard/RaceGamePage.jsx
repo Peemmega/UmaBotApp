@@ -1165,8 +1165,8 @@ export default function RaceGamePage({
           <label>
             Gameplay
             <select value={gameplayMode} onChange={(event) => setGameplayMode(event.target.value)}>
+              <option value="manual">Dice Gameplay</option>
               <option value="timing">Timing Gauge</option>
-              <option value="manual">Legacy Manual</option>
             </select>
           </label>
           <div className="race-style-tabs">
