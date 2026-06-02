@@ -126,11 +126,13 @@ export default function TimingRaceGauge({
           submitTiming(0, nextPosition === 1 ? 1 : -1, completedCycle);
         }
         directionRef.current *= -1;
-        cycleRef.current += 1;
-        submittedCycleRef.current = null;
         setDirection(directionRef.current);
-        setCycleId(cycleRef.current);
-        setSubmittedCycleId(null);
+        if (hasSubmittedTimingRef.current) {
+          cycleRef.current += 1;
+          submittedCycleRef.current = null;
+          setCycleId(cycleRef.current);
+          setSubmittedCycleId(null);
+        }
       }
 
       positionRef.current = nextPosition;
