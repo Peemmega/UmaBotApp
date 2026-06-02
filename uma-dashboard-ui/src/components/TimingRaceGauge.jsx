@@ -38,6 +38,7 @@ export default function TimingRaceGauge({
   const [cycleId, setCycleId] = useState(1);
   const [submittedCycleId, setSubmittedCycleId] = useState(null);
   const [lastResult, setLastResult] = useState(null);
+  const [hitStamps, setHitStamps] = useState([]);
   const animationRef = useRef(0);
   const lastFrameRef = useRef(0);
   const positionRef = useRef(0);
@@ -47,12 +48,30 @@ export default function TimingRaceGauge({
   const hasSubmittedTimingRef = useRef(false);
   const halfCycleMs = Math.max(520, Number(gauge?.half_cycle_ms) || 1450);
 
-  const submitTiming = useCallback((score, offset, targetCycle = cycleRef.current) => {
+  const pushHitStamp = useCallback((score, position, targetCycle) => {
+    const tier = getTier(score);
+    const id = `${targetCycle}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    const rotation = Math.round((Math.random() * 7) - 3.5);
+    setHitStamps((current) => [
+      ...current,
+      {
+        id,
+        position: Math.max(0, Math.min(1, position)),
+        result: tier,
+        timingScore: Number(score.toFixed(3)),
+        rotation,
+      },
+    ]);
+  }, []);
+
+  const submitTiming = useCallback((score, offset, targetCycle = cycleRef.current, stampPosition = positionRef.current) => {
     if (!isSessionActive || !isRunning || submittedCycleRef.current === targetCycle) return;
     submittedCycleRef.current = targetCycle;
     hasSubmittedTimingRef.current = true;
     setSubmittedCycleId(targetCycle);
-    setLastResult({ tier: getTier(score), score, cycleId: targetCycle });
+    const tier = getTier(score);
+    setLastResult({ tier, score, cycleId: targetCycle });
+    pushHitStamp(score, stampPosition, targetCycle);
     Promise.resolve(onSubmit({
       cycle_id: targetCycle,
       timing_score: Number(score.toFixed(3)),
@@ -65,7 +84,7 @@ export default function TimingRaceGauge({
         setSubmittedCycleId(null);
       }
     });
-  }, [gauge?.phase, isRunning, isSessionActive, onSubmit, runningStyle]);
+  }, [gauge?.phase, isRunning, isSessionActive, onSubmit, pushHitStamp, runningStyle]);
 
   useEffect(() => {
     const timerId = window.setTimeout(
@@ -123,7 +142,7 @@ export default function TimingRaceGauge({
         nextPosition = nextPosition >= 1 ? 1 : 0;
         const completedCycle = cycleRef.current;
         if (hasSubmittedTimingRef.current && submittedCycleRef.current !== completedCycle) {
-          submitTiming(0, nextPosition === 1 ? 1 : -1, completedCycle);
+          submitTiming(0, nextPosition === 1 ? 1 : -1, completedCycle, nextPosition);
         }
         directionRef.current *= -1;
         setDirection(directionRef.current);
@@ -148,7 +167,7 @@ export default function TimingRaceGauge({
   const hit = useCallback(() => {
     if (!isSessionActive || !isRunning || submittedCycleRef.current === cycleRef.current) return;
     const offset = (positionRef.current - 0.5) * 2;
-    submitTiming(Math.max(0, 1 - Math.abs(offset)), offset);
+    submitTiming(Math.max(0, 1 - Math.abs(offset)), offset, cycleRef.current, positionRef.current);
   }, [isRunning, isSessionActive, submitTiming]);
 
   useEffect(() => {
@@ -172,6 +191,23 @@ export default function TimingRaceGauge({
       tabIndex={0}
       aria-label="Timing gauge. Press Space, Enter, click, or tap near the center."
     >
+      <div className="timing-hit-stamps" aria-hidden="true">
+        {hitStamps.map((stamp) => (
+          <div
+            key={stamp.id}
+            className={`timing-hit-stamp is-${stamp.result.toLowerCase()}`}
+            style={{
+              left: `${stamp.position * 100}%`,
+              "--stamp-rot": `${stamp.rotation}deg`,
+            }}
+            onAnimationEnd={() => {
+              setHitStamps((current) => current.filter((item) => item.id !== stamp.id));
+            }}
+          >
+            <span>{stamp.result}</span>
+          </div>
+        ))}
+      </div>
       {!isRunning ? (
         <div key={countdownIndex} className="timing-countdown">{COUNTDOWN_STEPS[countdownIndex]}</div>
       ) : (
