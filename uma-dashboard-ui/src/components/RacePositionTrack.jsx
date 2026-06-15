@@ -23,9 +23,15 @@ function getProgressRatio(player, finishDistance) {
   const explicitRatio = Number(player?.progress_ratio);
   if (Number.isFinite(explicitRatio)) return clamp(explicitRatio, 0, 1);
 
-  const distance = Number(player?.distance) || 0;
+  const distance = Number(player?.distance);
+  if (Number.isFinite(distance)) {
+    const finish = Math.max(1, Number(finishDistance) || 1);
+    return clamp(distance / finish, 0, 1);
+  }
+
+  const fallbackScore = Number(player?.score);
   const finish = Math.max(1, Number(finishDistance) || 1);
-  return clamp(distance / finish, 0, 1);
+  return clamp((Number.isFinite(fallbackScore) ? fallbackScore : 0) / finish, 0, 1);
 }
 
 function getStackOffset(indexInCluster) {
@@ -79,7 +85,7 @@ function buildTrackPlayers(players, finishDistance) {
     return {
       ...player,
       markerColor: TRACK_STYLE_COLORS[player.runningStyleKey],
-      markerLeftPercent: 5 + player.progressRatio * 90,
+      markerProgress: player.progressRatio,
       markerOffsetY: offsetsById.get(playerId) || 0,
       playerKey: playerId,
     };
@@ -119,11 +125,10 @@ export default function RacePositionTrack({ players, finishDistance, currentUser
 
   return (
     <section className="race-position-track" aria-label="Live player positions">
-      <div className="race-position-track__surface" aria-hidden="true" />
-      <div className="race-position-track__rail" aria-hidden="true" />
-      <div className="race-position-track__finish-line" aria-hidden="true" />
-      <span className="race-position-track__label is-start">START</span>
-      <span className="race-position-track__label is-finish">FINISH</span>
+      <div className="race-position-track__dev-label">POSITION TRACK ACTIVE</div>
+      <div className="race-position-track__label is-start">START</div>
+      <div className="race-position-track__label is-finish">FINISH</div>
+      <div className="race-position-lane" aria-hidden="true" />
 
       {trackPlayers.map((player) => {
         const isSelf =
@@ -140,7 +145,7 @@ export default function RacePositionTrack({ players, finishDistance, currentUser
               isOvertaking ? "is-overtaking" : "",
             ].filter(Boolean).join(" ")}
             style={{
-              left: `${player.markerLeftPercent}%`,
+              "--progress": player.markerProgress,
               "--track-offset-y": `${player.markerOffsetY}px`,
               "--track-marker-color": player.markerColor,
             }}

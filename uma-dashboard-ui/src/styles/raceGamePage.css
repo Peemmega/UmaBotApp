@@ -1822,86 +1822,36 @@
 
 .race-position-track {
   position: absolute;
-  z-index: 3;
-  left: clamp(18px, 4vw, 36px);
-  right: clamp(18px, 4vw, 36px);
-  top: clamp(118px, 20vh, 164px);
-  bottom: clamp(110px, 19vh, 152px);
-  min-height: 170px;
+  left: 8%;
+  right: 8%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 120px;
+  z-index: 5;
   pointer-events: none;
 }
 
-.race-position-track__surface {
+.race-position-track__dev-label {
   position: absolute;
-  inset: 12% 0 10%;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 10px;
   border-radius: 999px;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.16), transparent 56%),
-    linear-gradient(180deg, rgba(146, 195, 99, 0.44), rgba(80, 140, 54, 0.26));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.36),
-    inset 0 -18px 28px rgba(39, 85, 28, 0.2);
-}
-
-.race-position-track__rail {
-  position: absolute;
-  left: 4%;
-  right: 4%;
-  top: 50%;
-  height: 14px;
-  border-radius: 999px;
-  transform: translateY(-50%);
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.84), rgba(246, 255, 238, 0.74)),
-    rgba(255, 255, 255, 0.8);
-  box-shadow:
-    0 0 0 2px rgba(255, 255, 255, 0.24),
-    0 14px 30px rgba(0, 0, 0, 0.18);
-}
-
-.race-position-track__rail::before,
-.race-position-track__rail::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 2px solid rgba(61, 128, 68, 0.54);
-  transform: translateY(-50%);
-}
-
-.race-position-track__rail::before {
-  left: -8px;
-}
-
-.race-position-track__rail::after {
-  right: -8px;
-}
-
-.race-position-track__finish-line {
-  position: absolute;
-  top: 26%;
-  bottom: 22%;
-  right: 4%;
-  width: 18px;
-  border-radius: 8px;
-  background:
-    repeating-linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.96) 0 12px,
-      rgba(34, 52, 34, 0.92) 12px 24px
-    );
-  box-shadow: 0 0 18px rgba(255, 255, 255, 0.44);
+  background: rgba(7, 22, 18, 0.72);
+  color: #f6fff7;
+  font-size: 10px;
+  font-weight: 1000;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
 }
 
 .race-position-track__label {
   position: absolute;
-  top: 14%;
+  top: 50%;
   border-radius: 999px;
-  padding: 5px 12px;
-  background: rgba(17, 31, 17, 0.56);
+  padding: 4px 10px;
+  background: rgba(17, 31, 17, 0.68);
   color: #ffffff;
   font-size: 11px;
   font-weight: 1000;
@@ -1911,17 +1861,50 @@
 }
 
 .race-position-track__label.is-start {
-  left: 0;
+  left: -6%;
+  transform: translateY(-50%);
 }
 
 .race-position-track__label.is-finish {
+  right: -6%;
+  transform: translateY(-50%);
+}
+
+.race-position-lane {
+  position: absolute;
+  left: 0;
   right: 0;
+  top: 50%;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.96), rgba(232, 255, 240, 0.92));
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.28),
+    0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.race-position-lane::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -2px;
+  width: 14px;
+  height: 40px;
+  transform: translateY(-50%);
+  border-radius: 4px;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.96) 0 8px,
+    rgba(31, 38, 31, 0.96) 8px 16px
+  );
 }
 
 .race-track-marker-wrap {
   position: absolute;
   top: 50%;
-  z-index: 2;
+  left: calc(var(--progress) * 100%);
+  z-index: 6;
   display: grid;
   justify-items: center;
   gap: 6px;
@@ -1952,6 +1935,7 @@
 }
 
 .race-player-marker {
+  position: relative;
   width: 42px;
   height: 42px;
   border-radius: 50%;
@@ -1963,7 +1947,8 @@
   color: #ffffff;
   background: var(--track-marker-color, #3f8cff);
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
-  transition: transform 250ms linear, box-shadow 220ms ease, background 220ms ease;
+  z-index: 6;
+  transition: box-shadow 220ms ease, background 220ms ease;
 }
 
 .race-player-marker span {
@@ -4349,13 +4334,13 @@
   }
 
   .race-position-track {
-    top: 112px;
-    bottom: 104px;
-    min-height: 150px;
+    left: 10%;
+    right: 10%;
+    height: 112px;
   }
 
   .race-position-track__label {
-    top: 8%;
+    font-size: 10px;
   }
 
   .race-player-marker {

@@ -1443,6 +1443,13 @@ export default function RaceGamePage({
               </div>
             )}
             <div className="race-live-stage-overlay" />
+            {isWebTiming ? (
+              <RacePositionTrack
+                players={roomPlayers}
+                finishDistance={room.finish_distance}
+                currentUserId={userId}
+              />
+            ) : null}
             <div className="race-path-strip uma-scroll" aria-label="Track path">
               {room.path?.map((step) => (
                 <span
@@ -1467,13 +1474,6 @@ export default function RaceGamePage({
               <div className="race-live-scoreboard uma-scroll" aria-label="Live race scoreboard">
                 {raceLiveScoreCards}
               </div>
-            ) : null}
-            {isWebTiming ? (
-              <RacePositionTrack
-                players={roomPlayers}
-                finishDistance={room.finish_distance}
-                currentUserId={userId}
-              />
             ) : null}
             <AnimatePresence>
               {skillPreview && (
