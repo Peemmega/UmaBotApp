@@ -1848,7 +1848,7 @@
 
 .race-position-track__label {
   position: absolute;
-  top: 50%;
+  top: 0%;
   border-radius: 999px;
   padding: 4px 10px;
   background: rgba(17, 31, 17, 0.68);
@@ -1936,13 +1936,13 @@
 
 .race-player-marker {
   position: relative;
-  width: 42px;
-  height: 42px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  border: 3px solid #ffffff;
+  border: 2px solid #ffffff;
   display: grid;
   place-items: center;
-  font-size: 17px;
+  font-size: 14px;
   font-weight: 900;
   color: #ffffff;
   background: var(--track-marker-color, #3f8cff);
@@ -4344,8 +4344,8 @@
   }
 
   .race-player-marker {
-    width: 38px;
-    height: 38px;
+    width: 20px;
+    height: 20px;
     font-size: 15px;
   }
 }

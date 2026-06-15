@@ -822,7 +822,7 @@ export default function RaceGamePage({
         </div>
         <div className="race-runner-info">
           <div className="race-runner-title-row">
-            <h3>{player.name}</h3>
+            <h3>#{player.display_number || index + 1} {player.name}</h3>
             <em>{scoreEntry.style || player.style}</em>
           </div>
           <div className="race-player-meta">
@@ -1443,13 +1443,11 @@ export default function RaceGamePage({
               </div>
             )}
             <div className="race-live-stage-overlay" />
-            {isWebTiming ? (
-              <RacePositionTrack
-                players={roomPlayers}
-                finishDistance={room.finish_distance}
-                currentUserId={userId}
-              />
-            ) : null}
+            <RacePositionTrack
+              players={roomPlayers}
+              finishDistance={room.finish_distance || room.distance || room.max_turn}
+              currentUserId={userId}
+            />
             <div className="race-path-strip uma-scroll" aria-label="Track path">
               {room.path?.map((step) => (
                 <span
