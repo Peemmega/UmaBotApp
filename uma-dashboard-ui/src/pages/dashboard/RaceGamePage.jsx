@@ -1457,11 +1457,13 @@ export default function RaceGamePage({
               </div>
             )}
             <div className="race-live-stage-overlay" />
-            <RacePositionTrack
-              players={raceTrackPlayers}
-              room={room}
-              currentUserId={userId}
-            />
+            {room.phase !== "waiting" ? (
+              <RacePositionTrack
+                players={raceTrackPlayers}
+                room={room}
+                currentUserId={userId}
+              />
+            ) : null}
             <div className="race-path-strip uma-scroll" aria-label="Track path">
               {room.path?.map((step) => (
                 <span
