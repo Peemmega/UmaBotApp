@@ -19,25 +19,21 @@ function normalizeRunningStyle(value) {
   return TRACK_STYLE_COLORS[key] ? key : "pace";
 }
 
-function getPlayerProgress(player, room) {
-  const finishDistance = Number(room?.finish_distance);
-  if (room?.race_mode === "web_timing" || Number.isFinite(finishDistance)) {
-    const distanceScore = Number(player?.distance ?? player?.score ?? 0);
-    return clamp(distanceScore / Math.max(1, finishDistance || 1), 0.02, 0.98);
-  }
+function getPlayerScore(player) {
+  return Number(player?.distance ?? player?.score ?? player?.total_score ?? 0);
+}
 
-  const currentTurn = Number(room?.current_turn ?? room?.turn ?? 0);
-  const totalTurns = Number(room?.max_turn ?? room?.total_turns ?? room?.turns ?? 12);
-  const turnProgress = totalTurns > 0 ? currentTurn / totalTurns : 0;
-  const roomPlayers = Array.isArray(room?.players) ? room.players : [];
-  const maxScore = Math.max(
-    ...roomPlayers.map((entry) => Number(entry?.score ?? entry?.total_score ?? 0)),
-    1
-  );
-  const playerScore = Number(player?.score ?? player?.total_score ?? 0);
-  const scoreRatio = playerScore / maxScore;
+function getRelativePlayerProgress(player, players) {
+  const scoreList = (Array.isArray(players) ? players : []).map(getPlayerScore);
+  const minScore = Math.min(...scoreList);
+  const maxScore = Math.max(...scoreList);
+  const range = maxScore - minScore;
 
-  return clamp(turnProgress * 0.85 + scoreRatio * 0.15, 0.02, 0.98);
+  if (range <= 0) return 0.5;
+
+  const value = getPlayerScore(player);
+  const normalized = (value - minScore) / range;
+  return clamp(0.08 + normalized * 0.84, 0.08, 0.92);
 }
 
 function getStackOffset(indexInCluster) {
@@ -51,15 +47,15 @@ function buildTrackPlayers(players, room) {
   const basePlayers = (Array.isArray(players) ? players : []).map((player, index) => ({
     ...player,
     display_number: Number(player?.display_number) || index + 1,
-    progressRatio: getPlayerProgress(player, room),
+    progressRatio: getRelativePlayerProgress(player, players),
+    numericScore: getPlayerScore(player),
     runningStyleKey: normalizeRunningStyle(player?.running_style || player?.style),
   }));
 
   const rankedPlayers = [...basePlayers]
     .sort((left, right) => (
       right.progressRatio - left.progressRatio ||
-      (Number(right.score ?? right.total_score) || 0) - (Number(left.score ?? left.total_score) || 0) ||
-      (Number(right.distance) || 0) - (Number(left.distance) || 0) ||
+      right.numericScore - left.numericScore ||
       left.display_number - right.display_number
     ))
     .map((player, index) => ({
@@ -160,9 +156,7 @@ export default function RacePositionTrack({ players, room, currentUserId }) {
             <div
               className="race-player-marker"
               title={
-                room?.race_mode === "web_timing"
-                  ? `${player.name || "Racer"}: ${Number(player.distance ?? player.score) || 0}m`
-                  : `${player.name || "Racer"} | Turn ${Number(room?.current_turn ?? room?.turn ?? 0)} / ${Number(room?.max_turn ?? room?.total_turns ?? room?.turns ?? 12)} | Score ${Number(player.score ?? player.total_score ?? 0)} | Rank ${Number(player.rank) || "-"}`
+                `${player.name || "Racer"} | Score ${player.numericScore} | Rank ${Number(player.rank) || "-"}`
               }
             >
               <span>{player.display_number}</span>
