@@ -894,12 +894,9 @@ export default function RaceGamePage({
         score,
         rank: scoreEntry.rank || index + 1,
         running_style: player.running_style || player.style,
-        progress_ratio: isWebTiming
-          ? Number(player.progress_ratio)
-          : Number(score) / Math.max(1, Number(room?.finish_distance || room?.distance || room?.max_turn) || 1),
       };
     }),
-    [isWebTiming, raceScorePlayers, room?.distance, room?.finish_distance, room?.max_turn, scoreboardByName]
+    [isWebTiming, raceScorePlayers, scoreboardByName]
   );
   const dicePresetRows = useMemo(
     () => getRaceDicePresetRows(room, diceTableColor),
@@ -1462,7 +1459,7 @@ export default function RaceGamePage({
             <div className="race-live-stage-overlay" />
             <RacePositionTrack
               players={raceTrackPlayers}
-              finishDistance={room.finish_distance || room.distance || room.max_turn}
+              room={room}
               currentUserId={userId}
             />
             <div className="race-path-strip uma-scroll" aria-label="Track path">

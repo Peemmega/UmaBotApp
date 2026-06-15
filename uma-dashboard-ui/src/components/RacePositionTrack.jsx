@@ -19,19 +19,25 @@ function normalizeRunningStyle(value) {
   return TRACK_STYLE_COLORS[key] ? key : "pace";
 }
 
-function getProgressRatio(player, finishDistance) {
-  const explicitRatio = Number(player?.progress_ratio);
-  if (Number.isFinite(explicitRatio)) return clamp(explicitRatio, 0, 1);
-
-  const distance = Number(player?.distance);
-  if (Number.isFinite(distance)) {
-    const finish = Math.max(1, Number(finishDistance) || 1);
-    return clamp(distance / finish, 0, 1);
+function getPlayerProgress(player, room) {
+  const finishDistance = Number(room?.finish_distance);
+  if (room?.race_mode === "web_timing" || Number.isFinite(finishDistance)) {
+    const distanceScore = Number(player?.distance ?? player?.score ?? 0);
+    return clamp(distanceScore / Math.max(1, finishDistance || 1), 0.02, 0.98);
   }
 
-  const fallbackScore = Number(player?.score);
-  const finish = Math.max(1, Number(finishDistance) || 1);
-  return clamp((Number.isFinite(fallbackScore) ? fallbackScore : 0) / finish, 0, 1);
+  const currentTurn = Number(room?.current_turn ?? room?.turn ?? 0);
+  const totalTurns = Number(room?.max_turn ?? room?.total_turns ?? room?.turns ?? 12);
+  const turnProgress = totalTurns > 0 ? currentTurn / totalTurns : 0;
+  const roomPlayers = Array.isArray(room?.players) ? room.players : [];
+  const maxScore = Math.max(
+    ...roomPlayers.map((entry) => Number(entry?.score ?? entry?.total_score ?? 0)),
+    1
+  );
+  const playerScore = Number(player?.score ?? player?.total_score ?? 0);
+  const scoreRatio = playerScore / maxScore;
+
+  return clamp(turnProgress * 0.85 + scoreRatio * 0.15, 0.02, 0.98);
 }
 
 function getStackOffset(indexInCluster) {
@@ -41,17 +47,18 @@ function getStackOffset(indexInCluster) {
   return direction * level * STACK_STEP_PX;
 }
 
-function buildTrackPlayers(players, finishDistance) {
+function buildTrackPlayers(players, room) {
   const basePlayers = (Array.isArray(players) ? players : []).map((player, index) => ({
     ...player,
     display_number: Number(player?.display_number) || index + 1,
-    progressRatio: getProgressRatio(player, finishDistance),
+    progressRatio: getPlayerProgress(player, room),
     runningStyleKey: normalizeRunningStyle(player?.running_style || player?.style),
   }));
 
   const rankedPlayers = [...basePlayers]
     .sort((left, right) => (
       right.progressRatio - left.progressRatio ||
+      (Number(right.score ?? right.total_score) || 0) - (Number(left.score ?? left.total_score) || 0) ||
       (Number(right.distance) || 0) - (Number(left.distance) || 0) ||
       left.display_number - right.display_number
     ))
@@ -92,10 +99,10 @@ function buildTrackPlayers(players, finishDistance) {
   });
 }
 
-export default function RacePositionTrack({ players, finishDistance, currentUserId }) {
+export default function RacePositionTrack({ players, room, currentUserId }) {
   const trackPlayers = useMemo(
-    () => buildTrackPlayers(players, finishDistance),
-    [finishDistance, players]
+    () => buildTrackPlayers(players, room),
+    [players, room]
   );
   const previousRanksRef = useRef(new Map());
   const [overtakeIds, setOvertakeIds] = useState([]);
@@ -150,7 +157,14 @@ export default function RacePositionTrack({ players, finishDistance, currentUser
               "--track-marker-color": player.markerColor,
             }}
           >
-            <div className="race-player-marker" title={`${player.name || "Racer"}: ${Number(player.distance) || 0}m`}>
+            <div
+              className="race-player-marker"
+              title={
+                room?.race_mode === "web_timing"
+                  ? `${player.name || "Racer"}: ${Number(player.distance ?? player.score) || 0}m`
+                  : `${player.name || "Racer"} | Turn ${Number(room?.current_turn ?? room?.turn ?? 0)} / ${Number(room?.max_turn ?? room?.total_turns ?? room?.turns ?? 12)} | Score ${Number(player.score ?? player.total_score ?? 0)} | Rank ${Number(player.rank) || "-"}`
+              }
+            >
               <span>{player.display_number}</span>
             </div>
             {player.zone_active ? <small>ZONE</small> : null}
