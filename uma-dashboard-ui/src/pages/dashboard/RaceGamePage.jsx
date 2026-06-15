@@ -884,6 +884,23 @@ export default function RaceGamePage({
       </motion.article>
     );
   });
+  const raceTrackPlayers = useMemo(
+    () => raceScorePlayers.map((player, index) => {
+      const scoreEntry = scoreboardByName.get(normalizeRaceName(player.name)) || {};
+      const score = Number(isWebTiming ? player.distance : scoreEntry.score ?? player.score) || 0;
+
+      return {
+        ...player,
+        score,
+        rank: scoreEntry.rank || index + 1,
+        running_style: player.running_style || player.style,
+        progress_ratio: isWebTiming
+          ? Number(player.progress_ratio)
+          : Number(score) / Math.max(1, Number(room?.finish_distance || room?.distance || room?.max_turn) || 1),
+      };
+    }),
+    [isWebTiming, raceScorePlayers, room?.distance, room?.finish_distance, room?.max_turn, scoreboardByName]
+  );
   const dicePresetRows = useMemo(
     () => getRaceDicePresetRows(room, diceTableColor),
     [diceTableColor, room]
@@ -1444,7 +1461,7 @@ export default function RaceGamePage({
             )}
             <div className="race-live-stage-overlay" />
             <RacePositionTrack
-              players={roomPlayers}
+              players={raceTrackPlayers}
               finishDistance={room.finish_distance || room.distance || room.max_turn}
               currentUserId={userId}
             />
