@@ -12,8 +12,7 @@ const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 const ZONE_FIELDS = [
   ["flat", "เพิ่มแต้มผลรวม"],
   ["add_dkh", "เพิ่มจำนวนลูกเต๋า d/kh"],
-  ["floor", "เพิ่มค่าทอยลูกเต๋าต่ำสุด"],
-  ["cap", "เพิ่มค่าทอยลูกเต๋าสูงสุด"],
+  ["cap_floor", "เพิ่มค่าทอยลูกเต๋าขั้นต่ำและสูงสุด"],
   ["self_heal_stamina", "ฟื้นฟู Stamina"],
   ["modify_current_speed", "เพิ่มอัตราเร่ง"],
 ];
@@ -21,8 +20,7 @@ const ZONE_FIELDS = [
 const normalizeBuild = (build = {}) => ({
   flat: build.flat ?? 0,
   add_dkh: build.add_dkh ?? 0,
-  floor: build.floor ?? 0,
-  cap: build.cap ?? 0,
+  cap_floor: build.cap_floor ?? (build.floor ?? 0) + (build.cap ?? 0),
   self_heal_stamina: build.self_heal_stamina ?? 0,
   modify_current_speed: build.modify_current_speed ?? 0,
 });
@@ -34,32 +32,26 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
   const [editingName, setEditingName] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const originalBuild = useMemo(
-    () => normalizeBuild(zone?.build),
-    [zone]
-  );
-
+  const originalBuild = useMemo(() => normalizeBuild(zone?.build), [zone]);
   const [draft, setDraft] = useState(originalBuild);
 
   const usedPoints = useMemo(() => {
     return (
       draft.flat +
-      draft.floor +
-      draft.cap +
+      draft.add_dkh +
+      draft.cap_floor +
       draft.self_heal_stamina +
-      draft.modify_current_speed +
-      draft.add_dkh
+      draft.modify_current_speed
     );
   }, [draft]);
 
   const originalUsedPoints = useMemo(() => {
     return (
       originalBuild.flat +
-      originalBuild.floor +
-      originalBuild.cap +
+      originalBuild.add_dkh +
+      originalBuild.cap_floor +
       originalBuild.self_heal_stamina +
-      originalBuild.modify_current_speed +
-      originalBuild.add_dkh
+      originalBuild.modify_current_speed
     );
   }, [originalBuild]);
 
@@ -96,8 +88,6 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
   const resetDraft = () => {
     playSound("click");
     setDraft(normalizeBuild({}));
-    // setZoneName("ชื่อ Zone");
-    // setImageUrl("");
   };
 
   const saveZone = async () => {
@@ -155,7 +145,7 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
     <div className={`zone-edit-backdrop ${closing ? "closing" : ""}`} onClick={closeModal}>
       <div className={`zone-edit-modal ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
         <div className="title-banner">
-            <h2>Zone Manager</h2>
+          <h2>Zone Manager</h2>
         </div>
 
         <div className="zone-edit-body">
@@ -168,11 +158,11 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
           </div>
 
           <input
-              className="zone-image-url-input"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="วาง Image URL เช่น https://..."
-          />  
+            className="zone-image-url-input"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            placeholder="วาง Image URL เช่น https://..."
+          />
 
           <div className="zone-edit-name-wrap">
             {editingName ? (

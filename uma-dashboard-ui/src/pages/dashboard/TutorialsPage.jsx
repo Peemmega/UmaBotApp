@@ -36,7 +36,7 @@ const scoreRows = [
   ["Power", "เพิ่มโบนัสรวม และเด่นบน Uphill เพราะ Power bonus ถูกคูณ"],
   ["Stamina", "เพิ่มโบนัสรวม และเป็น resource ที่ถูกใช้ตาม Path"],
   ["Gut", "ให้โบนัสเมื่ออยู่ในระยะ Gold กับผู้เล่นใกล้ ๆ และแรงขึ้นใน Phase 3-4"],
-  ["Skill / Zone", "เพิ่ม d, kh, floor, cap, คะแนนรวม หรือผลอื่นตาม effect ที่ถูกใช้ก่อน Run"],
+  ["Skill / Zone", "เพิ่ม d, kh, cap_floor, คะแนนรวม หรือผลอื่นตาม effect ที่ถูกใช้ก่อน Run"],
 ];
 
 const diceRows = [
@@ -75,9 +75,9 @@ const styleRows = [
 
 const pathRows = [
   ["Straight", "ใช้ Stamina 1"],
-  ["Curve", "ใช้ Stamina 1, ลด cap ลูกเต๋า 5, เพิ่ม floor/cap ตาม Wit"],
+  ["Curve", "ใช้ Stamina 1, ลด cap ลูกเต๋า 5, เพิ่ม cap_floor ตาม Wit"],
   ["Uphill", "ใช้ Stamina 2, Power bonus x3, ลด current speed ครั้งแรกของช่วงขึ้นเนิน"],
-  ["Downhill", "ไม่ใช้ Stamina, เพิ่ม floor/cap ตาม Wit x3"],
+  ["Downhill", "ไม่ใช้ Stamina, เพิ่ม cap_floor ตาม Wit x3"],
 ];
 
 const statRows = [
@@ -85,7 +85,7 @@ const statRows = [
   ["Stamina", "ตั้งค่าเริ่มต้นเป็น 8 + Stamina, เพิ่มโบนัสรวม และใช้จ่ายตาม Path"],
   ["Power", "เพิ่มโบนัสรวม และมีผลมากบน Uphill"],
   ["Gut", "เพิ่มโบนัสเมื่ออยู่ใน Gold range กับผู้เล่นใกล้ ๆ"],
-  ["Wit", "เพิ่ม Wit Mana เริ่มต้น, ฟื้น Mana ต่อเทิร์น, ช่วย WIT Reroll และช่วย floor/cap บาง Path"],
+  ["Wit", "เพิ่ม Wit Mana เริ่มต้น, ฟื้น Mana ต่อเทิร์น, ช่วย WIT Reroll และช่วย cap_floor บาง Path"],
 ];
 
 const skillFacts = [
@@ -109,12 +109,11 @@ const skillTriggers = [
 ];
 
 const zoneRows = [
-  ["flat", "+25 คะแนนรวมต่อ 1 แต้ม build"],
+  ["flat", "+20 คะแนนรวมต่อ 1 แต้ม build"],
   ["add_dkh", "+1 ลูกเต๋า และ +1 kh ต่อ 1 แต้ม build"],
-  ["floor", "+7 แต้มขั้นต่ำลูกเต๋าต่อ 1 แต้ม build"],
-  ["cap", "+7 แต้มสูงสุดลูกเต๋าต่อ 1 แต้ม build"],
+  ["cap_floor", "+3 แต้มขั้นต่ำและสูงสุดลูกเต๋าต่อ 1 แต้ม build"],
   ["self_heal_stamina", "ฟื้น Stamina +1 ต่อ 1 แต้ม build"],
-  ["modify_current_speed", "เพิ่ม current speed ผ่านระบบ acceleration ค่า 0.5 ต่อ 1 แต้ม build"],
+  ["modify_current_speed", "เพิ่ม current speed ผ่านระบบ acceleration ค่า 0.75 ต่อ 1 แต้ม build"],
 ];
 
 const rerollRows = [
@@ -134,7 +133,7 @@ const turnSteps = [
 const beginnerTips = [
   "ถ้ายังไม่รู้จะเล่นสายไหน Pace เป็นตัวเลือกที่ยืดหยุ่นและอ่านเกมง่าย",
   "ดู Path ก่อนใช้ Skill เพราะหลาย Skill ต้องการทางตรง โค้ง ขึ้นเนิน หรือลงเนิน",
-  "อย่าใช้ Zone เร็วเกินไป ถ้า build ของคุณเน้น d/kh หรือ cap ให้รอเทิร์นที่เต๋าดี",
+  "อย่าใช้ Zone เร็วเกินไป ถ้า build ของคุณเน้น d/kh หรือ cap_floor ให้รอเทิร์นที่เต๋าดี",
   "ระวัง Stamina ต่ำ เพราะถ้าจ่ายค่า Path ไม่พอจะโดนลด cap ลูกเต๋า 20",
   "Gold คือระยะใกล้ผู้เล่นอื่น ไม่ได้แปลว่าดีเสมอ ต้องดูตารางเต๋าของสายตัวเองด้วย",
   "เก็บ Wit Mana ไว้ใช้ Skill สำคัญช่วงท้าย โดยเฉพาะสาย Late และ End",
@@ -312,7 +311,7 @@ export default function TutorialsPage() {
             </div>
           </div>
           <Callout title="Effect ที่พบ">
-            เพิ่มคะแนนรวม, เพิ่ม d/kh, เพิ่ม floor/cap, ฟื้นหรือลด Stamina, ปรับ Gold range, debuff เทิร์นถัดไป และเพิ่ม current speed
+            เพิ่มคะแนนรวม, เพิ่ม d/kh, เพิ่ม cap_floor, ฟื้นหรือลด Stamina, ปรับ Gold range, debuff เทิร์นถัดไป และเพิ่ม current speed
           </Callout>
         </GameCard>
 
@@ -322,7 +321,7 @@ export default function TutorialsPage() {
             <p>Zone เป็น build พิเศษของผู้เล่น ใช้ในเกมได้ 1 ครั้ง แล้วใส่ buff ให้การทอยหรือฟื้นฟูทันทีตามชนิด build</p>
             <InfoTable rows={zoneRows} compact />
             <Callout title="Tip">
-              ถ้า Zone เน้น d/kh หรือ cap ให้เก็บไว้ใช้ตอนตารางเต๋าของสายคุณกำลังดี
+              ถ้า Zone เน้น d/kh หรือ cap_floor ให้เก็บไว้ใช้ตอนตารางเต๋าของสายคุณกำลังดี
             </Callout>
           </GameCard>
 

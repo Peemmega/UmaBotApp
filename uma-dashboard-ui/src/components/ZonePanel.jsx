@@ -8,20 +8,19 @@ export default function ZonePanel({ userId, player, onSaved }) {
   const zone = player?.zone || {};
 
   const ZONE_VALUE = {
-    flat: 25,
+    flat: 20,
     add_dkh: 1,
-    floor: 7,
-    cap: 7,
+    cap_floor: 3,
     self_heal_stamina: 1,
-    modify_current_speed: 0.5,
+    modify_current_speed: 0.75,
   };
 
   const getZoneEffectLines = (build = {}) => {
+    const capFloorBuild = (build.cap_floor ?? 0) + (build.floor ?? 0) + (build.cap ?? 0);
     const effects = {
       flat: (build.flat ?? 0) * ZONE_VALUE.flat,
       add_dkh: (build.add_dkh ?? 0) * ZONE_VALUE.add_dkh,
-      floor: (build.floor ?? 0) * ZONE_VALUE.floor,
-      cap: (build.cap ?? 0) * ZONE_VALUE.cap,
+      cap_floor: capFloorBuild * ZONE_VALUE.cap_floor,
       self_heal_stamina:
         (build.self_heal_stamina ?? 0) * ZONE_VALUE.self_heal_stamina,
       modify_current_speed:
@@ -32,11 +31,10 @@ export default function ZonePanel({ userId, player, onSaved }) {
 
     if (effects.flat) lines.push(`✨ เพิ่มผลรวม +${effects.flat}`);
     if (effects.add_dkh) lines.push(`🎲 เพิ่มลูกเต๋า d/kh +${effects.add_dkh}`);
-    if (effects.floor) lines.push(`🧱 เพิ่มแต้มขั้นต่ำ +${effects.floor}`);
-    if (effects.cap) lines.push(`📈 เพิ่มแต้มสูงสุด +${effects.cap}`);
+    if (effects.cap_floor) lines.push(`🧱📈 เพิ่มแต้มขั้นต่ำและสูงสุด +${effects.cap_floor}`);
     if (effects.self_heal_stamina) {
       lines.push(`❤️ ฟื้นฟู STA ตัวเอง +${effects.self_heal_stamina}`);
-    };
+    }
     if (effects.modify_current_speed) {
       lines.push(`👟 เพิ่มอัตราเร่ง ${effects.modify_current_speed} ระดับ`);
     }
