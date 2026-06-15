@@ -545,7 +545,7 @@ export default function RaceGamePage({
   const [rooms, setRooms] = useState([]);
   const [stages, setStages] = useState([]);
   const [selectedStage, setSelectedStage] = useState("Debut");
-  const [gameplayMode, setGameplayMode] = useState("timing");
+  const [gameplayMode, setGameplayMode] = useState("manual");
   const [style, setStyle] = useState(getSavedRaceStyle);
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(false);
