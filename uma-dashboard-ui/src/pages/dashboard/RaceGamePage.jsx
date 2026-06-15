@@ -51,6 +51,7 @@ import skillIcon from "../../assets/skill_icon/Velocity.webp";
 import { getRaceImage } from "../../utils/raceSchedule.js";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 import TimingRaceGauge from "../../components/TimingRaceGauge";
+import RacePositionTrack from "../../components/RacePositionTrack";
 import "../../styles/raceGamePage.css";
 
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
@@ -596,9 +597,16 @@ export default function RaceGamePage({
     onRoomState: handleRoomState,
   });
 
+  const roomPlayers = useMemo(
+    () => (room?.players || []).map((player, index) => ({
+      ...player,
+      display_number: Number(player?.display_number) || index + 1,
+    })),
+    [room?.players]
+  );
   const myPlayer = useMemo(
-    () => room?.players?.find((player) => player.id === String(userId)),
-    [room?.players, userId]
+    () => roomPlayers.find((player) => String(player.id) === String(userId)),
+    [roomPlayers, userId]
   );
   const isWebTiming = room?.race_mode === "web_timing";
 
@@ -767,7 +775,7 @@ export default function RaceGamePage({
     return entries;
   }, [room?.scoreboard]);
   const raceScorePlayers = useMemo(
-    () => [...(room?.players || [])].sort((left, right) => {
+    () => [...roomPlayers].sort((left, right) => {
       const leftScore = Number(isWebTiming ? left.distance : scoreboardByName.get(normalizeRaceName(left.name))?.score ?? left.score) || 0;
       const rightScore = Number(isWebTiming ? right.distance : scoreboardByName.get(normalizeRaceName(right.name))?.score ?? right.score) || 0;
       if (rightScore !== leftScore) return rightScore - leftScore;
@@ -778,7 +786,7 @@ export default function RaceGamePage({
       const rightSpeed = getRunnerMaxSpeedValue(right, rightRoll) ?? -Infinity;
       return rightSpeed - leftSpeed;
     }),
-    [isWebTiming, latestRollByName, room?.players, scoreboardByName]
+    [isWebTiming, latestRollByName, roomPlayers, scoreboardByName]
   );
   const myRaceRank = useMemo(() => {
     const scoreEntry = scoreboardByName.get(normalizeRaceName(myPlayer?.name));
@@ -1459,6 +1467,13 @@ export default function RaceGamePage({
               <div className="race-live-scoreboard uma-scroll" aria-label="Live race scoreboard">
                 {raceLiveScoreCards}
               </div>
+            ) : null}
+            {isWebTiming ? (
+              <RacePositionTrack
+                players={roomPlayers}
+                finishDistance={room.finish_distance}
+                currentUserId={userId}
+              />
             ) : null}
             <AnimatePresence>
               {skillPreview && (
