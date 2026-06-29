@@ -44,6 +44,63 @@ def get_db_connection():
     return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
 
 
+def get_table_columns(cur, table_name: str):
+    cur.execute(
+        """
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = %s
+        """,
+        (table_name,),
+    )
+    return {row["column_name"] for row in cur.fetchall()}
+
+
+def build_player_summary_query(columns):
+    def first_available(candidates, default="NULL"):
+        for column in candidates:
+            if column in columns:
+                return column
+        return default
+
+    def non_empty(column):
+        return f"NULLIF(BTRIM(CAST({column} AS text)), '')"
+
+    user_id_column = first_available(["user_id", "discord_id", "id"])
+    username_column = first_available(["username", "name", "display_name"])
+    type_column = first_available(["character_type", "player_type", "role"])
+
+    image_candidates = [
+        column
+        for column in ["profile_image_url", "avatar_url", "avatar", "thumbnail", "thumnail", "image_url"]
+        if column in columns
+    ]
+
+    select_parts = [
+        f"{non_empty(user_id_column)} AS user_id" if user_id_column != "NULL" else "NULL AS user_id",
+        f"{non_empty(username_column)} AS username" if username_column != "NULL" else "NULL AS username",
+        (
+            "COALESCE(" + ", ".join(non_empty(column) for column in image_candidates) + ") AS image_url"
+            if image_candidates
+            else "NULL AS image_url"
+        ),
+        (
+            f"COALESCE({non_empty(type_column)}, 'Player') AS type"
+            if type_column != "NULL"
+            else "'Player' AS type"
+        ),
+    ]
+
+    order_column = username_column if username_column != "NULL" else user_id_column
+    order_sql = order_column if order_column != "NULL" else "1"
+
+    return f"""
+        SELECT {", ".join(select_parts)}
+        FROM players
+        ORDER BY {order_sql} NULLS LAST
+    """
+
+
 @app.get("/login")
 def login():
     auth_url = f"https://discord.com/api/oauth2/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code&scope=identify"
@@ -79,6 +136,38 @@ def get_bot_stats():
         return {"total_players": row["total_players"] if row else 0}
     except Exception as e:
         return {"error": str(e)}
+
+
+@app.get("/api/players/summary")
+def get_players_summary():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        columns = get_table_columns(cur, "players")
+        cur.execute(build_player_summary_query(columns))
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        players = []
+        for row in rows:
+            username = str(row.get("username") or "").strip()
+            user_id = str(row.get("user_id") or "").strip()
+            if not username and not user_id:
+                continue
+
+            players.append(
+                {
+                    "id": user_id or username,
+                    "name": username or f"Player {user_id}",
+                    "image_url": row.get("image_url") or "",
+                    "type": str(row.get("type") or "Player").strip() or "Player",
+                }
+            )
+
+        return {"players": players}
+    except Exception as e:
+        return JSONResponse({"detail": str(e)}, status_code=500)
 
 
 MOBILE_REDIRECT_URI = "https://umabotapp-production-c99a.up.railway.app/callback/mobile"

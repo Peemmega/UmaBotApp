@@ -9,9 +9,9 @@ export default function RightRail({
 }) {
   return (
     <aside className="dashboard-right-panel right-rail">
-      <div className="right-rail-heading">
+      {/* <div className="right-rail-heading">
         <span>Live Trainee Desk</span>
-      </div>
+      </div> */}
 
       <SkillLoadoutPanel
         userId={userId}

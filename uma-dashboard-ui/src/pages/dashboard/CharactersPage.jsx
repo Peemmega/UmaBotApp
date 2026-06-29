@@ -1,59 +1,68 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "../../styles/charactersPage.css";
-import rose_garden_img from "../../assets/character/uma/rose_garden.webp"
-import manhattan_cafe_img from "../../assets/character/uma/manhattan_cafe.webp"
-import calstone_light_o_img from "../../assets/character/uma/calstone_light_o.webp"
-
-import spica_img from "../../assets/character/trainer/spica.webp"
-import kaguya_img from "../../assets/character/trainer/kaguya.webp"
-import gelbert_img from "../../assets/character/trainer/gelbert.webp"
 import { Badge, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
+import { DEFAULT_AVATAR_URL, toAbsoluteBotUrl } from "../../utils/avatar";
 
-const characters = [
-  {
-    id: 1,
-    name: "Calston Light O",
-    type: "Trainee",
-    image: calstone_light_o_img,
-  },
-  {
-    id: 2,
-    name: "Rose Garden",
-    type: "Trainee",
-    image: rose_garden_img,
-  },
-  {
-    id: 3,
-    name: "Manhattan Cafe",
-    type: "Trainee",
-    image: manhattan_cafe_img,
-  },
-  {
-    id: 101,
-    name: "Trainer Spica",
-    type: "Trainer",
-    image: spica_img,
-  },
-  {
-    id: 102,
-    name: "Ince Seiji",
-    type: "Trainer",
-    image: kaguya_img,
-  },
-  {
-    id: 103,
-    name: "Yataio Galeberg",
-    type: "Trainer",
-    image: gelbert_img,
-  },
-];
-
-const filters = ["All", "Trainee", "Trainer"];
+const APP_API_BASE =
+  import.meta.env.VITE_APP_API_BASE ||
+  "https://umabotapp-production-c99a.up.railway.app";
 
 export default function CharactersPage() {
   const [search, setSearch] = useState("");
+  const [characters, setCharacters] = useState([]);
   const [activeFilter, setActiveFilter] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCharacters() {
+      try {
+        setLoading(true);
+        setLoadError("");
+
+        const res = await fetch(`${APP_API_BASE}/api/players/summary`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data?.detail || `Character load failed: ${res.status}`);
+        }
+
+        if (!cancelled) {
+          setCharacters(Array.isArray(data?.players) ? data.players : []);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setLoadError(String(error));
+          setCharacters([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadCharacters();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const filters = useMemo(() => {
+    const types = Array.from(
+      new Set(
+        characters
+          .map((character) => String(character?.type || "").trim())
+          .filter(Boolean)
+      )
+    ).sort((left, right) => left.localeCompare(right));
+
+    return ["All", ...types];
+  }, [characters]);
 
   const filteredCharacters = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -73,14 +82,14 @@ export default function CharactersPage() {
 
       return matchSearch && matchFilter;
     });
-  }, [search, activeFilter]);
+  }, [activeFilter, characters, search]);
 
   return (
     <section className="characters-page">
       <GameCard className="page-control-card characters-page-card">
         <SectionHeader
           title="Characters"
-          kicker="Stable Roster"
+          kicker="System Roster"
           action={<Badge>{filteredCharacters.length} entries</Badge>}
         />
 
@@ -100,9 +109,25 @@ export default function CharactersPage() {
         </div>
       </GameCard>
 
-      
-
-      {filteredCharacters.length === 0 ? (
+      {loading ? (
+        <StaggerContainer>
+          <StaggerItem>
+            <GameCard className="page-empty-state">
+              <strong>Loading characters...</strong>
+              <span>Reading roster data from the system.</span>
+            </GameCard>
+          </StaggerItem>
+        </StaggerContainer>
+      ) : loadError ? (
+        <StaggerContainer>
+          <StaggerItem>
+            <GameCard className="page-empty-state">
+              <strong>Unable to load characters</strong>
+              <span>{loadError}</span>
+            </GameCard>
+          </StaggerItem>
+        </StaggerContainer>
+      ) : filteredCharacters.length === 0 ? (
         <StaggerContainer>
           <StaggerItem>
             <GameCard className="page-empty-state">
@@ -120,14 +145,13 @@ export default function CharactersPage() {
           <StaggerItem
             as="article"
             className="ui-game-card character-card"
-            key={character.id}
+            key={character.id || character.name}
           >
             <div className="character-image-frame">
-              {character.image ? (
-                <img src={character.image} alt={character.name} />
-              ) : (
-                <img src={special_week_img} alt={character.name} />
-              )}
+              <img
+                src={toAbsoluteBotUrl(character.image_url) || DEFAULT_AVATAR_URL}
+                alt={character.name}
+              />
             </div>
 
             <div className="character-info">
