@@ -7,9 +7,10 @@ import RaceGamePage from "./pages/dashboard/RaceGamePage";
 import LoadingScreen from "./components/LoadingScreen";
 import HorseshoeBackground from "./components/HorseshoeBackground";
 import PageTransition from "./components/PageTransition";
+import { getPlayer } from "./api/playerApi";
+import { getDiscordAvatarUrl, resolveSessionAvatar } from "./utils/avatar";
 
 const APP_BASE = "https://umabotapp-production-c99a.up.railway.app";
-const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const SESSION_KEY = "uma_login";
 const SESSION_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
@@ -128,21 +129,13 @@ export default function App() {
         setLoading(true);
         setError("");
 
-        const playerUrl = `${BOT_API_BASE}/player/${userId}?username=${encodeURIComponent(
-          username
-        )}`;
-
-        const res = await fetch(playerUrl);
-        if (!res.ok) throw new Error(`player API failed: ${res.status}`);
-
-        const data = await res.json();
+        const data = await getPlayer(userId, username);
         setPlayer(data);
         sessionStorage.setItem(cacheKey, JSON.stringify(data));
       } catch (err) {
         console.error("PLAYER LOAD ERROR:", err);
 
         setError(
-          `URL: ${playerUrl}\n\n` +
           `USERNAME: ${username}\n` +
           `USER ID: ${userId}\n\n` +
           `ERROR: ${String(err)}`
@@ -174,10 +167,20 @@ export default function App() {
     loadStats();
   }, [username, userId]);
 
-  const avatarUrl = useMemo(() => {
-    if (!userId || !avatarHash) return null;
-    return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.webp`;
-  }, [userId, avatarHash]);
+  useEffect(() => {
+    if (!userId || !player) return;
+    sessionStorage.setItem(`player:${userId}`, JSON.stringify(player));
+  }, [player, userId]);
+
+  const discordAvatarUrl = useMemo(
+    () => getDiscordAvatarUrl(userId, avatarHash),
+    [avatarHash, userId]
+  );
+
+  const avatarUrl = useMemo(
+    () => resolveSessionAvatar({ player, discordAvatarUrl }),
+    [discordAvatarUrl, player]
+  );
 
   const handleLogout = () => {
     localStorage.removeItem(SESSION_KEY);

@@ -1,3 +1,5 @@
+import { DEFAULT_AVATAR_URL, resolveRaceAvatar } from "../../utils/avatar";
+
 export default function TcgRoomPage({
   room,
   userId,
@@ -36,7 +38,7 @@ export default function TcgRoomPage({
               <strong>{slot === "player1" ? "Player 1" : "Player 2"}</strong>
               {player ? (
                 <>
-                  {player.avatar_url && <img src={player.avatar_url} alt="" />}
+                  <img src={resolveRaceAvatar({ avatar: player.avatar_url }, DEFAULT_AVATAR_URL)} alt="" />
                   <span>{player.username}</span>
                   {player.is_host && <em>Host</em>}
                 </>

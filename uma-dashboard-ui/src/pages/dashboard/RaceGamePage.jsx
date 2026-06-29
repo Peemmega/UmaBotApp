@@ -52,6 +52,7 @@ import { getRaceImage } from "../../utils/raceSchedule.js";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 import TimingRaceGauge from "../../components/TimingRaceGauge";
 import RacePositionTrack from "../../components/RacePositionTrack";
+import { resolveRaceAvatar } from "../../utils/avatar";
 import "../../styles/raceGamePage.css";
 
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
@@ -1845,7 +1846,7 @@ function RaceWinnerModal({ winner, room, onLeave }) {
   const winnerStyle = winner?.style || winner?.running_style || "-";
   const winnerScore = winner?.distance ?? winner?.score ?? winner?.total_score ?? 0;
   const winnerUnit = winner?.distance !== undefined ? "m" : " score";
-  const winnerAvatar = winner?.avatar || getRunnerAvatar(winner);
+  const winnerAvatar = getRunnerAvatar(winner);
   const isWebTiming = room?.race_mode === "web_timing";
   const finalScores = getFinalRaceScores(room);
 
@@ -2089,9 +2090,7 @@ function getRunnerAvatar(player) {
   const localPathAvatar = getLocalMobAvatarFromPath(player.thumbnail || player.avatar);
   if (localPathAvatar) return localPathAvatar;
 
-  return player.is_mob
-    ? firstUsableImage(player.thumbnail, player.avatar)
-    : firstUsableImage(player.avatar, player.thumbnail);
+  return resolveRaceAvatar(player);
 }
 
 function getLocalMobAvatarById(id = "") {
@@ -2108,15 +2107,6 @@ function getLocalMobAvatar(name = "") {
 function getLocalMobAvatarFromPath(value = "") {
   const fileName = String(value || "").trim().split(/[\\/]/).pop();
   return LOCAL_MOB_AVATAR_FILES.has(fileName) ? `/mobs/${fileName}` : "";
-}
-
-function firstUsableImage(...values) {
-  return values.find((value) => isUsableImageSrc(value)) || "";
-}
-
-function isUsableImageSrc(value) {
-  const text = String(value || "").trim();
-  return Boolean(text && (text.startsWith("http://") || text.startsWith("https://") || text.startsWith("/")));
 }
 
 function RaceLogItem({ log }) {

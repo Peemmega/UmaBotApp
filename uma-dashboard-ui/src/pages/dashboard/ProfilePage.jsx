@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { mainStats, aptitudeRows } from "../../data/dashboardConfig";
 import StatCell from "../../components/StatCell";
 import AptitudeItem from "../../components/AptitudeItem";
 import ResourcePill from "../../components/ResourcePill";
 import EditStatsModal from "../../components/EditStatsModal";
 import ZonePanel from "../../components/ZonePanel";
+import { BOT_API_BASE, uploadProfileImage } from "../../api/playerApi";
 import coinIcon from "../../assets/icons/umaCoin.webp";
 import statIcon from "../../assets/icons/statsPoint.webp";
 import skillIcon from "../../assets/icons/skillPoint.webp";
@@ -24,16 +25,79 @@ export default function ProfilePage({
   setIsEditStatsOpen,
   setIsRenameOpen,
 }) {
-
   const [equippedSkills, setEquippedSkills] = useState({});
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
+  const [uploadError, setUploadError] = useState("");
+  const fileInputRef = useRef(null);
+
   useEffect(() => {
     if (!userId) return;
 
-    fetch(`https://umadndbot-production.up.railway.app/player/${userId}/skills`)
+    fetch(`${BOT_API_BASE}/player/${userId}/skills`)
       .then((res) => res.json())
       .then((data) => setEquippedSkills(data))
       .catch(console.error);
   }, [userId]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  const currentAvatarUrl = previewUrl || avatarUrl;
+
+  const handleSelectImage = (event) => {
+    const file = event.target.files?.[0];
+    setUploadMessage("");
+    setUploadError("");
+
+    if (!file) {
+      setSelectedImageFile(null);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl("");
+      return;
+    }
+
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setSelectedImageFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const handleUploadImage = async () => {
+    if (!userId || !selectedImageFile) return;
+
+    try {
+      setUploadingImage(true);
+      setUploadError("");
+      setUploadMessage("");
+
+      const result = await uploadProfileImage(userId, selectedImageFile);
+      setPlayer((prev) => ({
+        ...(prev || {}),
+        profile_image_url: result.profile_image_url,
+        profile_image_updated_at: result.profile_image_updated_at,
+      }));
+      setUploadMessage("Profile image updated.");
+      setSelectedImageFile(null);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      setPreviewUrl("");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch (err) {
+      setUploadError(String(err.message || err));
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   return (
     <>
@@ -51,11 +115,40 @@ export default function ProfilePage({
 
             <div className="profile-body">
               <div className="profile-avatar-wrap">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="profile" className="profile-avatar" />
+                {currentAvatarUrl ? (
+                  <img src={currentAvatarUrl} alt="profile" className="profile-avatar" />
                 ) : (
                   <div className="profile-avatar placeholder">{"\u{1F464}"}</div>
                 )}
+                <div className="profile-avatar-actions">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                    className="profile-image-input"
+                    onChange={handleSelectImage}
+                  />
+                  <button
+                    type="button"
+                    className="profile-image-btn"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                  >
+                    Change Image / เปลี่ยนรูป
+                  </button>
+                  {selectedImageFile && (
+                    <button
+                      type="button"
+                      className="profile-image-upload-btn"
+                      onClick={handleUploadImage}
+                      disabled={uploadingImage}
+                    >
+                      {uploadingImage ? "Uploading..." : "Upload"}
+                    </button>
+                  )}
+                  {uploadMessage ? <div className="profile-image-success">{uploadMessage}</div> : null}
+                  {uploadError ? <div className="profile-image-error">{uploadError}</div> : null}
+                </div>
               </div>
 
               <div className="profile-info">
