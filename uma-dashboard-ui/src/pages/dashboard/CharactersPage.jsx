@@ -3,10 +3,16 @@ import "../../styles/charactersPage.css";
 import { Badge, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import { DEFAULT_AVATAR_URL, toAbsoluteBotUrl } from "../../utils/avatar";
+import { BOT_API_BASE } from "../../api/playerApi";
 
 const APP_API_BASE =
   import.meta.env.VITE_APP_API_BASE ||
   "https://umabotapp-production-c99a.up.railway.app";
+
+const CHARACTER_SUMMARY_SOURCES = [
+  BOT_API_BASE,
+  APP_API_BASE,
+];
 
 export default function CharactersPage() {
   const [search, setSearch] = useState("");
@@ -19,20 +25,33 @@ export default function CharactersPage() {
     let cancelled = false;
 
     async function loadCharacters() {
+      const failures = [];
+
       try {
         setLoading(true);
         setLoadError("");
 
-        const res = await fetch(`${APP_API_BASE}/api/players/summary`);
-        const data = await res.json();
+        for (const baseUrl of CHARACTER_SUMMARY_SOURCES) {
+          const summaryUrl = `${String(baseUrl || "").replace(/\/$/, "")}/api/players/summary`;
 
-        if (!res.ok) {
-          throw new Error(data?.detail || `Character load failed: ${res.status}`);
+          try {
+            const res = await fetch(summaryUrl);
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+              throw new Error(data?.detail || `Character load failed: ${res.status}`);
+            }
+
+            if (!cancelled) {
+              setCharacters(Array.isArray(data?.players) ? data.players : []);
+            }
+            return;
+          } catch (error) {
+            failures.push(`${summaryUrl}: ${String(error)}`);
+          }
         }
 
-        if (!cancelled) {
-          setCharacters(Array.isArray(data?.players) ? data.players : []);
-        }
+        throw new Error(failures.join(" | "));
       } catch (error) {
         if (!cancelled) {
           setLoadError(String(error));
