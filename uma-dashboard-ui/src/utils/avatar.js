@@ -21,9 +21,31 @@ export function isUsableImageSrc(value) {
 export function toAbsoluteBotUrl(value) {
   const text = String(value || "").trim();
   if (!text) return "";
-  if (text.startsWith("http://") || text.startsWith("https://") || text.startsWith("data:")) {
+  if (text.startsWith("data:")) {
     return text;
   }
+
+  if (text.startsWith("http://") || text.startsWith("https://")) {
+    try {
+      const resolvedUrl = new URL(text);
+      const apiBaseUrl = new URL(BOT_API_BASE);
+      const isLocalhostSource =
+        resolvedUrl.hostname === "127.0.0.1" ||
+        resolvedUrl.hostname === "localhost";
+      const isProductionApiBase =
+        apiBaseUrl.hostname !== "127.0.0.1" &&
+        apiBaseUrl.hostname !== "localhost";
+
+      if (isLocalhostSource && isProductionApiBase) {
+        return `${BOT_API_BASE}${resolvedUrl.pathname}${resolvedUrl.search}${resolvedUrl.hash}`;
+      }
+    } catch {
+      return text;
+    }
+
+    return text;
+  }
+
   if (text.startsWith("/")) return `${BOT_API_BASE}${text}`;
   return `${BOT_API_BASE}/${text.replace(/^\/+/, "")}`;
 }

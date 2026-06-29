@@ -52,6 +52,16 @@ export default function ProfilePage({
 
   const currentAvatarUrl = previewUrl || avatarUrl;
 
+  useEffect(() => {
+    if (!userId) return;
+    console.info("[profile] avatar img src", {
+      userId,
+      preview_src: previewUrl || "",
+      final_img_src: currentAvatarUrl || "",
+      profile_image_url: player?.profile_image_url || "",
+    });
+  }, [currentAvatarUrl, player?.profile_image_url, previewUrl, userId]);
+
   const handleSelectImage = (event) => {
     const file = event.target.files?.[0];
     setUploadMessage("");

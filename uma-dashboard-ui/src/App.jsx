@@ -182,6 +182,16 @@ export default function App() {
     [discordAvatarUrl, player]
   );
 
+  useEffect(() => {
+    if (!userId) return;
+    console.info("[avatar] resolved session avatar", {
+      userId,
+      profile_image_url: player?.profile_image_url || "",
+      discord_avatar_url: discordAvatarUrl || "",
+      final_img_src: avatarUrl || "",
+    });
+  }, [avatarUrl, discordAvatarUrl, player?.profile_image_url, userId]);
+
   const handleLogout = () => {
     localStorage.removeItem(SESSION_KEY);
     sessionStorage.removeItem(`player:${userId}`);
