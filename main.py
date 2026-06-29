@@ -159,6 +159,26 @@ def build_player_summary_query(columns):
     """
 
 
+def build_player_summary_item(row):
+    username = str(row.get("username") or "").strip()
+    user_id = str(row.get("user_id") or "").strip()
+    if not username and not user_id:
+        return None
+
+    return {
+        "id": user_id or username,
+        "name": username or f"Player {user_id}",
+        "image_url": row.get("image_url") or "",
+        "type": str(row.get("type") or "Player").strip() or "Player",
+    }
+
+
+def get_player_summary_rows(cur):
+    columns = get_table_columns(cur, "players")
+    cur.execute(build_player_summary_query(columns))
+    return fetch_all(cur)
+
+
 @app.get("/login")
 def login():
     auth_url = f"https://discord.com/api/oauth2/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code&scope=identify"
@@ -207,27 +227,33 @@ def get_players_summary():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        columns = get_table_columns(cur, "players")
-        cur.execute(build_player_summary_query(columns))
-        rows = fetch_all(cur)
-
-        players = []
-        for row in rows:
-            username = str(row.get("username") or "").strip()
-            user_id = str(row.get("user_id") or "").strip()
-            if not username and not user_id:
-                continue
-
-            players.append(
-                {
-                    "id": user_id or username,
-                    "name": username or f"Player {user_id}",
-                    "image_url": row.get("image_url") or "",
-                    "type": str(row.get("type") or "Player").strip() or "Player",
-                }
-            )
-
+        rows = get_player_summary_rows(cur)
+        players = [player for row in rows if (player := build_player_summary_item(row))]
         return {"players": players}
+    except Exception as e:
+        return JSONResponse({"detail": str(e)}, status_code=500)
+    finally:
+        if cur:
+            cur.close()
+        close_db_connection(conn)
+
+
+@app.get("/api/players/{user_id}/summary")
+def get_player_summary(user_id: str):
+    conn = None
+    cur = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        rows = get_player_summary_rows(cur)
+        target_user_id = str(user_id).strip()
+
+        for row in rows:
+            player = build_player_summary_item(row)
+            if player and str(player["id"]) == target_user_id:
+                return player
+
+        return JSONResponse({"detail": "Player not found"}, status_code=404)
     except Exception as e:
         return JSONResponse({"detail": str(e)}, status_code=500)
     finally:
