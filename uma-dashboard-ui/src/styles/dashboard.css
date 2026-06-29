@@ -45,6 +45,7 @@ body {
 
 .profile-info {
   min-width: 0;
+  align-content: center
 }
 
 .profile-id {
@@ -512,6 +513,7 @@ body {
   font-size: clamp(17px, 2.1vw, 23px);
   font-weight: 1000;
   color: white;
+  text-shadow: 0 0 8px rgba(16, 16, 16, 0.18)
 }
 
 .padding_container {
