@@ -66,6 +66,9 @@ def get_postgres_candidates():
 
 
 def get_db_connection():
+    if os.path.exists(DB_NAME):
+        return get_sqlite_connection()
+
     errors = []
 
     for candidate in get_postgres_candidates():
@@ -73,9 +76,6 @@ def get_db_connection():
             return psycopg2.connect(candidate, cursor_factory=RealDictCursor)
         except OperationalError as exc:
             errors.append(f"{candidate.split('@')[-1]} -> {exc}")
-
-    if os.path.exists(DB_NAME):
-        return get_sqlite_connection()
 
     if errors:
         raise RuntimeError(" | ".join(errors))
