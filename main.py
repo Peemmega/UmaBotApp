@@ -1,6 +1,7 @@
 import os
 import requests
 import httpx
+import sqlite3
 
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse, JSONResponse, FileResponse
@@ -11,6 +12,7 @@ import uvicorn
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from psycopg2 import OperationalError
 from urllib.parse import urlencode
 load_dotenv()
 
@@ -40,11 +42,67 @@ REDIRECT_URI = os.getenv("REDIRECT_URI")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+
+def get_sqlite_connection():
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def get_postgres_candidates():
+    candidates = []
+    for env_name in [
+        "DATABASE_URL",
+        "DATABASE_PUBLIC_URL",
+        "POSTGRES_URL",
+        "POSTGRES_PUBLIC_URL",
+        "PGDATABASE_URL",
+    ]:
+        value = os.getenv(env_name)
+        if value and value not in candidates:
+            candidates.append(value)
+    return candidates
+
+
 def get_db_connection():
-    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    errors = []
+
+    for candidate in get_postgres_candidates():
+        try:
+            return psycopg2.connect(candidate, cursor_factory=RealDictCursor)
+        except OperationalError as exc:
+            errors.append(f"{candidate.split('@')[-1]} -> {exc}")
+
+    if os.path.exists(DB_NAME):
+        return get_sqlite_connection()
+
+    if errors:
+        raise RuntimeError(" | ".join(errors))
+    raise RuntimeError("No database connection configured")
+
+
+def close_db_connection(conn):
+    if conn:
+        conn.close()
+
+
+def fetch_all(cur):
+    rows = cur.fetchall()
+    return [dict(row) for row in rows]
+
+
+def fetch_one(cur):
+    row = cur.fetchone()
+    return dict(row) if row else None
 
 
 def get_table_columns(cur, table_name: str):
+    connection_module = type(cur.connection).__module__
+    if connection_module.startswith("sqlite3"):
+        cur.execute(f"PRAGMA table_info({table_name})")
+        return {row["name"] for row in fetch_all(cur)}
+
     cur.execute(
         """
         SELECT column_name
@@ -53,7 +111,7 @@ def get_table_columns(cur, table_name: str):
         """,
         (table_name,),
     )
-    return {row["column_name"] for row in cur.fetchall()}
+    return {row["column_name"] for row in fetch_all(cur)}
 
 
 def build_player_summary_query(columns):
@@ -97,7 +155,7 @@ def build_player_summary_query(columns):
     return f"""
         SELECT {", ".join(select_parts)}
         FROM players
-        ORDER BY {order_sql} NULLS LAST
+        ORDER BY {order_sql}
     """
 
 
@@ -126,28 +184,32 @@ def callback(code: str):
 
 @app.get("/api/bot-stats/")
 def get_bot_stats():
+    conn = None
+    cur = None
     try:
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("SELECT COUNT(*) as total_players FROM players")
-        row = cur.fetchone()
-        cur.close()
-        conn.close()
+        row = fetch_one(cur)
         return {"total_players": row["total_players"] if row else 0}
     except Exception as e:
         return {"error": str(e)}
+    finally:
+        if cur:
+            cur.close()
+        close_db_connection(conn)
 
 
 @app.get("/api/players/summary")
 def get_players_summary():
+    conn = None
+    cur = None
     try:
         conn = get_db_connection()
         cur = conn.cursor()
         columns = get_table_columns(cur, "players")
         cur.execute(build_player_summary_query(columns))
-        rows = cur.fetchall()
-        cur.close()
-        conn.close()
+        rows = fetch_all(cur)
 
         players = []
         for row in rows:
@@ -168,6 +230,10 @@ def get_players_summary():
         return {"players": players}
     except Exception as e:
         return JSONResponse({"detail": str(e)}, status_code=500)
+    finally:
+        if cur:
+            cur.close()
+        close_db_connection(conn)
 
 
 MOBILE_REDIRECT_URI = "https://umabotapp-production-c99a.up.railway.app/callback/mobile"
