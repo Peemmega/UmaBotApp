@@ -144,7 +144,7 @@ export default function ProfilePage({
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingImage}
                   >
-                    Change Image / เปลี่ยนรูป
+                    เปลี่ยนรูป
                   </button>
                   {selectedImageFile && (
                     <button
