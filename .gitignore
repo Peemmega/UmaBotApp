@@ -4,6 +4,7 @@ __pycache__/
 .venv/
 dist/
 .env
+android/
 android/.gradle/
 android/app/build/
 android/build/

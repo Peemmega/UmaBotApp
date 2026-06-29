@@ -523,9 +523,7 @@ body {
   grid-template-columns: 180px 1fr;
   gap: clamp(var(--uma-space-5), 4vw, 50px);
   padding: clamp(var(--uma-space-5), 3vw, 30px) clamp(var(--uma-space-5), 4vw, 38px);
-  background:
-    radial-gradient(circle at 0 0, rgba(255, 212, 90, 0.16), transparent 36%),
-    linear-gradient(135deg, rgba(245, 255, 241, 0.94), rgba(236, 252, 203, 0.66));
+  background:linear-gradient(#fffffff5,#f8fff4f0),#f5f5f5
 }
 
 .profile-avatar {
