@@ -113,7 +113,7 @@ const zoneRows = [
   ["add_dkh", "+1 ลูกเต๋า และ +1 kh ต่อ 1 แต้ม build"],
   ["cap_floor", "+3 แต้มขั้นต่ำและสูงสุดลูกเต๋าต่อ 1 แต้ม build"],
   ["self_heal_stamina", "ฟื้น Stamina +1 ต่อ 1 แต้ม build"],
-  ["modify_current_speed", "เพิ่ม current speed ผ่านระบบ acceleration ค่า 0.75 ต่อ 1 แต้ม build"],
+  ["modify_current_speed", "เพิ่ม current speed ผ่านระบบ acceleration ค่า 1 ต่อ 1 แต้ม build"],
 ];
 
 const rerollRows = [
