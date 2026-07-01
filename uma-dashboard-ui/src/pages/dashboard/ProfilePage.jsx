@@ -193,7 +193,7 @@ export default function ProfilePage({
                   />
                   <ResourcePill
                     icon={skillIcon}
-                    label="Skill Points"
+                    label="Event Point"
                     value={player?.skill_point ?? 0}
                   />
                 </div>

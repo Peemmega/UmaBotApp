@@ -73,7 +73,7 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
       {/* <div className="skill-point-box">
         <span className="sp-circle">SP</span>
         <div>
-          <div className="sp-label">Skill Point</div>
+          <div className="sp-label">Event Point</div>
           <div className="sp-value">{player?.skill_point ?? 0}</div>
         </div>
       </div> */}
