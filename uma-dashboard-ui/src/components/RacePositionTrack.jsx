@@ -8,7 +8,8 @@ const TRACK_STYLE_COLORS = {
 };
 
 const STACK_THRESHOLD = 0.03;
-const STACK_STEP_PX = 24;
+const STACK_STEP_PX = 10;
+const LANE_COUNT = 6;
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -43,6 +44,10 @@ function getStackOffset(indexInCluster) {
   return direction * level * STACK_STEP_PX;
 }
 
+function getLaneCenterY(lane) {
+  return 12 + (clamp(Number(lane) || 1, 1, LANE_COUNT) - 1) * 15;
+}
+
 function buildTrackPlayers(players, room) {
   const basePlayers = (Array.isArray(players) ? players : []).map((player, index) => ({
     ...player,
@@ -50,6 +55,7 @@ function buildTrackPlayers(players, room) {
     progressRatio: getRelativePlayerProgress(player, players),
     numericScore: getPlayerScore(player),
     runningStyleKey: normalizeRunningStyle(player?.running_style || player?.style),
+    markerLane: clamp(Number(player?.current_lane) || 1, 1, LANE_COUNT),
   }));
 
   const rankedPlayers = [...basePlayers]
@@ -65,6 +71,7 @@ function buildTrackPlayers(players, room) {
 
   const offsetsById = new Map();
   const clusteredPlayers = [...rankedPlayers].sort((left, right) => (
+    left.markerLane - right.markerLane ||
     left.progressRatio - right.progressRatio ||
     left.display_number - right.display_number
   ));
@@ -74,7 +81,7 @@ function buildTrackPlayers(players, room) {
     const current = clusteredPlayers[index];
     const previous = clusteredPlayers[index - 1];
 
-    if (previous && Math.abs(current.progressRatio - previous.progressRatio) < STACK_THRESHOLD) {
+    if (previous && previous.markerLane === current.markerLane && Math.abs(current.progressRatio - previous.progressRatio) < STACK_THRESHOLD) {
       clusterDepth += 1;
     } else {
       clusterDepth = 0;
@@ -90,6 +97,7 @@ function buildTrackPlayers(players, room) {
       markerColor: TRACK_STYLE_COLORS[player.runningStyleKey],
       markerProgress: player.progressRatio,
       markerOffsetY: offsetsById.get(playerId) || 0,
+      markerLaneY: getLaneCenterY(player.markerLane),
       playerKey: playerId,
     };
   });
@@ -131,7 +139,15 @@ export default function RacePositionTrack({ players, room, currentUserId }) {
       <div className="race-position-track__dev-label">POSITION TRACK ACTIVE</div>
       <div className="race-position-track__label is-start">START</div>
       <div className="race-position-track__label is-finish">FINISH</div>
-      <div className="race-position-lane" aria-hidden="true" />
+      <div className="race-position-lanes" aria-hidden="true">
+        {Array.from({ length: LANE_COUNT }, (_, index) => (
+          <div
+            key={index + 1}
+            className="race-position-lane"
+            style={{ "--lane-y": `${getLaneCenterY(index + 1)}%` }}
+          />
+        ))}
+      </div>
 
       {trackPlayers.map((player) => {
         const isSelf =
@@ -151,6 +167,7 @@ export default function RacePositionTrack({ players, room, currentUserId }) {
               "--progress": player.markerProgress,
               "--track-offset-y": `${player.markerOffsetY}px`,
               "--track-marker-color": player.markerColor,
+              "--lane-y": `${player.markerLaneY}%`,
             }}
           >
             <div

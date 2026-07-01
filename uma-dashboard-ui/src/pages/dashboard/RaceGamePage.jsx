@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import {
   addRaceBot,
+  changeRaceLane,
   confirmRaceTurn,
   createRaceRoom,
   getRaceRoom,
@@ -57,6 +58,7 @@ import "../../styles/raceGamePage.css";
 
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
 const DICE_COLOR_OPTIONS = ["white", "gold"];
+const LANE_OPTIONS = [1, 2, 3, 4, 5, 6];
 const RACE_STYLE_COOKIE = "uma_race_last_style";
 const RACE_STYLE_COOKIE_MAX_AGE = 60 * 60 * 24 * 180;
 const RACE_MUSIC_VOLUME_COOKIE = "uma_race_music_volume";
@@ -610,6 +612,7 @@ export default function RaceGamePage({
     [roomPlayers, userId]
   );
   const isWebTiming = room?.race_mode === "web_timing";
+  const laneSystemEnabled = Boolean(room?.lane_system_enabled) && !isWebTiming;
 
   const canRun =
     room?.phase === "running" &&
@@ -837,9 +840,12 @@ export default function RaceGamePage({
               </>
             ) : (
               <>
-                <span><img src={staminaIcon} alt="Stamina" />{player.stamina_left}</span>
+                <span><img src={staminaIcon} alt="Stamina" />{player.current_stamina ?? player.stamina_left}/{player.max_stamina ?? player.stamina_left}</span>
                 <span><img src={witIcon} alt="Wit" />{player.wit_mana}</span>
                 <span className="race-score-speed">{maxSpeed}</span>
+                <span>Lane {player.current_lane ?? 1}</span>
+                {player.drafting_active ? <span className="race-effect-chip is-draft">Draft Active</span> : null}
+                {player.blocked_count ? <span className="race-effect-chip is-blocked">? BLOCKED x{player.blocked_count}</span> : null}
               </>
             )}
             <span className={`race-score-diff ${diff === 0 ? "lead" : ""}`}>
@@ -1097,6 +1103,9 @@ export default function RaceGamePage({
   const handleRun = () =>
     runAction("run", () => runRaceTurn(room.room_id, playerPayload));
 
+  const handleChangeLane = (targetLane) =>
+    runAction("lane", () => changeRaceLane(room.room_id, userId, targetLane));
+
   const timingRoomId = room?.room_id;
   const handleTiming = useCallback(
     async (timing) => {
@@ -1318,6 +1327,41 @@ export default function RaceGamePage({
       </header>
 
       {error && <div className="race-error">{error}</div>}
+
+      {laneSystemEnabled && myPlayer ? (
+        <section className="race-lane-control-card">
+          <div className="race-lane-control-copy">
+            <span>Lane Command</span>
+            <strong>Lane {myPlayer.current_lane ?? 1}</strong>
+            <small>
+              {myPlayer.pending_lane
+                ? `Changing to Lane ${myPlayer.pending_lane} next turn`
+                : "No hidden lane change queued"}
+            </small>
+          </div>
+          <div className="race-lane-button-row">
+            {LANE_OPTIONS.map((lane) => {
+              const isCurrent = Number(myPlayer.current_lane) === lane;
+              const isPending = Number(myPlayer.pending_lane) === lane;
+              return (
+                <button
+                  key={lane}
+                  type="button"
+                  className={[
+                    "race-lane-btn",
+                    isCurrent ? "is-current" : "",
+                    isPending ? "is-pending" : "",
+                  ].filter(Boolean).join(" ")}
+                  onClick={() => handleChangeLane(lane)}
+                  disabled={!room?.started || room?.ended || Boolean(actionBusy)}
+                >
+                  {lane}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
 
       <div className="race-hud-grid">
         <aside className="race-track-panel race-hud-panel race-track-hud">

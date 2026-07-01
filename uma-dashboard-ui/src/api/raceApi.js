@@ -76,6 +76,13 @@ export function runRaceTurn(roomId, player) {
   });
 }
 
+export function changeRaceLane(roomId, userId, targetLane) {
+  return request(`/race/rooms/${roomId}/change-lane`, {
+    method: "POST",
+    body: JSON.stringify({ user_id: String(userId), target_lane: Number(targetLane) }),
+  });
+}
+
 export function submitRaceTiming(roomId, timing) {
   const cycleId = Number(timing?.cycle_id);
   const timingScore = Number(timing?.timing_score);
