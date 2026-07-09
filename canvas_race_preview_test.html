@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Canvas Race Preview Test</title>
+  <style>
+    @font-face {
+      font-family: "Prompt Bold Local";
+      src: url("./uma-dashboard-ui/public/race_discord/Prompt-Bold.ttf") format("truetype");
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #111;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 1340px;
+      height: 498px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="preview" width="1340" height="498"></canvas>
+  <script>
+    const BG = "./uma-dashboard-ui/public/race_discord/race_dice_preview_bg.png";
+    const AVATAR = "./uma-dashboard-ui/public/race_discord/characters/mob_01.png";
+    const ICON_MAP = {
+      Speed: "./uma-dashboard-ui/public/race_discord/stats_icon/utx_ico_obtain_00.png",
+      Stamina: "./uma-dashboard-ui/public/race_discord/stats_icon/utx_ico_obtain_01.png",
+      Power: "./uma-dashboard-ui/public/race_discord/stats_icon/utx_ico_obtain_02.png",
+      Gut: "./uma-dashboard-ui/public/race_discord/stats_icon/utx_ico_obtain_03.png",
+      Velocity: "./uma-dashboard-ui/public/race_discord/skill_icons/Velocity.png",
+      Navigation: "./uma-dashboard-ui/public/race_discord/skill_icons/Navigation.png",
+      Block: "./uma-dashboard-ui/public/race_discord/icons/block_icon.png"
+    };
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    function cropCover(ctx, img, x, y, width, height) {
+      const scale = Math.max(width / img.width, height / img.height);
+      const nw = img.width * scale;
+      const nh = img.height * scale;
+      const ox = x + (width - nw) / 2;
+      const oy = y + (height - nh) / 2;
+      ctx.drawImage(img, ox, oy, nw, nh);
+    }
+
+    const TH_TEXT = {
+      inGroup: "\u0e2d\u0e22\u0e39\u0e48\u0e43\u0e19\u0e01\u0e25\u0e38\u0e48\u0e21",
+      score: "\u0e04\u0e30\u0e41\u0e19\u0e19",
+      currentSpeed: "\u0e04\u0e27\u0e32\u0e21\u0e40\u0e23\u0e47\u0e27\u0e1b\u0e31\u0e08\u0e08\u0e38\u0e1a\u0e31\u0e19"
+    };
+
+    function drawTextOutline(ctx, text, x, y, font, fill, outline, width, align = "left") {
+      ctx.save();
+      ctx.font = font;
+      ctx.textAlign = align;
+      ctx.textBaseline = "top";
+      for (let dx = -width; dx <= width; dx += 1) {
+        for (let dy = -width; dy <= width; dy += 1) {
+          if (!dx && !dy) continue;
+          ctx.fillStyle = outline;
+          ctx.fillText(text, x + dx, y + dy);
+        }
+      }
+      ctx.fillStyle = fill;
+      ctx.fillText(text, x, y);
+      ctx.restore();
+    }
+
+    function drawText(ctx, text, x, y, font, fill, align = "left") {
+      ctx.save();
+      ctx.font = font;
+      ctx.fillStyle = fill;
+      ctx.textAlign = align;
+      ctx.textBaseline = "top";
+      ctx.fillText(text, x, y);
+      ctx.restore();
+    }
+
+    function parseDisplayText(text) {
+      const pattern = /(__.*?__|<:.*?:\d+>|Speed|Power|Gut|Velocity|Navigation|Stamina|Block)/g;
+      return text.split(pattern).filter(Boolean).map((part, index) => {
+        if (part.startsWith("__") && part.endsWith("__")) {
+          return { key: "u" + index, type: "underline", value: part.slice(2, -2) };
+        }
+        if (part.startsWith("<:")) {
+          return { key: "i" + index, type: "icon", value: part.split(":")[1] };
+        }
+        if (ICON_MAP[part]) {
+          return { key: "i" + index, type: "icon", value: part };
+        }
+        return { key: "t" + index, type: "text", value: part };
+      });
+    }
+
+    async function drawRichText(ctx, x, y, tokens, font, color) {
+      ctx.save();
+      ctx.font = font;
+      ctx.fillStyle = color;
+      ctx.textBaseline = "top";
+
+      let cursorX = x;
+      for (const token of tokens) {
+        if (token.type === "text") {
+          ctx.fillText(token.value, cursorX, y);
+          cursorX += ctx.measureText(token.value).width;
+          continue;
+        }
+        if (token.type === "underline") {
+          ctx.fillText(token.value, cursorX, y);
+          const w = ctx.measureText(token.value).width;
+          ctx.beginPath();
+          ctx.lineWidth = 4;
+          ctx.strokeStyle = color;
+          ctx.moveTo(cursorX, y + 43);
+          ctx.lineTo(cursorX + w, y + 43);
+          ctx.stroke();
+          cursorX += w;
+          continue;
+        }
+        if (token.type === "icon") {
+          const icon = await loadImage(ICON_MAP[token.value]);
+          ctx.drawImage(icon, cursorX + 4, y + 6, 42, 42);
+          cursorX += 52;
+        }
+      }
+
+      ctx.restore();
+    }
+
+    async function main() {
+      await document.fonts.load("900 42px 'Prompt Bold Local'");
+
+      const canvas = document.getElementById("preview");
+      const ctx = canvas.getContext("2d");
+      const [bg, avatar] = await Promise.all([loadImage(BG), loadImage(AVATAR)]);
+
+      ctx.drawImage(bg, 0, 0, 1340, 498);
+      cropCover(ctx, avatar, 0, 0, 430, 498);
+
+      const brown = "#704623";
+      const green = "#69b22d";
+      const white = "#ffffff";
+      const outline = "#502d14";
+      const textYOffset = 10;
+
+      drawTextOutline(ctx, "2", 90, 20 + textYOffset, "900 92px 'Prompt Bold Local'", "#ffcd50", outline, 4, "right");
+      drawTextOutline(ctx, "/5", 100, 82 + textYOffset, "900 42px 'Prompt Bold Local'", white, outline, 4, "left");
+      drawTextOutline(ctx, "Pace", 30, 400 + textYOffset, "900 58px 'Prompt Bold Local'", white, outline, 4, "left");
+      drawTextOutline(ctx, TH_TEXT.score, 345, 370 + textYOffset, "900 30px 'Prompt Bold Local'", white, outline, 3, "left");
+      drawTextOutline(ctx, "42", 435, 405 + textYOffset, "900 58px 'Prompt Bold Local'", white, outline, 4, "right");
+
+      drawText(ctx, `${TH_TEXT.currentSpeed} 312`, 520, 30 + textYOffset, "900 58px 'Prompt Bold Local'", green);
+      drawText(ctx, "14", 1325, 16 + textYOffset, "900 92px 'Prompt Bold Local'", brown, "right");
+      drawText(ctx, `Uphill / ${TH_TEXT.inGroup} / lane 3`, 520, 100 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
+
+      await drawRichText(ctx, 520, 160 + textYOffset, parseDisplayText("3 + __5__ + 4 + <:Speed:1> + <:Power:2>"), "900 42px 'Prompt Bold Local'", brown);
+      await drawRichText(ctx, 520, 225 + textYOffset, parseDisplayText("+2 <:Speed:1> +1 <:Power:2> Block"), "900 42px 'Prompt Bold Local'", brown);
+
+      drawText(ctx, "88 (-7)", 595, 340 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
+      drawText(ctx, "0 → 10 pt.", 595, 415 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
+      drawText(ctx, "2", 1130, 400 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
+      drawText(ctx, "1", 1245, 400 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
+
+      document.title = canvas.toDataURL("image/png");
+    }
+
+    main();
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
@@ -266,17 +266,23 @@ const RACE_BGM_TRACKS = [
   "arima_kinen.mp3",
   "g1_race.mp3",
   "L'arc Trial Race.mp3",
-  "アオハル杯 決勝.mp3",
-  "ユメヲカケル -トレセン学園応援団 Ver-.mp3",
+  "ã‚¢ã‚ªãƒãƒ«æ¯ æ±ºå‹.mp3",
+  "ãƒ¦ãƒ¡ãƒ²ã‚«ã‚±ãƒ« -ãƒˆãƒ¬ã‚»ãƒ³å­¦åœ’å¿œæ´å›£ Ver-.mp3",
 ];
 const ZONE_TRACKS = [
   "glorious_moment.mp3",
   "Last Spurt.mp3",
-  "グランドマスターズ シニア級.mp3",
-  "スターの走り.mp3",
+  "ã‚°ãƒ©ãƒ³ãƒ‰ãƒžã‚¹ã‚¿ãƒ¼ã‚º ã‚·ãƒ‹ã‚¢ç´š.mp3",
+  "ã‚¹ã‚¿ãƒ¼ã®èµ°ã‚Š.mp3",
 ];
 const MUSIC_PANEL_ART_SRC = "/music/uma_music.webp";
 const RACE_DISCORD_PREVIEW_BG = "/race_discord/race_dice_preview_bg.png";
+const TH_TEXT = {
+  inGroup: "\u0e2d\u0e22\u0e39\u0e48\u0e43\u0e19\u0e01\u0e25\u0e38\u0e48\u0e21",
+  outGroup: "\u0e2d\u0e22\u0e39\u0e48\u0e19\u0e2d\u0e01\u0e01\u0e25\u0e38\u0e48\u0e21",
+  score: "\u0e04\u0e30\u0e41\u0e19\u0e19",
+  currentSpeed: "\u0e04\u0e27\u0e32\u0e21\u0e40\u0e23\u0e47\u0e27\u0e1b\u0e31\u0e08\u0e08\u0e38\u0e1a\u0e31\u0e19",
+};
 const RACE_DISCORD_PREVIEW_ICON_MAP = {
   Speed: "/race_discord/stats_icon/utx_ico_obtain_00.png",
   Stamina: "/race_discord/stats_icon/utx_ico_obtain_01.png",
@@ -2361,7 +2367,7 @@ function RaceDiceTemplateCard({ log, playerName, playerState, summary, bonusRows
   const currentLane = Number(summary?.current_lane ?? playerState?.current_lane ?? playerState?.entry_number ?? 1) || 1;
   const avatar = getRunnerAvatar(playerState) || "";
   const pathLabel = summary?.path?.label || "Track";
-  const distanceColor = normalizeDiceColor(summary?.distance_color) === "gold" ? "อยู่ในกลุ่ม" : "อยู่นอกกลุ่ม";
+  const distanceColor = normalizeDiceColor(summary?.distance_color) === "gold" ? TH_TEXT.inGroup : TH_TEXT.outGroup;
   const staminaText = formatStaminaText(summary, playerState);
   const witText = formatWitText(playerState, summary);
   const rerollLeft = playerState?.reroll_left ?? "0";
@@ -2504,31 +2510,32 @@ function RaceDicePreviewImage({
 
       context.drawImage(background, 0, 0, canvas.width, canvas.height);
       if (avatarImage) {
-        drawCoverImage(context, avatarImage, 0, 0, 480, 500);
+        drawCoverImage(context, avatarImage, 0, 0, 430, 498);
       }
 
       const brown = "#704623";
       const green = "#69b22d";
       const white = "#ffffff";
       const outline = "#502d14";
+      const textYOffset = 10;
 
-      drawOutlinedText(context, String(summary?.phase || "?"), 90, 20, "900 92px 'Prompt Bold Local'", "#ffcd50", outline, 4, "right");
-      drawOutlinedText(context, `/${logTurn}`, 100, 85, "900 42px 'Prompt Bold Local'", white, outline, 4, "left");
-      drawOutlinedText(context, String(styleLabel || "-"), 30, 400, "900 58px 'Prompt Bold Local'", white, outline, 4, "left");
-      drawOutlinedText(context, "คะแนน", 345, 370, "900 30px 'Prompt Bold Local'", white, outline, 3, "left");
-      drawOutlinedText(context, String(scoreValue ?? "-"), 435, 405, "900 58px 'Prompt Bold Local'", white, outline, 4, "right");
+      drawOutlinedText(context, String(summary?.phase || "?"), 90, 20 + textYOffset, "900 92px 'Prompt Bold Local'", "#ffcd50", outline, 4, "right");
+      drawOutlinedText(context, `/${logTurn}`, 100, 82 + textYOffset, "900 42px 'Prompt Bold Local'", white, outline, 4, "left");
+      drawOutlinedText(context, String(styleLabel || "-"), 30, 400 + textYOffset, "900 58px 'Prompt Bold Local'", white, outline, 4, "left");
+      drawOutlinedText(context, TH_TEXT.score, 345, 370 + textYOffset, "900 30px 'Prompt Bold Local'", white, outline, 3, "left");
+      drawOutlinedText(context, String(scoreValue ?? "-"), 435, 405 + textYOffset, "900 58px 'Prompt Bold Local'", white, outline, 4, "right");
 
-      drawCanvasText(context, `ความเร็วปัจจุบัน ${currentSpeed}`, 520, 30, "900 58px 'Prompt Bold Local'", green);
-      drawCanvasText(context, String(totalValue ?? formattedTurnScore ?? "-"), 1325, 18, "900 92px 'Prompt Bold Local'", brown, "right");
-      drawCanvasText(context, `${pathLabel} / ${distanceColor} / lane ${currentLane}`, 520, 100, "900 42px 'Prompt Bold Local'", brown);
+      drawCanvasText(context, `${TH_TEXT.currentSpeed} ${currentSpeed}`, 520, 30 + textYOffset, "900 58px 'Prompt Bold Local'", green);
+      drawCanvasText(context, String(totalValue ?? formattedTurnScore ?? "-"), 1325, 16 + textYOffset, "900 92px 'Prompt Bold Local'", brown, "right");
+      drawCanvasText(context, `${pathLabel} / ${distanceColor} / lane ${currentLane}`, 520, 100 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
 
-      await drawRichCanvasLine(context, 520, 160, diceLine, "900 42px 'Prompt Bold Local'", brown);
-      await drawRichCanvasLine(context, 520, 225, buildRichPreviewTokens(formatBonusDisplayText(summary?.bonus_display)), "900 42px 'Prompt Bold Local'", brown);
+      await drawRichCanvasLine(context, 520, 160 + textYOffset, diceLine, "900 42px 'Prompt Bold Local'", brown);
+      await drawRichCanvasLine(context, 520, 225 + textYOffset, buildRichPreviewTokens(formatBonusDisplayText(summary?.bonus_display)), "900 42px 'Prompt Bold Local'", brown);
 
-      drawCanvasText(context, staminaText, 595, 340, "900 42px 'Prompt Bold Local'", brown);
-      drawCanvasText(context, witText, 595, 415, "900 42px 'Prompt Bold Local'", brown);
-      drawCanvasText(context, String(rerollLeft), 1130, 400, "900 42px 'Prompt Bold Local'", brown);
-      drawCanvasText(context, String(witRerollLeft), 1245, 400, "900 42px 'Prompt Bold Local'", brown);
+      drawCanvasText(context, staminaText, 595, 340 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
+      drawCanvasText(context, witText, 595, 415 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
+      drawCanvasText(context, String(rerollLeft), 1130, 400 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
+      drawCanvasText(context, String(witRerollLeft), 1245, 400 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
 
       if (!canceled) {
         setImageSrc(canvas.toDataURL("image/png"));
@@ -2632,14 +2639,18 @@ function drawCanvasText(context, text, x, y, font, fillStyle, align = "left") {
 function drawOutlinedText(context, text, x, y, font, fillStyle, strokeStyle, lineWidth = 4, align = "left") {
   context.save();
   context.font = font;
-  context.fillStyle = fillStyle;
-  context.strokeStyle = strokeStyle;
-  context.lineWidth = lineWidth * 2;
-  context.lineJoin = "round";
   context.textAlign = align;
   context.textBaseline = "top";
-  context.strokeText(String(text || ""), x, y);
-  context.fillText(String(text || ""), x, y);
+  const value = String(text || "");
+  for (let dx = -lineWidth; dx <= lineWidth; dx += 1) {
+    for (let dy = -lineWidth; dy <= lineWidth; dy += 1) {
+      if (!dx && !dy) continue;
+      context.fillStyle = strokeStyle;
+      context.fillText(value, x + dx, y + dy);
+    }
+  }
+  context.fillStyle = fillStyle;
+  context.fillText(value, x, y);
   context.restore();
 }
 
@@ -2669,8 +2680,8 @@ async function drawRichCanvasLine(context, x, y, nodes, font, fillStyle) {
       context.beginPath();
       context.lineWidth = 4;
       context.strokeStyle = fillStyle;
-      context.moveTo(cursorX, y + 50);
-      context.lineTo(cursorX + width, y + 50);
+      context.moveTo(cursorX, y + 43);
+      context.lineTo(cursorX + width, y + 43);
       context.stroke();
     }
     cursorX += width;
@@ -2945,3 +2956,4 @@ function signed(value = 0) {
   const numberValue = Number(value) || 0;
   return numberValue > 0 ? `+${numberValue}` : String(numberValue);
 }
+
