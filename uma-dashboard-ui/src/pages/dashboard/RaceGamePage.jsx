@@ -809,6 +809,7 @@ export default function RaceGamePage({
     const score = Number(isWebTiming ? player.distance : scoreEntry.score ?? player.score) || 0;
     const diff = score - leaderScore;
     const rank = scoreEntry.rank || index + 1;
+    const showPreview = !isWebTiming && Number(player.last_roll_turn) === Number(room?.turn);
 
     return (
       <motion.article
@@ -863,6 +864,15 @@ export default function RaceGamePage({
             <small>{player.latest_timing_result.tier} +{player.latest_timing_result.distance_gain}m</small>
           ) : null}
         </div>
+        {showPreview ? (
+          <RaceDicePreviewImage
+            roomId={room?.room_id}
+            userId={player.id}
+            version={room?.updated_at}
+            className="race-score-preview-image"
+            alt={`${player.name} race dice preview`}
+          />
+        ) : null}
       </motion.article>
     );
   });
@@ -1569,18 +1579,9 @@ export default function RaceGamePage({
         <section className="race-log-panel race-hud-panel">
           <PanelTitle icon={<Radio size={16} />} title="Race Commentary" />
           <div className="race-log-list uma-scroll">
-            {(() => {
-              const reversedLogs = (room.action_logs || []).slice().reverse();
-              const latestPreviewLogIds = getLatestPreviewLogIds(reversedLogs);
-              return reversedLogs.map((log) => (
-                <RaceLogItem
-                  key={log.id}
-                  log={log}
-                  room={room}
-                  showPreview={latestPreviewLogIds.has(log.id)}
-                />
-              ));
-            })()}
+            {(room.action_logs || []).slice().reverse().map((log) => (
+              <RaceLogItem key={log.id} log={log} />
+            ))}
           </div>
         </section>
 
@@ -2163,51 +2164,38 @@ function getLocalMobAvatarFromPath(value = "") {
   return LOCAL_MOB_AVATAR_FILES.has(fileName) ? `/mobs/${fileName}` : "";
 }
 
-function RaceLogItem({ log, room, showPreview = false }) {
+function RaceLogItem({ log }) {
   const summary = log.payload?.roll_summary;
   const bonusRows = getRollBonusRows(summary);
   const actionEffectRows = summary ? [] : getActionEffectRows(log);
   const playerName = getLogPlayerName(log);
   const turnScore = summary?.total ?? getScoreFromLogMessage(log.message);
-  const previewPlayerId = getLogPreviewPlayerId(log);
-  const previewVersion = getLogPreviewVersion(log, room);
 
   return (
     <article className={`race-log-item ${summary ? "race-log-roll" : ""}`}>
       {summary ? (
-        <>
-          <div className="race-log-summary-grid">
-            <div className="race-log-summary-player">
-              <span>T{log.turn}</span>
-              <strong>{playerName}</strong>
-              <b>+{turnScore}</b>
-            </div>
-            <div className="race-log-summary-dice">
-              {formatRollDice(summary.dice || summary.base_total || "-", summary.base_total)}
-              {summary.distance_color ? <em>{summary.distance_color}</em> : null}
-            </div>
-            <div className="race-log-bonus-list">
-              {bonusRows.length > 0
-                ? bonusRows.map((item) => (
-                    <em key={`${item.label}-${item.value}-${item.index}`}>
-                      {item.icon && <img src={item.icon} alt={item.label} />}
-                      {item.note && <span>{item.note}</span>}
-                      <strong>{item.value}</strong>
-                    </em>
-                  ))
-                : <em>No bonus</em>}
-            </div>
+        <div className="race-log-summary-grid">
+          <div className="race-log-summary-player">
+            <span>T{log.turn}</span>
+            <strong>{playerName}</strong>
+            <b>+{turnScore}</b>
           </div>
-          {showPreview && previewPlayerId ? (
-            <RaceDicePreviewImage
-              roomId={room?.room_id}
-              userId={previewPlayerId}
-              version={previewVersion}
-              className="race-log-preview-image"
-              alt={`${playerName} race dice preview`}
-            />
-          ) : null}
-        </>
+          <div className="race-log-summary-dice">
+            {formatRollDice(summary.dice || summary.base_total || "-", summary.base_total)}
+            {summary.distance_color ? <em>{summary.distance_color}</em> : null}
+          </div>
+          <div className="race-log-bonus-list">
+            {bonusRows.length > 0
+              ? bonusRows.map((item) => (
+                  <em key={`${item.label}-${item.value}-${item.index}`}>
+                    {item.icon && <img src={item.icon} alt={item.label} />}
+                    {item.note && <span>{item.note}</span>}
+                    <strong>{item.value}</strong>
+                  </em>
+                ))
+              : <em>No bonus</em>}
+          </div>
+        </div>
       ) : (
         <>
           <p>
@@ -2227,45 +2215,6 @@ function RaceLogItem({ log, room, showPreview = false }) {
         </>
       )}
     </article>
-  );
-}
-
-function getLatestPreviewLogIds(logs) {
-  const latestIds = new Set();
-  const seenKeys = new Set();
-
-  for (const log of logs) {
-    const summary = log?.payload?.roll_summary;
-    if (!summary) continue;
-
-    const playerId = getLogPreviewPlayerId(log);
-    if (!playerId) continue;
-
-    const key = `${playerId}:${log.turn}`;
-    if (seenKeys.has(key)) continue;
-
-    seenKeys.add(key);
-    latestIds.add(log.id);
-  }
-
-  return latestIds;
-}
-
-function getLogPreviewPlayerId(log) {
-  const playerId =
-    log?.payload?.player_id ??
-    log?.payload?.user_id ??
-    log?.payload?.player?.id ??
-    log?.payload?.player?.user_id;
-  return playerId === undefined || playerId === null || playerId === "" ? "" : String(playerId);
-}
-
-function getLogPreviewVersion(log, room) {
-  return (
-    log?.payload?.updated_at ??
-    log?.updated_at ??
-    room?.updated_at ??
-    0
   );
 }
 

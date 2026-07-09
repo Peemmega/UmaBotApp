@@ -2148,6 +2148,15 @@
   box-shadow: 0 10px 20px rgba(73, 80, 54, 0.08);
 }
 
+.race-score-preview-image {
+  grid-column: 1 / -1;
+  display: block;
+  width: 100%;
+  margin-top: 2px;
+  border-radius: 12px;
+  border-top: 1px solid rgba(66, 93, 59, 0.12);
+}
+
 .race-score-rank {
   width: 30px;
   height: 30px;
@@ -2704,14 +2713,6 @@
   color: rgba(234, 255, 244, 0.72);
   font-size: 11px;
   font-weight: 900;
-}
-
-.race-log-preview-image {
-  display: block;
-  width: 100%;
-  margin-top: 2px;
-  border-radius: 12px;
-  border-top: 1px solid rgba(34, 126, 74, 0.12);
 }
 
 .race-confirm-btn {
