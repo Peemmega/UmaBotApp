@@ -13,7 +13,7 @@ export default function RaceDicePreviewImage({
   const src = useMemo(() => {
     if (!roomId || !userId) return "";
     const cacheVersion = version ?? 0;
-    return `${RACE_API_BASE}/race/rooms/${encodeURIComponent(roomId)}/players/${encodeURIComponent(userId)}/preview.png?v=${encodeURIComponent(cacheVersion)}`;
+    return `${RACE_API_BASE}/race/rooms/${encodeURIComponent(roomId)}/players/${encodeURIComponent(userId)}/preview.webp?v=${encodeURIComponent(cacheVersion)}`;
   }, [roomId, userId, version]);
 
   useEffect(() => {
