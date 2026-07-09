@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 
 const TRACK_STYLE_COLORS = {
   front: "#32c56a",
@@ -108,37 +108,9 @@ export default function RacePositionTrack({ players, room, currentUserId }) {
     () => buildTrackPlayers(players, room),
     [players, room]
   );
-  const previousRanksRef = useRef(new Map());
-  const [overtakeIds, setOvertakeIds] = useState([]);
-
-  useEffect(() => {
-    const overtakes = [];
-    const nextRanks = new Map();
-
-    trackPlayers.forEach((player) => {
-      const previousRank = previousRanksRef.current.get(player.playerKey);
-      if (previousRank && player.rank < previousRank) {
-        overtakes.push(player.playerKey);
-      }
-      nextRanks.set(player.playerKey, player.rank);
-    });
-
-    previousRanksRef.current = nextRanks;
-    if (overtakes.length === 0) return undefined;
-
-    setOvertakeIds((current) => [...new Set([...current, ...overtakes])]);
-    const timeoutId = window.setTimeout(() => {
-      setOvertakeIds((current) => current.filter((id) => !overtakes.includes(id)));
-    }, 460);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [trackPlayers]);
 
   return (
     <section className="race-position-track" aria-label="Live player positions">
-      <div className="race-position-track__dev-label">POSITION TRACK ACTIVE</div>
-      <div className="race-position-track__label is-start">START</div>
-      <div className="race-position-track__label is-finish">FINISH</div>
       <div className="race-position-lanes" aria-hidden="true">
         {Array.from({ length: LANE_COUNT }, (_, index) => (
           <div
@@ -152,16 +124,13 @@ export default function RacePositionTrack({ players, room, currentUserId }) {
       {trackPlayers.map((player) => {
         const isSelf =
           String(player.id ?? player.user_id ?? "") === String(currentUserId);
-        const isOvertaking = overtakeIds.includes(player.playerKey);
 
         return (
           <div
             key={player.playerKey}
             className={[
               "race-track-marker-wrap",
-              player.zone_active ? "is-zone-active" : "",
               isSelf ? "is-self" : "",
-              isOvertaking ? "is-overtaking" : "",
             ].filter(Boolean).join(" ")}
             style={{
               "--progress": player.markerProgress,
@@ -176,9 +145,15 @@ export default function RacePositionTrack({ players, room, currentUserId }) {
                 `${player.name || "Racer"} | Score ${player.numericScore} | Rank ${Number(player.rank) || "-"}`
               }
             >
-              <span>{player.display_number}</span>
+              {player.track_avatar ? (
+                <img src={player.track_avatar} alt="" />
+              ) : (
+                <span className="race-player-marker__fallback">
+                  {String(player.name || "R").slice(0, 1)}
+                </span>
+              )}
+              <span className="race-player-marker__number">{player.display_number}</span>
             </div>
-            {player.zone_active ? <small>ZONE</small> : null}
           </div>
         );
       })}

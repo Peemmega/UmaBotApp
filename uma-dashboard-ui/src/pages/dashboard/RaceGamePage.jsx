@@ -275,6 +275,7 @@ const ZONE_TRACKS = [
   "スターの走り.mp3",
 ];
 const MUSIC_PANEL_ART_SRC = "/music/uma_music.webp";
+const TURN_RESULT_TEMPLATE_BG = "/turn_result_temp.png";
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
@@ -636,18 +637,10 @@ export default function RaceGamePage({
     [room]
   );
   const isRaceWaiting = room?.phase === "waiting";
-  const raceStageBackground = useMemo(
-    () => getRaceStageBackground(room, roomRaceImage),
-    [room, roomRaceImage]
-  );
-  const nextRaceStageBackgrounds = useMemo(
-    () => getUpcomingRaceStageBackgrounds(room, roomRaceImage),
-    [room, roomRaceImage]
-  );
 
   useEffect(() => {
-    preloadImages([raceStageBackground.src, ...nextRaceStageBackgrounds]);
-  }, [nextRaceStageBackgrounds, raceStageBackground.src]);
+    preloadImages([TURN_RESULT_TEMPLATE_BG]);
+  }, []);
 
   useEffect(() => {
     if (raceBgmRef.current) raceBgmRef.current.volume = musicVolume;
@@ -912,6 +905,7 @@ export default function RaceGamePage({
         score,
         rank: scoreEntry.rank || index + 1,
         running_style: player.running_style || player.style,
+        track_avatar: getRunnerAvatar(player),
       };
     }),
     [isWebTiming, raceScorePlayers, scoreboardByName]
@@ -1482,63 +1476,16 @@ export default function RaceGamePage({
 
         <main className="race-hud-panel race-live-panel">
           <div className="race-live-stage">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={raceStageBackground.key}
-                className={`race-live-bg ${isRaceWaiting ? "is-static" : ""}`}
-                style={{ backgroundImage: `url(${raceStageBackground.src})` }}
-                initial={isRaceWaiting ? false : { opacity: 0, scale: 1.1 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={isRaceWaiting ? undefined : { opacity: 0, scale: 1.18 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-              />
-            </AnimatePresence>
-            {!isRaceWaiting && (
-              <div className="race-speed-burst" aria-hidden="true">
-                {Array.from({ length: 18 }, (_, index) => (
-                  <span
-                    key={index}
-                    style={{
-                      "--i": index,
-                      "--angle": `${(index * 137.5) % 360}deg`,
-                      "--delay": `${-((index * 0.073) % 1.35)}s`,
-                      "--duration": `${0.58 + (index % 7) * 0.055}s`,
-                      "--length": `${150 + (index % 6) * 38}px`,
-                      "--thickness": `${2 + (index % 4)}px`,
-                      "--start": `${34 + (index % 5) * 16}px`,
-                      "--end": `${330 + (index % 8) * 56}px`,
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-            <div className="race-live-stage-overlay" />
+            <div
+              className={`race-live-bg race-live-bg--turn-result ${isRaceWaiting ? "is-static" : ""}`}
+              style={{ backgroundImage: `url(${TURN_RESULT_TEMPLATE_BG})` }}
+            />
             {room.phase !== "waiting" ? (
               <RacePositionTrack
                 players={raceTrackPlayers}
                 room={room}
                 currentUserId={userId}
               />
-            ) : null}
-            <div className="race-path-strip uma-scroll" aria-label="Track path">
-              {room.path?.map((step) => (
-                <span
-                  key={step.turn}
-                  className={step.active ? "active" : ""}
-                  title={`${step.turn}: ${step.label}`}
-                >
-                  {step.icon}
-                </span>
-              ))}
-            </div>
-            <div className="race-phase-banner">
-              <Zap size={18} />
-              {isWebTiming ? `Leader: ${room.leader_phase}` : room.race_phase ? `Phase ${room.race_phase}` : "Race"}
-            </div>
-            {myRaceRank ? (
-              <div className="race-my-rank-badge" aria-label={`Your rank ${myRaceRank}`}>
-                <img src={getRaceRankImageSrc(myRaceRank)} alt={`Your rank ${myRaceRank}`} />
-              </div>
             ) : null}
             {isWebTiming ? (
               <div className="race-live-scoreboard uma-scroll" aria-label="Live race scoreboard">
