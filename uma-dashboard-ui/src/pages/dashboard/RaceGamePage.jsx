@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
@@ -14,7 +14,6 @@ import {
   Plus,
   Radio,
   RefreshCw,
-  Send,
   Sparkles,
   Target,
   Trophy,
@@ -50,11 +49,10 @@ import speedIcon from "../../assets/icons/Speed.webp";
 import staminaIcon from "../../assets/icons/Stamina.webp";
 import witIcon from "../../assets/icons/Wit.webp";
 import skillIcon from "../../assets/skill_icon/Velocity.webp";
-import discordIcon from "../../assets/icons/discord_icon.webp";
 import { getRaceImage } from "../../utils/raceSchedule.js";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 import TimingRaceGauge from "../../components/TimingRaceGauge";
-import RacePositionTrack, { buildTrackPlayers, LANE_COUNT } from "../../components/RacePositionTrack";
+import RacePositionTrack from "../../components/RacePositionTrack";
 import { resolveRaceAvatar } from "../../utils/avatar";
 import "../../styles/raceGamePage.css";
 
@@ -266,33 +264,16 @@ const RACE_BGM_TRACKS = [
   "arima_kinen.mp3",
   "g1_race.mp3",
   "L'arc Trial Race.mp3",
-  "ã‚¢ã‚ªãƒãƒ«æ¯ æ±ºå‹.mp3",
-  "ãƒ¦ãƒ¡ãƒ²ã‚«ã‚±ãƒ« -ãƒˆãƒ¬ã‚»ãƒ³å­¦åœ’å¿œæ´å›£ Ver-.mp3",
+  "アオハル杯 決勝.mp3",
+  "ユメヲカケル -トレセン学園応援団 Ver-.mp3",
 ];
 const ZONE_TRACKS = [
   "glorious_moment.mp3",
   "Last Spurt.mp3",
-  "ã‚°ãƒ©ãƒ³ãƒ‰ãƒžã‚¹ã‚¿ãƒ¼ã‚º ã‚·ãƒ‹ã‚¢ç´š.mp3",
-  "ã‚¹ã‚¿ãƒ¼ã®èµ°ã‚Š.mp3",
+  "グランドマスターズ シニア級.mp3",
+  "スターの走り.mp3",
 ];
 const MUSIC_PANEL_ART_SRC = "/music/uma_music.webp";
-const RACE_DISCORD_PREVIEW_BG = "/race_discord/race_dice_preview_bg.png";
-const TH_TEXT = {
-  inGroup: "\u0e2d\u0e22\u0e39\u0e48\u0e43\u0e19\u0e01\u0e25\u0e38\u0e48\u0e21",
-  outGroup: "\u0e2d\u0e22\u0e39\u0e48\u0e19\u0e2d\u0e01\u0e01\u0e25\u0e38\u0e48\u0e21",
-  score: "\u0e04\u0e30\u0e41\u0e19\u0e19",
-  currentSpeed: "\u0e04\u0e27\u0e32\u0e21\u0e40\u0e23\u0e47\u0e27\u0e1b\u0e31\u0e08\u0e08\u0e38\u0e1a\u0e31\u0e19",
-};
-const RACE_DISCORD_PREVIEW_ICON_MAP = {
-  Speed: "/race_discord/stats_icon/utx_ico_obtain_00.png",
-  Stamina: "/race_discord/stats_icon/utx_ico_obtain_01.png",
-  Power: "/race_discord/stats_icon/utx_ico_obtain_02.png",
-  Gut: "/race_discord/stats_icon/utx_ico_obtain_03.png",
-  Guts: "/race_discord/stats_icon/utx_ico_obtain_03.png",
-  Velocity: "/race_discord/skill_icons/Velocity.png",
-  Navigation: "/race_discord/skill_icons/Navigation.png",
-  Block: "/race_discord/icons/block_icon.png",
-};
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
@@ -1585,28 +1566,15 @@ export default function RaceGamePage({
         </aside>
 
         <section className="race-log-panel race-hud-panel">
-          <div className="race-chat-header">
-            <div className="race-chat-header-icon">
-              <Bot size={18} />
-            </div>
-            <div className="race-chat-header-copy">
-              <strong>race-commentary</strong>
-              <span>Race Control posts roll embeds, skill triggers, and lane updates here.</span>
-            </div>
-          </div>
+          <PanelTitle icon={<Radio size={16} />} title="Race Commentary" />
           <div className="race-log-list uma-scroll">
             {(room.action_logs || []).slice().reverse().map((log) => (
-              <RaceLogItem key={log.id} log={log} room={room} />
+              <RaceLogItem key={log.id} log={log} />
             ))}
           </div>
         </section>
 
         <aside className={`race-command-panel race-hud-panel uma-scroll ${room.phase === "running" ? "is-running" : ""} ${room.phase === "running" && room.gameplay_mode === "timing" ? "is-timing" : ""}`}>
-          <div className="race-command-header">
-            <span>Race Control</span>
-            <strong>/race-control</strong>
-            <small>Select commands as if you were posting into a Discord bot channel.</small>
-          </div>
           {room.phase === "waiting" ? (
             <>
               <div className="race-bot-picker">
@@ -1707,13 +1675,6 @@ export default function RaceGamePage({
                 <span>Turn {room.turn} Result</span>
                 <strong>{myConfirmTurnScore}</strong>
                 <p>{hasConfirmedTurn ? "Confirmed. Waiting for racers..." : "Review your score before next turn."}</p>
-                <RaceLaneSnapshot
-                  room={room}
-                  players={roomPlayers}
-                  currentUserId={userId}
-                  title="Lane Summary"
-                  subtitle={room.current_path?.label || "Current pack positions"}
-                />
               </div>
               
               <div className="race-reroll-actions">
@@ -1796,18 +1757,6 @@ export default function RaceGamePage({
               />
             </>
           )}
-          <div className="race-command-compose" aria-hidden="true">
-            <Send size={15} />
-            <span>
-              {room.phase === "waiting"
-                ? "Queue bots, then send /start."
-                : room.gameplay_mode === "timing"
-                  ? "Timing mode posts automatically after each hit."
-                  : isConfirmingTurn
-                    ? "Review the embed, then send /confirm."
-                    : "Use /run, /skill, /reroll, /block, or /rush."}
-            </span>
-          </div>
         </aside>
 
       </div>
@@ -1978,13 +1927,6 @@ function RaceWinnerModal({ winner, room, onLeave }) {
           <em>{winnerStyle}</em>
           <strong>{winnerScore}{winnerUnit}</strong>
         </div>
-        <RaceLaneSnapshot
-          room={room}
-          players={room?.players || []}
-          currentUserId={winner?.id}
-          title="Final Lane Summary"
-          subtitle={room?.current_path?.label || "Finish order"}
-        />
         <div className="race-final-scoreboard">
           <h3>Final Scores</h3>
           <div className="race-final-score-list uma-scroll">
@@ -2009,63 +1951,6 @@ function RaceWinnerModal({ winner, room, onLeave }) {
         </button>
       </motion.div>
     </div>
-  );
-}
-
-function RaceLaneSnapshot({ room, players, currentUserId, title = "Lane Summary", subtitle = "" }) {
-  const snapshotPlayers = buildTrackPlayers(players || room?.players || [], room);
-  const background = getRaceStageBackground(room, getRaceImage(roomRaceImageSource(room)));
-  const sortedPlayers = [...snapshotPlayers].sort((left, right) => (
-    (Number(left.rank) || 99) - (Number(right.rank) || 99)
-  ));
-
-  return (
-    <section className="race-lane-snapshot" aria-label={title}>
-      <div className="race-lane-snapshot-head">
-        <strong>{title}</strong>
-        <span>{subtitle || `${snapshotPlayers.length || 0} racers on track`}</span>
-      </div>
-      <div
-        className="race-lane-snapshot-canvas"
-        style={{ backgroundImage: `url(${background.src})` }}
-      >
-        <div className="race-lane-snapshot-shade" />
-        {Array.from({ length: LANE_COUNT }, (_, index) => (
-          <div
-            key={index + 1}
-            className="race-lane-snapshot-line"
-            style={{ "--lane-y": `${12 + index * 15}%` }}
-          />
-        ))}
-        {snapshotPlayers.map((player) => {
-          const isSelf = String(player.id ?? player.user_id ?? "") === String(currentUserId);
-          return (
-            <div
-              key={player.playerKey}
-              className={`race-lane-snapshot-marker ${isSelf ? "is-self" : ""}`}
-              style={{
-                "--progress": player.markerProgress,
-                "--lane-y": `${player.markerLaneY}%`,
-                "--offset-y": `${player.markerOffsetY}px`,
-                "--marker-color": player.markerColor,
-              }}
-              title={`${player.name || "Racer"} | Lane ${player.markerLane} | Rank ${player.rank}`}
-            >
-              <span>{player.display_number}</span>
-            </div>
-          );
-        })}
-      </div>
-      <div className="race-lane-snapshot-order">
-        {sortedPlayers.slice(0, 4).map((player) => (
-          <div key={`${player.playerKey}-summary`}>
-            <span>#{player.rank}</span>
-            <strong>{player.name || player.username || "Racer"}</strong>
-            <em>L{player.markerLane}</em>
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }
 
@@ -2268,410 +2153,58 @@ function getLocalMobAvatarFromPath(value = "") {
   return LOCAL_MOB_AVATAR_FILES.has(fileName) ? `/mobs/${fileName}` : "";
 }
 
-function RaceLogItem({ log, room }) {
+function RaceLogItem({ log }) {
   const summary = log.payload?.roll_summary;
+  const bonusRows = getRollBonusRows(summary);
   const actionEffectRows = summary ? [] : getActionEffectRows(log);
   const playerName = getLogPlayerName(log);
   const turnScore = summary?.total ?? getScoreFromLogMessage(log.message);
-  const accentColor = getRaceLogAccentColor(summary);
-  const formattedTurnScore = Number.isFinite(Number(turnScore)) ? signed(turnScore) : turnScore;
-  const playerState = getLogPlayerState(log, room);
 
   return (
-    <article
-      className={`race-log-item ${summary ? "race-log-roll" : ""}`}
-      style={{ "--race-log-accent": accentColor }}
-    >
-      <div className="race-log-message">
-        <div className="race-log-avatar" aria-hidden="true">
-          <img src={discordIcon} alt="" />
-        </div>
-        <div className="race-log-body">
-          <div className="race-log-meta">
-            <strong>Race Control</strong>
-            <span className="race-log-bot-badge">BOT</span>
-            <em>Turn {log.turn}</em>
+    <article className={`race-log-item ${summary ? "race-log-roll" : ""}`}>
+      {summary ? (
+        <div className="race-log-summary-grid">
+          <div className="race-log-summary-player">
+            <span>T{log.turn}</span>
+            <strong>{playerName}</strong>
+            <b>+{turnScore}</b>
           </div>
-          {summary ? (
-            <>
-              <p className="race-log-content">
-                <b>{playerName}</b>
-                <span>posted a movement roll.</span>
-              </p>
-              <RaceDiceTemplateCard
-                log={log}
-                playerName={playerName}
-                playerState={playerState}
-                summary={summary}
-                formattedTurnScore={formattedTurnScore}
-              />
-            </>
-          ) : (
-            <>
-              <p className="race-log-content">
-                <span>{log.message}</span>
-              </p>
-              {actionEffectRows.length > 0 ? (
-                <div className="race-log-action-effects">
-                  {actionEffectRows.map((item, index) => (
-                    <em key={`${item.label}-${item.value}-${index}`}>
-                      <span>{renderEffectLabel(item.label)}</span>
-                      <strong>{item.value}</strong>
-                    </em>
-                  ))}
-                </div>
-              ) : null}
-            </>
-          )}
+          <div className="race-log-summary-dice">
+            {formatRollDice(summary.dice || summary.base_total || "-", summary.base_total)}
+            {summary.distance_color ? <em>{summary.distance_color}</em> : null}
+          </div>
+          <div className="race-log-bonus-list">
+            {bonusRows.length > 0
+              ? bonusRows.map((item) => (
+                  <em key={`${item.label}-${item.value}-${item.index}`}>
+                    {item.icon && <img src={item.icon} alt={item.label} />}
+                    {item.note && <span>{item.note}</span>}
+                    <strong>{item.value}</strong>
+                  </em>
+                ))
+              : <em>No bonus</em>}
+          </div>
         </div>
-      </div>
+      ) : (
+        <>
+          <p>
+            <span>T{log.turn}</span>
+            {log.message}
+          </p>
+          {actionEffectRows.length > 0 ? (
+            <div className="race-log-action-effects">
+              {actionEffectRows.map((item, index) => (
+                <em key={`${item.label}-${item.value}-${index}`}>
+                  <span>{renderEffectLabel(item.label)}</span>
+                  <strong>{item.value}</strong>
+                </em>
+              ))}
+            </div>
+          ) : null}
+        </>
+      )}
     </article>
   );
-}
-
-function getRaceLogAccentColor(summary) {
-  const diceColor = normalizeDiceColor(summary?.distance_color);
-  if (diceColor === "gold") return "#f0b84b";
-  return "#5865f2";
-}
-
-function getLogPlayerState(log, room) {
-  const players = room?.players || [];
-  const payload = log?.payload || {};
-  const payloadId = String(
-    payload.user_id ??
-    payload.player_id ??
-    payload.player?.id ??
-    payload.game_player?.id ??
-    ""
-  );
-  const payloadName = normalizeRaceName(
-    payload.player_name ||
-    payload.username ||
-    payload.player?.name ||
-    payload.game_player?.name ||
-    ""
-  );
-
-  return players.find((player) => {
-    if (payloadId && String(player.id) === payloadId) return true;
-    return payloadName && normalizeRaceName(player.name || player.username) === payloadName;
-  }) || payload.game_player || payload.player || null;
-}
-
-function RaceDiceTemplateCard({ log, playerName, playerState, summary, formattedTurnScore }) {
-  const styleLabel = firstText(playerState?.style, playerState?.running_style, "-");
-  const currentSpeed = Math.floor(Number(summary?.current_max_speed ?? playerState?.current_max_speed ?? 0) || 0);
-  const currentLane = Number(summary?.current_lane ?? playerState?.current_lane ?? playerState?.entry_number ?? 1) || 1;
-  const avatar = getRunnerAvatar(playerState) || "";
-  const pathLabel = summary?.path?.label || "Track";
-  const distanceColor = normalizeDiceColor(summary?.distance_color) === "gold" ? TH_TEXT.inGroup : TH_TEXT.outGroup;
-  const staminaText = formatStaminaText(summary, playerState);
-  const witText = formatWitText(playerState, summary);
-  const rerollLeft = playerState?.reroll_left ?? "0";
-  const witRerollLeft = playerState?.wit_reroll_left ?? "0";
-  const diceLine = buildRichPreviewTokens(formatRollDice(summary?.dice || summary?.base_total || "-", summary?.base_total));
-  const bonusLine = buildRichPreviewTokens(formatBonusDisplayText(summary?.bonus_display));
-  const scoreValue = playerState?.score ?? playerState?.distance ?? "-";
-  const totalValue = Number.isFinite(Number(summary?.total)) ? summary.total : formattedTurnScore;
-
-  return (
-    <RaceDicePreviewImage
-      accentColor={getRaceLogAccentColor(summary)}
-      avatar={avatar}
-      currentLane={currentLane}
-      currentSpeed={currentSpeed}
-      diceLine={diceLine}
-      distanceColor={distanceColor}
-      formattedTurnScore={formattedTurnScore}
-      logTurn={log.turn}
-      pathLabel={pathLabel}
-      playerName={playerName}
-      rerollLeft={rerollLeft}
-      scoreValue={scoreValue}
-      staminaText={staminaText}
-      styleLabel={styleLabel}
-      summary={summary}
-      totalValue={totalValue}
-      witRerollLeft={witRerollLeft}
-      witText={witText}
-    />
-  );
-}
-
-function buildRichPreviewTokens(text = "") {
-  const input = String(text || "").trim();
-  if (!input || input === "-") return null;
-
-  const parts = input.split(/(__[^_]+__|<:[^:>]+:\d+>|Speed|Power|Gut|Velocity|Navigation|Stamina|Block)/g).filter(Boolean);
-  return parts.map((part, index) => {
-    const iconMatch = part.match(/^<:([^:>]+):\d+>$/);
-    const normalizedIconName = iconMatch ? iconMatch[1] : part;
-    const iconPath = RACE_DISCORD_PREVIEW_ICON_MAP[normalizedIconName];
-
-    if (iconPath) {
-      return { key: `${normalizedIconName}-${index}`, type: "img", src: iconPath, alt: normalizedIconName };
-    }
-
-    if (part.startsWith("__") && part.endsWith("__")) {
-      return { key: `${part}-${index}`, type: "text", text: part.slice(2, -2), underline: true };
-    }
-
-    return { key: `${part}-${index}`, type: "text", text: part, underline: false };
-  });
-}
-
-function formatBonusDisplayText(value = "") {
-  const text = String(value || "").trim();
-  if (!text || text === "-") return "-";
-  return text
-    .replace(/\bDRAFT\b/g, "")
-    .replace(/\bBLOCK\b/g, "Block")
-    .replace(/\s+/g, " ")
-    .trim() || "-";
-}
-
-function formatStaminaText(summary = {}, playerState = {}) {
-  const stamina = Number(summary?.stamina_left ?? summary?.current_stamina ?? playerState?.stamina_left);
-  const staminaDrain = Number(playerState?.last_stamina_drain ?? 0);
-  const draftingActive = Boolean(summary?.drafting_active ?? playerState?.drafting_active);
-  if (!Number.isFinite(stamina)) return "-";
-  const baseText = staminaDrain > 0 ? `${stamina} (-${staminaDrain})` : `${stamina}`;
-  return draftingActive ? `${baseText} DRAFT` : baseText;
-}
-
-function formatWitText(playerState = {}, summary = {}) {
-  const currentMana = firstFiniteNumber(
-    playerState?.wit_mana,
-    playerState?.current_wit,
-    playerState?.wit_point,
-    playerState?.wit
-  );
-  const witGain = firstFiniteNumber(
-    summary?.effective_stats?.effective_wit_gain,
-    playerState?.effective_race_stats?.effective_wit_gain
-  );
-
-  if (currentMana !== null && witGain !== null) {
-    return `${currentMana} \u2192 ${currentMana + witGain} pt.`;
-  }
-
-  if (currentMana !== null) {
-    return `${currentMana} pt.`;
-  }
-
-  return "-";
-}
-
-function RaceDicePreviewImage({
-  accentColor,
-  avatar,
-  currentLane,
-  currentSpeed,
-  diceLine,
-  distanceColor,
-  formattedTurnScore,
-  logTurn,
-  pathLabel,
-  playerName,
-  rerollLeft,
-  scoreValue,
-  staminaText,
-  styleLabel,
-  summary,
-  totalValue,
-  witRerollLeft,
-  witText,
-}) {
-  const [imageSrc, setImageSrc] = useState("");
-
-  useEffect(() => {
-    let canceled = false;
-
-    async function renderPreview() {
-      const canvas = document.createElement("canvas");
-      canvas.width = 1340;
-      canvas.height = 498;
-      const context = canvas.getContext("2d");
-      if (!context) return;
-
-      await ensureRacePreviewFont();
-
-      const [background, avatarImage] = await Promise.all([
-        loadCanvasImage(RACE_DISCORD_PREVIEW_BG),
-        loadCanvasImage(avatar).catch(() => null),
-      ]);
-
-      if (canceled) return;
-
-      context.drawImage(background, 0, 0, canvas.width, canvas.height);
-      if (avatarImage) {
-        drawCoverImage(context, avatarImage, 0, 0, 430, 498);
-      }
-
-      const brown = "#704623";
-      const green = "#69b22d";
-      const white = "#ffffff";
-      const outline = "#502d14";
-      const textYOffset = 10;
-
-      drawOutlinedText(context, String(summary?.phase || "?"), 90, 20 + textYOffset, "900 92px 'Prompt Bold Local'", "#ffcd50", outline, 4, "right");
-      drawOutlinedText(context, `/${logTurn}`, 100, 82 + textYOffset, "900 42px 'Prompt Bold Local'", white, outline, 4, "left");
-      drawOutlinedText(context, String(styleLabel || "-"), 30, 400 + textYOffset, "900 58px 'Prompt Bold Local'", white, outline, 4, "left");
-      drawOutlinedText(context, TH_TEXT.score, 345, 370 + textYOffset, "900 30px 'Prompt Bold Local'", white, outline, 3, "left");
-      drawOutlinedText(context, String(scoreValue ?? "-"), 435, 405 + textYOffset, "900 58px 'Prompt Bold Local'", white, outline, 4, "right");
-
-      drawCanvasText(context, `${TH_TEXT.currentSpeed} ${currentSpeed}`, 520, 30 + textYOffset, "900 58px 'Prompt Bold Local'", green);
-      drawCanvasText(context, String(totalValue ?? formattedTurnScore ?? "-"), 1325, 16 + textYOffset, "900 92px 'Prompt Bold Local'", brown, "right");
-      drawCanvasText(context, `${pathLabel} / ${distanceColor} / lane ${currentLane}`, 520, 100 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
-
-      await drawRichCanvasLine(context, 520, 160 + textYOffset, diceLine, "900 42px 'Prompt Bold Local'", brown);
-      await drawRichCanvasLine(context, 520, 225 + textYOffset, buildRichPreviewTokens(formatBonusDisplayText(summary?.bonus_display)), "900 42px 'Prompt Bold Local'", brown);
-
-      drawCanvasText(context, staminaText, 595, 340 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
-      drawCanvasText(context, witText, 595, 415 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
-      drawCanvasText(context, String(rerollLeft), 1130, 400 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
-      drawCanvasText(context, String(witRerollLeft), 1245, 400 + textYOffset, "900 42px 'Prompt Bold Local'", brown);
-
-      if (!canceled) {
-        setImageSrc(canvas.toDataURL("image/png"));
-      }
-    }
-
-    renderPreview().catch(() => {
-      if (!canceled) setImageSrc("");
-    });
-
-    return () => {
-      canceled = true;
-    };
-  }, [
-    avatar,
-    currentLane,
-    currentSpeed,
-    diceLine,
-    distanceColor,
-    formattedTurnScore,
-    logTurn,
-    pathLabel,
-    playerName,
-    rerollLeft,
-    scoreValue,
-    staminaText,
-    styleLabel,
-    summary,
-    totalValue,
-    witRerollLeft,
-    witText,
-  ]);
-
-  return (
-    <div className="race-dice-template-card" style={{ "--race-log-accent": accentColor }}>
-      {imageSrc ? (
-        <img className="race-dice-template-image" src={imageSrc} alt={`${playerName} race dice preview`} />
-      ) : (
-        <div className="race-dice-template-fallback">Rendering preview...</div>
-      )}
-    </div>
-  );
-}
-
-let racePreviewFontPromise;
-
-function ensureRacePreviewFont() {
-  if (typeof document === "undefined" || !document.fonts) return Promise.resolve();
-  if (!racePreviewFontPromise) {
-    racePreviewFontPromise = document.fonts.load("900 42px 'Prompt Bold Local'");
-  }
-  return racePreviewFontPromise;
-}
-
-function loadCanvasImage(src) {
-  return new Promise((resolve, reject) => {
-    if (!src) {
-      reject(new Error("Missing image source"));
-      return;
-    }
-
-    const image = new Image();
-    image.crossOrigin = "anonymous";
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error(`Failed to load image: ${src}`));
-    image.src = src;
-  });
-}
-
-function drawCoverImage(context, image, x, y, width, height) {
-  const scale = Math.max(width / image.width, height / image.height);
-  const drawWidth = image.width * scale;
-  const drawHeight = image.height * scale;
-  const offsetX = x + (width - drawWidth) / 2;
-  const offsetY = y + (height - drawHeight) / 2;
-  context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
-}
-
-function drawCanvasText(context, text, x, y, font, fillStyle, align = "left") {
-  context.save();
-  context.font = font;
-  context.fillStyle = fillStyle;
-  context.textAlign = align;
-  context.textBaseline = "top";
-  context.fillText(String(text || ""), x, y);
-  context.restore();
-}
-
-function drawOutlinedText(context, text, x, y, font, fillStyle, strokeStyle, lineWidth = 4, align = "left") {
-  context.save();
-  context.font = font;
-  context.textAlign = align;
-  context.textBaseline = "top";
-  const value = String(text || "");
-  for (let dx = -lineWidth; dx <= lineWidth; dx += 1) {
-    for (let dy = -lineWidth; dy <= lineWidth; dy += 1) {
-      if (!dx && !dy) continue;
-      context.fillStyle = strokeStyle;
-      context.fillText(value, x + dx, y + dy);
-    }
-  }
-  context.fillStyle = fillStyle;
-  context.fillText(value, x, y);
-  context.restore();
-}
-
-async function drawRichCanvasLine(context, x, y, nodes, font, fillStyle) {
-  if (!nodes) return;
-  context.save();
-  context.font = font;
-  context.fillStyle = fillStyle;
-  context.textBaseline = "top";
-
-  let cursorX = x;
-  for (const node of nodes) {
-    if (!node) continue;
-    if (node.type === "img") {
-      const icon = await loadCanvasImage(node.src).catch(() => null);
-      if (icon) {
-        context.drawImage(icon, cursorX + 4, y + 6, 42, 42);
-      }
-      cursorX += 52;
-      continue;
-    }
-
-    const text = String(node.text || "");
-    context.fillText(text, cursorX, y);
-    const width = context.measureText(text).width;
-    if (node.underline) {
-      context.beginPath();
-      context.lineWidth = 4;
-      context.strokeStyle = fillStyle;
-      context.moveTo(cursorX, y + 43);
-      context.lineTo(cursorX + width, y + 43);
-      context.stroke();
-    }
-    cursorX += width;
-  }
-
-  context.restore();
 }
 
 function getLogPlayerName(log) {
@@ -2940,4 +2473,3 @@ function signed(value = 0) {
   const numberValue = Number(value) || 0;
   return numberValue > 0 ? `+${numberValue}` : String(numberValue);
 }
-
