@@ -2706,11 +2706,12 @@
   font-weight: 900;
 }
 
-.race-confirm-preview-image {
+.race-log-preview-image {
   display: block;
   width: 100%;
-  margin-top: 6px;
+  margin-top: 2px;
   border-radius: 12px;
+  border-top: 1px solid rgba(34, 126, 74, 0.12);
 }
 
 .race-confirm-btn {
