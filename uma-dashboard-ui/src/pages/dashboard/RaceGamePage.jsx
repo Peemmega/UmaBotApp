@@ -2270,7 +2270,6 @@ function getLocalMobAvatarFromPath(value = "") {
 
 function RaceLogItem({ log, room }) {
   const summary = log.payload?.roll_summary;
-  const bonusRows = getRollBonusRows(summary);
   const actionEffectRows = summary ? [] : getActionEffectRows(log);
   const playerName = getLogPlayerName(log);
   const turnScore = summary?.total ?? getScoreFromLogMessage(log.message);
@@ -2304,7 +2303,6 @@ function RaceLogItem({ log, room }) {
                 playerName={playerName}
                 playerState={playerState}
                 summary={summary}
-                bonusRows={bonusRows}
                 formattedTurnScore={formattedTurnScore}
               />
             </>
@@ -2361,7 +2359,7 @@ function getLogPlayerState(log, room) {
   }) || payload.game_player || payload.player || null;
 }
 
-function RaceDiceTemplateCard({ log, playerName, playerState, summary, bonusRows, formattedTurnScore }) {
+function RaceDiceTemplateCard({ log, playerName, playerState, summary, formattedTurnScore }) {
   const styleLabel = firstText(playerState?.style, playerState?.running_style, "-");
   const currentSpeed = Math.floor(Number(summary?.current_max_speed ?? playerState?.current_max_speed ?? 0) || 0);
   const currentLane = Number(summary?.current_lane ?? playerState?.current_lane ?? playerState?.entry_number ?? 1) || 1;
@@ -2381,7 +2379,6 @@ function RaceDiceTemplateCard({ log, playerName, playerState, summary, bonusRows
     <RaceDicePreviewImage
       accentColor={getRaceLogAccentColor(summary)}
       avatar={avatar}
-      bonusRows={bonusRows}
       currentLane={currentLane}
       currentSpeed={currentSpeed}
       diceLine={diceLine}
@@ -2469,7 +2466,6 @@ function formatWitText(playerState = {}, summary = {}) {
 function RaceDicePreviewImage({
   accentColor,
   avatar,
-  bonusRows,
   currentLane,
   currentSpeed,
   diceLine,
@@ -2550,9 +2546,7 @@ function RaceDicePreviewImage({
       canceled = true;
     };
   }, [
-    accentColor,
     avatar,
-    bonusRows,
     currentLane,
     currentSpeed,
     diceLine,
@@ -2578,16 +2572,6 @@ function RaceDicePreviewImage({
       ) : (
         <div className="race-dice-template-fallback">Rendering preview...</div>
       )}
-      {bonusRows.length > 0 ? (
-        <div className="race-dice-template-bonus-chips">
-          {bonusRows.map((item) => (
-            <em key={`${item.label}-${item.value}-${item.index}`}>
-              {item.icon ? <img src={item.icon} alt={item.label} /> : null}
-              <strong>{item.value}</strong>
-            </em>
-          ))}
-        </div>
-      ) : null}
     </div>
   );
 }
