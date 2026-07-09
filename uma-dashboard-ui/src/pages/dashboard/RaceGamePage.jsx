@@ -276,7 +276,7 @@ const ZONE_TRACKS = [
 ];
 const MUSIC_PANEL_ART_SRC = "/music/uma_music.webp";
 const RACE_WAITING_BG = "/race_bg/main.webp";
-const TURN_RESULT_TEMPLATE_BG = "/turn_result_temp.png";
+const TURN_RESULT_TEMPLATE_BG = "/race_bg/turn_result_temp.png";
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
