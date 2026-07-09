@@ -2361,97 +2361,83 @@ function RaceDiceTemplateCard({ log, playerName, playerState, summary, bonusRows
   const currentLane = Number(summary?.current_lane ?? playerState?.current_lane ?? playerState?.entry_number ?? 1) || 1;
   const avatar = getRunnerAvatar(playerState) || "";
   const pathLabel = summary?.path?.label || "Track";
-  const distanceColor = normalizeDiceColor(summary?.distance_color) === "gold" ? "In Group" : "Out Group";
-  const staminaText = formatStaminaText(summary);
+  const distanceColor = normalizeDiceColor(summary?.distance_color) === "gold" ? "อยู่ในกลุ่ม" : "อยู่นอกกลุ่ม";
+  const staminaText = formatStaminaText(summary, playerState);
   const witText = formatWitText(playerState, summary);
-  const rerollText = `${playerState?.reroll_left ?? "-"} / ${playerState?.wit_reroll_left ?? "-"}`;
-  const diceLine = buildDicePreviewTokens(formatRollDice(summary?.dice || summary?.base_total || "-", summary?.base_total));
-  const bonusLine = buildBonusPreviewTokens(summary?.bonus_display);
+  const rerollLeft = playerState?.reroll_left ?? "0";
+  const witRerollLeft = playerState?.wit_reroll_left ?? "0";
+  const diceLine = buildRichPreviewTokens(formatRollDice(summary?.dice || summary?.base_total || "-", summary?.base_total));
+  const bonusLine = buildRichPreviewTokens(formatBonusDisplayText(summary?.bonus_display));
+  const scoreValue = playerState?.score ?? playerState?.distance ?? "-";
+  const totalValue = Number.isFinite(Number(summary?.total)) ? summary.total : formattedTurnScore;
 
   return (
-    <div className="race-dice-template-card" style={{ "--race-log-accent": getRaceLogAccentColor(summary) }}>
+    <div
+      className="race-dice-template-card"
+      style={{
+        "--race-log-accent": getRaceLogAccentColor(summary),
+        backgroundImage: `url(${RACE_DISCORD_PREVIEW_BG})`,
+      }}
+    >
       <div className="race-dice-template-avatar">
         {avatar ? <img src={avatar} alt="" /> : <Bot size={32} />}
-        <div className="race-dice-template-phase">
+        <div className="race-dice-template-turn">
           <strong>{summary?.phase || "?"}</strong>
-          <span>/ {log.turn}</span>
+          <span>/{log.turn}</span>
         </div>
         <div className="race-dice-template-style">{styleLabel}</div>
-        <div className="race-dice-template-score">
-          <span>Score</span>
-          <strong>{playerState?.score ?? playerState?.distance ?? "-"}</strong>
-        </div>
+        <div className="race-dice-template-score-label">คะแนน</div>
+        <div className="race-dice-template-score-value">{scoreValue}</div>
       </div>
       <div className="race-dice-template-main">
-        <div className="race-dice-template-topline">
-          <strong>Current Speed {currentSpeed}</strong>
-          <b>{formattedTurnScore}</b>
+        <div className="race-dice-template-speed">ความเร็วปัจจุบัน {currentSpeed}</div>
+        <div className="race-dice-template-total">{totalValue}</div>
+        <div className="race-dice-template-path">
+          {pathLabel} / {distanceColor} / lane {currentLane}
         </div>
-        <div className="race-dice-template-subline">
-          <span>{pathLabel}</span>
-          <span>{distanceColor}</span>
-          <span>Lane {currentLane}</span>
+        <div className="race-dice-template-dice-line">{diceLine}</div>
+        <div className="race-dice-template-bonus-line">
+          {bonusLine || <span className="race-dice-template-muted">-</span>}
         </div>
-        <div className="race-dice-template-richline">{diceLine}</div>
-        <div className="race-dice-template-richline is-bonus">
-          {bonusLine || <span className="race-dice-template-muted">No bonus</span>}
-        </div>
-        <div className="race-dice-template-stats">
-          <div>
-            <span>Stamina</span>
-            <strong>{staminaText}</strong>
-          </div>
-          <div>
-            <span>WIT</span>
-            <strong>{witText}</strong>
-          </div>
-          <div>
-            <span>Reroll / WIT</span>
-            <strong>{rerollText}</strong>
-          </div>
-        </div>
+        <div className="race-dice-template-stamina">{staminaText}</div>
+        <div className="race-dice-template-wit">{witText}</div>
+        <div className="race-dice-template-reroll-left">{rerollLeft}</div>
+        <div className="race-dice-template-wit-reroll-left">{witRerollLeft}</div>
+        <div className="race-dice-template-player">{playerName}</div>
         {bonusRows.length > 0 ? (
           <div className="race-dice-template-bonus-chips">
             {bonusRows.map((item) => (
               <em key={`${item.label}-${item.value}-${item.index}`}>
                 {item.icon ? <img src={item.icon} alt={item.label} /> : null}
-                <span>{item.label}</span>
                 <strong>{item.value}</strong>
               </em>
             ))}
           </div>
         ) : null}
-        <div className="race-dice-template-player">{playerName}</div>
       </div>
     </div>
   );
 }
 
-function buildDicePreviewTokens(text = "") {
-  const input = String(text || "");
-  if (!input) return null;
+function buildRichPreviewTokens(text = "") {
+  const input = String(text || "").trim();
+  if (!input || input === "-") return null;
 
-  const parts = input.split(/(\[[^\]]+\])/g).filter(Boolean);
-  return parts.map((part, index) => (
-    part.startsWith("[") && part.endsWith("]") ? (
-      <mark key={`${part}-${index}`}>{part.slice(1, -1)}</mark>
-    ) : (
-      <span key={`${part}-${index}`}>{part}</span>
-    )
-  ));
-}
+  const parts = input.split(/(__[^_]+__|<:[^:>]+:\d+>|Speed|Power|Gut|Velocity|Navigation|Stamina|Block)/g).filter(Boolean);
+  return parts.map((part, index) => {
+    const iconMatch = part.match(/^<:([^:>]+):\d+>$/);
+    const normalizedIconName = iconMatch ? iconMatch[1] : part;
+    const iconPath = RACE_DISCORD_PREVIEW_ICON_MAP[normalizedIconName];
 
-function buildBonusPreviewTokens(text = "") {
-  const normalized = formatBonusDisplayText(text);
-  if (!normalized || normalized === "-") return null;
-
-  const tokens = normalized.split(/(\s+)/).filter(Boolean);
-  return tokens.map((token, index) => {
-    const iconPath = RACE_DISCORD_PREVIEW_ICON_MAP[token];
     if (iconPath) {
-      return <img key={`${token}-${index}`} src={iconPath} alt={token} />;
+      return <img key={`${normalizedIconName}-${index}`} src={iconPath} alt={normalizedIconName} />;
     }
-    return <span key={`${token}-${index}`}>{token}</span>;
+
+    if (part.startsWith("__") && part.endsWith("__")) {
+      return <span key={`${part}-${index}`} className="is-underlined">{part.slice(2, -2)}</span>;
+    }
+
+    return <span key={`${part}-${index}`}>{part}</span>;
   });
 }
 
@@ -2465,22 +2451,35 @@ function formatBonusDisplayText(value = "") {
     .trim() || "-";
 }
 
-function formatStaminaText(summary = {}) {
-  const stamina = Number(summary?.stamina_left ?? summary?.current_stamina);
-  const note = String(summary?.stamina_note || "").trim();
-  if (!Number.isFinite(stamina) && !note) return "-";
-  if (!note) return String(stamina);
-  return `${stamina} ${note}`.trim();
+function formatStaminaText(summary = {}, playerState = {}) {
+  const stamina = Number(summary?.stamina_left ?? summary?.current_stamina ?? playerState?.stamina_left);
+  const staminaDrain = Number(playerState?.last_stamina_drain ?? 0);
+  const draftingActive = Boolean(summary?.drafting_active ?? playerState?.drafting_active);
+  if (!Number.isFinite(stamina)) return "-";
+  const baseText = staminaDrain > 0 ? `${stamina} (-${staminaDrain})` : `${stamina}`;
+  return draftingActive ? `${baseText} DRAFT` : baseText;
 }
 
 function formatWitText(playerState = {}, summary = {}) {
-  const direct = firstFiniteNumber(
-    playerState?.wit_point,
+  const currentMana = firstFiniteNumber(
+    playerState?.wit_mana,
     playerState?.current_wit,
-    playerState?.wit,
-    summary?.stats?.wit
+    playerState?.wit_point,
+    playerState?.wit
   );
-  if (direct !== null) return `${direct} pt.`;
+  const witGain = firstFiniteNumber(
+    summary?.effective_stats?.effective_wit_gain,
+    playerState?.effective_race_stats?.effective_wit_gain
+  );
+
+  if (currentMana !== null && witGain !== null) {
+    return `${currentMana} \u2192 ${currentMana + witGain} pt.`;
+  }
+
+  if (currentMana !== null) {
+    return `${currentMana} pt.`;
+  }
+
   return "-";
 }
 
