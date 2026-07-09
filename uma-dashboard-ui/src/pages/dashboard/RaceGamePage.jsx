@@ -275,6 +275,7 @@ const ZONE_TRACKS = [
   "スターの走り.mp3",
 ];
 const MUSIC_PANEL_ART_SRC = "/music/uma_music.webp";
+const RACE_WAITING_BG = "/race_bg/main.webp";
 const TURN_RESULT_TEMPLATE_BG = "/turn_result_temp.png";
 
 function stageName(stage) {
@@ -637,9 +638,10 @@ export default function RaceGamePage({
     [room]
   );
   const isRaceWaiting = room?.phase === "waiting";
+  const raceLiveStageBg = isRaceWaiting ? RACE_WAITING_BG : TURN_RESULT_TEMPLATE_BG;
 
   useEffect(() => {
-    preloadImages([TURN_RESULT_TEMPLATE_BG]);
+    preloadImages([RACE_WAITING_BG, TURN_RESULT_TEMPLATE_BG]);
   }, []);
 
   useEffect(() => {
@@ -1476,9 +1478,11 @@ export default function RaceGamePage({
 
         <main className="race-hud-panel race-live-panel">
           <div className="race-live-stage">
-            <div
+            <img
               className={`race-live-bg race-live-bg--turn-result ${isRaceWaiting ? "is-static" : ""}`}
-              style={{ backgroundImage: `url(${TURN_RESULT_TEMPLATE_BG})` }}
+              src={raceLiveStageBg}
+              alt=""
+              aria-hidden="true"
             />
             {room.phase !== "waiting" ? (
               <RacePositionTrack
