@@ -276,6 +276,17 @@ const ZONE_TRACKS = [
   "スターの走り.mp3",
 ];
 const MUSIC_PANEL_ART_SRC = "/music/uma_music.webp";
+const RACE_DISCORD_PREVIEW_BG = "/race_discord/race_dice_preview_bg.png";
+const RACE_DISCORD_PREVIEW_ICON_MAP = {
+  Speed: "/race_discord/stats_icon/utx_ico_obtain_00.png",
+  Stamina: "/race_discord/stats_icon/utx_ico_obtain_01.png",
+  Power: "/race_discord/stats_icon/utx_ico_obtain_02.png",
+  Gut: "/race_discord/stats_icon/utx_ico_obtain_03.png",
+  Guts: "/race_discord/stats_icon/utx_ico_obtain_03.png",
+  Velocity: "/race_discord/skill_icons/Velocity.png",
+  Navigation: "/race_discord/skill_icons/Navigation.png",
+  Block: "/race_discord/icons/block_icon.png",
+};
 
 function stageName(stage) {
   return stage?.name || stage?.id || "Debut";
@@ -1579,7 +1590,7 @@ export default function RaceGamePage({
           </div>
           <div className="race-log-list uma-scroll">
             {(room.action_logs || []).slice().reverse().map((log) => (
-              <RaceLogItem key={log.id} log={log} />
+              <RaceLogItem key={log.id} log={log} room={room} />
             ))}
           </div>
         </section>
@@ -2251,7 +2262,7 @@ function getLocalMobAvatarFromPath(value = "") {
   return LOCAL_MOB_AVATAR_FILES.has(fileName) ? `/mobs/${fileName}` : "";
 }
 
-function RaceLogItem({ log }) {
+function RaceLogItem({ log, room }) {
   const summary = log.payload?.roll_summary;
   const bonusRows = getRollBonusRows(summary);
   const actionEffectRows = summary ? [] : getActionEffectRows(log);
@@ -2259,6 +2270,7 @@ function RaceLogItem({ log }) {
   const turnScore = summary?.total ?? getScoreFromLogMessage(log.message);
   const accentColor = getRaceLogAccentColor(summary);
   const formattedTurnScore = Number.isFinite(Number(turnScore)) ? signed(turnScore) : turnScore;
+  const playerState = getLogPlayerState(log, room);
 
   return (
     <article
@@ -2281,30 +2293,14 @@ function RaceLogItem({ log }) {
                 <b>{playerName}</b>
                 <span>posted a movement roll.</span>
               </p>
-              <div className="race-log-embed">
-                <div className="race-log-summary-grid">
-                  <div className="race-log-summary-player">
-                    <span>T{log.turn}</span>
-                    <strong>{playerName}</strong>
-                    <b>{formattedTurnScore}</b>
-                  </div>
-                  <div className="race-log-summary-dice">
-                    <code>{formatRollDice(summary.dice || summary.base_total || "-", summary.base_total)}</code>
-                    {summary.distance_color ? <em>{summary.distance_color}</em> : null}
-                  </div>
-                  <div className="race-log-bonus-list">
-                    {bonusRows.length > 0
-                      ? bonusRows.map((item) => (
-                          <em key={`${item.label}-${item.value}-${item.index}`}>
-                            {item.icon && <img src={item.icon} alt={item.label} />}
-                            {item.note && <span>{item.note}</span>}
-                            <strong>{item.value}</strong>
-                          </em>
-                        ))
-                      : <em>No bonus</em>}
-                  </div>
-                </div>
-              </div>
+              <RaceDiceTemplateCard
+                log={log}
+                playerName={playerName}
+                playerState={playerState}
+                summary={summary}
+                bonusRows={bonusRows}
+                formattedTurnScore={formattedTurnScore}
+              />
             </>
           ) : (
             <>
@@ -2333,6 +2329,159 @@ function getRaceLogAccentColor(summary) {
   const diceColor = normalizeDiceColor(summary?.distance_color);
   if (diceColor === "gold") return "#f0b84b";
   return "#5865f2";
+}
+
+function getLogPlayerState(log, room) {
+  const players = room?.players || [];
+  const payload = log?.payload || {};
+  const payloadId = String(
+    payload.user_id ??
+    payload.player_id ??
+    payload.player?.id ??
+    payload.game_player?.id ??
+    ""
+  );
+  const payloadName = normalizeRaceName(
+    payload.player_name ||
+    payload.username ||
+    payload.player?.name ||
+    payload.game_player?.name ||
+    ""
+  );
+
+  return players.find((player) => {
+    if (payloadId && String(player.id) === payloadId) return true;
+    return payloadName && normalizeRaceName(player.name || player.username) === payloadName;
+  }) || payload.game_player || payload.player || null;
+}
+
+function RaceDiceTemplateCard({ log, playerName, playerState, summary, bonusRows, formattedTurnScore }) {
+  const styleLabel = firstText(playerState?.style, playerState?.running_style, "-");
+  const currentSpeed = Math.floor(Number(summary?.current_max_speed ?? playerState?.current_max_speed ?? 0) || 0);
+  const currentLane = Number(summary?.current_lane ?? playerState?.current_lane ?? playerState?.entry_number ?? 1) || 1;
+  const avatar = getRunnerAvatar(playerState) || "";
+  const pathLabel = summary?.path?.label || "Track";
+  const distanceColor = normalizeDiceColor(summary?.distance_color) === "gold" ? "In Group" : "Out Group";
+  const staminaText = formatStaminaText(summary);
+  const witText = formatWitText(playerState, summary);
+  const rerollText = `${playerState?.reroll_left ?? "-"} / ${playerState?.wit_reroll_left ?? "-"}`;
+  const diceLine = buildDicePreviewTokens(formatRollDice(summary?.dice || summary?.base_total || "-", summary?.base_total));
+  const bonusLine = buildBonusPreviewTokens(summary?.bonus_display);
+
+  return (
+    <div className="race-dice-template-card" style={{ "--race-log-accent": getRaceLogAccentColor(summary) }}>
+      <div className="race-dice-template-avatar">
+        {avatar ? <img src={avatar} alt="" /> : <Bot size={32} />}
+        <div className="race-dice-template-phase">
+          <strong>{summary?.phase || "?"}</strong>
+          <span>/ {log.turn}</span>
+        </div>
+        <div className="race-dice-template-style">{styleLabel}</div>
+        <div className="race-dice-template-score">
+          <span>Score</span>
+          <strong>{playerState?.score ?? playerState?.distance ?? "-"}</strong>
+        </div>
+      </div>
+      <div className="race-dice-template-main">
+        <div className="race-dice-template-topline">
+          <strong>Current Speed {currentSpeed}</strong>
+          <b>{formattedTurnScore}</b>
+        </div>
+        <div className="race-dice-template-subline">
+          <span>{pathLabel}</span>
+          <span>{distanceColor}</span>
+          <span>Lane {currentLane}</span>
+        </div>
+        <div className="race-dice-template-richline">{diceLine}</div>
+        <div className="race-dice-template-richline is-bonus">
+          {bonusLine || <span className="race-dice-template-muted">No bonus</span>}
+        </div>
+        <div className="race-dice-template-stats">
+          <div>
+            <span>Stamina</span>
+            <strong>{staminaText}</strong>
+          </div>
+          <div>
+            <span>WIT</span>
+            <strong>{witText}</strong>
+          </div>
+          <div>
+            <span>Reroll / WIT</span>
+            <strong>{rerollText}</strong>
+          </div>
+        </div>
+        {bonusRows.length > 0 ? (
+          <div className="race-dice-template-bonus-chips">
+            {bonusRows.map((item) => (
+              <em key={`${item.label}-${item.value}-${item.index}`}>
+                {item.icon ? <img src={item.icon} alt={item.label} /> : null}
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+              </em>
+            ))}
+          </div>
+        ) : null}
+        <div className="race-dice-template-player">{playerName}</div>
+      </div>
+    </div>
+  );
+}
+
+function buildDicePreviewTokens(text = "") {
+  const input = String(text || "");
+  if (!input) return null;
+
+  const parts = input.split(/(\[[^\]]+\])/g).filter(Boolean);
+  return parts.map((part, index) => (
+    part.startsWith("[") && part.endsWith("]") ? (
+      <mark key={`${part}-${index}`}>{part.slice(1, -1)}</mark>
+    ) : (
+      <span key={`${part}-${index}`}>{part}</span>
+    )
+  ));
+}
+
+function buildBonusPreviewTokens(text = "") {
+  const normalized = formatBonusDisplayText(text);
+  if (!normalized || normalized === "-") return null;
+
+  const tokens = normalized.split(/(\s+)/).filter(Boolean);
+  return tokens.map((token, index) => {
+    const iconPath = RACE_DISCORD_PREVIEW_ICON_MAP[token];
+    if (iconPath) {
+      return <img key={`${token}-${index}`} src={iconPath} alt={token} />;
+    }
+    return <span key={`${token}-${index}`}>{token}</span>;
+  });
+}
+
+function formatBonusDisplayText(value = "") {
+  const text = String(value || "").trim();
+  if (!text || text === "-") return "-";
+  return text
+    .replace(/\bDRAFT\b/g, "")
+    .replace(/\bBLOCK\b/g, "Block")
+    .replace(/\s+/g, " ")
+    .trim() || "-";
+}
+
+function formatStaminaText(summary = {}) {
+  const stamina = Number(summary?.stamina_left ?? summary?.current_stamina);
+  const note = String(summary?.stamina_note || "").trim();
+  if (!Number.isFinite(stamina) && !note) return "-";
+  if (!note) return String(stamina);
+  return `${stamina} ${note}`.trim();
+}
+
+function formatWitText(playerState = {}, summary = {}) {
+  const direct = firstFiniteNumber(
+    playerState?.wit_point,
+    playerState?.current_wit,
+    playerState?.wit,
+    summary?.stats?.wit
+  );
+  if (direct !== null) return `${direct} pt.`;
+  return "-";
 }
 
 function getLogPlayerName(log) {
