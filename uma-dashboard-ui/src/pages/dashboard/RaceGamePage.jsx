@@ -1335,41 +1335,6 @@ export default function RaceGamePage({
 
       {error && <div className="race-error">{error}</div>}
 
-      {laneSystemEnabled && myPlayer ? (
-        <section className="race-lane-control-card">
-          <div className="race-lane-control-copy">
-            <span>Lane Command</span>
-            <strong>Lane {myPlayer.current_lane ?? 1}</strong>
-            <small>
-              {myPlayer.pending_lane
-                ? `Changing to Lane ${myPlayer.pending_lane} next turn`
-                : "No hidden lane change queued"}
-            </small>
-          </div>
-          <div className="race-lane-button-row">
-            {LANE_OPTIONS.map((lane) => {
-              const isCurrent = Number(myPlayer.current_lane) === lane;
-              const isPending = Number(myPlayer.pending_lane) === lane;
-              return (
-                <button
-                  key={lane}
-                  type="button"
-                  className={[
-                    "race-lane-btn",
-                    isCurrent ? "is-current" : "",
-                    isPending ? "is-pending" : "",
-                  ].filter(Boolean).join(" ")}
-                  onClick={() => handleChangeLane(lane)}
-                  disabled={!room?.started || room?.ended || Boolean(actionBusy)}
-                >
-                  {lane}
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      ) : null}
-
       <div className="race-hud-grid">
         <aside className="race-track-panel race-hud-panel race-track-hud">
           <PanelTitle icon={<MapIcon size={16} />} title="Track HUD" />
@@ -1503,6 +1468,41 @@ export default function RaceGamePage({
             </AnimatePresence>
           </div>
         </main>
+
+        {laneSystemEnabled && myPlayer ? (
+          <section className="race-lane-control-card race-hud-panel">
+            <div className="race-lane-control-copy">
+              <span>Lane Command</span>
+              <strong>Lane {myPlayer.current_lane ?? 1}</strong>
+              <small>
+                {myPlayer.pending_lane
+                  ? `Changing to Lane ${myPlayer.pending_lane} next turn`
+                  : "No hidden lane change queued"}
+              </small>
+            </div>
+            <div className="race-lane-button-row">
+              {LANE_OPTIONS.map((lane) => {
+                const isCurrent = Number(myPlayer.current_lane) === lane;
+                const isPending = Number(myPlayer.pending_lane) === lane;
+                return (
+                  <button
+                    key={lane}
+                    type="button"
+                    className={[
+                      "race-lane-btn",
+                      isCurrent ? "is-current" : "",
+                      isPending ? "is-pending" : "",
+                    ].filter(Boolean).join(" ")}
+                    onClick={() => handleChangeLane(lane)}
+                    disabled={!room?.started || room?.ended || Boolean(actionBusy)}
+                  >
+                    {lane}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
 
         {isWebTiming && (
           <section className="race-timing-control-panel">
