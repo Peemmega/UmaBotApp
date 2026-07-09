@@ -14,6 +14,7 @@ import {
   Plus,
   Radio,
   RefreshCw,
+  Send,
   Sparkles,
   Target,
   Trophy,
@@ -49,10 +50,11 @@ import speedIcon from "../../assets/icons/Speed.webp";
 import staminaIcon from "../../assets/icons/Stamina.webp";
 import witIcon from "../../assets/icons/Wit.webp";
 import skillIcon from "../../assets/skill_icon/Velocity.webp";
+import discordIcon from "../../assets/icons/discord_icon.webp";
 import { getRaceImage } from "../../utils/raceSchedule.js";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 import TimingRaceGauge from "../../components/TimingRaceGauge";
-import RacePositionTrack from "../../components/RacePositionTrack";
+import RacePositionTrack, { buildTrackPlayers, LANE_COUNT } from "../../components/RacePositionTrack";
 import { resolveRaceAvatar } from "../../utils/avatar";
 import "../../styles/raceGamePage.css";
 
@@ -1566,7 +1568,15 @@ export default function RaceGamePage({
         </aside>
 
         <section className="race-log-panel race-hud-panel">
-          <PanelTitle icon={<Radio size={16} />} title="Race Commentary" />
+          <div className="race-chat-header">
+            <div className="race-chat-header-icon">
+              <Bot size={18} />
+            </div>
+            <div className="race-chat-header-copy">
+              <strong>race-commentary</strong>
+              <span>Race Control posts roll embeds, skill triggers, and lane updates here.</span>
+            </div>
+          </div>
           <div className="race-log-list uma-scroll">
             {(room.action_logs || []).slice().reverse().map((log) => (
               <RaceLogItem key={log.id} log={log} />
@@ -1575,6 +1585,11 @@ export default function RaceGamePage({
         </section>
 
         <aside className={`race-command-panel race-hud-panel uma-scroll ${room.phase === "running" ? "is-running" : ""} ${room.phase === "running" && room.gameplay_mode === "timing" ? "is-timing" : ""}`}>
+          <div className="race-command-header">
+            <span>Race Control</span>
+            <strong>/race-control</strong>
+            <small>Select commands as if you were posting into a Discord bot channel.</small>
+          </div>
           {room.phase === "waiting" ? (
             <>
               <div className="race-bot-picker">
@@ -1675,6 +1690,13 @@ export default function RaceGamePage({
                 <span>Turn {room.turn} Result</span>
                 <strong>{myConfirmTurnScore}</strong>
                 <p>{hasConfirmedTurn ? "Confirmed. Waiting for racers..." : "Review your score before next turn."}</p>
+                <RaceLaneSnapshot
+                  room={room}
+                  players={roomPlayers}
+                  currentUserId={userId}
+                  title="Lane Summary"
+                  subtitle={room.current_path?.label || "Current pack positions"}
+                />
               </div>
               
               <div className="race-reroll-actions">
@@ -1757,6 +1779,18 @@ export default function RaceGamePage({
               />
             </>
           )}
+          <div className="race-command-compose" aria-hidden="true">
+            <Send size={15} />
+            <span>
+              {room.phase === "waiting"
+                ? "Queue bots, then send /start."
+                : room.gameplay_mode === "timing"
+                  ? "Timing mode posts automatically after each hit."
+                  : isConfirmingTurn
+                    ? "Review the embed, then send /confirm."
+                    : "Use /run, /skill, /reroll, /block, or /rush."}
+            </span>
+          </div>
         </aside>
 
       </div>
@@ -1927,6 +1961,13 @@ function RaceWinnerModal({ winner, room, onLeave }) {
           <em>{winnerStyle}</em>
           <strong>{winnerScore}{winnerUnit}</strong>
         </div>
+        <RaceLaneSnapshot
+          room={room}
+          players={room?.players || []}
+          currentUserId={winner?.id}
+          title="Final Lane Summary"
+          subtitle={room?.current_path?.label || "Finish order"}
+        />
         <div className="race-final-scoreboard">
           <h3>Final Scores</h3>
           <div className="race-final-score-list uma-scroll">
@@ -1951,6 +1992,63 @@ function RaceWinnerModal({ winner, room, onLeave }) {
         </button>
       </motion.div>
     </div>
+  );
+}
+
+function RaceLaneSnapshot({ room, players, currentUserId, title = "Lane Summary", subtitle = "" }) {
+  const snapshotPlayers = buildTrackPlayers(players || room?.players || [], room);
+  const background = getRaceStageBackground(room, getRaceImage(roomRaceImageSource(room)));
+  const sortedPlayers = [...snapshotPlayers].sort((left, right) => (
+    (Number(left.rank) || 99) - (Number(right.rank) || 99)
+  ));
+
+  return (
+    <section className="race-lane-snapshot" aria-label={title}>
+      <div className="race-lane-snapshot-head">
+        <strong>{title}</strong>
+        <span>{subtitle || `${snapshotPlayers.length || 0} racers on track`}</span>
+      </div>
+      <div
+        className="race-lane-snapshot-canvas"
+        style={{ backgroundImage: `url(${background.src})` }}
+      >
+        <div className="race-lane-snapshot-shade" />
+        {Array.from({ length: LANE_COUNT }, (_, index) => (
+          <div
+            key={index + 1}
+            className="race-lane-snapshot-line"
+            style={{ "--lane-y": `${12 + index * 15}%` }}
+          />
+        ))}
+        {snapshotPlayers.map((player) => {
+          const isSelf = String(player.id ?? player.user_id ?? "") === String(currentUserId);
+          return (
+            <div
+              key={player.playerKey}
+              className={`race-lane-snapshot-marker ${isSelf ? "is-self" : ""}`}
+              style={{
+                "--progress": player.markerProgress,
+                "--lane-y": `${player.markerLaneY}%`,
+                "--offset-y": `${player.markerOffsetY}px`,
+                "--marker-color": player.markerColor,
+              }}
+              title={`${player.name || "Racer"} | Lane ${player.markerLane} | Rank ${player.rank}`}
+            >
+              <span>{player.display_number}</span>
+            </div>
+          );
+        })}
+      </div>
+      <div className="race-lane-snapshot-order">
+        {sortedPlayers.slice(0, 4).map((player) => (
+          <div key={`${player.playerKey}-summary`}>
+            <span>#{player.rank}</span>
+            <strong>{player.name || player.username || "Racer"}</strong>
+            <em>L{player.markerLane}</em>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -2159,52 +2257,82 @@ function RaceLogItem({ log }) {
   const actionEffectRows = summary ? [] : getActionEffectRows(log);
   const playerName = getLogPlayerName(log);
   const turnScore = summary?.total ?? getScoreFromLogMessage(log.message);
+  const accentColor = getRaceLogAccentColor(summary);
+  const formattedTurnScore = Number.isFinite(Number(turnScore)) ? signed(turnScore) : turnScore;
 
   return (
-    <article className={`race-log-item ${summary ? "race-log-roll" : ""}`}>
-      {summary ? (
-        <div className="race-log-summary-grid">
-          <div className="race-log-summary-player">
-            <span>T{log.turn}</span>
-            <strong>{playerName}</strong>
-            <b>+{turnScore}</b>
-          </div>
-          <div className="race-log-summary-dice">
-            {formatRollDice(summary.dice || summary.base_total || "-", summary.base_total)}
-            {summary.distance_color ? <em>{summary.distance_color}</em> : null}
-          </div>
-          <div className="race-log-bonus-list">
-            {bonusRows.length > 0
-              ? bonusRows.map((item) => (
-                  <em key={`${item.label}-${item.value}-${item.index}`}>
-                    {item.icon && <img src={item.icon} alt={item.label} />}
-                    {item.note && <span>{item.note}</span>}
-                    <strong>{item.value}</strong>
-                  </em>
-                ))
-              : <em>No bonus</em>}
-          </div>
+    <article
+      className={`race-log-item ${summary ? "race-log-roll" : ""}`}
+      style={{ "--race-log-accent": accentColor }}
+    >
+      <div className="race-log-message">
+        <div className="race-log-avatar" aria-hidden="true">
+          <img src={discordIcon} alt="" />
         </div>
-      ) : (
-        <>
-          <p>
-            <span>T{log.turn}</span>
-            {log.message}
-          </p>
-          {actionEffectRows.length > 0 ? (
-            <div className="race-log-action-effects">
-              {actionEffectRows.map((item, index) => (
-                <em key={`${item.label}-${item.value}-${index}`}>
-                  <span>{renderEffectLabel(item.label)}</span>
-                  <strong>{item.value}</strong>
-                </em>
-              ))}
-            </div>
-          ) : null}
-        </>
-      )}
+        <div className="race-log-body">
+          <div className="race-log-meta">
+            <strong>Race Control</strong>
+            <span className="race-log-bot-badge">BOT</span>
+            <em>Turn {log.turn}</em>
+          </div>
+          {summary ? (
+            <>
+              <p className="race-log-content">
+                <b>{playerName}</b>
+                <span>posted a movement roll.</span>
+              </p>
+              <div className="race-log-embed">
+                <div className="race-log-summary-grid">
+                  <div className="race-log-summary-player">
+                    <span>T{log.turn}</span>
+                    <strong>{playerName}</strong>
+                    <b>{formattedTurnScore}</b>
+                  </div>
+                  <div className="race-log-summary-dice">
+                    <code>{formatRollDice(summary.dice || summary.base_total || "-", summary.base_total)}</code>
+                    {summary.distance_color ? <em>{summary.distance_color}</em> : null}
+                  </div>
+                  <div className="race-log-bonus-list">
+                    {bonusRows.length > 0
+                      ? bonusRows.map((item) => (
+                          <em key={`${item.label}-${item.value}-${item.index}`}>
+                            {item.icon && <img src={item.icon} alt={item.label} />}
+                            {item.note && <span>{item.note}</span>}
+                            <strong>{item.value}</strong>
+                          </em>
+                        ))
+                      : <em>No bonus</em>}
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="race-log-content">
+                <span>{log.message}</span>
+              </p>
+              {actionEffectRows.length > 0 ? (
+                <div className="race-log-action-effects">
+                  {actionEffectRows.map((item, index) => (
+                    <em key={`${item.label}-${item.value}-${index}`}>
+                      <span>{renderEffectLabel(item.label)}</span>
+                      <strong>{item.value}</strong>
+                    </em>
+                  ))}
+                </div>
+              ) : null}
+            </>
+          )}
+        </div>
+      </div>
     </article>
   );
+}
+
+function getRaceLogAccentColor(summary) {
+  const diceColor = normalizeDiceColor(summary?.distance_color);
+  if (diceColor === "gold") return "#f0b84b";
+  return "#5865f2";
 }
 
 function getLogPlayerName(log) {

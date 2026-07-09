@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const TRACK_STYLE_COLORS = {
+export const TRACK_STYLE_COLORS = {
   front: "#32c56a",
   pace: "#3f8cff",
   late: "#ff9f40",
@@ -9,7 +9,7 @@ const TRACK_STYLE_COLORS = {
 
 const STACK_THRESHOLD = 0.03;
 const STACK_STEP_PX = 10;
-const LANE_COUNT = 6;
+export const LANE_COUNT = 6;
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -48,7 +48,7 @@ function getLaneCenterY(lane) {
   return 12 + (clamp(Number(lane) || 1, 1, LANE_COUNT) - 1) * 15;
 }
 
-function buildTrackPlayers(players, room) {
+export function buildTrackPlayers(players, room) {
   const basePlayers = (Array.isArray(players) ? players : []).map((player, index) => ({
     ...player,
     display_number: Number(player?.display_number) || index + 1,
