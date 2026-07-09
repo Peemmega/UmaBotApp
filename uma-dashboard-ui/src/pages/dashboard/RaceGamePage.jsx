@@ -1484,6 +1484,11 @@ export default function RaceGamePage({
               {LANE_OPTIONS.map((lane) => {
                 const isCurrent = Number(myPlayer.current_lane) === lane;
                 const isPending = Number(myPlayer.pending_lane) === lane;
+                const canChangeLane =
+                  room?.phase === "running" &&
+                  !isRaceEnded(room) &&
+                  !isWebTiming &&
+                  !Boolean(actionBusy);
                 return (
                   <button
                     key={lane}
@@ -1494,7 +1499,7 @@ export default function RaceGamePage({
                       isPending ? "is-pending" : "",
                     ].filter(Boolean).join(" ")}
                     onClick={() => handleChangeLane(lane)}
-                    disabled={!room?.started || room?.ended || Boolean(actionBusy)}
+                    disabled={!canChangeLane}
                   >
                     {lane}
                   </button>
