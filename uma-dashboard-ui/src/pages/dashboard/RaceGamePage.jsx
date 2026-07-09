@@ -2372,50 +2372,27 @@ function RaceDiceTemplateCard({ log, playerName, playerState, summary, bonusRows
   const totalValue = Number.isFinite(Number(summary?.total)) ? summary.total : formattedTurnScore;
 
   return (
-    <div
-      className="race-dice-template-card"
-      style={{
-        "--race-log-accent": getRaceLogAccentColor(summary),
-        backgroundImage: `url(${RACE_DISCORD_PREVIEW_BG})`,
-      }}
-    >
-      <div className="race-dice-template-avatar">
-        {avatar ? <img src={avatar} alt="" /> : <Bot size={32} />}
-        <div className="race-dice-template-turn">
-          <strong>{summary?.phase || "?"}</strong>
-          <span>/{log.turn}</span>
-        </div>
-        <div className="race-dice-template-style">{styleLabel}</div>
-        <div className="race-dice-template-score-label">คะแนน</div>
-        <div className="race-dice-template-score-value">{scoreValue}</div>
-      </div>
-      <div className="race-dice-template-main">
-        <div className="race-dice-template-speed">ความเร็วปัจจุบัน {currentSpeed}</div>
-        <div className="race-dice-template-total">{totalValue}</div>
-        <div className="race-dice-template-path">
-          {pathLabel} / {distanceColor} / lane {currentLane}
-        </div>
-        <div className="race-dice-template-dice-line">{diceLine}</div>
-        <div className="race-dice-template-bonus-line">
-          {bonusLine || <span className="race-dice-template-muted">-</span>}
-        </div>
-        <div className="race-dice-template-stamina">{staminaText}</div>
-        <div className="race-dice-template-wit">{witText}</div>
-        <div className="race-dice-template-reroll-left">{rerollLeft}</div>
-        <div className="race-dice-template-wit-reroll-left">{witRerollLeft}</div>
-        <div className="race-dice-template-player">{playerName}</div>
-        {bonusRows.length > 0 ? (
-          <div className="race-dice-template-bonus-chips">
-            {bonusRows.map((item) => (
-              <em key={`${item.label}-${item.value}-${item.index}`}>
-                {item.icon ? <img src={item.icon} alt={item.label} /> : null}
-                <strong>{item.value}</strong>
-              </em>
-            ))}
-          </div>
-        ) : null}
-      </div>
-    </div>
+    <RaceDicePreviewImage
+      accentColor={getRaceLogAccentColor(summary)}
+      avatar={avatar}
+      bonusRows={bonusRows}
+      currentLane={currentLane}
+      currentSpeed={currentSpeed}
+      diceLine={diceLine}
+      distanceColor={distanceColor}
+      formattedTurnScore={formattedTurnScore}
+      logTurn={log.turn}
+      pathLabel={pathLabel}
+      playerName={playerName}
+      rerollLeft={rerollLeft}
+      scoreValue={scoreValue}
+      staminaText={staminaText}
+      styleLabel={styleLabel}
+      summary={summary}
+      totalValue={totalValue}
+      witRerollLeft={witRerollLeft}
+      witText={witText}
+    />
   );
 }
 
@@ -2430,14 +2407,14 @@ function buildRichPreviewTokens(text = "") {
     const iconPath = RACE_DISCORD_PREVIEW_ICON_MAP[normalizedIconName];
 
     if (iconPath) {
-      return <img key={`${normalizedIconName}-${index}`} src={iconPath} alt={normalizedIconName} />;
+      return { key: `${normalizedIconName}-${index}`, type: "img", src: iconPath, alt: normalizedIconName };
     }
 
     if (part.startsWith("__") && part.endsWith("__")) {
-      return <span key={`${part}-${index}`} className="is-underlined">{part.slice(2, -2)}</span>;
+      return { key: `${part}-${index}`, type: "text", text: part.slice(2, -2), underline: true };
     }
 
-    return <span key={`${part}-${index}`}>{part}</span>;
+    return { key: `${part}-${index}`, type: "text", text: part, underline: false };
   });
 }
 
@@ -2481,6 +2458,225 @@ function formatWitText(playerState = {}, summary = {}) {
   }
 
   return "-";
+}
+
+function RaceDicePreviewImage({
+  accentColor,
+  avatar,
+  bonusRows,
+  currentLane,
+  currentSpeed,
+  diceLine,
+  distanceColor,
+  formattedTurnScore,
+  logTurn,
+  pathLabel,
+  playerName,
+  rerollLeft,
+  scoreValue,
+  staminaText,
+  styleLabel,
+  summary,
+  totalValue,
+  witRerollLeft,
+  witText,
+}) {
+  const [imageSrc, setImageSrc] = useState("");
+
+  useEffect(() => {
+    let canceled = false;
+
+    async function renderPreview() {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1340;
+      canvas.height = 498;
+      const context = canvas.getContext("2d");
+      if (!context) return;
+
+      await ensureRacePreviewFont();
+
+      const [background, avatarImage] = await Promise.all([
+        loadCanvasImage(RACE_DISCORD_PREVIEW_BG),
+        loadCanvasImage(avatar).catch(() => null),
+      ]);
+
+      if (canceled) return;
+
+      context.drawImage(background, 0, 0, canvas.width, canvas.height);
+      if (avatarImage) {
+        drawCoverImage(context, avatarImage, 0, 0, 480, 500);
+      }
+
+      const brown = "#704623";
+      const green = "#69b22d";
+      const white = "#ffffff";
+      const outline = "#502d14";
+
+      drawOutlinedText(context, String(summary?.phase || "?"), 90, 20, "900 92px 'Prompt Bold Local'", "#ffcd50", outline, 4, "right");
+      drawOutlinedText(context, `/${logTurn}`, 100, 85, "900 42px 'Prompt Bold Local'", white, outline, 4, "left");
+      drawOutlinedText(context, String(styleLabel || "-"), 30, 400, "900 58px 'Prompt Bold Local'", white, outline, 4, "left");
+      drawOutlinedText(context, "คะแนน", 345, 370, "900 30px 'Prompt Bold Local'", white, outline, 3, "left");
+      drawOutlinedText(context, String(scoreValue ?? "-"), 435, 405, "900 58px 'Prompt Bold Local'", white, outline, 4, "right");
+
+      drawCanvasText(context, `ความเร็วปัจจุบัน ${currentSpeed}`, 520, 30, "900 58px 'Prompt Bold Local'", green);
+      drawCanvasText(context, String(totalValue ?? formattedTurnScore ?? "-"), 1325, 18, "900 92px 'Prompt Bold Local'", brown, "right");
+      drawCanvasText(context, `${pathLabel} / ${distanceColor} / lane ${currentLane}`, 520, 100, "900 42px 'Prompt Bold Local'", brown);
+
+      await drawRichCanvasLine(context, 520, 160, diceLine, "900 42px 'Prompt Bold Local'", brown);
+      await drawRichCanvasLine(context, 520, 225, buildRichPreviewTokens(formatBonusDisplayText(summary?.bonus_display)), "900 42px 'Prompt Bold Local'", brown);
+
+      drawCanvasText(context, staminaText, 595, 340, "900 42px 'Prompt Bold Local'", brown);
+      drawCanvasText(context, witText, 595, 415, "900 42px 'Prompt Bold Local'", brown);
+      drawCanvasText(context, String(rerollLeft), 1130, 400, "900 42px 'Prompt Bold Local'", brown);
+      drawCanvasText(context, String(witRerollLeft), 1245, 400, "900 42px 'Prompt Bold Local'", brown);
+
+      if (!canceled) {
+        setImageSrc(canvas.toDataURL("image/png"));
+      }
+    }
+
+    renderPreview().catch(() => {
+      if (!canceled) setImageSrc("");
+    });
+
+    return () => {
+      canceled = true;
+    };
+  }, [
+    accentColor,
+    avatar,
+    bonusRows,
+    currentLane,
+    currentSpeed,
+    diceLine,
+    distanceColor,
+    formattedTurnScore,
+    logTurn,
+    pathLabel,
+    playerName,
+    rerollLeft,
+    scoreValue,
+    staminaText,
+    styleLabel,
+    summary,
+    totalValue,
+    witRerollLeft,
+    witText,
+  ]);
+
+  return (
+    <div className="race-dice-template-card" style={{ "--race-log-accent": accentColor }}>
+      {imageSrc ? (
+        <img className="race-dice-template-image" src={imageSrc} alt={`${playerName} race dice preview`} />
+      ) : (
+        <div className="race-dice-template-fallback">Rendering preview...</div>
+      )}
+      {bonusRows.length > 0 ? (
+        <div className="race-dice-template-bonus-chips">
+          {bonusRows.map((item) => (
+            <em key={`${item.label}-${item.value}-${item.index}`}>
+              {item.icon ? <img src={item.icon} alt={item.label} /> : null}
+              <strong>{item.value}</strong>
+            </em>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+let racePreviewFontPromise;
+
+function ensureRacePreviewFont() {
+  if (typeof document === "undefined" || !document.fonts) return Promise.resolve();
+  if (!racePreviewFontPromise) {
+    racePreviewFontPromise = document.fonts.load("900 42px 'Prompt Bold Local'");
+  }
+  return racePreviewFontPromise;
+}
+
+function loadCanvasImage(src) {
+  return new Promise((resolve, reject) => {
+    if (!src) {
+      reject(new Error("Missing image source"));
+      return;
+    }
+
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+    image.src = src;
+  });
+}
+
+function drawCoverImage(context, image, x, y, width, height) {
+  const scale = Math.max(width / image.width, height / image.height);
+  const drawWidth = image.width * scale;
+  const drawHeight = image.height * scale;
+  const offsetX = x + (width - drawWidth) / 2;
+  const offsetY = y + (height - drawHeight) / 2;
+  context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+}
+
+function drawCanvasText(context, text, x, y, font, fillStyle, align = "left") {
+  context.save();
+  context.font = font;
+  context.fillStyle = fillStyle;
+  context.textAlign = align;
+  context.textBaseline = "top";
+  context.fillText(String(text || ""), x, y);
+  context.restore();
+}
+
+function drawOutlinedText(context, text, x, y, font, fillStyle, strokeStyle, lineWidth = 4, align = "left") {
+  context.save();
+  context.font = font;
+  context.fillStyle = fillStyle;
+  context.strokeStyle = strokeStyle;
+  context.lineWidth = lineWidth * 2;
+  context.lineJoin = "round";
+  context.textAlign = align;
+  context.textBaseline = "top";
+  context.strokeText(String(text || ""), x, y);
+  context.fillText(String(text || ""), x, y);
+  context.restore();
+}
+
+async function drawRichCanvasLine(context, x, y, nodes, font, fillStyle) {
+  if (!nodes) return;
+  context.save();
+  context.font = font;
+  context.fillStyle = fillStyle;
+  context.textBaseline = "top";
+
+  let cursorX = x;
+  for (const node of nodes) {
+    if (!node) continue;
+    if (node.type === "img") {
+      const icon = await loadCanvasImage(node.src).catch(() => null);
+      if (icon) {
+        context.drawImage(icon, cursorX + 4, y + 6, 42, 42);
+      }
+      cursorX += 52;
+      continue;
+    }
+
+    const text = String(node.text || "");
+    context.fillText(text, cursorX, y);
+    const width = context.measureText(text).width;
+    if (node.underline) {
+      context.beginPath();
+      context.lineWidth = 4;
+      context.strokeStyle = fillStyle;
+      context.moveTo(cursorX, y + 50);
+      context.lineTo(cursorX + width, y + 50);
+      context.stroke();
+    }
+    cursorX += width;
+  }
+
+  context.restore();
 }
 
 function getLogPlayerName(log) {

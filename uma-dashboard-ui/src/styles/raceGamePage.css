@@ -2823,228 +2823,38 @@
   margin-top: 8px;
   aspect-ratio: 1340 / 498;
   border-radius: 14px;
-  display: flex;
+  display: block;
   overflow: hidden;
   position: relative;
-  background-color: #f7f6f2;
-  background-position: center;
-  background-size: cover;
+  background: rgba(255, 255, 255, 0.05);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.08),
     0 16px 28px rgba(0, 0, 0, 0.24);
-  font-family: "Prompt Bold Local", "Trebuchet MS", sans-serif;
 }
 
-.race-dice-template-avatar,
-.race-dice-template-main {
-  position: relative;
-  min-width: 0;
-  z-index: 1;
-}
-
-.race-dice-template-avatar {
-  width: 35.82%;
-  overflow: hidden;
-}
-
-.race-dice-template-avatar img {
+.race-dice-template-image,
+.race-dice-template-fallback {
   width: 100%;
   height: 100%;
+}
+
+.race-dice-template-image {
+  display: block;
   object-fit: cover;
-}
-
-.race-dice-template-avatar svg {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  transform: translate(-50%, -50%);
-  color: #ffffff;
-}
-
-.race-dice-template-turn {
-  position: absolute;
-  top: 4%;
-  left: 6.2%;
-  display: flex;
-  align-items: baseline;
-  gap: 0;
-  text-shadow:
-    -3px 0 #502d14,
-    0 3px #502d14,
-    3px 0 #502d14,
-    0 -3px #502d14;
-}
-
-.race-dice-template-turn strong {
-  color: #ffcd50;
-  font-size: clamp(40px, 5vw, 80px);
-  font-weight: 900;
-  line-height: 1;
-}
-
-.race-dice-template-turn span {
-  color: #ffffff;
-  font-size: clamp(18px, 2.4vw, 38px);
-  font-weight: 900;
-  line-height: 1.1;
-}
-
-.race-dice-template-style {
-  position: absolute;
-  left: 6.2%;
-  bottom: 4.8%;
-  color: #ffffff;
-  font-size: clamp(20px, 3vw, 52px);
-  font-weight: 900;
-  text-shadow:
-    -3px 0 #502d14,
-    0 3px #502d14,
-    3px 0 #502d14,
-    0 -3px #502d14;
-}
-
-.race-dice-template-score-label {
-  position: absolute;
-  right: 9%;
-  bottom: 18%;
-  color: #ffffff;
-  font-size: clamp(11px, 1.2vw, 20px);
-  font-weight: 900;
-  text-shadow:
-    -2px 0 #502d14,
-    0 2px #502d14,
-    2px 0 #502d14,
-    0 -2px #502d14;
-}
-
-.race-dice-template-score-value {
-  position: absolute;
-  right: 9%;
-  bottom: 4.2%;
-  color: #ffffff;
-  font-size: clamp(22px, 3vw, 56px);
-  font-weight: 900;
-  line-height: 1;
-  text-shadow:
-    -3px 0 #502d14,
-    0 3px #502d14,
-    3px 0 #502d14,
-    0 -3px #502d14;
-}
-
-.race-dice-template-main {
-  width: 64.18%;
-}
-
-.race-dice-template-speed,
-.race-dice-template-total,
-.race-dice-template-path,
-.race-dice-template-dice-line,
-.race-dice-template-bonus-line,
-.race-dice-template-stamina,
-.race-dice-template-wit,
-.race-dice-template-reroll-left,
-.race-dice-template-wit-reroll-left,
-.race-dice-template-player {
-  position: absolute;
-}
-
-.race-dice-template-speed {
-  top: 6%;
-  left: 4.5%;
-  color: #69b22d;
-  font-size: clamp(18px, 2.7vw, 58px);
-  font-weight: 900;
-  line-height: 1.05;
-}
-
-.race-dice-template-total {
-  top: 4%;
-  right: 1.6%;
-  color: #704623;
-  font-size: clamp(38px, 5vw, 88px);
-  font-weight: 900;
-  line-height: 1;
-}
-
-.race-dice-template-path {
-  top: 20%;
-  left: 4.5%;
-  right: 20%;
-  color: #704623;
-  font-size: clamp(15px, 2vw, 42px);
-  font-weight: 900;
-  line-height: 1.05;
-}
-
-.race-dice-template-dice-line,
-.race-dice-template-bonus-line {
-  left: 4.5%;
-  right: 5%;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: clamp(4px, 0.55vw, 10px);
-  color: #704623;
-  font-size: clamp(17px, 2.05vw, 42px);
-  font-weight: 900;
-  line-height: 1.15;
-}
-
-.race-dice-template-dice-line {
-  top: 31%;
-}
-
-.race-dice-template-bonus-line {
-  top: 44%;
-}
-
-.race-dice-template-dice-line span,
-.race-dice-template-bonus-line span {
-  color: #704623;
-}
-
-.race-dice-template-dice-line .is-underlined,
-.race-dice-template-bonus-line .is-underlined {
-  padding-bottom: 2px;
-  border-bottom: 4px solid #704623;
-}
-
-.race-dice-template-dice-line img,
-.race-dice-template-bonus-line img {
-  width: clamp(18px, 2.1vw, 42px);
-  height: clamp(18px, 2.1vw, 42px);
-  object-fit: contain;
 }
 
 .race-dice-template-muted {
   color: rgba(112, 70, 35, 0.7);
 }
 
-.race-dice-template-stamina,
-.race-dice-template-wit {
-  left: 12.6%;
-  right: 30%;
-  color: #704623;
-  font-size: clamp(14px, 2vw, 40px);
-  font-weight: 900;
-  line-height: 1.05;
-}
-
-.race-dice-template-stamina {
-  top: 69%;
-}
-
-.race-dice-template-wit {
-  top: 83%;
-}
-
 .race-dice-template-bonus-chips {
   position: absolute;
-  top: 56%;
-  left: 4.5%;
+  top: 10px;
+  right: 10px;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  pointer-events: none;
 }
 
 .race-dice-template-bonus-chips em {
@@ -3066,29 +2876,13 @@
   object-fit: contain;
 }
 
-.race-dice-template-reroll-left,
-.race-dice-template-wit-reroll-left {
-  top: 81%;
-  color: #704623;
-  font-size: clamp(20px, 3vw, 52px);
+.race-dice-template-fallback {
+  display: grid;
+  place-items: center;
+  color: #dbdee1;
+  font-size: 14px;
   font-weight: 900;
-  line-height: 1;
-}
-
-.race-dice-template-reroll-left {
-  left: 77.5%;
-}
-
-.race-dice-template-wit-reroll-left {
-  left: 91%;
-}
-
-.race-dice-template-player {
-  left: 4.5%;
-  bottom: 4.5%;
-  color: rgba(112, 70, 35, 0.9);
-  font-size: clamp(10px, 0.95vw, 15px);
-  font-weight: 900;
+  background: linear-gradient(180deg, rgba(49, 51, 56, 0.96), rgba(35, 36, 40, 0.96));
 }
 
 .race-log-summary-grid {
