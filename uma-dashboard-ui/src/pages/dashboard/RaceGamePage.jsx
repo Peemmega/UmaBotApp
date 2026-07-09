@@ -52,6 +52,7 @@ import skillIcon from "../../assets/skill_icon/Velocity.webp";
 import { getRaceImage } from "../../utils/raceSchedule.js";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 import TimingRaceGauge from "../../components/TimingRaceGauge";
+import RaceDicePreviewImage from "../../components/RaceDicePreviewImage";
 import RacePositionTrack from "../../components/RacePositionTrack";
 import { resolveRaceAvatar } from "../../utils/avatar";
 import "../../styles/raceGamePage.css";
@@ -1675,6 +1676,15 @@ export default function RaceGamePage({
                 <span>Turn {room.turn} Result</span>
                 <strong>{myConfirmTurnScore}</strong>
                 <p>{hasConfirmedTurn ? "Confirmed. Waiting for racers..." : "Review your score before next turn."}</p>
+                {myPlayer?.last_roll_turn === room.turn ? (
+                  <RaceDicePreviewImage
+                    roomId={room.room_id}
+                    userId={userId}
+                    version={room.updated_at}
+                    className="race-confirm-preview-image"
+                    alt={`Turn ${room.turn} dice preview`}
+                  />
+                ) : null}
               </div>
               
               <div className="race-reroll-actions">

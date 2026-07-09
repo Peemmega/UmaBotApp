@@ -2706,6 +2706,13 @@
   font-weight: 900;
 }
 
+.race-confirm-preview-image {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  border-radius: 12px;
+}
+
 .race-confirm-btn {
   min-height: 54px;
 }
