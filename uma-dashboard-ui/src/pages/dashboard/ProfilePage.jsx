@@ -21,6 +21,9 @@ export default function ProfilePage({
   avatarUrl,
   player,
   setPlayer,
+  profile,
+  profileType = "trainee",
+  onSaveProfile,
   error,
   isEditStatsOpen,
   setIsEditStatsOpen,
@@ -109,6 +112,82 @@ export default function ProfilePage({
       setUploadingImage(false);
     }
   };
+
+  if (profileType !== "trainee") {
+    const isTrainer = profileType === "trainer";
+    const profileName = profile?.name || (isTrainer ? "Trainer" : "NPC");
+    const profileImage = profile?.imageUrl || "";
+    const teamIds = Array.isArray(profile?.teamUmaIds) ? profile.teamUmaIds : [];
+
+    return (
+      <StaggerContainer className={`dashboard-shell profile-stagger role-profile role-profile-${profileType}`}>
+        <StaggerItem>
+          <section className="profile-card">
+            <div className="title-banner">
+              <h2>{isTrainer ? "Trainer Profile" : "NPC Profile"}</h2>
+            </div>
+            <div className="profile-body role-profile-body">
+              <div className="profile-avatar-wrap">
+                {profileImage ? (
+                  <img src={profileImage} alt={profileName} className="profile-avatar" />
+                ) : (
+                  <div className="profile-avatar placeholder">{isTrainer ? "🎓" : "👤"}</div>
+                )}
+              </div>
+              <div className="profile-info role-profile-fields">
+                <label>
+                  Display name
+                  <input
+                    value={profileName}
+                    maxLength={24}
+                    onChange={(event) => onSaveProfile({ name: event.target.value })}
+                  />
+                </label>
+                <label>
+                  Image URL
+                  <input
+                    value={profileImage}
+                    type="url"
+                    placeholder="https://..."
+                    onChange={(event) => onSaveProfile({ imageUrl: event.target.value })}
+                  />
+                </label>
+                {isTrainer && (
+                  <label>
+                    Uma Musume IDs in your team
+                    <input
+                      value={teamIds.join(", ")}
+                      placeholder="e.g. 1001, 1002, 1003"
+                      onChange={(event) =>
+                        onSaveProfile({
+                          teamUmaIds: event.target.value
+                            .split(",")
+                            .map((id) => id.trim())
+                            .filter(Boolean),
+                        })
+                      }
+                    />
+                    <small>Store character IDs only; stats, aptitude, zone and skills are not used for Trainers.</small>
+                  </label>
+                )}
+              </div>
+            </div>
+          </section>
+        </StaggerItem>
+
+        {isTrainer && (
+          <StaggerItem>
+            <section className="sheet-card trainer-team-card">
+              <div className="title-banner"><h2>My Uma Musume Team</h2></div>
+              <div className="trainer-team-list">
+                {teamIds.length ? teamIds.map((id) => <Badge key={id}>Uma ID: {id}</Badge>) : <p>Add character IDs above to build your team.</p>}
+              </div>
+            </section>
+          </StaggerItem>
+        )}
+      </StaggerContainer>
+    );
+  }
 
   return (
     <>

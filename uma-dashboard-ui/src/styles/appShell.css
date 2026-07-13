@@ -24,6 +24,45 @@
   pointer-events: none;
 }
 
+.profile-theme-trainer {
+  --uma-bg: #fff7fd;
+  --uma-bg-soft: #fff0fa;
+  --uma-surface-raised: #fff9fd;
+  --uma-ink: #4b2456;
+  --uma-muted: #7e557f;
+  --uma-border: rgba(156, 77, 173, 0.22);
+  --uma-border-strong: rgba(156, 77, 173, 0.38);
+  --uma-primary: #a34fc0;
+  --uma-primary-dark: #772a96;
+  --uma-gradient-primary: linear-gradient(135deg, #7d3fa4 0%, #c95fae 52%, #f38bc0 100%);
+  --uma-gradient-race: linear-gradient(135deg, #6a2e91 0%, #a34fc0 48%, #ed77b8 100%);
+  --uma-gradient-training: linear-gradient(135deg, #8d48b2 0%, #e66eaf 100%);
+  --uma-gradient-panel: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 242, 252, 0.94));
+  --uma-shadow-soft: 0 7px 18px rgba(103, 46, 118, 0.13);
+  --uma-shadow-card: 0 16px 34px rgba(103, 46, 118, 0.17), 0 1px 0 rgba(255, 255, 255, 0.78) inset;
+  --uma-shadow-pop: 0 24px 60px rgba(103, 46, 118, 0.25), 0 1px 0 rgba(255, 255, 255, 0.82) inset;
+}
+
+.profile-theme-trainer::before {
+  background:
+    radial-gradient(circle at 10% 7%, rgba(190, 101, 211, 0.27), transparent 27%),
+    radial-gradient(circle at 80% 9%, rgba(244, 128, 187, 0.24), transparent 26%),
+    radial-gradient(circle at 60% 95%, rgba(190, 101, 211, 0.16), transparent 34%),
+    linear-gradient(115deg, rgba(255, 247, 253, 0.97), rgba(255, 250, 255, 0.9) 48%, rgba(255, 237, 249, 0.82));
+}
+
+.profile-theme-npc {
+  --uma-bg: #fbfbff;
+  --uma-bg-soft: #f5f3ff;
+  --uma-surface-raised: #ffffff;
+  --uma-ink: #384052;
+  --uma-muted: #687080;
+  --uma-primary: #718096;
+  --uma-primary-dark: #4a5568;
+  --uma-gradient-primary: linear-gradient(135deg, #667085, #94a3b8);
+  --uma-gradient-training: linear-gradient(135deg, #718096, #a0aec0);
+}
+
 .app-shell::before {
   z-index: -2;
   background:
@@ -171,6 +210,37 @@
   align-items: center;
   gap: var(--uma-space-3);
   flex-wrap: wrap;
+}
+
+.profile-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid rgba(123, 79, 145, 0.14);
+  border-radius: var(--uma-radius-pill);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.profile-switcher-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  border-radius: var(--uma-radius-pill);
+  padding: 6px 9px;
+  background: transparent;
+  color: var(--uma-muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.profile-switcher-btn.active {
+  background: var(--uma-gradient-primary);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(69, 201, 111, 0.2);
 }
 
 .topbar-status {
@@ -447,6 +517,10 @@
     min-height: 34px;
     padding: 7px 11px;
     font-size: 12px;
+  }
+
+  .profile-switcher-btn span {
+    display: none;
   }
 
   .discord-btn-icon,

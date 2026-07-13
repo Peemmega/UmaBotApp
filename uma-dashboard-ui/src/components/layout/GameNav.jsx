@@ -26,10 +26,14 @@ export default function GameNav({
   activePage,
   onChangePage,
   items = gameNavItems,
+  profileType = "trainee",
 }) {
-  const visibleItems = IS_MAIN_WEB
+  const baseItems = IS_MAIN_WEB
     ? items.filter((item) => item.key !== "tcg")
     : items;
+  const visibleItems = profileType === "trainee"
+    ? baseItems
+    : baseItems.filter((item) => item.key !== "skills");
 
   return (
     <nav className="sidebar game-nav" aria-label="Game navigation">

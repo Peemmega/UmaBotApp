@@ -8,6 +8,14 @@ import RenameModal from "../components/RenameModal";
 import PageTransition from "../components/PageTransition";
 import { AppShell, GameNav, RightRail, TopBar } from "../components/layout";
 import { BOT_API_BASE } from "../api/playerApi";
+import ProfileSwitcher from "../components/ProfileSwitcher";
+import {
+  PROFILE_TYPES,
+  loadActiveProfileType,
+  loadProfilePresets,
+  saveActiveProfileType,
+  saveProfilePresets,
+} from "../data/profilePresets";
 
 import ProfilePage from "./dashboard/ProfilePage";
 import TutorialsPage from "./dashboard/TutorialsPage";
@@ -50,6 +58,29 @@ export default function DashboardPage({
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [activePage, setActivePage] = useState(getPageFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
+  const [profiles, setProfiles] = useState(() => loadProfilePresets(userId, username));
+  const [activeProfileType, setActiveProfileType] = useState(() => loadActiveProfileType(userId));
+
+  useEffect(() => {
+    const nextProfiles = loadProfilePresets(userId, player?.username || username);
+    setProfiles(nextProfiles);
+    setActiveProfileType(loadActiveProfileType(userId));
+  }, [userId]);
+
+  useEffect(() => {
+    if (!userId) return;
+    saveProfilePresets(userId, profiles);
+  }, [profiles, userId]);
+
+  const activeProfile = profiles[activeProfileType] || profiles.trainee;
+
+  const selectProfile = (type) => {
+    if (!PROFILE_TYPES[type]) return;
+    setActiveProfileType(type);
+    saveActiveProfileType(userId, type);
+    setIsEditStatsOpen(false);
+    changePage("profile");
+  };
 
   const changePage = (page) => {
     if (!VALID_PAGES.includes(page)) return;
@@ -116,6 +147,17 @@ export default function DashboardPage({
             avatarUrl={avatarUrl}
             player={player}
             setPlayer={setPlayer}
+            profile={activeProfile}
+            profileType={activeProfileType}
+            onSaveProfile={(changes) => {
+              setProfiles((current) => ({
+                ...current,
+                [activeProfileType]: {
+                  ...current[activeProfileType],
+                  ...changes,
+                },
+              }));
+            }}
             error={error}
             isEditStatsOpen={isEditStatsOpen}
             setIsEditStatsOpen={setIsEditStatsOpen}
@@ -195,21 +237,33 @@ export default function DashboardPage({
 
   return (
     <AppShell
+      profileType={activeProfileType}
       topBar={
         <TopBar
           unreadCount={unreadCount}
           onMailClick={() => setIsMailboxOpen(true)}
           onLogout={onLogout}
+          profileType={activeProfileType}
+          profileDesk={PROFILE_TYPES[activeProfileType]?.desk}
+          profileSwitcher={
+            <ProfileSwitcher
+              activeType={activeProfileType}
+              profiles={profiles}
+              onSelect={selectProfile}
+            />
+          }
         />
       }
-      nav={<GameNav activePage={activePage} onChangePage={changePage} />}
+      nav={<GameNav activePage={activePage} onChangePage={changePage} profileType={activeProfileType} />}
       rightRail={
-        <RightRail
-          userId={userId}
-          username={player?.username || username}
-          player={player}
-          skillLoadoutVersion={skillLoadoutVersion}
-        />
+        activeProfileType === "trainee" ? (
+          <RightRail
+            userId={userId}
+            username={player?.username || username}
+            player={player}
+            skillLoadoutVersion={skillLoadoutVersion}
+          />
+        ) : null
       }
       modals={modals}
     >

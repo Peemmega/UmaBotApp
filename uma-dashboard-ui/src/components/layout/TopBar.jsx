@@ -2,7 +2,14 @@ import discordIcon from "../../assets/icons/discord_icon.webp";
 import mailIcon from "../../assets/icons/mail_icon.webp";
 import { playSound } from "../../utils/soundManager";
 
-export default function TopBar({ unreadCount = 0, onMailClick, onLogout }) {
+export default function TopBar({
+  unreadCount = 0,
+  onMailClick,
+  onLogout,
+  profileType = "trainee",
+  profileDesk = "Trainee Desk",
+  profileSwitcher,
+}) {
   return (
     <header className="topbar">
       <div className="topbar-brand">
@@ -16,7 +23,9 @@ export default function TopBar({ unreadCount = 0, onMailClick, onLogout }) {
       </div>
 
       <div className="dashboard-actions">
-        <span className="topbar-status">Trainee Desk</span>
+        <span className="topbar-status">{profileDesk}</span>
+
+        {profileSwitcher}
 
         <a
           className="discord-btn"
