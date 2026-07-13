@@ -581,6 +581,24 @@ body {
   text-align: center;
 }
 
+.profile-image-upload-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-image-remove-btn {
+  border: 1px solid rgba(160, 58, 93, 0.35);
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: #ffffff;
+  color: #9f315d;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .role-profile-fields {
   display: grid;
   gap: 14px;

@@ -113,6 +113,44 @@ export default function ProfilePage({
     }
   };
 
+  const handlePresetImageUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      if (!file.type.startsWith("image/")) {
+        throw new Error("Please select an image file.");
+      }
+
+      const sourceUrl = URL.createObjectURL(file);
+      const image = new Image();
+      image.src = sourceUrl;
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = () => reject(new Error("Could not read this image."));
+      });
+
+      const maxDimension = 768;
+      const scale = Math.min(1, maxDimension / Math.max(image.width, image.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(image.width * scale));
+      canvas.height = Math.max(1, Math.round(image.height * scale));
+      canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(sourceUrl);
+
+      const imageUrl = canvas.toDataURL("image/webp", 0.82);
+      if (imageUrl.length > 1_500_000) {
+        throw new Error("Image is still too large. Please choose a smaller image.");
+      }
+
+      onSaveProfile({ imageUrl });
+    } catch (err) {
+      alert(String(err.message || err));
+    } finally {
+      event.target.value = "";
+    }
+  };
+
   if (profileType !== "trainee") {
     const isTrainer = profileType === "trainer";
     const profileName = profile?.name || (isTrainer ? "Trainer" : "NPC");
@@ -133,6 +171,26 @@ export default function ProfilePage({
                 ) : (
                   <div className="profile-avatar placeholder">{isTrainer ? "🎓" : "👤"}</div>
                 )}
+                <div className="profile-avatar-actions">
+                  <label className="profile-image-btn profile-image-upload-label">
+                    Upload image
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="profile-image-input"
+                      onChange={handlePresetImageUpload}
+                    />
+                  </label>
+                  {profileImage && (
+                    <button
+                      type="button"
+                      className="profile-image-remove-btn"
+                      onClick={() => onSaveProfile({ imageUrl: "" })}
+                    >
+                      Remove image
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="profile-info role-profile-fields">
                 <label>
