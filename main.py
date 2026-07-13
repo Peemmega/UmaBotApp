@@ -40,6 +40,7 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+BOT_API_BASE = os.getenv("BOT_API_BASE", "").rstrip("/")
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -185,7 +186,7 @@ def login():
     return RedirectResponse(auth_url)
 
 @app.get("/callback")
-def callback(code: str):
+async def callback(code: str):
     data = {
         'client_id': CLIENT_ID, 'client_secret': CLIENT_SECRET,
         'grant_type': 'authorization_code', 'code': code, 'redirect_uri': REDIRECT_URI
@@ -197,6 +198,7 @@ def callback(code: str):
         'Authorization': f'Bearer {access_token}'
     })
     user_data = user_response.json()
+    await ensure_bot_player_profile(user_data)
 
     # ส่งกลับไปที่หน้า Dashboard ของ React
     target_url = f"{FRONTEND_URL}/dashboard?username={user_data['username']}&id={user_data['id']}&avatar={user_data['avatar']}"
@@ -298,12 +300,39 @@ async def exchange_discord_code_and_get_user(code: str, redirect_uri: str):
         return user_res.json()
 
 
+async def ensure_bot_player_profile(user: dict) -> None:
+    """Create the player's Bot profile during web login when configured.
+
+    The Bot API is the source of truth for race/player data. Login must remain
+    usable if that service is temporarily unavailable, so the dashboard keeps
+    its existing retry as a fallback.
+    """
+    if not BOT_API_BASE:
+        return
+
+    user_id = str(user.get("id") or "").strip()
+    username = str(user.get("username") or "Unknown").strip() or "Unknown"
+    if not user_id:
+        return
+
+    try:
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            response = await client.get(
+                f"{BOT_API_BASE}/player/{user_id}",
+                params={"username": username},
+            )
+            response.raise_for_status()
+    except httpx.HTTPError as exc:
+        print(f"[login] unable to ensure bot player {user_id}: {exc}")
+
+
 @app.get("/callback/mobile")
 async def discord_mobile_callback(code: str):
     user = await exchange_discord_code_and_get_user(
         code,
         redirect_uri=MOBILE_REDIRECT_URI,
     )
+    await ensure_bot_player_profile(user)
 
     params = urlencode({
         "username": user["username"],
