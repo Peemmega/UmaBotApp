@@ -97,6 +97,10 @@ export default function ProfilePage({
         profile_image_url: result.profile_image_url,
         profile_image_updated_at: result.profile_image_updated_at,
       }));
+      onSaveProfile?.({
+        name: player?.username || username,
+        imageUrl: result.profile_image_url,
+      });
       setUploadMessage("Profile image updated.");
       setSelectedImageFile(null);
       if (previewUrl) {

@@ -118,7 +118,7 @@ export default function DashboardPage({
         );
 
       case "chars":
-        return <CharactersPage />;
+        return <CharactersPage userId={userId} player={player} profiles={profiles} />;
 
       case "races":
         return <RacesPage userId={userId} />;

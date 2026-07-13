@@ -5,6 +5,7 @@ import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger"
 import { DEFAULT_AVATAR_URL, toAbsoluteBotUrl } from "../../utils/avatar";
 import { BOT_API_BASE } from "../../api/playerApi";
 import { APP_BASE_URL } from "../../api/appConfig";
+import { PROFILE_TYPES } from "../../data/profilePresets";
 
 const APP_API_BASE = APP_BASE_URL;
 
@@ -13,7 +14,14 @@ const CHARACTER_SUMMARY_SOURCES = [
   APP_API_BASE,
 ];
 
-export default function CharactersPage() {
+function getCharacterType(type) {
+  const normalized = String(type || "").trim().toLowerCase();
+  if (normalized === "trainer") return PROFILE_TYPES.trainer.label;
+  if (normalized === "npc") return PROFILE_TYPES.npc.label;
+  return "Umamusume (Trainee)";
+}
+
+export default function CharactersPage({ userId, player, profiles }) {
   const [search, setSearch] = useState("");
   const [characters, setCharacters] = useState([]);
   const [activeFilter, setActiveFilter] = useState("All");
@@ -70,22 +78,51 @@ export default function CharactersPage() {
     };
   }, []);
 
+  const profileCharacters = useMemo(() => {
+    if (!profiles) return [];
+
+    return Object.values(PROFILE_TYPES)
+      .map((profileType) => {
+        const profile = profiles[profileType.id];
+        const imageUrl = profile?.imageUrl ||
+          (profileType.id === "trainee" ? player?.profile_image_url : "");
+        if (!imageUrl) return null;
+
+        return {
+          id: `${userId}:${profileType.id}`,
+          name: profile?.name || player?.username || profileType.label,
+          image_url: imageUrl,
+          type: profileType.id === "trainee" ? "Umamusume (Trainee)" : profileType.label,
+        };
+      })
+      .filter(Boolean);
+  }, [player?.profile_image_url, player?.username, profiles, userId]);
+
+  const rosterCharacters = useMemo(() => {
+    const remoteProfiles = characters
+      .filter((character) => String(character?.id || "") !== String(userId || ""))
+      .filter((character) => Boolean(String(character?.image_url || "").trim()))
+      .map((character) => ({ ...character, type: getCharacterType(character.type) }));
+
+    return [...remoteProfiles, ...profileCharacters];
+  }, [characters, profileCharacters, userId]);
+
   const filters = useMemo(() => {
     const types = Array.from(
       new Set(
-        characters
+        rosterCharacters
           .map((character) => String(character?.type || "").trim())
           .filter(Boolean)
       )
     ).sort((left, right) => left.localeCompare(right));
 
     return ["All", ...types];
-  }, [characters]);
+  }, [rosterCharacters]);
 
   const filteredCharacters = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return characters.filter((character) => {
+    return rosterCharacters.filter((character) => {
       const name = character.name?.toLowerCase() || "";
       const jpName =
         typeof character.jpName === "string"
@@ -100,7 +137,7 @@ export default function CharactersPage() {
 
       return matchSearch && matchFilter;
     });
-  }, [activeFilter, characters, search]);
+  }, [activeFilter, rosterCharacters, search]);
 
   return (
     <section className="characters-page">
@@ -136,7 +173,7 @@ export default function CharactersPage() {
             </GameCard>
           </StaggerItem>
         </StaggerContainer>
-      ) : loadError ? (
+      ) : loadError && rosterCharacters.length === 0 ? (
         <StaggerContainer>
           <StaggerItem>
             <GameCard className="page-empty-state">
