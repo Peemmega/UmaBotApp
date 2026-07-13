@@ -1,10 +1,10 @@
 import { Browser } from "@capacitor/browser";
 import { App } from "@capacitor/app";
+import { APP_BASE_URL } from "../api/appConfig";
 
 const DISCORD_CLIENT_ID = "1493569100566364291";
 
-const REDIRECT_URI =
-  "https://umaroleplaycommunity.up.railway.app/callback/mobile";
+const REDIRECT_URI = `${APP_BASE_URL}/callback/mobile`;
 
 export async function loginWithDiscordApp() {
   const url =

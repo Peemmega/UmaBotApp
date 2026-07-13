@@ -1,13 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { playSound } from "../utils/soundManager";
+import { BOT_API_BASE } from "../api/playerApi";
 
 import plusIcon from "../assets/icons/add.webp";
 import minusIcon from "../assets/icons/reduce.webp";
 import resetIcon from "../assets/icons/reset.webp";
 import editIcon from "../assets/icons/change_icon.webp";
-
-const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const ZONE_FIELDS = [
   ["flat", "เพิ่มแต้มผลรวม"],

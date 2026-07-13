@@ -7,6 +7,7 @@ import MailboxModal from "../components/MailboxModal";
 import RenameModal from "../components/RenameModal";
 import PageTransition from "../components/PageTransition";
 import { AppShell, GameNav, RightRail, TopBar } from "../components/layout";
+import { BOT_API_BASE } from "../api/playerApi";
 
 import ProfilePage from "./dashboard/ProfilePage";
 import TutorialsPage from "./dashboard/TutorialsPage";
@@ -127,7 +128,7 @@ export default function DashboardPage({
   const loadUnreadCount = async () => {
     try {
       const res = await fetch(
-        `https://umadndbot-production.up.railway.app/mailbox/${userId}`
+        `${BOT_API_BASE}/mailbox/${userId}`
       );
 
       const data = await res.json();

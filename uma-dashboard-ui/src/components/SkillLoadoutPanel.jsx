@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-
-const API_BASE = "https://umadndbot-production.up.railway.app";
+import { BOT_API_BASE as API_BASE } from "../api/playerApi";
 import { getSkillIcon } from "../utils/getSkillIcon";
 
 export default function SkillLoadoutPanel({ userId, username, player, refreshKey }) {

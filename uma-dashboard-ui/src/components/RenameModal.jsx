@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { playSound } from "../utils/soundManager";
-
-const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
+import { BOT_API_BASE } from "../api/playerApi";
 
 export default function RenameModal({ userId, currentName, onClose, onSave }) {
   const [name, setName] = useState(currentName || "");

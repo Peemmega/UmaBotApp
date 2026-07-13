@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import "../../styles/skillsPage.css";
 import Toast from "../../components/Toast";
+import { BOT_API_BASE } from "../../api/playerApi";
 
-const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 import { playSound } from "../../utils/soundManager";
 
 import witIcon from "../../assets/icons/Wit.webp";

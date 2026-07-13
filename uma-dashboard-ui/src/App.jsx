@@ -8,9 +8,10 @@ import LoadingScreen from "./components/LoadingScreen";
 import HorseshoeBackground from "./components/HorseshoeBackground";
 import PageTransition from "./components/PageTransition";
 import { getPlayer } from "./api/playerApi";
+import { APP_BASE_URL } from "./api/appConfig";
 import { getDiscordAvatarUrl, resolveSessionAvatar } from "./utils/avatar";
 
-const APP_BASE = "https://umaroleplaycommunity.up.railway.app";
+const APP_BASE = APP_BASE_URL;
 
 const SESSION_KEY = "uma_login";
 const SESSION_MAX_AGE = 7 * 24 * 60 * 60 * 1000;

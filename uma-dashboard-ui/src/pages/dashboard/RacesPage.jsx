@@ -6,8 +6,8 @@ import { getRaceImage } from "../../utils/raceSchedule.js";
 import Toast from "../../components/Toast";
 import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
+import { BOT_API_BASE } from "../../api/playerApi";
 
-const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
 
 const DISTANCE_FILTERS = [
   { value: "all", label: "ทั้งหมด" },

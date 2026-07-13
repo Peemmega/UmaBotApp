@@ -4,10 +4,9 @@ import { Badge, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../c
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import { DEFAULT_AVATAR_URL, toAbsoluteBotUrl } from "../../utils/avatar";
 import { BOT_API_BASE } from "../../api/playerApi";
+import { APP_BASE_URL } from "../../api/appConfig";
 
-const APP_API_BASE =
-  import.meta.env.VITE_APP_API_BASE ||
-  "https://umaroleplaycommunity.up.railway.app";
+const APP_API_BASE = APP_BASE_URL;
 
 const CHARACTER_SUMMARY_SOURCES = [
   BOT_API_BASE,

@@ -2,8 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import "../styles/raceCalendar.css";
 import { raceImageMap, fallbackRaceImg } from "../utils/raceSchedule.js";
 import { Button } from "./ui";
-
-const BOT_API_BASE = "https://umadndbot-production.up.railway.app";
+import { BOT_API_BASE } from "../api/playerApi";
 
 const monthNames = [
   "January", "February", "March", "April", "May", "June",

@@ -5,6 +5,7 @@ import plusIcon from "../assets/icons/add.webp";
 import minusIcon from "../assets/icons/reduce.webp";
 
 import { playSound } from "../utils/soundManager";
+import { BOT_API_BASE } from "../api/playerApi";
 
 const STAT_KEYS = [
   ["speed", "Speed"],
@@ -84,7 +85,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
       setSaving(true);
       setMessage("");
 
-      const res = await fetch("https://umadndbot-production.up.railway.app/player/stats/update", {
+      const res = await fetch(`${BOT_API_BASE}/player/stats/update`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
