@@ -40,6 +40,7 @@ export default function ProfilePage({
   const [teamMembers, setTeamMembers] = useState([]);
   const [teamFans, setTeamFans] = useState(0);
   const [availableTrainees, setAvailableTrainees] = useState([]);
+  const [trainerProfile, setTrainerProfile] = useState(null);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [inviteSearch, setInviteSearch] = useState("");
   const fileInputRef = useRef(null);
@@ -68,6 +69,14 @@ export default function ProfilePage({
 
   useEffect(() => {
     if (profileType === "trainer" && userId) loadTrainerTeam().catch(console.error);
+  }, [profileType, userId]);
+
+  useEffect(() => {
+    if (profileType !== "trainee" || !userId) return;
+    fetch(`${BOT_API_BASE}/trainee/${userId}/trainer`)
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => setTrainerProfile(data?.trainer || null))
+      .catch(() => setTrainerProfile(null));
   }, [profileType, userId]);
 
   const inviteTrainee = async (traineeUserId) => {
@@ -332,6 +341,14 @@ export default function ProfilePage({
                   <img src={currentAvatarUrl} alt="profile" className="profile-avatar" />
                 ) : (
                   <div className="profile-avatar placeholder">{"\u{1F464}"}</div>
+                )}
+                {trainerProfile?.image_url && (
+                  <img
+                    src={trainerProfile.image_url}
+                    alt={`Trainer ${trainerProfile.username}`}
+                    title={`Trainer: ${trainerProfile.username}`}
+                    className="profile-trainer-avatar"
+                  />
                 )}
                 <div className="profile-avatar-actions">
                   <input
