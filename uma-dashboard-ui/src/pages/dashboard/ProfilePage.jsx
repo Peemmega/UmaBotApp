@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { mainStats, aptitudeRows } from "../../data/dashboardConfig";
 import StatCell from "../../components/StatCell";
 import AptitudeItem from "../../components/AptitudeItem";
@@ -10,7 +11,7 @@ import statIcon from "../../assets/icons/statsPoint.webp";
 import skillIcon from "../../assets/icons/skillPoint.webp";
 import editIcon from "../../assets/icons/change_icon.webp";
 import { playSound } from "../../utils/soundManager";
-import { Badge, SectionHeader } from "../../components/ui";
+import { Badge, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 
 const fansIcon = `${BOT_API_BASE}/app/assets/icons/fans.png`;
@@ -40,6 +41,7 @@ export default function ProfilePage({
   const [teamFans, setTeamFans] = useState(0);
   const [availableTrainees, setAvailableTrainees] = useState([]);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [inviteSearch, setInviteSearch] = useState("");
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -77,6 +79,7 @@ export default function ProfilePage({
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || "Could not send invitation");
     setIsInviteOpen(false);
+    setInviteSearch("");
     await loadTrainerTeam();
   };
 
@@ -193,6 +196,9 @@ export default function ProfilePage({
     const isTrainer = profileType === "trainer";
     const profileName = profile?.name || (isTrainer ? "Trainer" : "NPC");
     const profileImage = profile?.imageUrl || "";
+    const filteredInvitees = availableTrainees.filter((trainee) =>
+      trainee.username.toLowerCase().includes(inviteSearch.trim().toLowerCase())
+    );
 
     return (
       <StaggerContainer className={`dashboard-shell profile-stagger role-profile role-profile-${profileType}`}>
@@ -265,17 +271,32 @@ export default function ProfilePage({
             </section>
           </StaggerItem>
         )}
-        {isInviteOpen && (
+        {isInviteOpen && createPortal(
           <div className="team-invite-backdrop" onClick={() => setIsInviteOpen(false)}>
             <section className="team-invite-modal" onClick={(event) => event.stopPropagation()}>
-              <h2>Invite an Uma Musume</h2>
-              {availableTrainees.length ? availableTrainees.map((trainee) => (
-                <button key={trainee.user_id} onClick={() => inviteTrainee(trainee.user_id).catch((err) => alert(err.message))}>
-                  {trainee.username} · {trainee.fans} Fans
-                </button>
-              )) : <p>No available Trainees with uploaded profiles.</p>}
+              <header className="team-invite-header">
+                <div>
+                  <span>Team Management</span>
+                  <h2>Invite an Uma Musume</h2>
+                </div>
+                <button className="team-invite-close" onClick={() => setIsInviteOpen(false)} aria-label="Close">×</button>
+              </header>
+              <div className="team-invite-toolbar">
+                <SearchInput value={inviteSearch} onChange={(event) => setInviteSearch(event.target.value)} placeholder="Search Trainee name..." />
+              </div>
+              <div className="team-invite-grid">
+                {filteredInvitees.length ? filteredInvitees.map((trainee) => (
+                  <article className="team-invite-card" key={trainee.user_id}>
+                    <img src={trainee.image_url} alt={trainee.username} />
+                    <h3>{trainee.username}</h3>
+                    <Badge>{trainee.fans} Fans</Badge>
+                    <button onClick={() => inviteTrainee(trainee.user_id).catch((err) => alert(err.message))}>Invite</button>
+                  </article>
+                )) : <p className="team-invite-empty">No available Trainees with uploaded profiles.</p>}
+              </div>
             </section>
-          </div>
+          </div>,
+          document.body
         )}
       </StaggerContainer>
     );

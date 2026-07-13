@@ -647,34 +647,70 @@ body {
 .team-invite-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1200;
+  z-index: 6000;
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(42, 22, 55, 0.5);
+  background: rgba(35, 17, 46, 0.58);
+  backdrop-filter: blur(8px);
 }
 
 .team-invite-modal {
-  width: min(460px, 100%);
+  width: min(900px, 100%);
   max-height: 75vh;
   overflow: auto;
-  display: grid;
-  gap: 10px;
-  padding: 24px;
+  overflow: hidden;
   border-radius: var(--uma-radius-md);
-  background: white;
+  background: var(--uma-gradient-panel);
   color: var(--uma-ink);
+  box-shadow: var(--uma-shadow-pop);
 }
 
-.team-invite-modal button {
-  border: 1px solid var(--uma-border-strong);
+.team-invite-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  background: var(--uma-gradient-training);
+  color: white;
+}
+
+.team-invite-header span { font-size: 12px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.team-invite-header h2 { margin: 3px 0 0; color: white; }
+.team-invite-close {
+  width: 34px; height: 34px; border: 0; border-radius: 50%; background: rgba(255,255,255,.22); color: white; font-size: 25px; cursor: pointer;
+}
+
+.team-invite-toolbar { padding: 16px 20px; background: rgba(255,255,255,.48); }
+.team-invite-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+.team-invite-card {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  overflow: hidden;
+  padding: 10px;
+  border: 1px solid var(--uma-border);
   border-radius: var(--uma-radius-sm);
-  padding: 12px;
-  background: var(--uma-bg-soft);
-  color: var(--uma-ink);
-  font: inherit;
-  font-weight: 800;
+  background: rgba(255,255,255,.86);
+}
+.team-invite-card img { width: 100%; height: 150px; border-radius: 7px; object-fit: cover; object-position: top; }
+.team-invite-card h3 { margin: 0; color: var(--uma-ink); font-size: 17px; }
+.team-invite-card button {
+  width: 100%; border: 0; border-radius: var(--uma-radius-sm); padding: 9px; background: var(--uma-gradient-primary); color: white; font: inherit; font-weight: 900;
   cursor: pointer;
+}
+.team-invite-empty { grid-column: 1 / -1; padding: 36px; color: var(--uma-muted); font-weight: 800; text-align: center; }
+
+@media (max-width: 640px) {
+  .team-invite-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 12px; }
+  .team-invite-card img { height: 120px; }
 }
 
 .trainer-profile-fans {
