@@ -75,6 +75,19 @@ export default function DashboardPage({
   useEffect(() => {
     if (!userId) return;
     saveProfilePresets(userId, profiles);
+    ["trainer", "npc"].forEach((profileType) => {
+      const profile = profiles[profileType];
+      fetch(`${BOT_API_BASE}/profiles/preset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: String(userId),
+          profile_type: profileType,
+          name: profile?.name || profileType,
+          image_url: profile?.imageUrl || "",
+        }),
+      }).catch(console.error);
+    });
   }, [profiles, userId]);
 
   const activeProfile = profiles[activeProfileType] || profiles.trainee;

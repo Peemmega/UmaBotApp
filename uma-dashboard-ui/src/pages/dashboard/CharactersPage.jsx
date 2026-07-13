@@ -110,7 +110,8 @@ export default function CharactersPage({ userId, player, profiles }) {
       .filter((character) => Boolean(String(character?.image_url || "").trim()))
       .map((character) => ({ ...character, type: getCharacterType(character.type) }));
 
-    return [...remoteProfiles, ...profileCharacters];
+    const remoteIds = new Set(remoteProfiles.map((character) => String(character.id)));
+    return [...remoteProfiles, ...profileCharacters.filter((character) => !remoteIds.has(String(character.id)))];
   }, [characters, profileCharacters, userId]);
 
   const filters = useMemo(() => {
