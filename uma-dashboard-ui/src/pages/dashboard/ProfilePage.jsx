@@ -6,13 +6,14 @@ import ResourcePill from "../../components/ResourcePill";
 import EditStatsModal from "../../components/EditStatsModal";
 import ZonePanel from "../../components/ZonePanel";
 import { BOT_API_BASE, uploadProfileImage } from "../../api/playerApi";
-import coinIcon from "../../assets/icons/umaCoin.webp";
 import statIcon from "../../assets/icons/statsPoint.webp";
 import skillIcon from "../../assets/icons/skillPoint.webp";
 import editIcon from "../../assets/icons/change_icon.webp";
 import { playSound } from "../../utils/soundManager";
 import { Badge, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
+
+const fansIcon = `${BOT_API_BASE}/app/assets/icons/fans.png`;
 
 export default function ProfilePage({
   username,
@@ -182,9 +183,9 @@ export default function ProfilePage({
 
                 <div className="profile-resources">
                   <ResourcePill
-                    icon={coinIcon}
-                    label="Uma Coins"
-                    value={player?.uma_coin ?? 0}
+                    icon={fansIcon}
+                    label="Fans"
+                    value={player?.fans ?? 1}
                   />
                   <ResourcePill
                     icon={statIcon}
