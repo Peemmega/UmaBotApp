@@ -262,7 +262,9 @@ def get_player_summary(user_id: str):
         close_db_connection(conn)
 
 
-MOBILE_REDIRECT_URI = "https://umaroleplaycommunity.up.railway.app/callback/mobile"
+# The OAuth token exchange must use the exact same URI used to start OAuth.
+# Keep it environment-specific so Test does not exchange with the Production URI.
+MOBILE_REDIRECT_URI = f"{FRONTEND_URL.rstrip('/')}/callback/mobile"
 
 async def exchange_discord_code_and_get_user(code: str, redirect_uri: str):
     async with httpx.AsyncClient() as client:
