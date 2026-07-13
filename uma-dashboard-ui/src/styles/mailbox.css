@@ -256,3 +256,28 @@
   from { opacity: 1; }
   to { opacity: 0; }
 }
+
+.mailbox-invite-dialog {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 14px;
+  padding: 28px;
+  background: rgba(47, 23, 61, 0.82);
+  color: white;
+  text-align: center;
+}
+
+.mailbox-invite-dialog h3,
+.mailbox-invite-dialog p { margin: 0; }
+.mailbox-invite-dialog button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  background: white;
+  color: #6f2c83;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}

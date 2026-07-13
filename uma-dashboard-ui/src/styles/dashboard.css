@@ -644,6 +644,39 @@ body {
   font-weight: 800;
 }
 
+.team-invite-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(42, 22, 55, 0.5);
+}
+
+.team-invite-modal {
+  width: min(460px, 100%);
+  max-height: 75vh;
+  overflow: auto;
+  display: grid;
+  gap: 10px;
+  padding: 24px;
+  border-radius: var(--uma-radius-md);
+  background: white;
+  color: var(--uma-ink);
+}
+
+.team-invite-modal button {
+  border: 1px solid var(--uma-border-strong);
+  border-radius: var(--uma-radius-sm);
+  padding: 12px;
+  background: var(--uma-bg-soft);
+  color: var(--uma-ink);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .profile-image-success {
   background: rgba(111, 185, 47, 0.14);
   color: #3f7c1a;

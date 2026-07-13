@@ -210,6 +210,7 @@ export default function DashboardPage({
       {isMailboxOpen && (
         <MailboxModal
           userId={userId}
+          profileType={activeProfileType}
           onClose={() => {
             setIsMailboxOpen(false);
             loadUnreadCount();

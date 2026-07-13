@@ -35,6 +35,10 @@ export default function ProfilePage({
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadError, setUploadError] = useState("");
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [teamFans, setTeamFans] = useState(0);
+  const [availableTrainees, setAvailableTrainees] = useState([]);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -45,6 +49,35 @@ export default function ProfilePage({
       .then((data) => setEquippedSkills(data))
       .catch(console.error);
   }, [userId]);
+
+  const loadTrainerTeam = async () => {
+    const [teamRes, availableRes] = await Promise.all([
+      fetch(`${BOT_API_BASE}/trainer/${userId}/team`),
+      fetch(`${BOT_API_BASE}/trainer/${userId}/available-trainees`),
+    ]);
+    if (teamRes.ok) {
+      const data = await teamRes.json();
+      setTeamMembers(data.members || []);
+      setTeamFans(data.fans || 0);
+    }
+    if (availableRes.ok) setAvailableTrainees((await availableRes.json()).trainees || []);
+  };
+
+  useEffect(() => {
+    if (profileType === "trainer" && userId) loadTrainerTeam().catch(console.error);
+  }, [profileType, userId]);
+
+  const inviteTrainee = async (traineeUserId) => {
+    const res = await fetch(`${BOT_API_BASE}/trainer/invitations`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ trainer_user_id: String(userId), trainee_user_id: String(traineeUserId) }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Could not send invitation");
+    setIsInviteOpen(false);
+    await loadTrainerTeam();
+  };
 
   useEffect(() => {
     return () => {
@@ -159,7 +192,6 @@ export default function ProfilePage({
     const isTrainer = profileType === "trainer";
     const profileName = profile?.name || (isTrainer ? "Trainer" : "NPC");
     const profileImage = profile?.imageUrl || "";
-    const teamIds = Array.isArray(profile?.teamUmaIds) ? profile.teamUmaIds : [];
 
     return (
       <StaggerContainer className={`dashboard-shell profile-stagger role-profile role-profile-${profileType}`}>
@@ -197,6 +229,7 @@ export default function ProfilePage({
                 </div>
               </div>
               <div className="profile-info role-profile-fields">
+                {isTrainer && <div className="profile-resources"><ResourcePill icon={fansIcon} label="Team Fans" value={teamFans} /></div>}
                 <label>
                   Display name
                   <input
@@ -214,24 +247,6 @@ export default function ProfilePage({
                     onChange={(event) => onSaveProfile({ imageUrl: event.target.value })}
                   />
                 </label>
-                {isTrainer && (
-                  <label>
-                    Uma Musume IDs in your team
-                    <input
-                      value={teamIds.join(", ")}
-                      placeholder="e.g. 1001, 1002, 1003"
-                      onChange={(event) =>
-                        onSaveProfile({
-                          teamUmaIds: event.target.value
-                            .split(",")
-                            .map((id) => id.trim())
-                            .filter(Boolean),
-                        })
-                      }
-                    />
-                    <small>Store character IDs only; stats, aptitude, zone and skills are not used for Trainers.</small>
-                  </label>
-                )}
               </div>
             </div>
           </section>
@@ -242,10 +257,23 @@ export default function ProfilePage({
             <section className="sheet-card trainer-team-card">
               <div className="title-banner"><h2>My Uma Musume Team</h2></div>
               <div className="trainer-team-list">
-                {teamIds.length ? teamIds.map((id) => <Badge key={id}>Uma ID: {id}</Badge>) : <p>Add character IDs above to build your team.</p>}
+                <button className="profile-image-upload-btn" onClick={() => setIsInviteOpen(true)}>Invite to team</button>
+                {teamMembers.length ? teamMembers.map((member) => <Badge key={member.user_id}>{member.username} · {member.fans} Fans</Badge>) : <p>No team members yet.</p>}
               </div>
             </section>
           </StaggerItem>
+        )}
+        {isInviteOpen && (
+          <div className="team-invite-backdrop" onClick={() => setIsInviteOpen(false)}>
+            <section className="team-invite-modal" onClick={(event) => event.stopPropagation()}>
+              <h2>Invite an Uma Musume</h2>
+              {availableTrainees.length ? availableTrainees.map((trainee) => (
+                <button key={trainee.user_id} onClick={() => inviteTrainee(trainee.user_id).catch((err) => alert(err.message))}>
+                  {trainee.username} · {trainee.fans} Fans
+                </button>
+              )) : <p>No available Trainees with uploaded profiles.</p>}
+            </section>
+          </div>
         )}
       </StaggerContainer>
     );

@@ -15,12 +15,13 @@ const rewardIconMap = {
   aptitude: aptitudeIcon,
 };
 
-export default function MailboxModal({ userId, onClose, onMailChanged }) {
+export default function MailboxModal({ userId, profileType = "trainee", onClose, onMailChanged }) {
   const [mails, setMails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [closing, setClosing] = useState(false);
   const [activeTab, setActiveTab] = useState("list");
+  const [pendingInvitation, setPendingInvitation] = useState(null);
 
   const closeModal = () => {
     playSound("close");
@@ -36,7 +37,7 @@ export default function MailboxModal({ userId, onClose, onMailChanged }) {
       setLoading(true);
       setMessage("");
 
-      const res = await fetch(`${BOT_API_BASE}/mailbox/${userId}`);
+      const res = await fetch(`${BOT_API_BASE}/mailbox/${userId}?profile_type=${profileType}`);
       const data = await res.json();
 
       if (!res.ok) throw new Error(data?.detail || "Cannot load mailbox");
@@ -52,7 +53,24 @@ export default function MailboxModal({ userId, onClose, onMailChanged }) {
 
   useEffect(() => {
     loadMailbox();
-  }, [userId]);
+  }, [profileType, userId]);
+
+  const respondToInvitation = async (accepted) => {
+    try {
+      const res = await fetch(`${BOT_API_BASE}/trainer/invitations/${pendingInvitation.invitation_id}/respond`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trainee_user_id: String(userId), accepted }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Could not respond to invitation");
+      setPendingInvitation(null);
+      await markRead(pendingInvitation.id);
+      loadMailbox();
+    } catch (err) {
+      setMessage(String(err.message || err));
+    }
+  };
 
   const markRead = async (mailId) => {
     try {
@@ -141,7 +159,9 @@ export default function MailboxModal({ userId, onClose, onMailChanged }) {
                   key={mail.id}
                   className={`mail-item ${mail.is_read ? "read" : "unread"}`}
                   onClick={() => {
-                    if (!mail.is_read) markRead(mail.id);
+                    if (mail.invitation_id && profileType === "trainee") {
+                      setPendingInvitation(mail);
+                    } else if (!mail.is_read) markRead(mail.id);
                   }}
                 >
                   <img src={icon} alt="reward" className="mail-item-icon" />
@@ -173,6 +193,15 @@ export default function MailboxModal({ userId, onClose, onMailChanged }) {
             Close
           </button>
         </div>
+
+        {pendingInvitation && (
+          <div className="mailbox-invite-dialog" role="dialog" aria-modal="true">
+            <h3>Join this Trainer's team?</h3>
+            <p>{pendingInvitation.message}</p>
+            <button onClick={() => respondToInvitation(false)}>Decline</button>
+            <button onClick={() => respondToInvitation(true)}>Join team</button>
+          </div>
+        )}
       </div>
     </div>
   );
