@@ -10,7 +10,7 @@ import PageTransition from "./components/PageTransition";
 import { getPlayer } from "./api/playerApi";
 import { getDiscordAvatarUrl, resolveSessionAvatar } from "./utils/avatar";
 
-const APP_BASE = "https://umabotapp-production-c99a.up.railway.app";
+const APP_BASE = "https://umaroleplaycommunity.up.railway.app";
 
 const SESSION_KEY = "uma_login";
 const SESSION_MAX_AGE = 7 * 24 * 60 * 60 * 1000;

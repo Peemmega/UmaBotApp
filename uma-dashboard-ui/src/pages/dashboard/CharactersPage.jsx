@@ -7,7 +7,7 @@ import { BOT_API_BASE } from "../../api/playerApi";
 
 const APP_API_BASE =
   import.meta.env.VITE_APP_API_BASE ||
-  "https://umabotapp-production-c99a.up.railway.app";
+  "https://umaroleplaycommunity.up.railway.app";
 
 const CHARACTER_SUMMARY_SOURCES = [
   BOT_API_BASE,

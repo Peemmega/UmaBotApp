@@ -25,7 +25,7 @@ app.add_middleware(
     allow_origins=["*"],
     # allow_origins=[
     #     "http://localhost:5173",
-    #     "https://umabotapp-production-c99a.up.railway.app",
+    #     "https://umaroleplaycommunity.up.railway.app",
     # ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -262,7 +262,7 @@ def get_player_summary(user_id: str):
         close_db_connection(conn)
 
 
-MOBILE_REDIRECT_URI = "https://umabotapp-production-c99a.up.railway.app/callback/mobile"
+MOBILE_REDIRECT_URI = "https://umaroleplaycommunity.up.railway.app/callback/mobile"
 
 async def exchange_discord_code_and_get_user(code: str, redirect_uri: str):
     async with httpx.AsyncClient() as client:

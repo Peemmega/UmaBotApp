@@ -4,7 +4,7 @@ import { App } from "@capacitor/app";
 const DISCORD_CLIENT_ID = "1493569100566364291";
 
 const REDIRECT_URI =
-  "https://umabotapp-production-c99a.up.railway.app/callback/mobile";
+  "https://umaroleplaycommunity.up.railway.app/callback/mobile";
 
 export async function loginWithDiscordApp() {
   const url =
