@@ -12,13 +12,13 @@ import { playSound } from "../../utils/soundManager";
 import { IS_MAIN_WEB } from "../../api/appConfig";
 
 export const gameNavItems = [
-  { key: "profile", label: "Profile", Icon: UserRound },
-  { key: "chars", label: "Chars", Icon: UsersRound },
-  { key: "races", label: "Races", Icon: Trophy },
-  { key: "race", label: "Race", Icon: Flag },
+  { key: "profile", label: "โปรไฟล์", Icon: UserRound },
+  { key: "chars", label: "ตัวละคร", Icon: UsersRound },
+  { key: "races", label: "รายการแข่ง", Icon: Trophy },
+  { key: "race", label: "ห้องแข่ง", Icon: Flag },
   { key: "tcg", label: "TCG", Icon: PanelsTopLeft },
-  { key: "skills", label: "Skills", Icon: Sparkles },
-  { key: "tutorials", label: "Tutorials", Icon: BookOpen },
+  { key: "skills", label: "สกิล", Icon: Sparkles },
+  { key: "tutorials", label: "คู่มือ", Icon: BookOpen },
   { key: "qa", label: "Q&A", Icon: CircleHelp },
 ];
 
