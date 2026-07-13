@@ -677,6 +677,21 @@ body {
   cursor: pointer;
 }
 
+.trainer-profile-fans {
+  grid-template-columns: minmax(180px, 300px);
+  justify-content: center;
+}
+
+.trainer-rename-modal input {
+  width: 100%;
+  border: 2px solid var(--uma-border-strong);
+  border-radius: var(--uma-radius-sm);
+  padding: 10px 12px;
+  color: var(--uma-ink);
+  font: inherit;
+  font-weight: 800;
+}
+
 .profile-image-success {
   background: rgba(111, 185, 47, 0.14);
   color: #3f7c1a;

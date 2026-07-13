@@ -39,6 +39,8 @@ export default function ProfilePage({
   const [teamFans, setTeamFans] = useState(0);
   const [availableTrainees, setAvailableTrainees] = useState([]);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [isProfileRenameOpen, setIsProfileRenameOpen] = useState(false);
+  const [profileNameDraft, setProfileNameDraft] = useState("");
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -228,26 +230,37 @@ export default function ProfilePage({
                   )}
                 </div>
               </div>
-              <div className="profile-info role-profile-fields">
-                {isTrainer && <div className="profile-resources"><ResourcePill icon={fansIcon} label="Team Fans" value={teamFans} /></div>}
-                <label>
-                  Display name
-                  <input
-                    value={profileName}
-                    maxLength={24}
-                    onChange={(event) => onSaveProfile({ name: event.target.value })}
-                  />
-                </label>
-                <label>
-                  Image URL
-                  <input
-                    value={profileImage}
-                    type="url"
-                    placeholder="https://..."
-                    onChange={(event) => onSaveProfile({ imageUrl: event.target.value })}
-                  />
-                </label>
-              </div>
+              {isTrainer ? (
+                <div className="profile-info">
+                  <div className="profile-name-row">
+                    <div className="profile-name">{profileName}</div>
+                    <button
+                      type="button"
+                      className="rename-btn"
+                      onClick={() => {
+                        setProfileNameDraft(profileName);
+                        setIsProfileRenameOpen(true);
+                      }}
+                    >
+                      <img src={editIcon} alt="Rename trainer" />
+                    </button>
+                  </div>
+                  <div className="profile-resources trainer-profile-fans">
+                    <ResourcePill icon={fansIcon} label="Team Fans" value={teamFans} />
+                  </div>
+                </div>
+              ) : (
+                <div className="profile-info role-profile-fields">
+                  <label>
+                    Display name
+                    <input value={profileName} maxLength={24} onChange={(event) => onSaveProfile({ name: event.target.value })} />
+                  </label>
+                  <label>
+                    Image URL
+                    <input value={profileImage} type="url" placeholder="https://..." onChange={(event) => onSaveProfile({ imageUrl: event.target.value })} />
+                  </label>
+                </div>
+              )}
             </div>
           </section>
         </StaggerItem>
@@ -272,6 +285,19 @@ export default function ProfilePage({
                   {trainee.username} · {trainee.fans} Fans
                 </button>
               )) : <p>No available Trainees with uploaded profiles.</p>}
+            </section>
+          </div>
+        )}
+        {isProfileRenameOpen && (
+          <div className="team-invite-backdrop" onClick={() => setIsProfileRenameOpen(false)}>
+            <section className="team-invite-modal trainer-rename-modal" onClick={(event) => event.stopPropagation()}>
+              <h2>Rename Trainer</h2>
+              <input value={profileNameDraft} maxLength={24} onChange={(event) => setProfileNameDraft(event.target.value)} autoFocus />
+              <button onClick={() => {
+                const name = profileNameDraft.trim();
+                if (name) onSaveProfile({ name });
+                setIsProfileRenameOpen(false);
+              }}>Save</button>
             </section>
           </div>
         )}
