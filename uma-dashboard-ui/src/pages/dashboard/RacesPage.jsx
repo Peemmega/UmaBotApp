@@ -7,6 +7,7 @@ import Toast from "../../components/Toast";
 import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import { BOT_API_BASE } from "../../api/playerApi";
+import { IS_MAIN_WEB } from "../../api/appConfig";
 
 
 const DISTANCE_FILTERS = [
@@ -66,7 +67,7 @@ export default function RacesPage({ userId }) {
   }, [races, search, activeDistance]);
 
   const createRaceRoom = async () => {
-    if (!selectedRace) return;
+    if (IS_MAIN_WEB || !selectedRace) return;
 
     const res = await fetch(`${BOT_API_BASE}/race/room/create`, {
       method: "POST",
@@ -234,13 +235,15 @@ export default function RacesPage({ userId }) {
                   ยกเลิก
                 </Button>
 
-                <Button
-                  variant="primary"
-                  className="zone-save-btn"
-                  onClick={createRaceRoom}
-                >
-                  สร้างห้อง
-                </Button>
+                {!IS_MAIN_WEB && (
+                  <Button
+                    variant="primary"
+                    className="zone-save-btn"
+                    onClick={createRaceRoom}
+                  >
+                    สร้างห้อง
+                  </Button>
+                )}
               </div>
             </div>
           </div>
