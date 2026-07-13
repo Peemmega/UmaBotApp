@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import moneyIcon from "../assets/mail/money_mail_icon.webp";
 import statsIcon from "../assets/mail/stats_mail_icon.webp";
 import skillIcon from "../assets/mail/skill_pt_mail_icon.webp";
 import aptitudeIcon from "../assets/mail/aptitude_mail_icon.webp";
 import { playSound } from "../utils/soundManager";
 import { BOT_API_BASE } from "../api/playerApi";
 
+const fansIcon = `${BOT_API_BASE}/app/assets/icons/fans.png`;
+
 const rewardIconMap = {
-  uma_coin: moneyIcon,
-  money: moneyIcon,
+  fans: fansIcon,
   stats_point: statsIcon,
   skill_point: skillIcon,
   aptitude: aptitudeIcon,
