@@ -108,11 +108,11 @@ export default function TutorialsPage() {
         <GameCard className="tutorial-card accent-blue">
           <SectionHeader kicker="หนึ่งเทิร์นทำอะไรบ้าง" title="ลำดับการตัดสินใจที่แนะนำ" />
           <ol className="tutorial-turn-flow">
-            <li><strong>เช็กสถานการณ์</strong><span>ดู Phase, Path, Stamina, ตำแหน่ง และผลของคู่แข่ง</span></li>
-            <li><strong>ใช้ Skill หรือ Zone</strong><span>ใช้เมื่อเงื่อนไขตรงและผลจะช่วยการทอยเทิร์นนี้หรือเทิร์นถัดไป</span></li>
-            <li><strong>ตั้งเลนล่วงหน้า</strong><span>ใช้ <code>/game lane target_lane:1-6</code> ก่อนยืนยัน หากต้องการเปลี่ยนเลนในเทิร์นถัดไป</span></li>
-            <li><strong>Run และตัดสินใจ Reroll</strong><span>ตรวจโบนัสและคะแนนจากผลทอยก่อนใช้สิทธิ์ Reroll หรือ WIT Reroll</span></li>
-            <li><strong>ยืนยันผล</strong><span>เมื่อพร้อมแล้วกดยืนยันเพื่อให้การแข่งขันเดินต่อ</span></li>
+            <li><div><strong>เช็กสถานการณ์</strong><span>ดู Phase, Path, Stamina, ตำแหน่ง และผลของคู่แข่ง</span></div></li>
+            <li><div><strong>ใช้ Skill หรือ Zone</strong><span>ใช้เมื่อเงื่อนไขตรงและผลจะช่วยการทอยเทิร์นนี้หรือเทิร์นถัดไป</span></div></li>
+            <li><div><strong>ตั้งเลนล่วงหน้า</strong><span>ใช้ <code>/game lane target_lane:1-6</code> ก่อนยืนยัน หากต้องการเปลี่ยนเลนในเทิร์นถัดไป</span></div></li>
+            <li><div><strong>Run และตัดสินใจ Reroll</strong><span>ตรวจโบนัสและคะแนนจากผลทอยก่อนใช้สิทธิ์ Reroll หรือ WIT Reroll</span></div></li>
+            <li><div><strong>ยืนยันผล</strong><span>เมื่อพร้อมแล้วกดยืนยันเพื่อให้การแข่งขันเดินต่อ</span></div></li>
           </ol>
         </GameCard>
 
