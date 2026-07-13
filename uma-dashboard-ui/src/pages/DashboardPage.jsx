@@ -56,6 +56,7 @@ export default function DashboardPage({
   const [isMailboxOpen, setIsMailboxOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
+  const [isPresetRenameOpen, setIsPresetRenameOpen] = useState(false);
   const [activePage, setActivePage] = useState(getPageFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
   const [profiles, setProfiles] = useState(() => loadProfilePresets(userId, username));
@@ -158,6 +159,7 @@ export default function DashboardPage({
                 },
               }));
             }}
+            onRequestRename={() => setIsPresetRenameOpen(true)}
             error={error}
             isEditStatsOpen={isEditStatsOpen}
             setIsEditStatsOpen={setIsEditStatsOpen}
@@ -230,6 +232,21 @@ export default function DashboardPage({
               username: newName,
             }));
             setIsRenameOpen(false);
+          }}
+        />
+      )}
+
+      {isPresetRenameOpen && (
+        <RenameModal
+          currentName={activeProfile?.name || ""}
+          saveLocally
+          onClose={() => setIsPresetRenameOpen(false)}
+          onSave={(name) => {
+            setProfiles((current) => ({
+              ...current,
+              [activeProfileType]: { ...current[activeProfileType], name },
+            }));
+            setIsPresetRenameOpen(false);
           }}
         />
       )}

@@ -5,7 +5,6 @@ import AptitudeItem from "../../components/AptitudeItem";
 import ResourcePill from "../../components/ResourcePill";
 import EditStatsModal from "../../components/EditStatsModal";
 import ZonePanel from "../../components/ZonePanel";
-import RenameModal from "../../components/RenameModal";
 import { BOT_API_BASE, uploadProfileImage } from "../../api/playerApi";
 import statIcon from "../../assets/icons/statsPoint.webp";
 import skillIcon from "../../assets/icons/skillPoint.webp";
@@ -25,6 +24,7 @@ export default function ProfilePage({
   profile,
   profileType = "trainee",
   onSaveProfile,
+  onRequestRename,
   error,
   isEditStatsOpen,
   setIsEditStatsOpen,
@@ -40,7 +40,6 @@ export default function ProfilePage({
   const [teamFans, setTeamFans] = useState(0);
   const [availableTrainees, setAvailableTrainees] = useState([]);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
-  const [isProfileRenameOpen, setIsProfileRenameOpen] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -238,7 +237,7 @@ export default function ProfilePage({
                       type="button"
                       className="rename-btn"
                       onClick={() => {
-                        setIsProfileRenameOpen(true);
+                        onRequestRename?.();
                       }}
                     >
                       <img src={editIcon} alt="Rename trainer" />
@@ -277,17 +276,6 @@ export default function ProfilePage({
               )) : <p>No available Trainees with uploaded profiles.</p>}
             </section>
           </div>
-        )}
-        {isProfileRenameOpen && (
-          <RenameModal
-            currentName={profileName}
-            saveLocally
-            onClose={() => setIsProfileRenameOpen(false)}
-            onSave={(name) => {
-              onSaveProfile({ name });
-              setIsProfileRenameOpen(false);
-            }}
-          />
         )}
       </StaggerContainer>
     );

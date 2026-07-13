@@ -24,7 +24,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(#8dd62c, #68b900);
+  background: var(--uma-gradient-training);
   color: white;
   padding: 18px 24px;
 }
@@ -67,8 +67,8 @@
 }
 
 .mailbox-tab.active {
-  background: linear-gradient(#8dd62c, #68b900);
-  border-color: #75bd22;
+  background: var(--uma-gradient-training);
+  border-color: var(--uma-primary-dark);
   color: white;
 }
 
@@ -124,7 +124,7 @@
 }
 
 .mail-reward {
-  color: #4e9650;
+  color: var(--uma-primary-dark);
   font-size: 16px;
 }
 
