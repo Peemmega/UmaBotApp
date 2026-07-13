@@ -265,8 +265,18 @@ export default function ProfilePage({
             <section className="sheet-card trainer-team-card">
               <div className="title-banner"><h2>My Uma Musume Team</h2></div>
               <div className="trainer-team-list">
-                <button className="profile-image-upload-btn" onClick={() => setIsInviteOpen(true)}>Invite to team</button>
-                {teamMembers.length ? teamMembers.map((member) => <Badge key={member.user_id}>{member.username} · {member.fans} Fans</Badge>) : <p>No team members yet.</p>}
+                <div className="trainer-team-grid">
+                  {teamMembers.length ? teamMembers.map((member) => (
+                    <article className="trainer-team-member" key={member.user_id}>
+                      <img src={member.image_url} alt={member.username} />
+                      <h3>{member.username}</h3>
+                      <Badge>{member.fans} Fans</Badge>
+                    </article>
+                  )) : <p className="trainer-team-empty">No team members yet.</p>}
+                </div>
+                <div className="trainer-team-invite-action">
+                  <button className="profile-image-upload-btn" onClick={() => setIsInviteOpen(true)}>Invite to team</button>
+                </div>
               </div>
             </section>
           </StaggerItem>
