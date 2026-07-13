@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { playSound } from "../utils/soundManager";
 import { BOT_API_BASE } from "../api/playerApi";
 
-export default function RenameModal({ userId, currentName, onClose, onSave }) {
+export default function RenameModal({ userId, currentName, onClose, onSave, saveLocally = false }) {
   const [name, setName] = useState(currentName || "");
   const [closing, setClosing] = useState(false);
 
@@ -18,6 +18,12 @@ export default function RenameModal({ userId, currentName, onClose, onSave }) {
 
     try {
       playSound("click");
+
+      if (saveLocally) {
+        playSound("save");
+        onSave(trimmed);
+        return;
+      }
 
       const res = await fetch(`${BOT_API_BASE}/player/username/update`, {
         method: "POST",

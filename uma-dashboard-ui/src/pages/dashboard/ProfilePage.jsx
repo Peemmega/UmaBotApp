@@ -5,6 +5,7 @@ import AptitudeItem from "../../components/AptitudeItem";
 import ResourcePill from "../../components/ResourcePill";
 import EditStatsModal from "../../components/EditStatsModal";
 import ZonePanel from "../../components/ZonePanel";
+import RenameModal from "../../components/RenameModal";
 import { BOT_API_BASE, uploadProfileImage } from "../../api/playerApi";
 import statIcon from "../../assets/icons/statsPoint.webp";
 import skillIcon from "../../assets/icons/skillPoint.webp";
@@ -40,7 +41,6 @@ export default function ProfilePage({
   const [availableTrainees, setAvailableTrainees] = useState([]);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isProfileRenameOpen, setIsProfileRenameOpen] = useState(false);
-  const [profileNameDraft, setProfileNameDraft] = useState("");
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -230,7 +230,7 @@ export default function ProfilePage({
                   )}
                 </div>
               </div>
-              {isTrainer ? (
+              {isTrainer || profileType === "npc" ? (
                 <div className="profile-info">
                   <div className="profile-name-row">
                     <div className="profile-name">{profileName}</div>
@@ -238,29 +238,19 @@ export default function ProfilePage({
                       type="button"
                       className="rename-btn"
                       onClick={() => {
-                        setProfileNameDraft(profileName);
                         setIsProfileRenameOpen(true);
                       }}
                     >
                       <img src={editIcon} alt="Rename trainer" />
                     </button>
                   </div>
-                  <div className="profile-resources trainer-profile-fans">
-                    <ResourcePill icon={fansIcon} label="Team Fans" value={teamFans} />
-                  </div>
+                  {isTrainer && (
+                    <div className="profile-resources trainer-profile-fans">
+                      <ResourcePill icon={fansIcon} label="Team Fans" value={teamFans} />
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="profile-info role-profile-fields">
-                  <label>
-                    Display name
-                    <input value={profileName} maxLength={24} onChange={(event) => onSaveProfile({ name: event.target.value })} />
-                  </label>
-                  <label>
-                    Image URL
-                    <input value={profileImage} type="url" placeholder="https://..." onChange={(event) => onSaveProfile({ imageUrl: event.target.value })} />
-                  </label>
-                </div>
-              )}
+              ) : null}
             </div>
           </section>
         </StaggerItem>
@@ -289,17 +279,15 @@ export default function ProfilePage({
           </div>
         )}
         {isProfileRenameOpen && (
-          <div className="team-invite-backdrop" onClick={() => setIsProfileRenameOpen(false)}>
-            <section className="team-invite-modal trainer-rename-modal" onClick={(event) => event.stopPropagation()}>
-              <h2>Rename Trainer</h2>
-              <input value={profileNameDraft} maxLength={24} onChange={(event) => setProfileNameDraft(event.target.value)} autoFocus />
-              <button onClick={() => {
-                const name = profileNameDraft.trim();
-                if (name) onSaveProfile({ name });
-                setIsProfileRenameOpen(false);
-              }}>Save</button>
-            </section>
-          </div>
+          <RenameModal
+            currentName={profileName}
+            saveLocally
+            onClose={() => setIsProfileRenameOpen(false)}
+            onSave={(name) => {
+              onSaveProfile({ name });
+              setIsProfileRenameOpen(false);
+            }}
+          />
         )}
       </StaggerContainer>
     );
