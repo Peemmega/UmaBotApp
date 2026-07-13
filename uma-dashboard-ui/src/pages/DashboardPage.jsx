@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import "../styles/dashboard.css";
 import "../styles/mailbox.css";
@@ -57,6 +57,10 @@ export default function DashboardPage({
   const [unreadCount, setUnreadCount] = useState(0);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isPresetRenameOpen, setIsPresetRenameOpen] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState(() =>
+    typeof Notification === "undefined" ? "unsupported" : Notification.permission
+  );
+  const previousUnreadCount = useRef(null);
   const [activePage, setActivePage] = useState(getPageFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
   const [profiles, setProfiles] = useState(() => loadProfilePresets(userId, username));
@@ -172,12 +176,25 @@ export default function DashboardPage({
   const loadUnreadCount = async () => {
     try {
       const res = await fetch(
-        `${BOT_API_BASE}/mailbox/${userId}`
+        `${BOT_API_BASE}/mailbox/${userId}?profile_type=${activeProfileType}`
       );
 
       const data = await res.json();
       const unread = data.filter((m) => !m.is_read).length;
+      const previous = previousUnreadCount.current;
       setUnreadCount(unread);
+      previousUnreadCount.current = unread;
+      if (previous !== null && unread > previous && Notification.permission === "granted") {
+        const notification = new Notification("UmaDnD — New mail", {
+          body: `You have ${unread} unread message${unread === 1 ? "" : "s"}.`,
+          icon: "/uma-icon.webp",
+        });
+        notification.onclick = () => {
+          window.focus();
+          setIsMailboxOpen(true);
+          notification.close();
+        };
+      }
     } catch (err) {
       console.error(err);
     }
@@ -198,6 +215,7 @@ export default function DashboardPage({
   useEffect(() => {
     if (!userId) return;
 
+    previousUnreadCount.current = null;
     loadUnreadCount();
 
     const interval = setInterval(() => {
@@ -205,7 +223,13 @@ export default function DashboardPage({
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [userId]);
+  }, [activeProfileType, userId]);
+
+  const enableNotifications = async () => {
+    if (typeof Notification === "undefined") return;
+    const permission = await Notification.requestPermission();
+    setNotificationPermission(permission);
+  };
 
   const modals = (
     <>
@@ -270,6 +294,8 @@ export default function DashboardPage({
               onSelect={selectProfile}
             />
           }
+          notificationPermission={notificationPermission}
+          onEnableNotifications={enableNotifications}
         />
       }
       nav={<GameNav activePage={activePage} onChangePage={changePage} profileType={activeProfileType} />}

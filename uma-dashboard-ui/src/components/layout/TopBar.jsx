@@ -9,6 +9,8 @@ export default function TopBar({
   profileType = "trainee",
   profileDesk = "Trainee Desk",
   profileSwitcher,
+  notificationPermission = "unsupported",
+  onEnableNotifications,
 }) {
   return (
     <header className="topbar">
@@ -26,6 +28,12 @@ export default function TopBar({
         <span className="topbar-status">{profileDesk}</span>
 
         {profileSwitcher}
+
+        {notificationPermission !== "granted" && notificationPermission !== "unsupported" && (
+          <button type="button" className="notification-btn" onClick={onEnableNotifications}>
+            Enable alerts
+          </button>
+        )}
 
         <a
           className="discord-btn"
