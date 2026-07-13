@@ -9,6 +9,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { playSound } from "../../utils/soundManager";
+import { IS_MAIN_WEB } from "../../api/appConfig";
 
 export const gameNavItems = [
   { key: "profile", label: "Profile", Icon: UserRound },
@@ -26,9 +27,13 @@ export default function GameNav({
   onChangePage,
   items = gameNavItems,
 }) {
+  const visibleItems = IS_MAIN_WEB
+    ? items.filter((item) => item.key !== "tcg")
+    : items;
+
   return (
     <nav className="sidebar game-nav" aria-label="Game navigation">
-      {items.map((item) => {
+      {visibleItems.map((item) => {
         const isActive = activePage === item.key;
         const Icon = item.Icon;
 
