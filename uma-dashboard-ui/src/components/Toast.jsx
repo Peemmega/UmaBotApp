@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import "../styles/skillsPage.css"; // ใช้ style เดิม
 
 export default function Toast({ message, type = "success", onClose }) {
@@ -10,7 +11,7 @@ export default function Toast({ message, type = "success", onClose }) {
     return () => clearTimeout(timer);
   }, [onClose]);
 
-  return (
+  const toast = (
     <div className={`toast ${type}`}>
       <div className="toast-icon">
         {type === "success" ? "✓" : "!"}
@@ -23,4 +24,6 @@ export default function Toast({ message, type = "success", onClose }) {
       </div>
     </div>
   );
+
+  return typeof document === "undefined" ? toast : createPortal(toast, document.body);
 }

@@ -387,10 +387,10 @@
   position: fixed;
   right: 32px;
   bottom: 32px;
-  z-index: 2000;
+  z-index: 10000;
 
-  min-width: 420px;
-  max-width: 520px;
+  min-width: min(420px, calc(100vw - 32px));
+  max-width: min(520px, calc(100vw - 32px));
 
   display: flex;
   align-items: center;
