@@ -346,6 +346,46 @@ code {
     box-shadow var(--uma-duration-base) ease;
 }
 
+.profile-theme-trainee .ui-badge,
+.profile-badge-trainee {
+  border-color: rgba(35, 150, 78, 0.28);
+  background: rgba(69, 201, 111, 0.14);
+  color: #167542;
+}
+
+.profile-theme-trainer .ui-badge,
+.profile-badge-trainer {
+  border-color: rgba(163, 79, 192, 0.34);
+  background: linear-gradient(135deg, rgba(163, 79, 192, 0.16), rgba(243, 139, 192, 0.2));
+  color: #7d318e;
+}
+
+.profile-theme-npc .ui-badge,
+.profile-badge-npc {
+  border-color: rgba(100, 116, 139, 0.32);
+  background: rgba(100, 116, 139, 0.14);
+  color: #475569;
+}
+
+/* Character cards keep their own profile color even when another preset is active. */
+.ui-badge.profile-badge-trainee {
+  border-color: rgba(35, 150, 78, 0.28);
+  background: rgba(69, 201, 111, 0.14);
+  color: #167542;
+}
+
+.ui-badge.profile-badge-trainer {
+  border-color: rgba(163, 79, 192, 0.34);
+  background: linear-gradient(135deg, rgba(163, 79, 192, 0.16), rgba(243, 139, 192, 0.2));
+  color: #7d318e;
+}
+
+.ui-badge.profile-badge-npc {
+  border-color: rgba(100, 116, 139, 0.32);
+  background: rgba(100, 116, 139, 0.14);
+  color: #475569;
+}
+
 .ui-search-input::placeholder {
   color: rgba(124, 111, 133, 0.68);
 }

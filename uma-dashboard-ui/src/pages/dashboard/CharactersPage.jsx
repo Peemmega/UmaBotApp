@@ -21,6 +21,12 @@ function getCharacterType(type) {
   return "Umamusume (Trainee)";
 }
 
+function getCharacterBadgeClass(type) {
+  if (type === "Trainer") return "profile-badge-trainer";
+  if (type === "NPC") return "profile-badge-npc";
+  return "profile-badge-trainee";
+}
+
 export default function CharactersPage({ userId, player, profiles }) {
   const [search, setSearch] = useState("");
   const [characters, setCharacters] = useState([]);
@@ -214,7 +220,7 @@ export default function CharactersPage({ userId, player, profiles }) {
               {/* <p>{character.jpName}</p> */}
 
               <div className="character-bottom">
-                <Badge>{character.type}</Badge>
+                <Badge className={getCharacterBadgeClass(character.type)}>{character.type}</Badge>
                 {/* <button type="button">View</button> */}
               </div>
             </div>
