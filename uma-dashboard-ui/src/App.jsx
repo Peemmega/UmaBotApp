@@ -267,6 +267,8 @@ export default function App() {
       setIsRoleSaving(true);
       setRoleError("");
       const result = await selectAccountRole({ userId, username, role });
+      localStorage.removeItem(`uma:profile-presets:${userId}`);
+      sessionStorage.removeItem(`player:${userId}`);
       setAccountRole(result.role);
       if (result.player) {
         setPlayer(result.player);
