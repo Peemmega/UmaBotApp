@@ -6,9 +6,7 @@ export default function TopBar({
   unreadCount = 0,
   onMailClick,
   onLogout,
-  profileType = "trainee",
   profileDesk = "Trainee Desk",
-  profileSwitcher,
   notificationPermission = "unsupported",
   onEnableNotifications,
 }) {
@@ -26,8 +24,6 @@ export default function TopBar({
 
       <div className="dashboard-actions">
         <span className="topbar-status">{profileDesk}</span>
-
-        {profileSwitcher}
 
         {notificationPermission !== "granted" && notificationPermission !== "unsupported" && (
           <button type="button" className="notification-btn" onClick={onEnableNotifications}>

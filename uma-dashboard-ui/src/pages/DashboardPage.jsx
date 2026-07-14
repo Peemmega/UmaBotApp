@@ -289,7 +289,6 @@ export default function DashboardPage({
           unreadCount={unreadCount}
           onMailClick={() => setIsMailboxOpen(true)}
           onLogout={onLogout}
-          profileType={activeProfileType}
           profileDesk={PROFILE_TYPES[activeProfileType]?.desk}
           notificationPermission={notificationPermission}
           onEnableNotifications={enableNotifications}
