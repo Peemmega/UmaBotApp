@@ -533,11 +533,11 @@ code {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--confirm-primary);
-  background: linear-gradient(90deg, var(--confirm-primary) var(--hold-progress), color-mix(in srgb, var(--confirm-primary) 13%, #ffffff) var(--hold-progress));
+  background: var(--confirm-primary);
   color: #fff;
   touch-action: none;
 }
-.role-confirm-hold::before { content: ""; position: absolute; inset: 0; background: color-mix(in srgb, var(--confirm-primary) 18%, transparent); transform: translateX(calc(var(--hold-progress) - 100%)); }
+.role-confirm-hold::before { content: ""; position: absolute; inset: 0; background: rgba(255, 255, 255, 0.28); transform: translateX(calc(var(--hold-progress) - 100%)); }
 .role-confirm-hold span { position: relative; z-index: 1; }
 .role-confirm-back:disabled, .role-confirm-hold:disabled { cursor: wait; opacity: 0.7; }
 
