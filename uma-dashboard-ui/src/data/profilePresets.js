@@ -9,8 +9,8 @@ const PROFILE_STORAGE_PREFIX = "uma:profile-presets:";
 function createProfiles(username = "") {
   return {
     trainee: { type: "trainee", name: username, imageUrl: "" },
-    trainer: { type: "trainer", name: "Trainer", imageUrl: "", teamUmaIds: [] },
-    npc: { type: "npc", name: "NPC", imageUrl: "" },
+    trainer: { type: "trainer", name: username || "Trainer", imageUrl: "", teamUmaIds: [] },
+    npc: { type: "npc", name: username || "NPC", imageUrl: "" },
   };
 }
 

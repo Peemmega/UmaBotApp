@@ -8,7 +8,6 @@ import RenameModal from "../components/RenameModal";
 import PageTransition from "../components/PageTransition";
 import { AppShell, GameNav, RightRail, TopBar } from "../components/layout";
 import { BOT_API_BASE } from "../api/playerApi";
-import ProfileSwitcher from "../components/ProfileSwitcher";
 import {
   PROFILE_TYPES,
   loadActiveProfileType,
@@ -49,6 +48,7 @@ export default function DashboardPage({
   avatarUrl,
   player,
   setPlayer,
+  accountRole,
   error,
   onLogout,
 }) {
@@ -64,36 +64,36 @@ export default function DashboardPage({
   const [activePage, setActivePage] = useState(getPageFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
   const [profiles, setProfiles] = useState(() => loadProfilePresets(userId, username));
-  const [activeProfileType, setActiveProfileType] = useState(() => loadActiveProfileType(userId));
+  const [activeProfileType, setActiveProfileType] = useState(() => accountRole || loadActiveProfileType(userId));
 
   useEffect(() => {
     const nextProfiles = loadProfilePresets(userId, player?.username || username);
     setProfiles(nextProfiles);
-    setActiveProfileType(loadActiveProfileType(userId));
-  }, [userId]);
+    setActiveProfileType(accountRole || loadActiveProfileType(userId));
+  }, [accountRole, userId, username]);
 
   useEffect(() => {
     if (!userId) return;
     saveProfilePresets(userId, profiles);
-    ["trainer", "npc"].forEach((profileType) => {
-      const profile = profiles[profileType];
-      fetch(`${BOT_API_BASE}/profiles/preset`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: String(userId),
-          profile_type: profileType,
-          name: profile?.name || profileType,
-          image_url: profile?.imageUrl || "",
-        }),
-      }).catch(console.error);
-    });
-  }, [profiles, userId]);
+    if (accountRole !== "trainer" && accountRole !== "npc") return;
+
+    const profile = profiles[accountRole];
+    fetch(`${BOT_API_BASE}/profiles/preset`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: String(userId),
+        profile_type: accountRole,
+        name: profile?.name || accountRole,
+        image_url: profile?.imageUrl || "",
+      }),
+    }).catch(console.error);
+  }, [accountRole, profiles, userId]);
 
   const activeProfile = profiles[activeProfileType] || profiles.trainee;
 
   const selectProfile = (type) => {
-    if (!PROFILE_TYPES[type]) return;
+    if (!PROFILE_TYPES[type] || type !== accountRole) return;
     setActiveProfileType(type);
     saveActiveProfileType(userId, type);
     setIsEditStatsOpen(false);
@@ -300,13 +300,6 @@ export default function DashboardPage({
           onLogout={onLogout}
           profileType={activeProfileType}
           profileDesk={PROFILE_TYPES[activeProfileType]?.desk}
-          profileSwitcher={
-            <ProfileSwitcher
-              activeType={activeProfileType}
-              profiles={profiles}
-              onSelect={selectProfile}
-            />
-          }
           notificationPermission={notificationPermission}
           onEnableNotifications={enableNotifications}
         />

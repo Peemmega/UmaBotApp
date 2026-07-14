@@ -367,6 +367,66 @@ code {
   color: #475569;
 }
 
+.role-selection-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.role-selection-card {
+  width: min(760px, 100%);
+  padding: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 24px;
+  background: rgba(20, 27, 48, 0.92);
+  color: #fff;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+}
+
+.role-selection-kicker {
+  color: #9dc7ff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.role-selection-card h1 { margin: 8px 0; }
+.role-selection-card > p { color: #d9e3fa; }
+
+.role-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 26px;
+}
+
+.role-selection-grid button {
+  min-height: 150px;
+  padding: 20px;
+  border: 1px solid rgba(157, 199, 255, 0.45);
+  border-radius: 16px;
+  background: rgba(63, 94, 150, 0.28);
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.role-selection-grid button:hover:not(:disabled) { background: rgba(83, 126, 203, 0.5); }
+.role-selection-grid button:disabled { cursor: wait; opacity: 0.6; }
+.role-selection-grid strong, .role-selection-grid span { display: block; }
+.role-selection-grid strong { font-size: 1.15rem; margin-bottom: 8px; }
+.role-selection-grid span { color: #d9e3fa; line-height: 1.45; }
+.role-selection-status { margin-top: 18px; color: #9dc7ff !important; }
+.role-selection-error { margin-top: 18px; color: #ffacac !important; }
+
+@media (max-width: 640px) {
+  .role-selection-card { padding: 24px; }
+  .role-selection-grid { grid-template-columns: 1fr; }
+  .role-selection-grid button { min-height: 100px; }
+}
+
 /* Character cards keep their own profile color even when another preset is active. */
 .ui-badge.profile-badge-trainee {
   border-color: rgba(35, 150, 78, 0.28);

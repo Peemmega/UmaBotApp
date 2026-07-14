@@ -198,8 +198,6 @@ async def callback(code: str):
         'Authorization': f'Bearer {access_token}'
     })
     user_data = user_response.json()
-    await ensure_bot_player_profile(user_data)
-
     # ส่งกลับไปที่หน้า Dashboard ของ React
     target_url = f"{FRONTEND_URL}/dashboard?username={user_data['username']}&id={user_data['id']}&avatar={user_data['avatar']}"
     return RedirectResponse(target_url)
@@ -332,8 +330,6 @@ async def discord_mobile_callback(code: str):
         code,
         redirect_uri=MOBILE_REDIRECT_URI,
     )
-    await ensure_bot_player_profile(user)
-
     params = urlencode({
         "username": user["username"],
         "id": user["id"],

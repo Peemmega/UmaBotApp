@@ -18,6 +18,18 @@ export function getPlayer(userId, username = "Unknown") {
   return request(`/player/${encodeURIComponent(userId)}?username=${encodeURIComponent(username)}`);
 }
 
+export function getAccountRole(userId) {
+  return request(`/account/${encodeURIComponent(userId)}/role`);
+}
+
+export function selectAccountRole({ userId, username, role }) {
+  return request("/account/role", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: String(userId), username, role }),
+  });
+}
+
 export async function uploadProfileImage(userId, file) {
   const formData = new FormData();
   formData.append("file", file);

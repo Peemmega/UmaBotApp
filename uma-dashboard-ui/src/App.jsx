@@ -7,7 +7,7 @@ import RaceGamePage from "./pages/dashboard/RaceGamePage";
 import LoadingScreen from "./components/LoadingScreen";
 import HorseshoeBackground from "./components/HorseshoeBackground";
 import PageTransition from "./components/PageTransition";
-import { getPlayer } from "./api/playerApi";
+import { getAccountRole, getPlayer, selectAccountRole } from "./api/playerApi";
 import { APP_BASE_URL } from "./api/appConfig";
 import { getDiscordAvatarUrl, resolveSessionAvatar } from "./utils/avatar";
 
@@ -52,6 +52,34 @@ function loadLoginSession() {
   }
 }
 
+const ROLE_CHOICES = [
+  { id: "trainee", title: "Umamusume", detail: "Create a racing profile with Stats, Skills, and Zone." },
+  { id: "trainer", title: "Trainer", detail: "Create a trainer profile to manage an Umamusume team." },
+  { id: "npc", title: "NPC", detail: "Create a character profile for roleplay." },
+];
+
+function RoleSelection({ busy, error, onSelect }) {
+  return (
+    <main className="role-selection-page">
+      <section className="role-selection-card" aria-labelledby="role-selection-title">
+        <span className="role-selection-kicker">Welcome to Tracen Academy</span>
+        <h1 id="role-selection-title">Choose your role</h1>
+        <p>This choice creates the data for your selected role.</p>
+        <div className="role-selection-grid">
+          {ROLE_CHOICES.map((role) => (
+            <button key={role.id} type="button" onClick={() => onSelect(role.id)} disabled={busy}>
+              <strong>{role.title}</strong>
+              <span>{role.detail}</span>
+            </button>
+          ))}
+        </div>
+        {busy && <p className="role-selection-status">Creating your profile...</p>}
+        {error && <p className="role-selection-error">{error}</p>}
+      </section>
+    </main>
+  );
+}
+
 export default function App() {
   const [showIntro, setShowIntro] = useState(true);
   const [routePath, setRoutePath] = useState(window.location.pathname);
@@ -61,6 +89,10 @@ export default function App() {
   const [avatarHash, setAvatarHash] = useState("");
 
   const [player, setPlayer] = useState(null);
+  const [accountRole, setAccountRole] = useState(null);
+  const [isRoleLoading, setIsRoleLoading] = useState(false);
+  const [isRoleSaving, setIsRoleSaving] = useState(false);
+  const [roleError, setRoleError] = useState("");
   const [statsSummary, setStatsSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showRaw, setShowRaw] = useState(false);
@@ -114,6 +146,28 @@ export default function App() {
   useEffect(() => {
     if (!username || !userId) return;
 
+    let cancelled = false;
+    setIsRoleLoading(true);
+    setRoleError("");
+    getAccountRole(userId)
+      .then((data) => {
+        if (!cancelled) setAccountRole(data.role || null);
+      })
+      .catch((err) => {
+        if (!cancelled) setRoleError(String(err.message || err));
+      })
+      .finally(() => {
+        if (!cancelled) setIsRoleLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, username]);
+
+  useEffect(() => {
+    if (!username || !userId || accountRole !== "trainee") return;
+
     const cacheKey = `player:${userId}`;
     const cached = sessionStorage.getItem(cacheKey);
 
@@ -166,7 +220,7 @@ export default function App() {
 
     loadPlayer();
     loadStats();
-  }, [username, userId]);
+  }, [accountRole, username, userId]);
 
   useEffect(() => {
     if (!userId || !player) return;
@@ -201,6 +255,7 @@ export default function App() {
     setUserId("");
     setAvatarHash("");
     setPlayer(null);
+    setAccountRole(null);
 
     window.location.href = "/";
   };
@@ -220,9 +275,30 @@ export default function App() {
     window.dispatchEvent(new Event("uma:navigate"));
   };
 
+  const handleRoleSelection = async (role) => {
+    try {
+      setIsRoleSaving(true);
+      setRoleError("");
+      const result = await selectAccountRole({ userId, username, role });
+      setAccountRole(result.role);
+      if (result.player) {
+        setPlayer(result.player);
+        sessionStorage.setItem(`player:${userId}`, JSON.stringify(result.player));
+      }
+    } catch (err) {
+      setRoleError(String(err.message || err));
+    } finally {
+      setIsRoleSaving(false);
+    }
+  };
+
   const pageContent = !username ? (
     <LoginPage key="login" appBase={APP_BASE} />
-  ) : isTcgRoute ? (
+  ) : isRoleLoading ? (
+    <LoadingScreen key="role-loading" onFinished={() => {}} />
+  ) : !accountRole ? (
+    <RoleSelection busy={isRoleSaving} error={roleError} onSelect={handleRoleSelection} />
+  ) : isTcgRoute && accountRole === "trainee" ? (
     <PageTransition key="tcg">
       <CardGamePage
         fullscreen
@@ -232,7 +308,7 @@ export default function App() {
         avatarUrl={avatarUrl}
       />
     </PageTransition>
-  ) : isRaceRoute ? (
+  ) : isRaceRoute && accountRole === "trainee" ? (
     <PageTransition key="race">
       <RaceGamePage
         fullscreen
@@ -250,6 +326,7 @@ export default function App() {
       avatarUrl={avatarUrl}
       player={player}
       setPlayer={setPlayer}
+      accountRole={accountRole}
       statsSummary={statsSummary}
       showRaw={showRaw}
       setShowRaw={setShowRaw}
