@@ -10,6 +10,7 @@ import PageTransition from "./components/PageTransition";
 import { getAccountRole, getPlayer, selectAccountRole } from "./api/playerApi";
 import { APP_BASE_URL } from "./api/appConfig";
 import { getDiscordAvatarUrl, resolveSessionAvatar } from "./utils/avatar";
+import { ArrowRight, GraduationCap, Sparkles, Trophy, UsersRound } from "lucide-react";
 
 const APP_BASE = APP_BASE_URL;
 
@@ -53,26 +54,65 @@ function loadLoginSession() {
 }
 
 const ROLE_CHOICES = [
-  { id: "trainee", title: "Umamusume", detail: "Create a racing profile with Stats, Skills, and Zone." },
-  { id: "trainer", title: "Trainer", detail: "Create a trainer profile to manage an Umamusume team." },
-  { id: "npc", title: "NPC", detail: "Create a character profile for roleplay." },
+  {
+    id: "trainee",
+    title: "Umamusume",
+    thaiTitle: "อุมะมุสุเมะ",
+    subtitle: "นักวิ่งแห่ง Tracen Academy",
+    detail: "สร้างโปรไฟล์นักวิ่ง อัป Stats เลือกสกิล และลงแข่งเพื่อสะสม Fans",
+    Icon: Trophy,
+  },
+  {
+    id: "trainer",
+    title: "Trainer",
+    thaiTitle: "เทรนเนอร์",
+    subtitle: "ผู้ฝึกสอนและผู้จัดการทีม",
+    detail: "สร้างโปรไฟล์ผู้ฝึกสอน จัดทีม Umamusume และติดตาม Fans ของทีม",
+    Icon: GraduationCap,
+  },
+  {
+    id: "npc",
+    title: "NPC",
+    thaiTitle: "ตัวละคร NPC",
+    subtitle: "ตัวละครสำหรับโลก Roleplay",
+    detail: "สร้างตัวละครประกอบ พร้อมชื่อและรูปโปรไฟล์สำหรับใช้งานในชุมชน",
+    Icon: UsersRound,
+  },
 ];
 
 function RoleSelection({ busy, error, onSelect }) {
   return (
     <main className="role-selection-page">
       <section className="role-selection-card" aria-labelledby="role-selection-title">
-        <span className="role-selection-kicker">Welcome to Tracen Academy</span>
-        <h1 id="role-selection-title">Choose your role</h1>
-        <p>This choice creates the data for your selected role.</p>
+        <div className="role-selection-heading">
+          <span className="role-selection-crest"><Sparkles size={20} /></span>
+          <div>
+            <span className="role-selection-kicker">Tracen Academy RP</span>
+            <h1 id="role-selection-title">เลือกบทบาทของคุณ</h1>
+          </div>
+        </div>
+        <p className="role-selection-intro">เลือกบทบาทที่ต้องการเล่น เพื่อเริ่มต้นสร้างข้อมูลโปรไฟล์ของคุณ</p>
         <div className="role-selection-grid">
-          {ROLE_CHOICES.map((role) => (
-            <button key={role.id} type="button" onClick={() => onSelect(role.id)} disabled={busy}>
-              <strong>{role.title}</strong>
-              <span>{role.detail}</span>
+          {ROLE_CHOICES.map(({ Icon, ...role }) => (
+            <button
+              key={role.id}
+              type="button"
+              className={`role-choice role-choice-${role.id}`}
+              onClick={() => onSelect(role.id)}
+              disabled={busy}
+            >
+              <span className="role-choice-icon"><Icon size={27} strokeWidth={2.3} /></span>
+              <span className="role-choice-copy">
+                <strong>{role.title}</strong>
+                <b>{role.thaiTitle}</b>
+                <small>{role.subtitle}</small>
+                <span>{role.detail}</span>
+              </span>
+              <span className="role-choice-cta">เลือกบทบาทนี้ <ArrowRight size={17} /></span>
             </button>
           ))}
         </div>
+        <p className="role-selection-note">บทบาทจะถูกบันทึกถาวรกับบัญชี Discord นี้</p>
         {busy && <p className="role-selection-status">Creating your profile...</p>}
         {error && <p className="role-selection-error">{error}</p>}
       </section>
