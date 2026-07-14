@@ -247,6 +247,19 @@ export default function App() {
     });
   }, [avatarUrl, discordAvatarUrl, player?.profile_image_url, userId]);
 
+  const handleLogout = () => {
+    localStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem(`player:${userId}`);
+
+    setUsername("");
+    setUserId("");
+    setAvatarHash("");
+    setPlayer(null);
+    setAccountRole(null);
+
+    window.location.href = "/";
+  };
+
   const normalizedRoutePath = routePath.replace(/\/+$/, "") || "/";
   const isTcgRoute =
     normalizedRoutePath === "/tcg" ||
@@ -321,6 +334,7 @@ export default function App() {
       setShowRaw={setShowRaw}
       error={error}
       loading={loading}
+      onLogout={handleLogout}
     />
   );
 
