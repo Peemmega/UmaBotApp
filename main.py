@@ -2,6 +2,7 @@ import os
 import requests
 import httpx
 import sqlite3
+import time
 
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse, JSONResponse, FileResponse
@@ -198,8 +199,15 @@ async def callback(code: str):
         'Authorization': f'Bearer {access_token}'
     })
     user_data = user_response.json()
-    # ส่งกลับไปที่หน้า Dashboard ของ React
-    target_url = f"{FRONTEND_URL}/dashboard?username={user_data['username']}&id={user_data['id']}&avatar={user_data['avatar']}"
+    # Give each Discord return URL a unique cache key so the browser always
+    # loads the current SPA bundle after login rather than a cached dashboard.
+    params = urlencode({
+        "username": user_data["username"],
+        "id": user_data["id"],
+        "avatar": user_data.get("avatar") or "",
+        "login_nonce": str(time.time_ns()),
+    })
+    target_url = f"{FRONTEND_URL.rstrip('/')}/dashboard?{params}"
     return RedirectResponse(target_url)
 
 @app.get("/api/bot-stats/")
@@ -308,6 +316,7 @@ async def discord_mobile_callback(code: str):
         "username": user["username"],
         "id": user["id"],
         "avatar": user.get("avatar") or "",
+        "login_nonce": str(time.time_ns()),
     })
 
     return RedirectResponse(f"umadnd://callback?{params}")
@@ -335,7 +344,10 @@ if os.path.exists(FRONTEND_DIST):
         # รายการ path ที่เป็น API/Auth ไม่ต้องส่งไฟล์ index.html
         if full_path.startswith("api") or full_path in ["login", "callback"]:
             return JSONResponse({"error": "Not Found"}, status_code=404)
-        return FileResponse(os.path.join(FRONTEND_DIST, "index.html"))
+        return FileResponse(
+            os.path.join(FRONTEND_DIST, "index.html"),
+            headers={"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"},
+        )
 
 if __name__ == "__main__":
 
