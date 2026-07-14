@@ -475,10 +475,78 @@ code {
 .role-selection-status { margin-top: 18px; color: #397852 !important; text-align: center; }
 .role-selection-error { margin-top: 18px; color: #c93e55 !important; text-align: center; }
 
+.role-confirm-backdrop {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(30, 38, 52, 0.48);
+  backdrop-filter: blur(6px);
+}
+
+.role-confirm-modal {
+  --confirm-primary: #2ca65d;
+  --confirm-surface: #eaffef;
+  width: min(440px, 100%);
+  padding: 32px;
+  border: 1px solid color-mix(in srgb, var(--confirm-primary) 36%, #ffffff);
+  border-radius: 24px;
+  background: linear-gradient(145deg, var(--confirm-surface), #ffffff 65%);
+  color: #344054;
+  box-shadow: 0 26px 60px rgba(31, 41, 55, 0.24);
+  text-align: center;
+}
+
+.role-confirm-trainer { --confirm-primary: #a34fc0; --confirm-surface: #fff0fb; }
+.role-confirm-npc { --confirm-primary: #718096; --confirm-surface: #f2f5f9; }
+
+.role-confirm-icon {
+  width: 58px;
+  height: 58px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 18px;
+  background: var(--confirm-primary);
+  color: #fff;
+  box-shadow: 0 10px 20px color-mix(in srgb, var(--confirm-primary) 32%, transparent);
+}
+
+.role-confirm-kicker { display: block; margin-top: 17px; color: var(--confirm-primary); font-size: 0.77rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+.role-confirm-modal h2 { margin: 7px 0 0; font-size: 1.5rem; }
+.role-confirm-modal p { margin: 14px 0 0; color: #667085; line-height: 1.65; }
+.role-confirm-modal p strong { color: #b42318; }
+
+.role-confirm-actions { display: grid; grid-template-columns: 0.86fr 1.5fr; gap: 11px; margin-top: 25px; }
+.role-confirm-back,
+.role-confirm-hold {
+  min-height: 50px;
+  border-radius: 13px;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.role-confirm-back { border: 1px solid #d0d5dd; background: rgba(255, 255, 255, 0.72); color: #475467; }
+.role-confirm-hold {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--confirm-primary);
+  background: linear-gradient(90deg, var(--confirm-primary) var(--hold-progress), color-mix(in srgb, var(--confirm-primary) 13%, #ffffff) var(--hold-progress));
+  color: #fff;
+  touch-action: none;
+}
+.role-confirm-hold::before { content: ""; position: absolute; inset: 0; background: color-mix(in srgb, var(--confirm-primary) 18%, transparent); transform: translateX(calc(var(--hold-progress) - 100%)); }
+.role-confirm-hold span { position: relative; z-index: 1; }
+.role-confirm-back:disabled, .role-confirm-hold:disabled { cursor: wait; opacity: 0.7; }
+
 @media (max-width: 640px) {
   .role-selection-card { padding: 24px; }
   .role-selection-grid { grid-template-columns: 1fr; }
   .role-choice { min-height: 0; }
+  .role-confirm-modal { padding: 26px 20px; }
+  .role-confirm-actions { grid-template-columns: 1fr; }
 }
 
 /* Character cards keep their own profile color even when another preset is active. */

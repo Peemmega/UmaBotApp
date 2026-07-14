@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -81,6 +81,47 @@ const ROLE_CHOICES = [
 ];
 
 function RoleSelection({ busy, error, onSelect }) {
+  const [pendingRole, setPendingRole] = useState(null);
+  const [holdProgress, setHoldProgress] = useState(0);
+  const holdTimerRef = useRef(null);
+
+  const clearHold = () => {
+    if (holdTimerRef.current) {
+      window.clearInterval(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+  };
+
+  useEffect(() => () => clearHold(), []);
+
+  const cancelHold = () => {
+    if (busy) return;
+    clearHold();
+    setHoldProgress(0);
+  };
+
+  const startHold = () => {
+    if (busy || !pendingRole || holdTimerRef.current) return;
+
+    const startedAt = Date.now();
+    holdTimerRef.current = window.setInterval(() => {
+      const progress = Math.min(((Date.now() - startedAt) / 2000) * 100, 100);
+      setHoldProgress(progress);
+
+      if (progress >= 100) {
+        clearHold();
+        void onSelect(pendingRole.id);
+      }
+    }, 25);
+  };
+
+  const closeConfirmation = () => {
+    if (busy) return;
+    clearHold();
+    setHoldProgress(0);
+    setPendingRole(null);
+  };
+
   return (
     <main className="role-selection-page">
       <section className="role-selection-card" aria-labelledby="role-selection-title">
@@ -93,29 +134,74 @@ function RoleSelection({ busy, error, onSelect }) {
         </div>
         <p className="role-selection-intro">เลือกบทบาทที่ต้องการเล่น เพื่อเริ่มต้นสร้างข้อมูลโปรไฟล์ของคุณ</p>
         <div className="role-selection-grid">
-          {ROLE_CHOICES.map(({ Icon, ...role }) => (
-            <button
-              key={role.id}
-              type="button"
-              className={`role-choice role-choice-${role.id}`}
-              onClick={() => onSelect(role.id)}
-              disabled={busy}
-            >
-              <span className="role-choice-icon"><Icon size={27} strokeWidth={2.3} /></span>
-              <span className="role-choice-copy">
-                <strong>{role.title}</strong>
-                <b>{role.thaiTitle}</b>
-                <small>{role.subtitle}</small>
-                <span>{role.detail}</span>
-              </span>
-              <span className="role-choice-cta">เลือกบทบาทนี้ <ArrowRight size={17} /></span>
-            </button>
-          ))}
+          {ROLE_CHOICES.map((role) => {
+            const Icon = role.Icon;
+            return (
+              <button
+                key={role.id}
+                type="button"
+                className={`role-choice role-choice-${role.id}`}
+                onClick={() => setPendingRole(role)}
+                disabled={busy}
+              >
+                <span className="role-choice-icon"><Icon size={27} strokeWidth={2.3} /></span>
+                <span className="role-choice-copy">
+                  <strong>{role.title}</strong>
+                  <b>{role.thaiTitle}</b>
+                  <small>{role.subtitle}</small>
+                  <span>{role.detail}</span>
+                </span>
+                <span className="role-choice-cta">เลือกบทบาทนี้ <ArrowRight size={17} /></span>
+              </button>
+            );
+          })}
         </div>
         <p className="role-selection-note">บทบาทจะถูกบันทึกถาวรกับบัญชี Discord นี้</p>
         {busy && <p className="role-selection-status">Creating your profile...</p>}
         {error && <p className="role-selection-error">{error}</p>}
       </section>
+
+      {pendingRole && (
+        <div className="role-confirm-backdrop" role="presentation">
+          <section
+            className={`role-confirm-modal role-confirm-${pendingRole.id}`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="role-confirm-title"
+          >
+            <span className="role-confirm-icon"><pendingRole.Icon size={28} /></span>
+            <span className="role-confirm-kicker">ยืนยันบทบาท</span>
+            <h2 id="role-confirm-title">เลือกเป็น {pendingRole.thaiTitle}</h2>
+            <p>
+              เมื่อยืนยันแล้ว บทบาทนี้จะถูกผูกกับบัญชี Discord ของคุณ
+              <strong> และไม่สามารถเปลี่ยนภายหลังได้</strong>
+            </p>
+            <div className="role-confirm-actions">
+              <button type="button" className="role-confirm-back" onClick={closeConfirmation} disabled={busy}>
+                ย้อนกลับ
+              </button>
+              <button
+                type="button"
+                className="role-confirm-hold"
+                style={{ "--hold-progress": `${holdProgress}%` }}
+                onPointerDown={(event) => {
+                  if (event.button === 0) startHold();
+                }}
+                onPointerUp={cancelHold}
+                onPointerLeave={cancelHold}
+                onPointerCancel={cancelHold}
+                onKeyDown={(event) => {
+                  if (!event.repeat && (event.key === "Enter" || event.key === " ")) startHold();
+                }}
+                onKeyUp={cancelHold}
+                disabled={busy}
+              >
+                <span>{holdProgress > 0 ? "กดค้างเพื่อยืนยัน..." : "กดค้าง 2 วินาทีเพื่อยืนยัน"}</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }
