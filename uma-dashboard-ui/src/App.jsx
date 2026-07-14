@@ -138,7 +138,6 @@ function RoleSelection({ busy, error, onSelect }) {
         <p className="role-selection-intro">เลือกบทบาทที่ต้องการเล่น เพื่อเริ่มต้นสร้างข้อมูลโปรไฟล์ของคุณ</p>
         <div className="role-selection-grid">
           {ROLE_CHOICES.map((role) => {
-            const Icon = role.Icon;
             return (
               <button
                 key={role.id}
@@ -150,7 +149,6 @@ function RoleSelection({ busy, error, onSelect }) {
                 <span className="role-choice-banner" aria-hidden="true">
                   <img src={role.banner} alt="" />
                 </span>
-                <span className="role-choice-icon"><Icon size={27} strokeWidth={2.3} /></span>
                 <span className="role-choice-copy">
                   <strong>{role.title}</strong>
                   <b>{role.thaiTitle}</b>

@@ -454,17 +454,6 @@ code {
 .role-choice-trainer { --role-primary: #a34fc0; --role-ink: #722e86; --role-muted: #85508f; --role-border: rgba(163, 79, 192, 0.32); --role-surface: #fff0fb; --role-shadow: rgba(163, 79, 192, 0.18); }
 .role-choice-npc { --role-primary: #718096; --role-ink: #475569; --role-muted: #5e6d7e; --role-border: rgba(100, 116, 139, 0.32); --role-surface: #f2f5f9; --role-shadow: rgba(100, 116, 139, 0.16); }
 
-.role-choice-icon {
-  width: 52px;
-  height: 52px;
-  display: grid;
-  place-items: center;
-  border-radius: 16px;
-  background: var(--role-primary);
-  color: #fff;
-  box-shadow: 0 8px 17px var(--role-shadow);
-}
-
 .role-choice-banner {
   position: relative;
   width: calc(100% + 46px);
@@ -491,8 +480,7 @@ code {
   object-position: center;
 }
 
-.role-choice-icon { margin-top: 18px; }
-.role-choice-copy { display: grid; margin-top: 18px; color: var(--role-ink); }
+.role-choice-copy { display: grid; margin-top: 20px; color: var(--role-ink); }
 .role-choice-copy strong { color: var(--role-ink); font-size: 1.34rem; line-height: 1.1; }
 .role-choice-copy b { margin-top: 4px; color: var(--role-ink); font-size: 0.94rem; }
 .role-choice-copy small { margin-top: 14px; color: var(--role-muted); font-weight: 800; }
