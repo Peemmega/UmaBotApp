@@ -6,13 +6,11 @@ import "../styles/mailbox.css";
 import MailboxModal from "../components/MailboxModal";
 import RenameModal from "../components/RenameModal";
 import PageTransition from "../components/PageTransition";
-import { AppShell, GameNav, RightRail, TopBar } from "../components/layout";
+import { AppShell, GameNav, RightRail } from "../components/layout";
 import { BOT_API_BASE } from "../api/playerApi";
 import {
-  PROFILE_TYPES,
   loadActiveProfileType,
   loadProfilePresets,
-  saveActiveProfileType,
   saveProfilePresets,
 } from "../data/profilePresets";
 
@@ -50,16 +48,12 @@ export default function DashboardPage({
   setPlayer,
   accountRole,
   error,
-  onLogout,
 }) {
   const [isEditStatsOpen, setIsEditStatsOpen] = useState(false);
   const [isMailboxOpen, setIsMailboxOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isPresetRenameOpen, setIsPresetRenameOpen] = useState(false);
-  const [notificationPermission, setNotificationPermission] = useState(() =>
-    typeof Notification === "undefined" ? "unsupported" : Notification.permission
-  );
   const previousUnreadCount = useRef(null);
   const [activePage, setActivePage] = useState(getPageFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
@@ -91,14 +85,6 @@ export default function DashboardPage({
   }, [accountRole, profiles, userId]);
 
   const activeProfile = profiles[activeProfileType] || profiles.trainee;
-
-  const selectProfile = (type) => {
-    if (!PROFILE_TYPES[type] || type !== accountRole) return;
-    setActiveProfileType(type);
-    saveActiveProfileType(userId, type);
-    setIsEditStatsOpen(false);
-    changePage("profile");
-  };
 
   const changePage = (page) => {
     if (!VALID_PAGES.includes(page)) return;
@@ -238,12 +224,6 @@ export default function DashboardPage({
     return () => clearInterval(interval);
   }, [activeProfileType, userId]);
 
-  const enableNotifications = async () => {
-    if (typeof Notification === "undefined") return;
-    const permission = await Notification.requestPermission();
-    setNotificationPermission(permission);
-  };
-
   const modals = (
     <>
       {isMailboxOpen && (
@@ -293,17 +273,6 @@ export default function DashboardPage({
   return (
     <AppShell
       profileType={activeProfileType}
-      topBar={
-        <TopBar
-          unreadCount={unreadCount}
-          onMailClick={() => setIsMailboxOpen(true)}
-          onLogout={onLogout}
-          profileType={activeProfileType}
-          profileDesk={PROFILE_TYPES[activeProfileType]?.desk}
-          notificationPermission={notificationPermission}
-          onEnableNotifications={enableNotifications}
-        />
-      }
       nav={<GameNav activePage={activePage} onChangePage={changePage} profileType={activeProfileType} />}
       rightRail={
         activeProfileType === "trainee" ? (

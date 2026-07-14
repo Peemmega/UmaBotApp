@@ -298,32 +298,6 @@ async def exchange_discord_code_and_get_user(code: str, redirect_uri: str):
         return user_res.json()
 
 
-async def ensure_bot_player_profile(user: dict) -> None:
-    """Create the player's Bot profile during web login when configured.
-
-    The Bot API is the source of truth for race/player data. Login must remain
-    usable if that service is temporarily unavailable, so the dashboard keeps
-    its existing retry as a fallback.
-    """
-    if not BOT_API_BASE:
-        return
-
-    user_id = str(user.get("id") or "").strip()
-    username = str(user.get("username") or "Unknown").strip() or "Unknown"
-    if not user_id:
-        return
-
-    try:
-        async with httpx.AsyncClient(timeout=8.0) as client:
-            response = await client.get(
-                f"{BOT_API_BASE}/player/{user_id}",
-                params={"username": username},
-            )
-            response.raise_for_status()
-    except httpx.HTTPError as exc:
-        print(f"[login] unable to ensure bot player {user_id}: {exc}")
-
-
 @app.get("/callback/mobile")
 async def discord_mobile_callback(code: str):
     user = await exchange_discord_code_and_get_user(
