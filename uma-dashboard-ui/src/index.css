@@ -465,6 +465,33 @@ code {
   box-shadow: 0 8px 17px var(--role-shadow);
 }
 
+.role-choice-banner {
+  position: relative;
+  width: calc(100% + 46px);
+  height: 112px;
+  display: block;
+  margin: -23px -23px 0;
+  overflow: hidden;
+  border-bottom: 1px solid var(--role-border);
+  background: var(--role-surface);
+}
+
+.role-choice-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 48%, color-mix(in srgb, var(--role-primary) 22%, transparent));
+}
+
+.role-choice-banner img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.role-choice-icon { margin-top: 18px; }
 .role-choice-copy { display: grid; margin-top: 18px; color: var(--role-ink); }
 .role-choice-copy strong { color: var(--role-ink); font-size: 1.34rem; line-height: 1.1; }
 .role-choice-copy b { margin-top: 4px; color: var(--role-ink); font-size: 0.94rem; }
@@ -545,6 +572,7 @@ code {
   .role-selection-card { padding: 24px; }
   .role-selection-grid { grid-template-columns: 1fr; }
   .role-choice { min-height: 0; }
+  .role-choice-banner { height: 132px; }
   .role-confirm-modal { padding: 26px 20px; }
   .role-confirm-actions { grid-template-columns: 1fr; }
 }

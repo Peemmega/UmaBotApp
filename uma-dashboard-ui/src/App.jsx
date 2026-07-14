@@ -60,6 +60,7 @@ const ROLE_CHOICES = [
     thaiTitle: "อุมะมุสุเมะ",
     subtitle: "นักวิ่งแห่ง Tracen Academy",
     detail: "สร้างโปรไฟล์นักวิ่ง อัป Stats เลือกสกิล และลงแข่งเพื่อสะสม Fans",
+    banner: "/role_selection_banner/umamusumes_banner.webp",
     Icon: Trophy,
   },
   {
@@ -68,6 +69,7 @@ const ROLE_CHOICES = [
     thaiTitle: "เทรนเนอร์",
     subtitle: "ผู้ฝึกสอนและผู้จัดการทีม",
     detail: "สร้างโปรไฟล์ผู้ฝึกสอน จัดทีม Umamusume และติดตาม Fans ของทีม",
+    banner: "/role_selection_banner/trainers_banner.webp",
     Icon: GraduationCap,
   },
   {
@@ -76,6 +78,7 @@ const ROLE_CHOICES = [
     thaiTitle: "ตัวละคร NPC",
     subtitle: "ตัวละครสำหรับโลก Roleplay",
     detail: "สร้างตัวละครประกอบ พร้อมชื่อและรูปโปรไฟล์สำหรับใช้งานในชุมชน",
+    banner: "/role_selection_banner/NPCs_Banner.webp",
     Icon: UsersRound,
   },
 ];
@@ -144,6 +147,9 @@ function RoleSelection({ busy, error, onSelect }) {
                 onClick={() => setPendingRole(role)}
                 disabled={busy}
               >
+                <span className="role-choice-banner" aria-hidden="true">
+                  <img src={role.banner} alt="" />
+                </span>
                 <span className="role-choice-icon"><Icon size={27} strokeWidth={2.3} /></span>
                 <span className="role-choice-copy">
                   <strong>{role.title}</strong>
