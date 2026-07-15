@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import "../../styles/charactersPage.css";
 import { Badge, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
@@ -9,6 +10,7 @@ import { APP_BASE_URL } from "../../api/appConfig";
 import { PROFILE_TYPES } from "../../data/profilePresets";
 import { aptitudeRows } from "../../data/dashboardConfig";
 import AptitudeItem from "../../components/AptitudeItem";
+import { playSound } from "../../utils/soundManager";
 
 const APP_API_BASE = APP_BASE_URL;
 
@@ -62,6 +64,14 @@ export default function CharactersPage({ userId, player, profiles }) {
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState("");
+  const openCharacterProfile = (character) => {
+    playSound("open");
+    setSelectedCharacter(character);
+  };
+  const closeCharacterProfile = () => {
+    playSound("close");
+    setSelectedCharacter(null);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -279,11 +289,11 @@ export default function CharactersPage({ userId, player, profiles }) {
             key={character.id || character.name}
             role="button"
             tabIndex={0}
-            onClick={() => setSelectedCharacter(character)}
+            onClick={() => openCharacterProfile(character)}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
-                setSelectedCharacter(character);
+                openCharacterProfile(character);
               }
             }}
           >
@@ -307,15 +317,17 @@ export default function CharactersPage({ userId, player, profiles }) {
           ))}
         </StaggerContainer>
       )}
-      {selectedCharacter && createPortal(
-        <CharacterProfileModal
-          character={selectedCharacter}
-          detail={detail}
-          loading={detailLoading}
-          error={detailError}
-          onClose={() => setSelectedCharacter(null)}
-          onOpenCharacter={setSelectedCharacter}
-        />,
+      {createPortal(
+        <AnimatePresence>
+          {selectedCharacter && <CharacterProfileModal
+            character={selectedCharacter}
+            detail={detail}
+            loading={detailLoading}
+            error={detailError}
+            onClose={closeCharacterProfile}
+            onOpenCharacter={openCharacterProfile}
+          />}
+        </AnimatePresence>,
         document.body
       )}
     </section>
@@ -323,6 +335,7 @@ export default function CharactersPage({ userId, player, profiles }) {
 }
 
 function CharacterProfileModal({ character, detail, loading, error, onClose, onOpenCharacter }) {
+  const prefersReducedMotion = useReducedMotion();
   const isTrainer = character.type === "Trainer";
   const profile = detail?.profile || character.profileData || {};
   const imageUrl = profile.profile_image_url || profile.image_url || character.image_url;
@@ -338,8 +351,26 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
   }, [onClose]);
 
   return (
-    <div className="character-profile-backdrop" role="presentation" onMouseDown={onClose}>
-      <section className={`character-profile-modal ${isTrainer ? "character-profile-modal--trainer" : "character-profile-modal--trainee"}`} role="dialog" aria-modal="true" aria-labelledby="character-profile-title" onMouseDown={(event) => event.stopPropagation()}>
+    <motion.div
+      className="character-profile-backdrop"
+      role="presentation"
+      onMouseDown={onClose}
+      initial={prefersReducedMotion ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+    >
+      <motion.section
+        className={`character-profile-modal ${isTrainer ? "character-profile-modal--trainer" : "character-profile-modal--trainee"}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="character-profile-title"
+        onMouseDown={(event) => event.stopPropagation()}
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 26, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 18, scale: 0.97 }}
+        transition={{ type: "spring", stiffness: 330, damping: 27 }}
+      >
         <button type="button" className="character-profile-close" onClick={onClose} aria-label="Close profile">×</button>
         <header className="character-profile-hero">
           <img src={toAbsoluteBotUrl(imageUrl) || DEFAULT_AVATAR_URL} alt={name} />
@@ -398,7 +429,7 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
             </section>
           </>
         )}
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 }

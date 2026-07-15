@@ -9,6 +9,7 @@ import { playSound } from "../../utils/soundManager";
 import witIcon from "../../assets/icons/Wit.webp";
 import staminaIcon from "../../assets/icons/Stamina.webp";
 import { getSkillIcon } from "../../utils/getSkillIcon";
+import { describeRaceEffect } from "../../utils/raceEffects";
 import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 
@@ -198,7 +199,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
                   <strong>ผลของสกิล</strong>
                   <ul>
                     {skill.effects.map((effect, index) => (
-                      <li key={index}>{renderTextWithIcons(effect)}</li>
+                      <li key={index}>{renderTextWithIcons(describeRaceEffect(effect))}</li>
                     ))}
                   </ul>
                 </div>

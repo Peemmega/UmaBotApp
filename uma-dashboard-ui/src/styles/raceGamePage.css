@@ -4334,6 +4334,15 @@
   color: rgba(229, 255, 248, 0.82);
 }
 
+.race-lane-help {
+  margin: 8px 0 0;
+  max-width: 430px;
+  color: rgba(238, 255, 245, 0.86);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
 .race-lane-button-row {
   display: grid;
   grid-template-columns: repeat(6, minmax(40px, 1fr));

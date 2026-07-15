@@ -50,6 +50,7 @@ import staminaIcon from "../../assets/icons/Stamina.webp";
 import witIcon from "../../assets/icons/Wit.webp";
 import skillIcon from "../../assets/skill_icon/Velocity.webp";
 import { getRaceImage } from "../../utils/raceSchedule.js";
+import { describeRaceEffect, getRaceEffectDescriptor } from "../../utils/raceEffects";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 import TimingRaceGauge from "../../components/TimingRaceGauge";
 import RaceDicePreviewImage from "../../components/RaceDicePreviewImage";
@@ -60,6 +61,7 @@ import "../../styles/raceGamePage.css";
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
 const DICE_COLOR_OPTIONS = ["white", "gold"];
 const LANE_OPTIONS = [1, 2, 3, 4, 5, 6];
+const LANE_HELP_TEXT = "เลือกตำแหน่งเลน 1–6 ล่วงหน้า การเปลี่ยนจะมีผลตอนเริ่มเทิร์นถัดไป และแผนเลนที่ตั้งไว้จะแสดงเป็นสถานะ Pending จนกว่าจะมีผล";
 const RACE_STYLE_COOKIE = "uma_race_last_style";
 const RACE_STYLE_COOKIE_MAX_AGE = 60 * 60 * 24 * 180;
 const RACE_MUSIC_VOLUME_COOKIE = "uma_race_music_volume";
@@ -1477,8 +1479,9 @@ export default function RaceGamePage({
               <small>
                 {myPlayer.pending_lane
                   ? `Changing to Lane ${myPlayer.pending_lane} next turn`
-                  : "No hidden lane change queued"}
+                  : "No lane change queued"}
               </small>
+              <p className="race-lane-help">{LANE_HELP_TEXT}</p>
             </div>
             <div className="race-lane-button-row">
               {LANE_OPTIONS.map((lane) => {
@@ -2246,6 +2249,14 @@ function collectEffectRows(source, rows) {
   if (!source) return;
   if (Array.isArray(source)) {
     source.forEach((item) => collectEffectRows(item, rows));
+    return;
+  }
+  const descriptor = getRaceEffectDescriptor(source);
+  if (descriptor) {
+    rows.push({
+      label: ["modify_enemy_gold_lane_range", "modify_gold_lane_range"].includes(descriptor.type) ? "Lane Effect" : "Effect",
+      value: describeRaceEffect(descriptor),
+    });
     return;
   }
   if (typeof source === "string") {
