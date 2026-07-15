@@ -241,11 +241,17 @@
 .character-race-row em { color: #6b796d; font-size: 13px; font-style: normal; }
 
 .character-team-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.character-team-member { display: flex; align-items: center; gap: 11px; padding: 10px; border: 1px solid rgba(163, 79, 192, 0.18); border-radius: 12px; background: rgba(255, 245, 255, 0.7); }
-.character-team-member img, .character-profile-trainer img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; object-position: top center; }
-.character-team-member strong, .character-team-member span { display: block; }
-.character-team-member span { margin-top: 3px; color: #7b5b80; font-size: 12px; font-weight: 800; }
-.character-profile-trainer { display: grid; grid-template-columns: 48px auto 1fr; align-items: center; gap: 10px; margin: 22px 28px 28px; padding: 12px; border-radius: 12px; background: rgba(163, 79, 192, 0.1); }
+.character-modal-team-card { overflow: hidden; padding: 0; border: 1px solid rgba(69, 201, 111, 0.24); border-radius: 12px; background: #fff; box-shadow: 0 6px 16px rgba(48, 71, 53, 0.08); cursor: pointer; text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.character-modal-team-card:hover, .character-modal-team-card:focus-visible { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(48, 71, 53, 0.16); outline: none; }
+.character-modal-team-image { height: 114px; background: linear-gradient(135deg, rgba(245, 255, 241, 0.95), rgba(236, 252, 203, 0.88)); }
+.character-modal-team-image img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.character-modal-team-info { padding: 9px 10px 11px; }
+.character-modal-team-info strong, .character-modal-team-info span { display: block; }
+.character-modal-team-info strong { color: var(--uma-ink); }
+.character-modal-team-info span { margin-top: 3px; color: #43815b; font-size: 12px; font-weight: 800; }
+.character-profile-trainer { display: grid; grid-template-columns: 48px auto 1fr; align-items: center; gap: 10px; width: calc(100% - 56px); margin: 22px 28px 0; padding: 12px; border: 0; border-radius: 12px; background: rgba(163, 79, 192, 0.1); cursor: pointer; text-align: left; }
+.character-profile-trainer:hover, .character-profile-trainer:focus-visible { background: rgba(163, 79, 192, 0.18); outline: 2px solid rgba(163, 79, 192, 0.42); }
+.character-profile-trainer img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; object-position: top center; }
 .character-profile-trainer span { color: #7b5b80; font-size: 12px; font-weight: 900; text-transform: uppercase; }
 .character-profile-trainer strong { color: var(--uma-ink); }
 
@@ -293,5 +299,5 @@
   .character-profile-status, .character-profile-empty { margin: 20px 18px; }
   .character-aptitude-group { grid-template-columns: 1fr; gap: 6px; }
   .character-team-grid { grid-template-columns: 1fr; }
-  .character-profile-trainer { margin: 18px; }
+  .character-profile-trainer { width: calc(100% - 36px); margin: 18px 18px 0; }
 }

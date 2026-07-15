@@ -314,6 +314,7 @@ export default function CharactersPage({ userId, player, profiles }) {
           loading={detailLoading}
           error={detailError}
           onClose={() => setSelectedCharacter(null)}
+          onOpenCharacter={setSelectedCharacter}
         />,
         document.body
       )}
@@ -321,7 +322,7 @@ export default function CharactersPage({ userId, player, profiles }) {
   );
 }
 
-function CharacterProfileModal({ character, detail, loading, error, onClose }) {
+function CharacterProfileModal({ character, detail, loading, error, onClose, onOpenCharacter }) {
   const isTrainer = character.type === "Trainer";
   const profile = detail?.profile || character.profileData || {};
   const imageUrl = profile.profile_image_url || profile.image_url || character.image_url;
@@ -354,14 +355,37 @@ function CharacterProfileModal({ character, detail, loading, error, onClose }) {
           <section className="character-profile-section">
             <h3>Trainees in team</h3>
             {members.length ? <div className="character-team-grid">{members.map((member) => (
-              <article key={member.user_id || member.id || member.username} className="character-team-member">
-                <img src={toAbsoluteBotUrl(member.image_url) || DEFAULT_AVATAR_URL} alt={member.username} />
-                <div><strong>{member.username || member.name}</strong><span>{formatFans(member.fans)} Fans</span></div>
+              <article
+                key={member.user_id || member.id || member.username}
+                className="character-modal-team-card"
+                role="button"
+                tabIndex={0}
+                onClick={() => onOpenCharacter({
+                  id: member.user_id || member.id,
+                  name: member.username || member.name,
+                  image_url: member.image_url,
+                  type: "Umamusume (Trainee)",
+                })}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onOpenCharacter({ id: member.user_id || member.id, name: member.username || member.name, image_url: member.image_url, type: "Umamusume (Trainee)" });
+                  }
+                }}
+              >
+                <div className="character-modal-team-image"><img src={toAbsoluteBotUrl(member.image_url) || DEFAULT_AVATAR_URL} alt={member.username} /></div>
+                <div className="character-modal-team-info"><strong>{member.username || member.name}</strong><span>{formatFans(member.fans)} Fans</span></div>
               </article>
             ))}</div> : <p className="character-profile-empty">No Trainees in this team yet.</p>}
           </section>
         ) : (
           <>
+            {traineeTrainer && <button type="button" className="character-profile-trainer" onClick={() => onOpenCharacter({
+              id: traineeTrainer.user_id || traineeTrainer.id,
+              name: traineeTrainer.username || traineeTrainer.name,
+              image_url: traineeTrainer.image_url,
+              type: "Trainer",
+            })}><img src={toAbsoluteBotUrl(traineeTrainer.image_url) || DEFAULT_AVATAR_URL} alt={traineeTrainer.username} /><span>Trainer</span><strong>{traineeTrainer.username || traineeTrainer.name}</strong></button>}
             <section className="character-profile-section">
               <h3>Aptitude</h3>
               <div className="character-aptitude-grid">
@@ -372,7 +396,6 @@ function CharacterProfileModal({ character, detail, loading, error, onClose }) {
               <h3>Race history</h3>
               {detail?.history?.length ? <div className="character-race-list">{detail.history.map((record, index) => <div className="character-race-row" key={record.id || `${raceName(record)}-${index}`}><strong>{racePlacement(record)}</strong><span>{raceName(record)}</span><em>{raceTrack(record)}</em></div>)}</div> : <p className="character-profile-empty">No race history recorded yet.</p>}
             </section>
-            {traineeTrainer && <section className="character-profile-trainer"><img src={toAbsoluteBotUrl(traineeTrainer.image_url) || DEFAULT_AVATAR_URL} alt={traineeTrainer.username} /><span>Trainer</span><strong>{traineeTrainer.username}</strong></section>}
           </>
         )}
       </section>
