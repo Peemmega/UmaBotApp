@@ -106,6 +106,11 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
     });
   }, [skills, search, activeTag]);
 
+  const skillDetailsById = useMemo(
+    () => new Map(skills.map((skill) => [String(skill.id), skill])),
+    [skills]
+  );
+
   function formatText(text) {
     if (!text) return "";
 
@@ -253,9 +258,14 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
               เลือกช่องที่ต้องการติดตั้งสกิลนี้
             </p>
 
+            <SkillDetail skill={selectedSkill} className="skill-equip-selected-detail" />
+
             <div className="skill-equip-buttons">
               {[1, 2, 3, 4].map((slot) => {
                 const currentSkill = equippedSkills[`slot_${slot}`];
+                const currentSkillDetails = currentSkill
+                  ? skillDetailsById.get(String(currentSkill.id)) || currentSkill
+                  : null;
                 return (
                 <div className="skill-equip-slot-option" key={slot}>
                   <div className="skill-equip-slot-summary">
@@ -265,6 +275,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
                       <span>{currentSkill ? currentSkill.name : "Empty slot"}</span>
                     </div>
                   </div>
+                  {currentSkillDetails && <SkillDetail skill={currentSkillDetails} className="skill-equip-current-detail" />}
                 <Button
                   type="button"
                   className="skill-equip-slot-button"
@@ -293,5 +304,19 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
             )}
             
     </section>
+  );
+}
+
+function SkillDetail({ skill, className = "" }) {
+  const effects = Array.isArray(skill?.effects) ? skill.effects : [];
+  const description = skill?.description || skill?.effect_text;
+  if (!skill) return null;
+
+  return (
+    <div className={`skill-detail-summary ${className}`}>
+      {description ? <p>{description}</p> : null}
+      {skill.trigger ? <span><b>Condition:</b> {skill.trigger}</span> : null}
+      {effects.length ? <ul>{effects.map((effect, index) => <li key={`${skill.id || skill.name}-${index}`}>{describeRaceEffect(effect)}</li>)}</ul> : null}
+    </div>
   );
 }

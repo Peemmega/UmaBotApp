@@ -398,6 +398,14 @@
 .skill-equip-slot-summary span { min-width: 0; overflow: hidden; color: var(--uma-ink); font-size: 14px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
 .skill-equip-slot-button { width: calc(100% - 16px); margin: 0 8px 8px; font-size: 14px !important; }
 
+.skill-detail-summary { color: #526156; font-size: 12px; line-height: 1.4; }
+.skill-detail-summary p { margin: 0 0 6px; }
+.skill-detail-summary > span { display: block; }
+.skill-detail-summary ul { margin: 6px 0 0; padding-left: 17px; }
+.skill-detail-summary li + li { margin-top: 2px; }
+.skill-equip-selected-detail { margin: -6px 0 16px; padding: 11px 13px; border-radius: 12px; background: rgba(69, 201, 111, 0.1); }
+.skill-equip-current-detail { padding: 0 13px 10px; }
+
 .toast {
   position: fixed;
   right: 32px;
