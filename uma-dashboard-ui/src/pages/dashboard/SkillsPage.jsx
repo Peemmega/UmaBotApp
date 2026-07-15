@@ -260,7 +260,10 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
                 <div className="skill-equip-slot-option" key={slot}>
                   <div className="skill-equip-slot-summary">
                     <strong>Slot {slot}</strong>
-                    <span>{currentSkill ? currentSkill.name : "Empty slot"}</span>
+                    <div className="skill-equip-slot-skill">
+                      {currentSkill ? <div className="skill-icon-box">{getSkillIcon(currentSkill.icon)}</div> : null}
+                      <span>{currentSkill ? currentSkill.name : "Empty slot"}</span>
+                    </div>
                   </div>
                 <Button
                   type="button"

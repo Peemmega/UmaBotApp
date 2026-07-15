@@ -393,7 +393,9 @@
 .skill-equip-slot-summary { padding: 11px 13px 8px; }
 .skill-equip-slot-summary strong, .skill-equip-slot-summary span { display: block; }
 .skill-equip-slot-summary strong { color: var(--uma-primary-dark); font-size: 12px; font-weight: 1000; text-transform: uppercase; }
-.skill-equip-slot-summary span { margin-top: 3px; overflow: hidden; color: var(--uma-ink); font-size: 14px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+.skill-equip-slot-skill { display: flex; align-items: center; gap: 8px; margin-top: 4px; min-width: 0; }
+.skill-equip-slot-skill .skill-icon-box { flex: 0 0 28px; width: 28px; height: 28px; border-radius: 8px; font-size: 14px; }
+.skill-equip-slot-summary span { min-width: 0; overflow: hidden; color: var(--uma-ink); font-size: 14px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
 .skill-equip-slot-button { width: calc(100% - 16px); margin: 0 8px 8px; font-size: 14px !important; }
 
 .toast {
