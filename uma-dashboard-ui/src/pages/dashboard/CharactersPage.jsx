@@ -339,7 +339,7 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
 
   return (
     <div className="character-profile-backdrop" role="presentation" onMouseDown={onClose}>
-      <section className="character-profile-modal" role="dialog" aria-modal="true" aria-labelledby="character-profile-title" onMouseDown={(event) => event.stopPropagation()}>
+      <section className={`character-profile-modal ${isTrainer ? "character-profile-modal--trainer" : "character-profile-modal--trainee"}`} role="dialog" aria-modal="true" aria-labelledby="character-profile-title" onMouseDown={(event) => event.stopPropagation()}>
         <button type="button" className="character-profile-close" onClick={onClose} aria-label="Close profile">×</button>
         <header className="character-profile-hero">
           <img src={toAbsoluteBotUrl(imageUrl) || DEFAULT_AVATAR_URL} alt={name} />
