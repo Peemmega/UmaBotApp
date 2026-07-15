@@ -582,6 +582,55 @@ body {
   text-align: center;
 }
 
+.profile-crop-backdrop {
+  position: fixed;
+  z-index: 1200;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(25, 19, 35, 0.68);
+  backdrop-filter: blur(5px);
+}
+
+.profile-crop-modal {
+  width: min(440px, 100%);
+  padding: 22px;
+  border: 1px solid rgba(69, 201, 111, 0.3);
+  border-radius: 20px;
+  background: #fafff8;
+  box-shadow: 0 26px 70px rgba(22, 14, 30, 0.38);
+}
+
+.profile-crop-modal header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.profile-crop-modal header span { color: #338454; font-size: 12px; font-weight: 900; text-transform: uppercase; }
+.profile-crop-modal header h2 { margin: 3px 0 0; color: var(--uma-ink); font-size: 22px; }
+.profile-crop-modal header button { width: 32px; height: 32px; border: 0; border-radius: 50%; background: #edf5ea; color: var(--uma-ink); font-size: 24px; cursor: pointer; }
+.profile-crop-modal > p { margin: 12px 0 18px; color: #617264; font-size: 13px; font-weight: 700; }
+
+.profile-crop-viewport {
+  position: relative;
+  width: min(320px, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 3px solid #fff;
+  border-radius: 16px;
+  background: repeating-conic-gradient(#dce8d8 0 25%, #f4faf1 0 50%) 50% / 26px 26px;
+  box-shadow: inset 0 0 0 1px rgba(51, 132, 84, 0.25), 0 8px 20px rgba(29, 62, 36, 0.14);
+  cursor: grab;
+  touch-action: none;
+}
+.profile-crop-viewport:active { cursor: grabbing; }
+.profile-crop-viewport img { position: absolute; max-width: none; user-select: none; pointer-events: none; }
+.profile-crop-zoom { display: grid; grid-template-columns: 42px 1fr; align-items: center; gap: 12px; margin: 18px auto; color: #387b50; font-size: 13px; font-weight: 900; max-width: 320px; }
+.profile-crop-zoom input { accent-color: #35a962; }
+.profile-crop-modal footer { display: flex; justify-content: flex-end; gap: 10px; }
+.profile-crop-modal footer button { border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 900; cursor: pointer; }
+.profile-crop-cancel { color: #5d6860; background: #e9efea; }
+.profile-crop-save { color: #fff; background: linear-gradient(135deg, #23964e, #55c96f); }
+.profile-crop-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .profile-image-upload-label {
   display: inline-flex;
   align-items: center;

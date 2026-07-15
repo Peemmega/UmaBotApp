@@ -13,6 +13,7 @@ import editIcon from "../../assets/icons/change_icon.webp";
 import { playSound } from "../../utils/soundManager";
 import { Badge, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
+import ProfileImageCropModal from "../../components/ProfileImageCropModal";
 
 const fansIcon = `${BOT_API_BASE}/app/assets/icons/fans.png`;
 
@@ -43,6 +44,8 @@ export default function ProfilePage({
   const [trainerProfile, setTrainerProfile] = useState(null);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [inviteSearch, setInviteSearch] = useState("");
+  const [cropImageFile, setCropImageFile] = useState(null);
+  const [cropTarget, setCropTarget] = useState("");
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -124,9 +127,12 @@ export default function ProfilePage({
       return;
     }
 
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setSelectedImageFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Please select an image file.");
+      return;
+    }
+    setCropTarget("trainee");
+    setCropImageFile(file);
   };
 
   const handleUploadImage = async () => {
@@ -166,40 +172,31 @@ export default function ProfilePage({
   const handlePresetImageUpload = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    try {
-      if (!file.type.startsWith("image/")) {
-        throw new Error("Please select an image file.");
-      }
-
-      const sourceUrl = URL.createObjectURL(file);
-      const image = new Image();
-      image.src = sourceUrl;
-      await new Promise((resolve, reject) => {
-        image.onload = resolve;
-        image.onerror = () => reject(new Error("Could not read this image."));
-      });
-
-      const maxDimension = 768;
-      const scale = Math.min(1, maxDimension / Math.max(image.width, image.height));
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.max(1, Math.round(image.width * scale));
-      canvas.height = Math.max(1, Math.round(image.height * scale));
-      canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
-      URL.revokeObjectURL(sourceUrl);
-
-      const imageUrl = canvas.toDataURL("image/webp", 0.82);
-      if (imageUrl.length > 1_500_000) {
-        throw new Error("Image is still too large. Please choose a smaller image.");
-      }
-
-      onSaveProfile({ imageUrl });
-    } catch (err) {
-      alert(String(err.message || err));
-    } finally {
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file.");
       event.target.value = "";
+      return;
     }
+    setCropTarget("preset");
+    setCropImageFile(file);
+    event.target.value = "";
   };
+
+  const handleCropComplete = (croppedFile) => {
+    if (cropTarget === "trainee") {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setSelectedImageFile(croppedFile);
+      setPreviewUrl(URL.createObjectURL(croppedFile));
+    } else {
+      const reader = new FileReader();
+      reader.onload = () => onSaveProfile({ imageUrl: String(reader.result || "") });
+      reader.readAsDataURL(croppedFile);
+    }
+    setCropImageFile(null);
+    setCropTarget("");
+  };
+
+  const cropModal = cropImageFile ? <ProfileImageCropModal file={cropImageFile} onCancel={() => { setCropImageFile(null); setCropTarget(""); }} onConfirm={handleCropComplete} /> : null;
 
   if (profileType !== "trainee") {
     const isTrainer = profileType === "trainer";
@@ -210,6 +207,7 @@ export default function ProfilePage({
     );
 
     return (
+      <>
       <StaggerContainer className={`dashboard-shell profile-stagger role-profile role-profile-${profileType}`}>
         <StaggerItem>
           <section className="profile-card">
@@ -318,6 +316,8 @@ export default function ProfilePage({
           document.body
         )}
       </StaggerContainer>
+      {cropModal}
+      </>
     );
   }
 
@@ -522,6 +522,7 @@ export default function ProfilePage({
             />
           </StaggerItem>
         </StaggerContainer>
+      {cropModal}
     </>
   );
 }
