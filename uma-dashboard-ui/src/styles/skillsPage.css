@@ -383,6 +383,19 @@
   box-shadow: 0 10px 18px rgba(132, 204, 22, 0.45);
 }
 
+.skill-equip-slot-option {
+  overflow: hidden;
+  border: 1px solid rgba(69, 201, 111, 0.22);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.skill-equip-slot-summary { padding: 11px 13px 8px; }
+.skill-equip-slot-summary strong, .skill-equip-slot-summary span { display: block; }
+.skill-equip-slot-summary strong { color: var(--uma-primary-dark); font-size: 12px; font-weight: 1000; text-transform: uppercase; }
+.skill-equip-slot-summary span { margin-top: 3px; overflow: hidden; color: var(--uma-ink); font-size: 14px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+.skill-equip-slot-button { width: calc(100% - 16px); margin: 0 8px 8px; font-size: 14px !important; }
+
 .toast {
   position: fixed;
   right: 32px;

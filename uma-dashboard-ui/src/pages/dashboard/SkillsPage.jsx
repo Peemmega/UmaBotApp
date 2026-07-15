@@ -20,6 +20,17 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
   const [search, setSearch] = useState("");
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [toast, setToast] = useState(null);
+  const [equippedSkills, setEquippedSkills] = useState({});
+
+  const loadEquippedSkills = async () => {
+    if (!userId) return;
+    try {
+      const res = await fetch(`${BOT_API_BASE}/player/${userId}/skills`);
+      if (res.ok) setEquippedSkills(await res.json());
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
@@ -39,6 +50,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
       .then((res) => res.json())
       .then((data) => setSkills(data))
       .catch(console.error);
+    loadEquippedSkills();
   }, []);
 
     const equipSkill = async (slot) => {
@@ -68,6 +80,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
         showToast(data.message || "ติดตั้งสกิลสำเร็จ", "success");
         playSound("open");
 
+        await loadEquippedSkills();
         onSkillEquipped?.();
 
         setSelectedSkill(null);
@@ -241,19 +254,27 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
             </p>
 
             <div className="skill-equip-buttons">
-              {[1, 2, 3, 4].map((slot) => (
+              {[1, 2, 3, 4].map((slot) => {
+                const currentSkill = equippedSkills[`slot_${slot}`];
+                return (
+                <div className="skill-equip-slot-option" key={slot}>
+                  <div className="skill-equip-slot-summary">
+                    <strong>Slot {slot}</strong>
+                    <span>{currentSkill ? currentSkill.name : "Empty slot"}</span>
+                  </div>
                 <Button
-                  key={slot}
                   type="button"
+                  className="skill-equip-slot-button"
                   onClick={() => {
                     playSound("open");
                     equipSkill(slot);
-                    onSkillEquipped?.();
                   }}
                 >
                   ใส่ในช่อง {slot}
                 </Button>
-              ))}
+                </div>
+                );
+              })}
             </div>
           </div>
         </div>,
