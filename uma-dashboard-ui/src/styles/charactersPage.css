@@ -245,11 +245,11 @@
 .character-profile-status, .character-profile-empty { margin: 24px 28px; color: #6f6572; font-weight: 700; }
 .character-profile-status.is-error { color: #b43c4f; }
 
-.character-aptitude-grid { display: grid; gap: 10px; }
-.character-aptitude-group { display: grid; grid-template-columns: 78px 1fr; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; background: var(--character-modal-soft); }
-.character-aptitude-group > span { color: var(--character-modal-primary); font-size: 12px; font-weight: 1000; text-transform: uppercase; }
+.character-aptitude-grid { display: grid; gap: 0px; }
+.character-aptitude-group { display: grid; grid-template-columns: 78px 1fr; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; background: color(srgb rgba(255, 255, 255, 0) green blue); }
+.character-aptitude-group > span { color: var(--character-modal-primary); font-size: 14px; font-weight: 1000; text-transform: uppercase; }
 .character-aptitude-group > div { display: flex; flex-wrap: wrap; gap: 8px; }
-.character-aptitude-group .aptitude-item { min-width: 72px; padding: 4px 6px; }
+.character-aptitude-group .aptitude-item { min-width: 72px; padding: 4px 6px; gap: 15px;}
 
 .character-race-list { border: 1px solid color-mix(in srgb, var(--character-modal-primary) 20%, white); border-radius: 12px; overflow: hidden; }
 .character-race-row { display: grid; grid-template-columns: 48px 1fr auto; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid color-mix(in srgb, var(--character-modal-primary) 16%, white); }
