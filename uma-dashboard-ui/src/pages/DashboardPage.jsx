@@ -172,6 +172,7 @@ export default function DashboardPage({
             isEditStatsOpen={isEditStatsOpen}
             setIsEditStatsOpen={setIsEditStatsOpen}
             setIsRenameOpen={setIsRenameOpen}
+            skillLoadoutVersion={skillLoadoutVersion}
           />
         );
     }

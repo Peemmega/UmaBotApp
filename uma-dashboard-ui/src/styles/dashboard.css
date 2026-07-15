@@ -631,6 +631,12 @@ body {
 .profile-crop-save { color: #fff; background: linear-gradient(135deg, #23964e, #55c96f); }
 .profile-crop-save:disabled { opacity: 0.5; cursor: not-allowed; }
 
+.profile-mobile-skill-loadout { display: none; }
+
+@media (max-width: 1280px) {
+  .profile-mobile-skill-loadout { display: block; }
+}
+
 .profile-image-upload-label {
   display: inline-flex;
   align-items: center;

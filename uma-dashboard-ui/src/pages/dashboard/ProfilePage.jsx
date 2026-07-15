@@ -14,6 +14,7 @@ import { playSound } from "../../utils/soundManager";
 import { Badge, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import ProfileImageCropModal from "../../components/ProfileImageCropModal";
+import SkillLoadoutPanel from "../../components/SkillLoadoutPanel";
 
 const fansIcon = `${BOT_API_BASE}/app/assets/icons/fans.png`;
 
@@ -31,6 +32,7 @@ export default function ProfilePage({
   isEditStatsOpen,
   setIsEditStatsOpen,
   setIsRenameOpen,
+  skillLoadoutVersion,
 }) {
   const [equippedSkills, setEquippedSkills] = useState({});
   const [selectedImageFile, setSelectedImageFile] = useState(null);
@@ -504,6 +506,15 @@ export default function ProfilePage({
               </div>
             </div>
           </section>
+          </StaggerItem>
+
+          <StaggerItem className="profile-mobile-skill-loadout">
+            <SkillLoadoutPanel
+              userId={userId}
+              username={player?.username || username}
+              player={player}
+              refreshKey={skillLoadoutVersion}
+            />
           </StaggerItem>
 
           <StaggerItem>
