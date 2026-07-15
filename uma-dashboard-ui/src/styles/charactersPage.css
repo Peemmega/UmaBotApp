@@ -240,12 +240,12 @@
 .character-race-row span { color: var(--uma-ink); font-weight: 800; }
 .character-race-row em { color: #6b796d; font-size: 13px; font-style: normal; }
 
-.character-team-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.character-team-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2%; }
 .character-modal-team-card { overflow: hidden; padding: 0; border: 1px solid rgba(69, 201, 111, 0.24); border-radius: 12px; background: #fff; box-shadow: 0 6px 16px rgba(48, 71, 53, 0.08); cursor: pointer; text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; }
 .character-modal-team-card:hover, .character-modal-team-card:focus-visible { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(48, 71, 53, 0.16); outline: none; }
 .character-modal-team-image { height: 114px; background: linear-gradient(135deg, rgba(245, 255, 241, 0.95), rgba(236, 252, 203, 0.88)); }
 .character-modal-team-image img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
-.character-modal-team-info { padding: 9px 10px 11px; }
+.character-modal-team-info { padding: 0px 10px 10px; }
 .character-modal-team-info strong, .character-modal-team-info span { display: block; }
 .character-modal-team-info strong { color: var(--uma-ink); }
 .character-modal-team-info span { margin-top: 3px; color: #43815b; font-size: 12px; font-weight: 800; }
