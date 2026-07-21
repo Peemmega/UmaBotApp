@@ -560,6 +560,7 @@ export default function RaceGamePage({
   const [actionBusy, setActionBusy] = useState("");
   const [error, setError] = useState("");
   const [showSkills, setShowSkills] = useState(false);
+  const [raceInfoView, setRaceInfoView] = useState("scoreboard");
   const [skillPreview, setSkillPreview] = useState(null);
   const [skillLibrary, setSkillLibrary] = useState([]);
   const [diceTableColor, setDiceTableColor] = useState("white");
@@ -1491,7 +1492,7 @@ export default function RaceGamePage({
                   room?.phase === "running" &&
                   !isRaceEnded(room) &&
                   !isWebTiming &&
-                  !Boolean(actionBusy);
+                  !actionBusy;
                 return (
                   <button
                     key={lane}
@@ -1525,24 +1526,53 @@ export default function RaceGamePage({
         )}
 
         <aside className="race-score-panel race-hud-panel">
-          <PanelTitle icon={<Trophy size={16} />} title="Scoreboard" />
-          <div className="race-score-list uma-scroll">
-            {raceScoreCards}
+          <div className="race-info-panel-header">
+            <PanelTitle
+              icon={raceInfoView === "scoreboard" ? <Trophy size={16} /> : <Radio size={16} />}
+              title={raceInfoView === "scoreboard" ? "Scoreboard" : "Race Commentary"}
+            />
+            <div className="race-info-view-tabs" role="tablist" aria-label="Race information view">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={raceInfoView === "scoreboard"}
+                className={raceInfoView === "scoreboard" ? "is-active" : ""}
+                onClick={() => setRaceInfoView("scoreboard")}
+              >
+                <Trophy size={14} />
+                Scoreboard
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={raceInfoView === "commentary"}
+                className={raceInfoView === "commentary" ? "is-active" : ""}
+                onClick={() => setRaceInfoView("commentary")}
+              >
+                <Radio size={14} />
+                Commentary
+              </button>
+            </div>
           </div>
-          <div className="race-status-panel">
-            <div><Activity size={16} /><span>{room.phase}</span></div>
-            <div><Radio size={16} /><span>{socketStatus}</span></div>
-          </div>
-        </aside>
 
-        <section className="race-log-panel race-hud-panel">
-          <PanelTitle icon={<Radio size={16} />} title="Race Commentary" />
-          <div className="race-log-list uma-scroll">
-            {(room.action_logs || []).slice().reverse().map((log) => (
-              <RaceLogItem key={log.id} log={log} />
-            ))}
-          </div>
-        </section>
+          {raceInfoView === "scoreboard" ? (
+            <>
+              <div className="race-score-list uma-scroll">
+                {raceScoreCards}
+              </div>
+              <div className="race-status-panel">
+                <div><Activity size={16} /><span>{room.phase}</span></div>
+                <div><Radio size={16} /><span>{socketStatus}</span></div>
+              </div>
+            </>
+          ) : (
+            <div className="race-log-list race-info-log-list uma-scroll">
+              {(room.action_logs || []).slice().reverse().map((log) => (
+                <RaceLogItem key={log.id} log={log} />
+              ))}
+            </div>
+          )}
+        </aside>
 
         <aside className={`race-command-panel race-hud-panel uma-scroll ${room.phase === "running" ? "is-running" : ""} ${room.phase === "running" && room.gameplay_mode === "timing" ? "is-timing" : ""}`}>
           {room.phase === "waiting" ? (
