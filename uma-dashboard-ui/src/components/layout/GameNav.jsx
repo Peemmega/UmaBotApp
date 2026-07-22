@@ -2,6 +2,7 @@ import {
   BookOpen,
   PanelsTopLeft,
   CircleHelp,
+  Calculator,
   Flag,
   Sparkles,
   Trophy,
@@ -18,6 +19,7 @@ export const gameNavItems = [
   { key: "race", label: "ห้องแข่ง", Icon: Flag },
   { key: "tcg", label: "TCG", Icon: PanelsTopLeft },
   { key: "skills", label: "สกิล", Icon: Sparkles },
+  { key: "tools", label: "เครื่องมือคำนวณ", Icon: Calculator },
   { key: "tutorials", label: "คู่มือ", Icon: BookOpen },
   { key: "qa", label: "Q&A", Icon: CircleHelp },
 ];

@@ -23,6 +23,7 @@ import QAPage from "./dashboard/QAPage";
 import RacesPage from "./dashboard/RacesPage";
 import CardGamePage from "./dashboard/CardGamePage";
 import RaceGamePage from "./dashboard/RaceGamePage";
+import ToolsPage from "./dashboard/ToolsPage";
 
 const VALID_PAGES = [
   "profile",
@@ -31,6 +32,7 @@ const VALID_PAGES = [
   "race",
   "tcg",
   "skills",
+  "tools",
   "tutorials",
   "qa",
 ];
@@ -146,6 +148,9 @@ export default function DashboardPage({
 
       case "qa":
         return <QAPage />;
+
+      case "tools":
+        return <ToolsPage />;
 
       case "profile":
       default:
