@@ -56,7 +56,7 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
                     </span>
 
                     <span className="skill-loadout-cd">
-                    CD {skill.cooldown ?? 0}
+                    WIT Cost {skill.cost ?? 0}
                     </span>
                 </>
                     ) : (
