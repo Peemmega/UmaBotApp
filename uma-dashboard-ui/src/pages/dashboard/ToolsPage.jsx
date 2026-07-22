@@ -20,15 +20,16 @@ const DISTANCES = [
 ];
 const WISDOM_VALUES = Array.from({ length: 8 }, (_, index) => index + 1);
 
-function getWitValue({ wisdom, turn, startRate }) {
-  // Aptitude's selected start-rate bonus drives the displayed turn values.
-  return 100 + wisdom * startRate + (turn - 1) * (startRate + wisdom * 2);
+function getWitValue({ wisdom, turn, aptitudeBonus }) {
+  // Turn 1 always begins at 100 + (10 × Wit), before any aptitude bonus applies.
+  const baseValue = 100 + wisdom * 10 + (turn - 1) * (10 + wisdom * 2);
+  return turn === 1 ? baseValue : Math.round(baseValue * (1 + aptitudeBonus / 100));
 }
 
 export default function ToolsPage() {
   const [aptitude, setAptitude] = useState("G");
   const [distance, setDistance] = useState("medium");
-  const startRate = APTITUDES.find((item) => item.rank === aptitude)?.bonus ?? 0;
+  const aptitudeBonus = APTITUDES.find((item) => item.rank === aptitude)?.bonus ?? 0;
   const selectedDistance = DISTANCES.find((item) => item.key === distance) || DISTANCES[2];
   const turns = useMemo(
     () => Array.from({ length: selectedDistance.turns }, (_, index) => index + 1),
@@ -62,7 +63,7 @@ export default function ToolsPage() {
           </label>
           <div className="wit-rate-card">
             <span><Gauge size={16} /> Aptitude bonus</span>
-            <strong>+{startRate}%</strong>
+            <strong>+{aptitudeBonus}%</strong>
           </div>
         </div>
 
@@ -79,7 +80,7 @@ export default function ToolsPage() {
               {WISDOM_VALUES.map((wisdom) => (
                 <tr key={wisdom}>
                   <th scope="row">{wisdom}</th>
-                  {turns.map((turn) => <td key={turn}>{getWitValue({ wisdom, turn, startRate })}</td>)}
+                  {turns.map((turn) => <td key={turn}>{getWitValue({ wisdom, turn, aptitudeBonus })}</td>)}
                 </tr>
               ))}
             </tbody>
