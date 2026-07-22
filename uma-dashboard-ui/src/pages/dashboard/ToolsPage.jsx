@@ -2,24 +2,33 @@ import { useMemo, useState } from "react";
 import { Calculator, Gauge, Route, Sparkles } from "lucide-react";
 import "../../styles/toolsPage.css";
 
-const APTITUDES = ["G", "F", "E", "D", "C", "B", "A", "S"];
+const APTITUDES = [
+  { rank: "G", bonus: 0 },
+  { rank: "F", bonus: 5 },
+  { rank: "E", bonus: 10 },
+  { rank: "D", bonus: 15 },
+  { rank: "C", bonus: 20 },
+  { rank: "B", bonus: 25 },
+  { rank: "A", bonus: 30 },
+  { rank: "S", bonus: 35 },
+];
 const DISTANCES = [
   { key: "sprint", label: "Sprint", turns: 8 },
-  { key: "mile", label: "Mile", turns: 12 },
-  { key: "medium", label: "Medium", turns: 16 },
-  { key: "long", label: "Long", turns: 20 },
+  { key: "mile", label: "Mile", turns: 8 },
+  { key: "medium", label: "Medium", turns: 12 },
+  { key: "long", label: "Long", turns: 16 },
 ];
 const WISDOM_VALUES = Array.from({ length: 8 }, (_, index) => index + 1);
 
 function getWitValue({ wisdom, turn, startRate }) {
-  // With G / start rate 10 this reproduces the supplied table: 110, 122, 134...
+  // Aptitude's selected start-rate bonus drives the displayed turn values.
   return 100 + wisdom * startRate + (turn - 1) * (startRate + wisdom * 2);
 }
 
 export default function ToolsPage() {
   const [aptitude, setAptitude] = useState("G");
   const [distance, setDistance] = useState("medium");
-  const startRate = (APTITUDES.indexOf(aptitude) + 1) * 10;
+  const startRate = APTITUDES.find((item) => item.rank === aptitude)?.bonus ?? 0;
   const selectedDistance = DISTANCES.find((item) => item.key === distance) || DISTANCES[2];
   const turns = useMemo(
     () => Array.from({ length: selectedDistance.turns }, (_, index) => index + 1),
@@ -42,7 +51,7 @@ export default function ToolsPage() {
           <label className="wit-control">
             <span><Sparkles size={16} /> Aptitude</span>
             <select value={aptitude} onChange={(event) => setAptitude(event.target.value)}>
-              {APTITUDES.map((rank) => <option key={rank} value={rank}>{rank}</option>)}
+              {APTITUDES.map((item) => <option key={item.rank} value={item.rank}>{item.rank} (+{item.bonus}%)</option>)}
             </select>
           </label>
           <label className="wit-control">
@@ -52,8 +61,8 @@ export default function ToolsPage() {
             </select>
           </label>
           <div className="wit-rate-card">
-            <span><Gauge size={16} /> Wit start rate</span>
-            <strong>{startRate}</strong>
+            <span><Gauge size={16} /> Aptitude bonus</span>
+            <strong>+{startRate}%</strong>
           </div>
         </div>
 
@@ -61,7 +70,7 @@ export default function ToolsPage() {
           <table className="wit-table">
             <thead>
               <tr>
-                <th className="wit-label-cell" rowSpan="2">Wisdom</th>
+                <th className="wit-label-cell" rowSpan="2">Wit</th>
                 <th className="wit-turn-heading" colSpan={turns.length}>Turn · {selectedDistance.label}</th>
               </tr>
               <tr>{turns.map((turn) => <th key={turn}>{turn}</th>)}</tr>
