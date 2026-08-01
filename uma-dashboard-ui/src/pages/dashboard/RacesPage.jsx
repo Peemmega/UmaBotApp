@@ -108,7 +108,7 @@ export default function RacesPage({ userId }) {
           <SearchInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search race name / id / track..."
+            placeholder="ค้นหาสนาม..."
           />
 
           <FilterTabs
@@ -127,8 +127,8 @@ export default function RacesPage({ userId }) {
         <StaggerContainer>
           <StaggerItem>
             <GameCard className="page-empty-state">
-              <strong>No races found</strong>
-              <span>Try another race name, track, or distance filter.</span>
+              <strong>ไม่พบสนาม</strong>
+              <span>ลองค้นหาใหม่อีกครั้ง.</span>
             </GameCard>
           </StaggerItem>
         </StaggerContainer>

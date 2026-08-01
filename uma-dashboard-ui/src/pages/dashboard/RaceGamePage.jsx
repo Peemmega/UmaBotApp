@@ -1149,8 +1149,8 @@ export default function RaceGamePage({
     <section className={`race-page ${fullscreen ? "race-fullscreen-page" : ""}`} onClickCapture={handleRaceButtonSound}>
         <header className="race-hero">
           <div>
-            <span className="race-kicker">ห้องฝึกซ้อมออนไลน์</span>
-            <h2>ล็อบบี้</h2>
+            <span className="race-kicker">ห้องซ้อมออนไลน์</span>
+            <h2>ห้องล็อบบี้</h2>
           </div>
           <div className="race-toolbar">
             <button type="button" className="race-menu-home-btn" onClick={onBackToDashboard}>

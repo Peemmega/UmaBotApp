@@ -2841,7 +2841,8 @@
 
 .race-fullscreen-page .race-kicker {
   color: #2f8c4f;
-  font-size: 9px;
+  font-size: 12px;
+  font-weight: 1000;
   letter-spacing: 0.04em;
 }
 
@@ -2849,6 +2850,7 @@
   color: #223326;
   font-size: clamp(20px, 1.8vw, 30px);
   text-shadow: none;
+  font-weight: 1000;
 }
 
 .race-fullscreen-page .race-hud-stat {

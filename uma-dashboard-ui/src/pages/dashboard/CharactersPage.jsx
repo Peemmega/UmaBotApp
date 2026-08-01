@@ -229,8 +229,8 @@ export default function CharactersPage({ userId, player, profiles }) {
     <section className="characters-page">
       <GameCard className="page-control-card characters-page-card">
         <SectionHeader
-          title="Characters"
-          kicker="System Roster"
+          title="สมาชิก"
+          kicker="สมุดรายชื่อ"
           action={<Badge>{filteredCharacters.length} รายชื่อ</Badge>}
         />
 
@@ -238,7 +238,7 @@ export default function CharactersPage({ userId, player, profiles }) {
           <SearchInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search character..."
+            placeholder="ค้นหาตัวละคร..."
           />
 
           <FilterTabs
