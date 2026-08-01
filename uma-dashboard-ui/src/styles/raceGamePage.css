@@ -4445,6 +4445,16 @@
   white-space: nowrap;
 }
 
+.race-info-effects .is-debuff {
+  background: rgba(215, 72, 72, 0.14);
+  color: #b53d3d;
+}
+
+.race-info-effects .is-buff {
+  background: rgba(58, 159, 83, 0.14);
+  color: #28743e;
+}
+
 .race-info-effects .is-empty {
   background: rgba(75, 80, 79, 0.08);
   color: #6d786f;

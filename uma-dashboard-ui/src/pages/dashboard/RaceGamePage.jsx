@@ -262,6 +262,25 @@ const RACE_STAGE_BG_BY_PATH_TYPE = {
   4: "/race_bg/path_4_bg.webp",
   end: "/race_bg/path_end.webp",
 };
+const PATH_EFFECTS_BY_TYPE = {
+  1: [
+    { label: "STA", value: "เสีย 1 ครั้ง", tone: "debuff" },
+  ],
+  2: [
+    { label: "STA", value: "เสีย 1 ครั้ง", tone: "debuff" },
+    { label: "Dice Cap", value: "-5 รอบนี้", tone: "debuff" },
+    { label: "WIT", value: "min/max +1 ต่อ WIT", tone: "buff" },
+  ],
+  3: [
+    { label: "STA", value: "เสีย 2 ครั้ง", tone: "debuff" },
+    { label: "POW", value: "โบนัสผลรวม ×3 รอบนี้", tone: "buff" },
+    { label: "Speed", value: "-5% หนึ่งครั้ง", tone: "debuff" },
+  ],
+  4: [
+    { label: "STA", value: "ไม่เสีย", tone: "buff" },
+    { label: "WIT", value: "min/max +3 ต่อ WIT", tone: "buff" },
+  ],
+};
 const MAX_RACE_RANK_IMAGE_INDEX = 17;
 const RACE_BGM_TRACKS = [
   "arima_kinen.mp3",
@@ -1465,7 +1484,10 @@ export default function RaceGamePage({
               </div>
               <div className="race-info-effects" aria-label="Active race effects">
                 {raceInfoEffects.length > 0 ? raceInfoEffects.map((effect, index) => (
-                  <em key={`${effect.label}-${effect.value}-${index}`}>
+                  <em
+                    key={`${effect.label}-${effect.value}-${index}`}
+                    className={effect.tone ? `is-${effect.tone}` : ""}
+                  >
                     {effect.label}: {effect.value}
                   </em>
                 )) : <em className="is-empty">No active effect</em>}
@@ -2292,7 +2314,8 @@ function getActionEffectRows(log) {
 }
 
 function getCurrentRaceInfoEffects(room, player) {
-  const rows = [];
+  const pathType = Number(room?.current_path?.type);
+  const rows = [...(PATH_EFFECTS_BY_TYPE[pathType] || [])];
   [
     room?.current_path?.effect,
     room?.current_path?.effects,
