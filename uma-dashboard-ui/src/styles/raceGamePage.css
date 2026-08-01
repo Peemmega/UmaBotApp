@@ -4368,30 +4368,32 @@
 
 .race-lane-control-copy {
   display: grid;
-  gap: 4px;
+  gap: 0px;
+  text-align: left;
+  padding: 0px 0px 0 3%;
 }
 
 .race-lane-control-copy span {
-  font-size: 11px;
+  font-size: 16px;
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(196, 255, 241, 0.78);
+  color: #ac5d0dc7;
 }
 
 .race-lane-control-copy strong {
   font-size: 22px;
-  color: #f4fffb;
+  color: #009861;
 }
 
 .race-lane-control-copy small {
-  color: rgba(229, 255, 248, 0.82);
+  color: #4b504f;
 }
 
 .race-lane-help {
   margin: 8px 0 0;
   max-width: 430px;
-  color: rgba(238, 255, 245, 0.86);
+  color: #000000db;
   font-size: 12px;
   font-weight: 700;
   line-height: 1.45;

@@ -1475,8 +1475,8 @@ export default function RaceGamePage({
         {laneSystemEnabled && myPlayer ? (
           <section className="race-lane-control-card race-hud-panel">
             <div className="race-lane-control-copy">
-              <span>Lane Command</span>
-              <strong>Lane {myPlayer.current_lane ?? 1}</strong>
+              <span>Action เปลี่ยนเลน</span>
+              <strong>เลน {myPlayer.current_lane ?? 1}</strong>
               <small>
                 {myPlayer.pending_lane
                   ? `Changing to Lane ${myPlayer.pending_lane} next turn`
@@ -1540,7 +1540,7 @@ export default function RaceGamePage({
                 onClick={() => setRaceInfoView("scoreboard")}
               >
                 <Trophy size={14} />
-                Scoreboard
+                ตารางอันดับ
               </button>
               <button
                 type="button"
@@ -1550,7 +1550,7 @@ export default function RaceGamePage({
                 onClick={() => setRaceInfoView("commentary")}
               >
                 <Radio size={14} />
-                Commentary
+                Race logs
               </button>
             </div>
           </div>
