@@ -91,7 +91,7 @@ export default function CharactersPage({ userId, player, profiles }) {
             const data = await res.json().catch(() => ({}));
 
             if (!res.ok) {
-              throw new Error(data?.detail || `Character load failed: ${res.status}`);
+              throw new Error(data?.detail || `การโหลดข้อมูลล้มเหลว: ${res.status}`);
             }
 
             if (!cancelled) {
@@ -231,7 +231,7 @@ export default function CharactersPage({ userId, player, profiles }) {
         <SectionHeader
           title="Characters"
           kicker="System Roster"
-          action={<Badge>{filteredCharacters.length} entries</Badge>}
+          action={<Badge>{filteredCharacters.length} รายชื่อ</Badge>}
         />
 
         <div className="characters-toolbar">
@@ -254,8 +254,8 @@ export default function CharactersPage({ userId, player, profiles }) {
         <StaggerContainer>
           <StaggerItem>
             <GameCard className="page-empty-state">
-              <strong>Loading characters...</strong>
-              <span>Reading roster data from the system.</span>
+              <strong>กำลังโหลดตัวละคร...</strong>
+              <span>อ่านข้อมูลรายชื่อจากระบบ</span>
             </GameCard>
           </StaggerItem>
         </StaggerContainer>
@@ -263,7 +263,7 @@ export default function CharactersPage({ userId, player, profiles }) {
         <StaggerContainer>
           <StaggerItem>
             <GameCard className="page-empty-state">
-              <strong>Unable to load characters</strong>
+              <strong>ไม่สามารถโหลดตัวละครได้</strong>
               <span>{loadError}</span>
             </GameCard>
           </StaggerItem>
@@ -272,8 +272,8 @@ export default function CharactersPage({ userId, player, profiles }) {
         <StaggerContainer>
           <StaggerItem>
             <GameCard className="page-empty-state">
-              <strong>No characters found</strong>
-              <span>Try a different name or roster filter.</span>
+              <strong>ไม่พบตัวละคร</strong>
+              <span>ลองใช้ชื่ออื่นหรือตัวกรองรายชื่อผู้เล่นดู</span>
             </GameCard>
           </StaggerItem>
         </StaggerContainer>
@@ -382,9 +382,9 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
           <div className="character-profile-fans"><span>{isTrainer ? "Total Fans" : "Fans Point"}</span><strong>{formatFans(fans)}</strong></div>
         </header>
 
-        {loading ? <p className="character-profile-status">Loading profile details...</p> : error ? <p className="character-profile-status is-error">{error}</p> : isTrainer ? (
+        {loading ? <p className="character-profile-status">กำลังโหลดโปรไฟล์...</p> : error ? <p className="character-profile-status is-error">{error}</p> : isTrainer ? (
           <section className="character-profile-section">
-            <h3>Trainees in team</h3>
+            <h3>สาวม้าในทีม</h3>
             {members.length ? <div className="character-team-grid">{members.map((member) => (
               <article
                 key={member.user_id || member.id || member.username}
@@ -407,7 +407,7 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
                 <div className="character-modal-team-image"><img src={toAbsoluteBotUrl(member.image_url) || DEFAULT_AVATAR_URL} alt={member.username} /></div>
                 <div className="character-modal-team-info"><strong>{member.username || member.name}</strong><span>{formatFans(member.fans)} Fans</span></div>
               </article>
-            ))}</div> : <p className="character-profile-empty">No Trainees in this team yet.</p>}
+            ))}</div> : <p className="character-profile-empty">ยังไม่มีสาวม้าในทีม</p>}
           </section>
         ) : (
           <>
@@ -416,16 +416,16 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
               name: traineeTrainer.username || traineeTrainer.name,
               image_url: traineeTrainer.image_url,
               type: "Trainer",
-            })}><img src={toAbsoluteBotUrl(traineeTrainer.image_url) || DEFAULT_AVATAR_URL} alt={traineeTrainer.username} /><span>Trainer</span><strong>{traineeTrainer.username || traineeTrainer.name}</strong></button>}
+            })}><img src={toAbsoluteBotUrl(traineeTrainer.image_url) || DEFAULT_AVATAR_URL} alt={traineeTrainer.username} /><span>เทรนเนอร์</span><strong>{traineeTrainer.username || traineeTrainer.name}</strong></button>}
             <section className="character-profile-section">
-              <h3>Aptitude</h3>
+              <h3>ค่าความถนัด</h3>
               <div className="character-aptitude-grid">
                 {aptitudeRows.map((row) => <div className="character-aptitude-group" key={row.title}><span>{row.title}</span><div>{row.items.map((item) => <AptitudeItem key={item.key} label={item.label} value={profile[item.key]} />)}</div></div>)}
               </div>
             </section>
             <section className="character-profile-section">
-              <h3>Race history</h3>
-              {detail?.history?.length ? <div className="character-race-list">{detail.history.map((record, index) => <div className="character-race-row" key={record.id || `${raceName(record)}-${index}`}><strong>{racePlacement(record)}</strong><span>{raceName(record)}</span><em>{raceTrack(record)}</em></div>)}</div> : <p className="character-profile-empty">No race history recorded yet.</p>}
+              <h3>ประวัติการแข่ง</h3>
+              {detail?.history?.length ? <div className="character-race-list">{detail.history.map((record, index) => <div className="character-race-row" key={record.id || `${raceName(record)}-${index}`}><strong>{racePlacement(record)}</strong><span>{raceName(record)}</span><em>{raceTrack(record)}</em></div>)}</div> : <p className="character-profile-empty">ยังไม่มีประวัติการแข่งขัน</p>}
             </section>
           </>
         )}
