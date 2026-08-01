@@ -8,14 +8,14 @@ export const mainStats = [
 
 export const aptitudeRows = [
   {
-    title: "Track",
+    title: "สนาม",
     items: [
       { key: "turf", label: "Turf" },
       { key: "dirt", label: "Dirt" },
     ],
   },
   {
-    title: "Distance",
+    title: "ระยะทาง",
     items: [
       { key: "sprint", label: "Sprint" },
       { key: "mile", label: "Mile" },
@@ -24,7 +24,7 @@ export const aptitudeRows = [
     ],
   },
   {
-    title: "Style",
+    title: "แผนการวิ่ง",
     items: [
       { key: "front", label: "Front" },
       { key: "pace", label: "Pace" },

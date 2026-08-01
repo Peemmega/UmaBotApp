@@ -567,7 +567,6 @@ export default function RaceGamePage({
   const [hiddenRoomIds, setHiddenRoomIds] = useState(() => new Set());
   const [selectedBot, setSelectedBot] = useState("rookie_front");
   const [selectedBotLevel, setSelectedBotLevel] = useState(1);
-  const [runDiceColorCache, setRunDiceColorCache] = useState({});
   const [musicNowPlaying, setMusicNowPlaying] = useState(null);
   const [musicVolume, setMusicVolume] = useState(getSavedRaceMusicVolume);
   const requestRef = useRef(false);
@@ -751,10 +750,9 @@ export default function RaceGamePage({
     [latestRollByName, myPlayer?.name]
   );
   const myConfirmTurnScore = getRunnerTurnScore(myPlayer, room, myLatestRoll);
-  const myRunDiceColorKey = getRunDiceColorKey(room, myPlayer, room?.turn);
   const myRunDiceColor = useMemo(
-    () => runDiceColorCache[myRunDiceColorKey] || getRunnerCurrentDiceColor(myPlayer, room, myLatestRoll),
-    [myLatestRoll, myPlayer, myRunDiceColorKey, room, runDiceColorCache]
+    () => getRunnerCurrentDiceColor(myPlayer, room, myLatestRoll),
+    [myLatestRoll, myPlayer, room]
   );
   const raceRunners = useMemo(
     () => getRaceRunnersByCurrentSpeed(room?.players || [], latestRollByName),
@@ -941,20 +939,6 @@ export default function RaceGamePage({
     };
   }, []);
 
-  useEffect(() => {
-    if (!isConfirmingTurn || !myPlayer || !room?.room_id) return;
-
-    const nextTurnKey = getRunDiceColorKey(room, myPlayer, Number(room.turn) + 1);
-    if (!nextTurnKey) return;
-
-    const nextTurnColor = getRunnerPreRollDiceColor(myPlayer, room);
-    setRunDiceColorCache((current) => (
-      current[nextTurnKey] === nextTurnColor
-        ? current
-        : { ...current, [nextTurnKey]: nextTurnColor }
-    ));
-  }, [isConfirmingTurn, myPlayer, room]);
-
   const refreshRooms = useCallback(async (extraHiddenRoomIds = []) => {
     try {
       setLoading(true);
@@ -1135,17 +1119,8 @@ export default function RaceGamePage({
     [timingRoomId, userId]
   );
 
-  const handleConfirmTurn = () => {
-    const nextTurnKey = getRunDiceColorKey(room, myPlayer, Number(room?.turn) + 1);
-    if (nextTurnKey) {
-      setRunDiceColorCache((current) => ({
-        ...current,
-        [nextTurnKey]: getRunnerPreRollDiceColor(myPlayer, room),
-      }));
-    }
-
-    return runAction("confirm", () => confirmRaceTurn(room.room_id, playerPayload));
-  };
+  const handleConfirmTurn = () =>
+    runAction("confirm", () => confirmRaceTurn(room.room_id, playerPayload));
 
   const handleReroll = () =>
     runAction("reroll", () => rerollRaceTurn(room.room_id, playerPayload));
@@ -1174,12 +1149,12 @@ export default function RaceGamePage({
     <section className={`race-page ${fullscreen ? "race-fullscreen-page" : ""}`} onClickCapture={handleRaceButtonSound}>
         <header className="race-hero">
           <div>
-            <span className="race-kicker">Online Race</span>
-            <h2>Race Lobby</h2>
+            <span className="race-kicker">ห้องฝึกซ้อมออนไลน์</span>
+            <h2>ล็อบบี้</h2>
           </div>
           <div className="race-toolbar">
             <button type="button" className="race-menu-home-btn" onClick={onBackToDashboard}>
-              Main Site
+              กลับหน้าหลัก
             </button>
             <button type="button" onClick={() => refreshRooms()} disabled={loading}>
               <RefreshCw size={16} />
@@ -1192,7 +1167,7 @@ export default function RaceGamePage({
 
         <div className="race-create-panel">
           <label>
-            Track
+            สนาม
             <select
               value={selectedStage}
               onChange={(event) => setSelectedStage(event.target.value)}
@@ -1207,7 +1182,7 @@ export default function RaceGamePage({
           <label>
             Gameplay
             <select value={gameplayMode} onChange={(event) => setGameplayMode(event.target.value)}>
-              <option value="manual">Dice Gameplay</option>
+              <option value="manual">ทอยลูกเต๋า</option>
               <option value="timing">Timing Gauge</option>
             </select>
           </label>
@@ -1236,7 +1211,7 @@ export default function RaceGamePage({
 
         <div className="race-room-grid">
           {rooms.length === 0 ? (
-            <div className="race-empty">No web race rooms yet.</div>
+            <div className="race-empty">ยังไม่มีห้องซ้อมถูกสร้าง</div>
           ) : (
             rooms.map((item) => {
               const raceImage = getRaceImage(roomRaceImageSource(item));
@@ -1263,7 +1238,7 @@ export default function RaceGamePage({
                       onClick={() => handleJoin(item)}
                       disabled={Boolean(actionBusy) || !canJoinRoom}
                     >
-                      {item.is_joined ? "Rejoin" : "Join"}
+                      {item.is_joined ? "เข้าร่วมใหม่" : "เข้าร่วม"}
                     </button>
                   </div>
                 </article>
@@ -2062,15 +2037,6 @@ function getRunnerCurrentDiceColor(player, room, latestRoll) {
   return isRunnerInGoldRange(player, room) ? "gold" : "white";
 }
 
-function getRunnerPreRollDiceColor(player, room) {
-  return isRunnerInGoldRange(player, room) ? "gold" : "white";
-}
-
-function getRunDiceColorKey(room, player, turn) {
-  if (!room?.room_id || !player?.id || turn === undefined || turn === null) return "";
-  return `${room.room_id}:${player.id}:${turn}`;
-}
-
 function normalizeDiceColor(value = "") {
   const color = String(value || "").trim().toLowerCase();
   if (color === "gold" || color === "golden") return "gold";
@@ -2082,22 +2048,53 @@ function isRunnerInGoldRange(player, room) {
   const playerScore = Number(player?.score);
   if (!Number.isFinite(playerScore)) return false;
 
-  const goldRange = Math.max(0, 20 + getRunnerGoldRangeBonus(player));
+  const goldRange = getRunnerGoldRangeValue(player);
+  const goldLaneTolerance = getRunnerGoldLaneTolerance(player);
   const competitors = (room?.players || []).filter((other) => String(other?.id) !== String(player?.id));
+
+  // The dice service treats a solo runner as Gold.
+  if (competitors.length === 0) return true;
 
   return competitors.some((other) => {
     const otherScore = Number(other?.score);
-    return Number.isFinite(otherScore) && Math.abs(otherScore - playerScore) <= goldRange;
+    const otherLane = Number(other?.current_lane);
+    const playerLane = Number(player?.current_lane);
+    return (
+      Number.isFinite(otherScore) &&
+      Math.abs(otherScore - playerScore) <= goldRange &&
+      Number.isFinite(playerLane) &&
+      Number.isFinite(otherLane) &&
+      Math.abs(otherLane - playerLane) <= goldLaneTolerance
+    );
   });
 }
 
-function getRunnerGoldRangeBonus(player) {
-  return firstFiniteNumber(
+function getRunnerGoldRangeValue(player) {
+  const bonus = firstFiniteNumber(
+    player?.gold_range_bonus_this_turn,
     player?.pending_bonus?.gold_range,
-    player?.buffs?.gold_range,
-    player?.buffs?.pending_bonus?.gold_range,
-    player?.last_roll?.pending_bonus?.gold_range
+    player?.buffs?.gold_range
   ) ?? 0;
+  const penalty = Math.abs(firstFiniteNumber(
+    player?.enemy_gold_range_penalty_next_turn,
+    player?.pending_bonus?.enemy_gold_range_penalty,
+    player?.buffs?.enemy_gold_range_penalty
+  ) ?? 0);
+  return Math.max(1, 20 + bonus - penalty);
+}
+
+function getRunnerGoldLaneTolerance(player) {
+  const bonus = firstFiniteNumber(
+    player?.gold_lane_bonus_this_turn,
+    player?.pending_bonus?.gold_lane,
+    player?.buffs?.gold_lane
+  ) ?? 0;
+  const penalty = Math.abs(firstFiniteNumber(
+    player?.enemy_gold_lane_penalty_next_turn,
+    player?.pending_bonus?.enemy_gold_lane_penalty,
+    player?.buffs?.enemy_gold_lane_penalty
+  ) ?? 0);
+  return Math.max(0, 1 + bonus - penalty);
 }
 
 function firstFiniteNumber(...values) {

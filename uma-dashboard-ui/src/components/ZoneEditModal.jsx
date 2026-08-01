@@ -144,7 +144,7 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
     <div className={`zone-edit-backdrop ${closing ? "closing" : ""}`} onClick={closeModal}>
       <div className={`zone-edit-modal ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
         <div className="title-banner">
-          <h2>Zone Manager</h2>
+          <h2>จัดการโซน</h2>
         </div>
 
         <div className="zone-edit-body">
@@ -152,7 +152,7 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
             {imageUrl ? (
               <img src={imageUrl} className="zone-edit-main-image" />
             ) : (
-              <div className="zone-image-placeholder">Zone Image</div>
+              <div className="zone-image-placeholder">รูปโซน</div>
             )}
           </div>
 
