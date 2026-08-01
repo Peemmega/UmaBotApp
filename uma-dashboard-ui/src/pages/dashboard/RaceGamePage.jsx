@@ -741,6 +741,10 @@ export default function RaceGamePage({
     () => getAptitudeRows(room, myPlayer),
     [myPlayer, room]
   );
+  const raceInfoEffects = useMemo(
+    () => getCurrentRaceInfoEffects(room, myPlayer),
+    [myPlayer, room]
+  );
   const latestRollByName = useMemo(
     () => getLatestRollByName(room?.action_logs || []),
     [room?.action_logs]
@@ -1449,41 +1453,52 @@ export default function RaceGamePage({
 
         {laneSystemEnabled && myPlayer ? (
           <section className="race-lane-control-card race-hud-panel">
-            <div className="race-lane-control-copy">
-              <span>Action เปลี่ยนเลน</span>
-              <strong>เลน {myPlayer.current_lane ?? 1}</strong>
-              <small>
-                {myPlayer.pending_lane
-                  ? `Changing to Lane ${myPlayer.pending_lane} next turn`
-                  : "No lane change queued"}
-              </small>
-              <p className="race-lane-help">{LANE_HELP_TEXT}</p>
+            <div className="race-lane-info">
+              <span>Race Info</span>
+              <div className="race-info-summary">
+                <strong>{isWebTiming ? `${room.leader_distance || 0}m` : `Turn ${room.turn || 0}`}</strong>
+                <small>{isWebTiming ? `${room.finish_distance || 0}m finish` : `/${room.max_turn || "-"}`}</small>
+              </div>
+              <div className="race-info-details">
+                <span>{room.track || "Track"} · {isWebTiming ? `${room.finish_distance || 0}m` : room.distance || "Distance"}</span>
+                <span>{room.current_path?.label || "Start"}</span>
+              </div>
+              <div className="race-info-effects" aria-label="Active race effects">
+                {raceInfoEffects.length > 0 ? raceInfoEffects.map((effect, index) => (
+                  <em key={`${effect.label}-${effect.value}-${index}`}>
+                    {effect.label}: {effect.value}
+                  </em>
+                )) : <em className="is-empty">No active effect</em>}
+              </div>
             </div>
-            <div className="race-lane-button-row">
-              {LANE_OPTIONS.map((lane) => {
-                const isCurrent = Number(myPlayer.current_lane) === lane;
-                const isPending = Number(myPlayer.pending_lane) === lane;
-                const canChangeLane =
-                  room?.phase === "running" &&
-                  !isRaceEnded(room) &&
-                  !isWebTiming &&
-                  !actionBusy;
-                return (
-                  <button
-                    key={lane}
-                    type="button"
-                    className={[
-                      "race-lane-btn",
-                      isCurrent ? "is-current" : "",
-                      isPending ? "is-pending" : "",
-                    ].filter(Boolean).join(" ")}
-                    onClick={() => handleChangeLane(lane)}
-                    disabled={!canChangeLane}
-                  >
-                    {lane}
-                  </button>
-                );
-              })}
+            <div className="race-lane-selector">
+              <span className="race-lane-selector-title">Lane · {myPlayer.current_lane ?? 1}</span>
+              <div className="race-lane-button-row">
+                {LANE_OPTIONS.map((lane) => {
+                  const isCurrent = Number(myPlayer.current_lane) === lane;
+                  const isPending = Number(myPlayer.pending_lane) === lane;
+                  const canChangeLane =
+                    room?.phase === "running" &&
+                    !isRaceEnded(room) &&
+                    !isWebTiming &&
+                    !actionBusy;
+                  return (
+                    <button
+                      key={lane}
+                      type="button"
+                      className={[
+                        "race-lane-btn",
+                        isCurrent ? "is-current" : "",
+                        isPending ? "is-pending" : "",
+                      ].filter(Boolean).join(" ")}
+                      onClick={() => handleChangeLane(lane)}
+                      disabled={!canChangeLane}
+                    >
+                      {lane}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </section>
         ) : null}
@@ -2274,6 +2289,28 @@ function getActionEffectRows(log) {
   }
 
   return rows.slice(0, 8);
+}
+
+function getCurrentRaceInfoEffects(room, player) {
+  const rows = [];
+  [
+    room?.current_path?.effect,
+    room?.current_path?.effects,
+    room?.current_path?.active_effects,
+    room?.active_effects,
+    player?.active_effects,
+    player?.effects,
+    player?.buffs,
+    player?.pending_bonus,
+  ].forEach((source) => collectEffectRows(source, rows));
+
+  const seen = new Set();
+  return rows.filter((row) => {
+    const key = `${row.label}:${row.value}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 3);
 }
 
 function collectEffectRows(source, rows) {
