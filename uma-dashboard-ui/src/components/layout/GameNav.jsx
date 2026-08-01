@@ -16,12 +16,12 @@ export const gameNavItems = [
   { key: "profile", label: "โปรไฟล์", Icon: UserRound },
   { key: "chars", label: "ตัวละคร", Icon: UsersRound },
   { key: "races", label: "รายการแข่ง", Icon: Trophy },
-  { key: "race", label: "ห้องแข่ง", Icon: Flag },
-  { key: "tcg", label: "TCG", Icon: PanelsTopLeft },
+  { key: "race", label: "ห้องซ้อมวิ่ง", Icon: Flag },
+  // { key: "tcg", label: "TCG", Icon: PanelsTopLeft },
   { key: "skills", label: "สกิล", Icon: Sparkles },
   { key: "tools", label: "เครื่องมือคำนวณ", Icon: Calculator },
   { key: "tutorials", label: "คู่มือ", Icon: BookOpen },
-  { key: "qa", label: "Q&A", Icon: CircleHelp },
+  // { key: "qa", label: "Q&A", Icon: CircleHelp },
 ];
 
 export default function GameNav({
