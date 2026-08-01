@@ -2037,6 +2037,10 @@ function getRunnerCurrentDiceColor(player, room, latestRoll) {
   return isRunnerInGoldRange(player, room) ? "gold" : "white";
 }
 
+function getRunnerPreRollDiceColor(player, room) {
+  return isRunnerInGoldRange(player, room) ? "gold" : "white";
+}
+
 function normalizeDiceColor(value = "") {
   const color = String(value || "").trim().toLowerCase();
   if (color === "gold" || color === "golden") return "gold";
