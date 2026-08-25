@@ -171,22 +171,25 @@
 }
 
 .character-profile-modal {
-  --character-modal-primary: #23964e;
-  --character-modal-accent: #55dca6;
-  --character-modal-soft: rgba(80, 193, 111, 0.1);
+  --character-modal-primary: var(--uma-primary);
+  --character-modal-accent: var(--uma-mint);
+  --character-modal-soft: color-mix(in srgb, var(--character-modal-primary) 12%, transparent);
+  --character-modal-surface: var(--uma-surface);
+  --character-modal-ink: var(--uma-ink);
+  --character-modal-muted: var(--uma-muted);
   position: relative;
   width: min(720px, 100%);
   max-height: min(820px, calc(100vh - 48px));
   overflow-y: auto;
   border: 1px solid color-mix(in srgb, var(--character-modal-primary) 38%, white);
   border-radius: var(--uma-radius-md);
-  background: linear-gradient(150deg, #fff, color-mix(in srgb, var(--character-modal-accent) 13%, white));
+  background: linear-gradient(150deg, var(--character-modal-surface), color-mix(in srgb, var(--character-modal-accent) 13%, var(--character-modal-surface)));
   box-shadow: 0 28px 70px rgba(22, 13, 31, 0.35);
 }
 
 .character-profile-modal--trainer {
-  --character-modal-primary: #8c3dab;
-  --character-modal-accent: #df7ec7;
+  --character-modal-primary: #a34fc0;
+  --character-modal-accent: #f38bc0;
   --character-modal-soft: rgba(163, 79, 192, 0.12);
 }
 
@@ -200,7 +203,7 @@
   border: 0;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.9);
-  color: var(--uma-ink);
+  color: var(--character-modal-ink);
   font-size: 26px;
   line-height: 1;
   cursor: pointer;
@@ -241,12 +244,12 @@
 .character-profile-fans strong { display: block; margin-top: 4px; font-size: 25px; }
 
 .character-profile-section { padding: 22px 28px 10px; }
-.character-profile-section h3 { margin: 0 0 14px; color: var(--uma-ink); font-size: 18px; }
-.character-profile-status, .character-profile-empty { margin: 24px 28px; color: #6f6572; font-weight: 700; }
+.character-profile-section h3 { margin: 0 0 14px; color: var(--character-modal-ink); font-size: 18px; }
+.character-profile-status, .character-profile-empty { margin: 24px 28px; color: var(--character-modal-muted); font-weight: 700; }
 .character-profile-status.is-error { color: #b43c4f; }
 
 .character-aptitude-grid { display: grid; gap: 0px; }
-.character-aptitude-group { display: grid; grid-template-columns: 78px 1fr; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; background: color(srgb rgba(255, 255, 255, 0) green blue); }
+.character-aptitude-group { display: grid; grid-template-columns: 78px 1fr; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; background: var(--character-modal-soft); }
 .character-aptitude-group > span { color: var(--character-modal-primary); font-size: 14px; font-weight: 1000; text-transform: uppercase; }
 .character-aptitude-group > div { display: flex; flex-wrap: wrap; gap: 8px; }
 .character-aptitude-group .aptitude-item { min-width: 72px; padding: 4px 6px; gap: 15px;}
@@ -255,28 +258,28 @@
 .character-race-row { display: grid; grid-template-columns: 1.25fr 1.3fr 1fr .7fr .45fr .6fr; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid color-mix(in srgb, var(--character-modal-primary) 16%, white); }
 .character-race-row:last-child { border-bottom: 0; }
 .character-race-row strong { color: var(--character-modal-primary); font-size: 15px; }
-.character-race-row span, .character-race-row time { color: var(--uma-ink); font-size: 13px; font-weight: 800; }
-.character-race-row em { display: block; margin-top: 3px; color: #6b796d; font-size: 12px; font-style: normal; }
+.character-race-row span, .character-race-row time { color: var(--character-modal-ink); font-size: 13px; font-weight: 800; }
+.character-race-row em { display: block; margin-top: 3px; color: var(--character-modal-muted); font-size: 12px; font-style: normal; }
 .character-race-row--header { background: var(--character-modal-soft); padding-block: 9px; }
 .character-race-row--header span { color: var(--character-modal-primary); font-size: 11px; font-weight: 1000; text-transform: uppercase; }
-.character-race-row--button { width: 100%; border: 0; background: rgba(255, 255, 255, 0.66); cursor: pointer; text-align: left; transition: background .18s ease, transform .18s ease; }
+.character-race-row--button { width: 100%; border: 0; background: var(--character-modal-surface); cursor: pointer; text-align: left; transition: background .18s ease, transform .18s ease; }
 .character-race-row--button:hover, .character-race-row--button:focus-visible { background: var(--character-modal-soft); outline: none; transform: translateX(2px); }
 .character-race-placement { font-size: 17px !important; }
 
 .character-team-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2%; }
-.character-modal-team-card { overflow: hidden; padding: 0; border: 1px solid color-mix(in srgb, var(--character-modal-primary) 28%, white); border-radius: 12px; background: #fff; box-shadow: 0 6px 16px rgba(48, 71, 53, 0.08); cursor: pointer; text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.character-modal-team-card:hover, .character-modal-team-card:focus-visible { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(48, 71, 53, 0.16); outline: none; }
-.character-modal-team-image { height: 140px; background: linear-gradient(135deg, rgba(245, 255, 241, 0.95), rgba(236, 252, 203, 0.88)); }
+.character-modal-team-card { overflow: hidden; padding: 0; border: 1px solid color-mix(in srgb, var(--character-modal-primary) 28%, white); border-radius: 12px; background: var(--character-modal-surface); box-shadow: var(--uma-shadow-soft); cursor: pointer; text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.character-modal-team-card:hover, .character-modal-team-card:focus-visible { transform: translateY(-2px); box-shadow: var(--uma-shadow-card); outline: none; }
+.character-modal-team-image { height: 140px; background: linear-gradient(135deg, var(--character-modal-soft), color-mix(in srgb, var(--character-modal-accent) 18%, var(--character-modal-surface))); }
 .character-modal-team-image img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
 .character-modal-team-info { padding: 0px 10px 10px; }
 .character-modal-team-info strong, .character-modal-team-info span { display: block; }
-.character-modal-team-info strong { color: var(--uma-ink); }
+.character-modal-team-info strong { color: var(--character-modal-ink); }
 .character-modal-team-info span { margin-top: 3px; color: var(--character-modal-primary); font-size: 12px; font-weight: 800; }
 .character-profile-trainer { display: grid; grid-template-columns: 48px auto 1fr; align-items: center; gap: 10px; width: calc(100% - 56px); margin: 22px 28px 0; padding: 12px; border: 0; border-radius: 12px; background: var(--character-modal-soft); cursor: pointer; text-align: left; }
 .character-profile-trainer:hover, .character-profile-trainer:focus-visible { background: color-mix(in srgb, var(--character-modal-primary) 20%, white); outline: 2px solid color-mix(in srgb, var(--character-modal-primary) 45%, white); }
 .character-profile-trainer img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; object-position: top center; }
 .character-profile-trainer span { color: var(--character-modal-primary); font-size: 12px; font-weight: 900; text-transform: uppercase; }
-.character-profile-trainer strong { color: var(--uma-ink); }
+.character-profile-trainer strong { color: var(--character-modal-ink); }
 
 @media (max-width: 900px) {
   .characters-grid {
