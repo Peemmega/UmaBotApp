@@ -259,6 +259,8 @@
 .character-race-row em { display: block; margin-top: 3px; color: #6b796d; font-size: 12px; font-style: normal; }
 .character-race-row--header { background: var(--character-modal-soft); padding-block: 9px; }
 .character-race-row--header span { color: var(--character-modal-primary); font-size: 11px; font-weight: 1000; text-transform: uppercase; }
+.character-race-row--button { width: 100%; border: 0; background: rgba(255, 255, 255, 0.66); cursor: pointer; text-align: left; transition: background .18s ease, transform .18s ease; }
+.character-race-row--button:hover, .character-race-row--button:focus-visible { background: var(--character-modal-soft); outline: none; transform: translateX(2px); }
 .character-race-placement { font-size: 17px !important; }
 
 .character-team-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2%; }

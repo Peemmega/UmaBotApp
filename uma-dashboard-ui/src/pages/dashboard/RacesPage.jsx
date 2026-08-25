@@ -4,6 +4,7 @@ import "../../styles/skillsPage.css";
 import { playSound } from "../../utils/soundManager";
 import { getRaceImage } from "../../utils/raceSchedule.js";
 import Toast from "../../components/Toast";
+import SharedRaceHistoryDetailModal from "../../components/RaceHistoryDetailModal";
 import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import { BOT_API_BASE } from "../../api/playerApi";
@@ -318,7 +319,7 @@ export default function RacesPage({ userId }) {
       )}
 
       {selectedRaceResult && createPortal(
-        <RaceHistoryDetailModal
+        <SharedRaceHistoryDetailModal
           raceId={selectedRaceResult.race_id}
           fallback={selectedRaceResult}
           onClose={() => setSelectedRaceResult(null)}
@@ -356,6 +357,25 @@ function formatSnapshotValues(values) {
   return Object.entries(values)
     .filter(([, value]) => value !== null && value !== undefined && value !== "")
     .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(", ") : String(value)}`);
+}
+
+function formatRaceAction(action) {
+  const data = action?.action_data || action?.action_data_json || {};
+  const type = String(action?.action_type || "").toLowerCase();
+  if (type === "skill") {
+    const id = data.skill_id || "-";
+    const name = data.skill_name ? ` (${data.skill_name})` : "";
+    return `ใช้สกิล ${id}${name}`;
+  }
+  if (type === "lane_change" || type === "lane_change_queued") {
+    const prefix = type === "lane_change_queued" ? "เลือกเปลี่ยนเลน" : "เปลี่ยนเลน";
+    return `${prefix} ${data.from_lane ?? "-"} → ${data.to_lane ?? "-"}`;
+  }
+  if (type === "zone") return `ใช้ Zone ${data.zone_name || "-"}`;
+  if (data.summary) return String(data.summary);
+  if (type === "rush") return `ใช้ Rush +${data.move_forward ?? "-"}`;
+  if (type === "block") return `ใช้ Block ถอย ${data.move_back ?? "-"}`;
+  return action?.action_type || "-";
 }
 
 function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
@@ -417,6 +437,7 @@ function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
                 const participantTurns = turnsByParticipant[participant.participant_id] || [];
                 const participantActions = actionsByParticipant[participant.participant_id] || [];
                 const skills = Array.isArray(snapshot.skills) ? snapshot.skills : [];
+                const notRecorded = "ยังไม่มีบันทึกในระบบ";
                 return <details className="race-history-participant" key={participant.participant_id}>
                   <summary>
                     <strong>#{participant.final_rank || "-"}</strong>
@@ -425,10 +446,10 @@ function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
                   </summary>
                   <div className="race-history-participant-detail">
                     <div className="race-history-snapshot-grid">
-                      <div><span>ค่าสถานะ</span><p>{formatSnapshotValues(snapshot.base_stats).join(" · ") || "-"}</p></div>
-                      <div><span>ความถนัด</span><p>{formatSnapshotValues(snapshot.aptitudes).join(" · ") || "-"}</p></div>
-                      <div><span>สกิล</span><p>{skills.map((skill) => skill?.name || skill?.id || String(skill)).join(", ") || "-"}</p></div>
-                      <div><span>Zone</span><p>{snapshot.zone?.name || snapshot.zone?.zone_name || "-"}</p></div>
+                      <div><span>ค่าสถานะ</span><p>{formatSnapshotValues(snapshot.base_stats).join(" · ") || notRecorded}</p></div>
+                      <div><span>ความถนัด</span><p>{formatSnapshotValues(snapshot.aptitudes).join(" · ") || notRecorded}</p></div>
+                      <div><span>สกิล</span><p>{skills.map((skill) => skill?.name || skill?.id || String(skill)).join(", ") || notRecorded}</p></div>
+                      <div><span>Zone</span><p>{snapshot.zone?.name || snapshot.zone?.zone_name || notRecorded}</p></div>
                     </div>
                     <div className="race-history-timeline">
                       <span>ผลแต่ละเทิร์น</span>
@@ -436,7 +457,7 @@ function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
                     </div>
                     <div className="race-history-timeline">
                       <span>การกระทำ</span>
-                      {participantActions.length ? participantActions.map((action) => <p key={action.action_id}>T{action.turn_number}: {action.action_type}</p>) : <p>-</p>}
+                      {participantActions.length ? participantActions.map((action) => <p key={action.action_id}>T{action.turn_number}: {formatRaceAction(action)}</p>) : <p>ยังไม่มีบันทึกการกระทำ</p>}
                     </div>
                   </div>
                 </details>;

@@ -10,6 +10,7 @@ import { APP_BASE_URL } from "../../api/appConfig";
 import { PROFILE_TYPES } from "../../data/profilePresets";
 import { aptitudeRows } from "../../data/dashboardConfig";
 import AptitudeItem from "../../components/AptitudeItem";
+import RaceHistoryDetailModal from "../../components/RaceHistoryDetailModal";
 import { playSound } from "../../utils/soundManager";
 
 const APP_API_BASE = APP_BASE_URL;
@@ -84,12 +85,15 @@ export default function CharactersPage({ userId, player, profiles }) {
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState("");
+  const [selectedRaceResult, setSelectedRaceResult] = useState(null);
   const openCharacterProfile = (character) => {
     playSound("open");
+    setSelectedRaceResult(null);
     setSelectedCharacter(character);
   };
   const closeCharacterProfile = () => {
     playSound("close");
+    setSelectedRaceResult(null);
     setSelectedCharacter(null);
   };
 
@@ -346,15 +350,24 @@ export default function CharactersPage({ userId, player, profiles }) {
             error={detailError}
             onClose={closeCharacterProfile}
             onOpenCharacter={openCharacterProfile}
+            onOpenRace={(record) => setSelectedRaceResult(record)}
           />}
         </AnimatePresence>,
+        document.body
+      )}
+      {selectedRaceResult && createPortal(
+        <RaceHistoryDetailModal
+          raceId={selectedRaceResult.race_id}
+          fallback={selectedRaceResult}
+          onClose={() => setSelectedRaceResult(null)}
+        />,
         document.body
       )}
     </section>
   );
 }
 
-function CharacterProfileModal({ character, detail, loading, error, onClose, onOpenCharacter }) {
+function CharacterProfileModal({ character, detail, loading, error, onClose, onOpenCharacter, onOpenRace }) {
   const prefersReducedMotion = useReducedMotion();
   const isTrainer = character.type === "Trainer";
   const profile = detail?.profile || character.profileData || {};
@@ -449,14 +462,14 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
                 <div className="character-race-row character-race-row--header" role="row">
                   <span>วันที่</span><span>รายการ</span><span>เทรนเนอร์</span><span>สายวิ่ง</span><span>อันดับ</span><span>คะแนน</span>
                 </div>
-                {detail.history.map((record, index) => <div className="character-race-row" role="row" key={record.race_id || record.id || `${raceName(record)}-${index}`}>
+                {detail.history.map((record, index) => <button type="button" className="character-race-row character-race-row--button" role="row" key={record.race_id || record.id || `${raceName(record)}-${index}`} onClick={() => onOpenRace(record)}>
                   <time data-label="วันที่">{raceDate(record)}</time>
                   <span data-label="รายการ"><strong>{raceName(record)}</strong><em>{raceTrack(record)}</em></span>
                   <span data-label="เทรนเนอร์">{record.trainer_name || "-"}</span>
                   <span data-label="สายวิ่ง">{record.running_style || "-"}</span>
                   <strong data-label="อันดับ" className="character-race-placement">{racePlacement(record)}</strong>
                   <strong data-label="คะแนน">{raceScore(record)}</strong>
-                </div>)}
+                </button>)}
               </div> : <p className="character-profile-empty">ยังไม่มีประวัติการแข่งขัน</p>}
             </section>
           </>
