@@ -42,15 +42,16 @@ function normalizeRaceHistory(data) {
 }
 
 function raceName(record) {
-  return record?.race_name || record?.race?.name || record?.name || record?.track_name || "Unknown race";
+  return record?.race_name || record?.stage_name || record?.race?.name || record?.name || record?.track_name || "Unknown race";
 }
 
 function raceTrack(record) {
-  return record?.track || record?.track_type || record?.surface || record?.race?.track || "-";
+  const track = record?.track || record?.track_type || record?.surface || record?.race?.track || "-";
+  return record?.record_type === "practice" ? `${track} · Practice` : track;
 }
 
 function racePlacement(record) {
-  const place = record?.placement ?? record?.rank ?? record?.position ?? record?.place;
+  const place = record?.final_rank ?? record?.placement ?? record?.rank ?? record?.position ?? record?.place;
   return Number.isFinite(Number(place)) ? `#${place}` : "-";
 }
 
