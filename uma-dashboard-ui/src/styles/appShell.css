@@ -3,7 +3,7 @@
   isolation: isolate;
   min-height: 100vh;
   width: 100%;
-  color: #ffffff;
+  color: var(--uma-on-primary);
   overflow-x: hidden;
   padding:
     calc(76px + var(--uma-space-5))
@@ -27,7 +27,9 @@
 .profile-theme-trainer {
   --uma-bg: #fff7fd;
   --uma-bg-soft: #fff0fa;
+  --uma-surface: #ffffff;
   --uma-surface-raised: #fff9fd;
+  --uma-surface-green: #fff7fd;
   --uma-ink: #4b2456;
   --uma-muted: #7e557f;
   --uma-border: rgba(156, 77, 173, 0.22);
@@ -41,10 +43,8 @@
   --uma-shadow-soft: 0 7px 18px rgba(103, 46, 118, 0.13);
   --uma-shadow-card: 0 16px 34px rgba(103, 46, 118, 0.17), 0 1px 0 rgba(255, 255, 255, 0.78) inset;
   --uma-shadow-pop: 0 24px 60px rgba(103, 46, 118, 0.25), 0 1px 0 rgba(255, 255, 255, 0.82) inset;
-}
-
-.profile-theme-trainer::before {
-  background:
+  --uma-focus-ring: 0 0 0 4px rgba(163, 79, 192, 0.24);
+  --uma-shell-glow:
     radial-gradient(circle at 10% 7%, rgba(190, 101, 211, 0.27), transparent 27%),
     radial-gradient(circle at 80% 9%, rgba(244, 128, 187, 0.24), transparent 26%),
     radial-gradient(circle at 60% 95%, rgba(190, 101, 211, 0.16), transparent 34%),
@@ -54,31 +54,39 @@
 .profile-theme-npc {
   --uma-bg: #fbfbff;
   --uma-bg-soft: #f5f3ff;
+  --uma-surface: #ffffff;
   --uma-surface-raised: #ffffff;
+  --uma-surface-green: #f2f5f9;
   --uma-ink: #384052;
   --uma-muted: #687080;
+  --uma-border: rgba(100, 116, 139, 0.22);
+  --uma-border-strong: rgba(100, 116, 139, 0.38);
   --uma-primary: #718096;
   --uma-primary-dark: #4a5568;
   --uma-gradient-primary: linear-gradient(135deg, #667085, #94a3b8);
+  --uma-gradient-race: linear-gradient(135deg, #4a5568 0%, #718096 48%, #a0aec0 100%);
   --uma-gradient-training: linear-gradient(135deg, #718096, #a0aec0);
+  --uma-gradient-panel: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(242, 245, 249, 0.94));
+  --uma-shadow-soft: 0 7px 18px rgba(71, 85, 105, 0.13);
+  --uma-shadow-card: 0 16px 34px rgba(71, 85, 105, 0.17), 0 1px 0 rgba(255, 255, 255, 0.78) inset;
+  --uma-shadow-pop: 0 24px 60px rgba(71, 85, 105, 0.25), 0 1px 0 rgba(255, 255, 255, 0.82) inset;
+  --uma-focus-ring: 0 0 0 4px rgba(113, 128, 150, 0.24);
+  --uma-shell-glow:
+    radial-gradient(circle at 10% 7%, rgba(148, 163, 184, 0.25), transparent 27%),
+    radial-gradient(circle at 80% 9%, rgba(203, 213, 225, 0.3), transparent 26%),
+    radial-gradient(circle at 60% 95%, rgba(148, 163, 184, 0.16), transparent 34%),
+    linear-gradient(115deg, rgba(251, 251, 255, 0.98), rgba(245, 247, 250, 0.9) 48%, rgba(241, 245, 249, 0.84));
 }
 
 .app-shell::before {
   z-index: -2;
-  background:
-    radial-gradient(circle at 10% 7%, rgba(69, 201, 111, 0.28), transparent 27%),
-    radial-gradient(circle at 80% 9%, rgba(85, 220, 166, 0.22), transparent 26%),
-    radial-gradient(circle at 60% 95%, rgba(139, 220, 92, 0.2), transparent 34%),
-    linear-gradient(115deg, rgba(245, 255, 241, 0.96), rgba(244, 253, 255, 0.84) 48%, rgba(239, 255, 220, 0.76));
+  background: var(--uma-shell-glow);
 }
 
 .app-shell::after {
   z-index: -1;
   opacity: 0.62;
-  background:
-    linear-gradient(118deg, transparent 0 43%, rgba(255, 255, 255, 0.58) 43% 43.45%, transparent 43.45%),
-    linear-gradient(118deg, transparent 0 58%, rgba(69, 201, 111, 0.16) 58% 58.7%, transparent 58.7%),
-    repeating-linear-gradient(118deg, transparent 0 44px, rgba(255, 255, 255, 0.18) 44px 46px, transparent 46px 112px);
+  background: var(--uma-shell-lines);
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.88), transparent 82%);
 }
 
@@ -144,12 +152,12 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--uma-space-5);
-  border-bottom: 1px solid rgba(123, 79, 145, 0.12);
+  border-bottom: 1px solid var(--uma-border);
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.94), rgba(245, 255, 241, 0.86)),
-    rgba(255, 255, 255, 0.92);
+    linear-gradient(90deg, var(--uma-surface-glass-strong), var(--uma-surface-tint)),
+    var(--uma-surface-glass-strong);
   backdrop-filter: blur(18px);
-  box-shadow: 0 12px 30px rgba(59, 41, 66, 0.12);
+  box-shadow: 0 12px 30px var(--uma-shadow-tint);
 }
 
 .topbar-brand {
@@ -167,10 +175,10 @@
   display: grid;
   place-items: center;
   background: var(--uma-gradient-primary);
-  color: #ffffff;
+  color: var(--uma-on-primary);
   font-size: 17px;
   font-weight: 1000;
-  box-shadow: 0 10px 24px rgba(69, 201, 111, 0.28);
+  box-shadow: 0 10px 24px var(--uma-shadow-tint);
   overflow: hidden;
 }
 
@@ -217,9 +225,9 @@
   align-items: center;
   gap: 3px;
   padding: 3px;
-  border: 1px solid rgba(123, 79, 145, 0.14);
+  border: 1px solid var(--uma-border);
   border-radius: var(--uma-radius-pill);
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--uma-surface-glass);
 }
 
 .profile-switcher-btn {
@@ -239,12 +247,12 @@
 
 .profile-switcher-btn.active {
   background: var(--uma-gradient-primary);
-  color: #ffffff;
-  box-shadow: 0 4px 10px rgba(69, 201, 111, 0.2);
+  color: var(--uma-on-primary);
+  box-shadow: 0 4px 10px var(--uma-shadow-tint);
 }
 
 .topbar-status {
-  border: 1px solid rgba(123, 79, 145, 0.14);
+  border: 1px solid var(--uma-border);
   border-radius: var(--uma-radius-pill);
   padding: 8px 13px;
   background: rgba(255, 255, 255, 0.72);
@@ -278,24 +286,24 @@
 
 .discord-btn {
   background: #5865f2;
-  color: #ffffff;
+  color: var(--uma-on-primary);
 }
 
 .mail-btn {
   position: relative;
   background: var(--uma-gradient-primary);
-  color: #ffffff;
+  color: var(--uma-on-primary);
 }
 
 .notification-btn {
-  background: rgba(255, 255, 255, 0.78);
+  background: var(--uma-surface-glass);
   border: 1px solid var(--uma-border-strong);
   color: var(--uma-primary-dark);
 }
 
 .danger-btn {
-  background: linear-gradient(135deg, #7a384f, #a84c69);
-  color: #ffffff;
+  background: var(--uma-danger-gradient);
+  color: var(--uma-on-primary);
 }
 
 .discord-btn-icon,
@@ -313,8 +321,8 @@
   height: 20px;
   padding: 0 6px;
   border-radius: var(--uma-radius-pill);
-  background: #ef4444;
-  color: #ffffff;
+  background: var(--uma-danger);
+  color: var(--uma-on-primary);
   font-size: 12px;
   font-weight: 900;
   display: flex;
@@ -342,12 +350,12 @@
   position: sticky;
   width: 100%;
   padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.62);
+  border: 1px solid var(--uma-surface-glass-strong);
   border-radius: var(--uma-radius-md);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(245, 255, 241, 0.72)),
-    rgba(255, 255, 255, 0.74);
-  box-shadow: 0 14px 30px rgba(59, 41, 66, 0.11);
+    linear-gradient(180deg, var(--uma-surface-glass-strong), var(--uma-surface-tint)),
+    var(--uma-surface-glass);
+  box-shadow: 0 14px 30px var(--uma-shadow-tint);
   backdrop-filter: blur(14px);
   display: flex;
   flex-direction: column;
@@ -379,7 +387,7 @@
   border: none;
   border-radius: var(--uma-radius-xs);
   background: transparent;
-  color: rgba(59, 41, 66, 0.76);
+  color: var(--uma-muted);
   font-size: 14px;
   font-weight: 950;
   text-align: left;
@@ -405,19 +413,19 @@
 
 .game-nav-btn:hover,
 .sidebar-btn:hover {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--uma-surface-glass);
   color: var(--uma-ink);
   transform: translateX(2px);
-  box-shadow: 0 8px 16px rgba(59, 41, 66, 0.08);
+  box-shadow: 0 8px 16px var(--uma-shadow-tint);
 }
 
 .game-nav-btn.active,
 .sidebar-btn.active {
   background:
-    linear-gradient(90deg, rgba(69, 201, 111, 0.2), rgba(255, 255, 255, 0.88)),
-    rgba(255, 255, 255, 0.82);
+    linear-gradient(90deg, var(--uma-primary-faint), var(--uma-surface-glass-strong)),
+    var(--uma-surface-glass);
   color: var(--uma-ink);
-  box-shadow: 0 10px 20px rgba(69, 201, 111, 0.14), inset 0 0 0 1px rgba(69, 201, 111, 0.2);
+  box-shadow: 0 10px 20px var(--uma-shadow-tint), inset 0 0 0 1px var(--uma-primary-faint);
 }
 
 .game-nav-btn.active .game-nav-active-bar,
@@ -435,10 +443,10 @@
 }
 
 .right-rail-heading {
-  border: 1px solid rgba(123, 79, 145, 0.08);
+  border: 1px solid var(--uma-border);
   border-radius: var(--uma-radius-xs);
   padding: 7px 10px;
-  background: rgba(255, 255, 255, 0.54);
+  background: var(--uma-surface-glass);
   color: var(--uma-muted);
   font-size: 11px;
   font-weight: 1000;

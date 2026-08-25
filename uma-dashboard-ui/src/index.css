@@ -28,6 +28,7 @@
 
   --uma-primary: #45c96f;
   --uma-primary-dark: #23964e;
+  --uma-on-primary: #ffffff;
   --uma-pink: #ff7fb3;
   --uma-coral: #ff9a7a;
   --uma-gold: #ffd45a;
@@ -40,11 +41,28 @@
   --uma-danger: #ff5a6b;
   --uma-success: #35c77b;
   --uma-warning: #f5a623;
+  --uma-danger-gradient: linear-gradient(135deg, #7a384f, #a84c69);
+
+  /* Theme-aware surfaces keep shared components visually consistent. */
+  --uma-surface-glass: color-mix(in srgb, var(--uma-surface) 72%, transparent);
+  --uma-surface-glass-strong: color-mix(in srgb, var(--uma-surface) 82%, transparent);
+  --uma-surface-tint: color-mix(in srgb, var(--uma-bg-soft) 78%, var(--uma-surface));
+  --uma-primary-faint: color-mix(in srgb, var(--uma-primary) 14%, transparent);
+  --uma-shadow-tint: color-mix(in srgb, var(--uma-primary-dark) 14%, transparent);
 
   --uma-gradient-primary: linear-gradient(135deg, #45c96f 0%, #55dca6 52%, #8bdc5c 100%);
   --uma-gradient-race: linear-gradient(135deg, #23964e 0%, #45c96f 48%, #55dca6 100%);
   --uma-gradient-training: linear-gradient(135deg, #8bdc5c 0%, #45c96f 100%);
   --uma-gradient-panel: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(245, 255, 241, 0.92));
+  --uma-shell-glow:
+    radial-gradient(circle at 10% 7%, rgba(69, 201, 111, 0.28), transparent 27%),
+    radial-gradient(circle at 80% 9%, rgba(85, 220, 166, 0.22), transparent 26%),
+    radial-gradient(circle at 60% 95%, rgba(139, 220, 92, 0.2), transparent 34%),
+    linear-gradient(115deg, rgba(245, 255, 241, 0.96), rgba(244, 253, 255, 0.84) 48%, rgba(239, 255, 220, 0.76));
+  --uma-shell-lines:
+    linear-gradient(118deg, transparent 0 43%, rgba(255, 255, 255, 0.58) 43% 43.45%, transparent 43.45%),
+    linear-gradient(118deg, transparent 0 58%, color-mix(in srgb, var(--uma-primary) 16%, transparent) 58% 58.7%, transparent 58.7%),
+    repeating-linear-gradient(118deg, transparent 0 44px, rgba(255, 255, 255, 0.18) 44px 46px, transparent 46px 112px);
 
   --uma-radius-xs: 6px;
   --uma-radius-sm: 9px;
@@ -168,11 +186,11 @@ code {
 }
 
 .ui-game-card {
-  border: 1px solid rgba(255, 255, 255, 0.66);
+  border: 1px solid var(--uma-surface-glass-strong);
   border-radius: var(--uma-radius-md);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 255, 241, 0.9)),
-    var(--uma-surface);
+    linear-gradient(180deg, var(--uma-surface-glass-strong), var(--uma-surface-tint)),
+    var(--uma-surface-glass);
   color: var(--uma-ink);
   box-shadow: var(--uma-shadow-card);
   backdrop-filter: blur(10px);
@@ -242,12 +260,12 @@ code {
 
 .ui-button-primary {
   background: var(--uma-gradient-primary);
-  color: #ffffff;
+  color: var(--uma-on-primary);
 }
 
 .ui-button-secondary {
   background: var(--uma-gradient-race);
-  color: #ffffff;
+  color: var(--uma-on-primary);
 }
 
 .ui-button-ghost {
@@ -257,7 +275,7 @@ code {
 
 .ui-button-danger {
   background: var(--uma-danger);
-  color: #ffffff;
+  color: var(--uma-on-primary);
 }
 
 .ui-button-sm {
