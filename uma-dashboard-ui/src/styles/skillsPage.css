@@ -748,9 +748,28 @@
 .race-history-participant summary small { margin-top: 3px; color: #697866; font-size: 12px; font-weight: 700; }
 .race-history-participant summary em { align-self: center; color: #2d7034; font-size: 13px; font-style: normal; font-weight: 1000; }
 .race-history-participant-detail { padding: 0 12px 14px; border-top: 1px solid rgba(117, 200, 50, .2); }
-.race-history-snapshot-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
-.race-history-snapshot-grid > div, .race-history-timeline { padding: 10px; border-radius: 9px; background: rgba(235, 250, 222, .54); }
+.race-history-snapshot-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.race-history-snapshot-card, .race-history-timeline { padding: 12px; border: 1px solid rgba(117, 200, 50, .18); border-radius: 11px; background: linear-gradient(145deg, rgba(255,255,255,.92), rgba(235, 250, 222, .7)); }
+.race-history-stats-card { grid-column: 1 / -1; }
 .race-history-snapshot-grid p, .race-history-timeline p { margin: 4px 0 0; color: #485548; font-size: 12px; font-weight: 700; line-height: 1.45; }
+.race-history-stat-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; margin-top: 8px; }
+.race-history-stat-chip { display: grid; grid-template-columns: 20px 1fr; align-items: center; gap: 3px 6px; min-width: 0; padding: 7px; border-radius: 9px; background: rgba(255,255,255,.86); box-shadow: inset 0 0 0 1px rgba(117, 200, 50, .14); }
+.race-history-stat-chip img { grid-row: 1 / span 2; width: 20px; height: 20px; object-fit: contain; }
+.race-history-stat-chip span { color: #657363; font-size: 9px; font-weight: 900; text-transform: none; }
+.race-history-stat-chip strong { color: #3d7f32; font-size: 17px; line-height: 1; }
+.race-history-aptitude-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.race-history-aptitude-list span { display: inline-flex; align-items: center; gap: 5px; padding: 4px 6px; border-radius: 999px; background: rgba(126,173,45,.11); color: #4e7024; }
+.race-history-aptitude-list small { font-size: 10px; font-weight: 900; }
+.race-history-aptitude-list strong { font-size: 12px; }
+.race-history-skill-list { display: grid; gap: 6px; margin-top: 8px; }
+.race-history-skill-chip { display: flex; align-items: center; gap: 8px; padding: 7px; border-radius: 9px; background: rgba(255,255,255,.84); box-shadow: inset 0 0 0 1px rgba(117, 200, 50, .14); }
+.race-history-skill-icon { display: grid; place-items: center; width: 30px; height: 30px; overflow: hidden; border-radius: 8px; background: rgba(126,173,45,.12); }
+.race-history-skill-icon .skill-icon-img { width: 26px; height: 26px; object-fit: contain; }
+.race-history-skill-chip strong, .race-history-skill-chip code { display: block; }
+.race-history-skill-chip strong { color: var(--uma-ink); font-size: 12px; }
+.race-history-skill-chip code { margin-top: 2px; color: #67942d; font-size: 10px; font-weight: 900; }
+.race-history-zone-card { display: grid; align-content: center; min-height: 88px; background: linear-gradient(135deg, rgba(100, 188, 233, .18), rgba(126,173,45,.18)); }
+.race-history-zone-card > strong { margin-top: 8px; color: #396746; font-size: 15px; }
 .race-history-timeline { margin-top: 8px; }
 .race-history-detail-actions { grid-template-columns: 1fr; }
 
@@ -772,6 +791,10 @@
   .race-history-participant summary { grid-template-columns: 38px 1fr; }
   .race-history-participant summary em { grid-column: 2; justify-self: start; }
   .race-history-snapshot-grid { grid-template-columns: 1fr; }
+  .race-history-stats-card { grid-column: auto; }
+  .race-history-stat-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .race-history-stat-chip { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 3px; }
+  .race-history-stat-chip img { grid-row: auto; }
 }
 
 

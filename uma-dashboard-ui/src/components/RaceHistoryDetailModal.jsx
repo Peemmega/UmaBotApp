@@ -1,7 +1,27 @@
 import { useEffect, useState } from "react";
 import { Badge, Button } from "./ui";
 import { BOT_API_BASE } from "../api/playerApi";
+import speedIcon from "../assets/icons/Speed.webp";
+import staminaIcon from "../assets/icons/Stamina.webp";
+import powerIcon from "../assets/icons/Power.webp";
+import gutIcon from "../assets/icons/Gut.webp";
+import witIcon from "../assets/icons/Wit.webp";
+import { getSkillIcon } from "../utils/getSkillIcon";
 import "../styles/skillsPage.css";
+
+const STAT_DEFINITIONS = [
+  { key: "speed", label: "Speed", icon: speedIcon },
+  { key: "stamina", label: "Stamina", icon: staminaIcon },
+  { key: "power", label: "Power", icon: powerIcon },
+  { key: "gut", label: "Guts", icon: gutIcon },
+  { key: "wit", label: "Wit", icon: witIcon },
+];
+
+const APTITUDE_LABELS = {
+  turf: "Turf", dirt: "Dirt", sprint: "Sprint", mile: "Mile",
+  medium: "Medium", long: "Long", front: "Front", pace: "Pace",
+  late: "Late", end_style: "End",
+};
 
 function formatHistoryDate(value) {
   if (!value) return "-";
@@ -16,11 +36,13 @@ function formatHistoryDate(value) {
   }).format(date);
 }
 
-function formatSnapshotValues(values) {
-  if (!values || typeof values !== "object") return [];
-  return Object.entries(values)
-    .filter(([, value]) => value !== null && value !== undefined && value !== "")
-    .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(", ") : String(value)}`);
+function skillDetails(skill) {
+  if (typeof skill === "string") return { id: skill, name: skill, icon: null };
+  return {
+    id: skill?.id || skill?.skill_id || "-",
+    name: skill?.name || skill?.id || skill?.skill_id || "-",
+    icon: skill?.icon,
+  };
 }
 
 function formatRaceAction(action) {
@@ -101,6 +123,8 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
                 const participantTurns = turnsByParticipant[participant.participant_id] || [];
                 const participantActions = actionsByParticipant[participant.participant_id] || [];
                 const skills = Array.isArray(snapshot.skills) ? snapshot.skills : [];
+                const baseStats = snapshot.base_stats || {};
+                const aptitudes = snapshot.aptitudes || {};
                 const notRecorded = "ยังไม่มีบันทึกในระบบ";
                 return <details className="race-history-participant" key={participant.participant_id}>
                   <summary>
@@ -110,10 +134,34 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
                   </summary>
                   <div className="race-history-participant-detail">
                     <div className="race-history-snapshot-grid">
-                      <div><span>ค่าสถานะ</span><p>{formatSnapshotValues(snapshot.base_stats).join(" · ") || notRecorded}</p></div>
-                      <div><span>ความถนัด</span><p>{formatSnapshotValues(snapshot.aptitudes).join(" · ") || notRecorded}</p></div>
-                      <div><span>สกิล</span><p>{skills.map((skill) => skill?.name || skill?.id || String(skill)).join(", ") || notRecorded}</p></div>
-                      <div><span>Zone</span><p>{snapshot.zone?.name || snapshot.zone?.zone_name || notRecorded}</p></div>
+                      <div className="race-history-snapshot-card race-history-stats-card">
+                        <span>ค่าสถานะ</span>
+                        {STAT_DEFINITIONS.some((stat) => baseStats[stat.key] !== null && baseStats[stat.key] !== undefined) ? <div className="race-history-stat-grid">
+                          {STAT_DEFINITIONS.map((stat) => <div className="race-history-stat-chip" key={stat.key}>
+                            <img src={stat.icon} alt="" /><span>{stat.label}</span><strong>{baseStats[stat.key] ?? "-"}</strong>
+                          </div>)}
+                        </div> : <p>{notRecorded}</p>}
+                      </div>
+                      <div className="race-history-snapshot-card">
+                        <span>ความถนัด</span>
+                        {Object.keys(aptitudes).length ? <div className="race-history-aptitude-list">
+                          {Object.entries(aptitudes).filter(([, value]) => value !== null && value !== undefined).map(([key, value]) => <span key={key}><small>{APTITUDE_LABELS[key] || key}</small><strong>{value}</strong></span>)}
+                        </div> : <p>{notRecorded}</p>}
+                      </div>
+                      <div className="race-history-snapshot-card race-history-skills-card">
+                        <span>สกิล</span>
+                        {skills.length ? <div className="race-history-skill-list">{skills.map((skill, index) => {
+                          const detail = skillDetails(skill);
+                          return <div className="race-history-skill-chip" key={`${detail.id}-${index}`}>
+                            <div className="race-history-skill-icon">{getSkillIcon(detail.icon)}</div>
+                            <div><strong>{detail.name}</strong><code>{detail.id}</code></div>
+                          </div>;
+                        })}</div> : <p>{notRecorded}</p>}
+                      </div>
+                      <div className="race-history-snapshot-card race-history-zone-card">
+                        <span>Zone</span>
+                        <strong>{snapshot.zone?.name || snapshot.zone?.zone_name || notRecorded}</strong>
+                      </div>
                     </div>
                     <div className="race-history-timeline">
                       <span>ผลแต่ละเทิร์น</span>
