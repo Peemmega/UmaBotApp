@@ -676,7 +676,7 @@
 
 .race-history-section-heading span,
 .race-history-detail-heading span,
-.race-history-snapshot-grid span,
+/* .race-history-snapshot-grid span, */
 .race-history-timeline > span {
   display: block;
   color: #7ead2d;
@@ -757,20 +757,12 @@
 .race-history-stat-chip img { grid-row: 1 / span 2; width: 20px; height: 20px; object-fit: contain; }
 .race-history-stat-chip span { color: #657363; font-size: 9px; font-weight: 900; text-transform: none; }
 .race-history-stat-chip strong { color: #3d7f32; font-size: 17px; line-height: 1; }
-.race-history-profile-stats { margin-top: 8px; border-radius: 11px; overflow: hidden; }
-.race-history-profile-stats .stat-cell { min-height: 84px; padding: 8px 5px; background: linear-gradient(145deg, #5eb744, #318e58); border-right-color: rgba(255,255,255,.5); }
-.race-history-profile-stats .stat-header { justify-content: center; gap: 4px; color: white; font-size: 10px; }
-.race-history-profile-stats .stat-header span { color: white; }
-.race-history-profile-stats .stat-icon { width: 19px; height: 19px; }
-.race-history-profile-stats .stat-body { gap: 5px; }
-.race-history-profile-stats .grade-image { height: 26px; }
-.race-history-profile-stats .stat-value { color: white; font-size: 18px; }
 .race-history-profile-aptitudes { margin-top: 8px; gap: 7px; }
 .race-history-profile-aptitudes .aptitude-row { grid-template-columns: 74px 1fr; gap: 8px; }
 .race-history-profile-aptitudes .aptitude-row-title { font-size: 12px; color: #5f8e29; }
 .race-history-profile-aptitudes .aptitude-row-items { gap: 5px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .race-history-profile-aptitudes .aptitude-item { min-height: 32px; padding: 3px 5px; gap: 4px; background: rgba(255,255,255,.88); }
-.race-history-profile-aptitudes .aptitude-name { font-size: 10px; }
+.race-history-profile-aptitudes .aptitude-name { font-size: 12px; color:#7c3f15 }
 .race-history-profile-aptitudes .aptitude-grade-image { height: 21px; }
 .race-history-profile-skills { margin-top: 8px; padding: 0; }
 .race-history-profile-skills .skill-loadout-item { min-height: 43px; padding: 5px 7px; }

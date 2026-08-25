@@ -20,12 +20,17 @@ function formatHistoryDate(value) {
   }).format(date);
 }
 
-function skillDetails(skill) {
-  if (typeof skill === "string") return { id: skill, name: skill, icon: null };
+function skillDetails(skill, skillCatalog = {}) {
+  if (typeof skill === "string") {
+    const catalogSkill = skillCatalog[skill] || {};
+    return { id: skill, name: catalogSkill.name || skill, icon: catalogSkill.icon || null };
+  }
+  const id = skill?.id || skill?.skill_id || "-";
+  const catalogSkill = skillCatalog[id] || {};
   return {
-    id: skill?.id || skill?.skill_id || "-",
-    name: skill?.name || skill?.id || skill?.skill_id || "-",
-    icon: skill?.icon,
+    id,
+    name: skill?.name && skill.name !== id ? skill.name : catalogSkill.name || skill?.name || id,
+    icon: skill?.icon || catalogSkill.icon,
   };
 }
 
@@ -80,6 +85,7 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [skillCatalog, setSkillCatalog] = useState({});
 
   useEffect(() => {
     const controller = new AbortController();
@@ -94,6 +100,22 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
       .finally(() => setLoading(false));
     return () => controller.abort();
   }, [raceId]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`${BOT_API_BASE}/skills?tag=all`, { signal: controller.signal })
+      .then((res) => res.ok ? res.json() : [])
+      .then((skills) => {
+        if (!Array.isArray(skills)) return;
+        setSkillCatalog(Object.fromEntries(
+          skills.filter((skill) => skill?.id).map((skill) => [skill.id, skill])
+        ));
+      })
+      .catch((requestError) => {
+        if (requestError.name !== "AbortError") setSkillCatalog({});
+      });
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     const handleEscape = (event) => event.key === "Escape" && onClose();
@@ -148,7 +170,7 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
                     <div className="race-history-snapshot-grid">
                       <div className="race-history-snapshot-card race-history-stats-card">
                         <span>ค่าสถานะ</span>
-                        {mainStats.some((stat) => baseStats[stat.key] !== null && baseStats[stat.key] !== undefined) ? <div className="stats-grid race-history-profile-stats">
+                        {mainStats.some((stat) => baseStats[stat.key] !== null && baseStats[stat.key] !== undefined) ? <div className="stats-grid">
                           {mainStats.map((stat) => <StatCell key={stat.key} statKey={stat.key} label={stat.label} value={baseStats[stat.key]} />)}
                         </div> : <p>{notRecorded}</p>}
                       </div>
@@ -164,7 +186,7 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
                       <div className="race-history-snapshot-card race-history-skills-card">
                         <span>สกิล</span>
                         {skills.length ? <div className="skill-loadout-list race-history-profile-skills">{skills.map((skill, index) => {
-                          const detail = skillDetails(skill);
+                          const detail = skillDetails(skill, skillCatalog);
                           return <div className="skill-loadout-item" key={`${detail.id}-${index}`}>
                             <span className="skill-loadout-slot">{index + 1}</span>
                             <div className="skill-icon-box">{getSkillIcon(detail.icon)}</div>
