@@ -55,6 +55,25 @@ function racePlacement(record) {
   return Number.isFinite(Number(place)) ? `#${place}` : "-";
 }
 
+function raceDate(record) {
+  const value = record?.finished_at || record?.finishedAt || record?.date;
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return new Intl.DateTimeFormat("th-TH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function raceScore(record) {
+  const score = record?.final_score ?? record?.score;
+  return Number.isFinite(Number(score)) ? new Intl.NumberFormat().format(Number(score)) : "-";
+}
+
 export default function CharactersPage({ userId, player, profiles }) {
   const [search, setSearch] = useState("");
   const [characters, setCharacters] = useState([]);
@@ -426,7 +445,19 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
             </section>
             <section className="character-profile-section">
               <h3>ประวัติการแข่ง</h3>
-              {detail?.history?.length ? <div className="character-race-list">{detail.history.map((record, index) => <div className="character-race-row" key={record.id || `${raceName(record)}-${index}`}><strong>{racePlacement(record)}</strong><span>{raceName(record)}</span><em>{raceTrack(record)}</em></div>)}</div> : <p className="character-profile-empty">ยังไม่มีประวัติการแข่งขัน</p>}
+              {detail?.history?.length ? <div className="character-race-list" role="table" aria-label="Race history">
+                <div className="character-race-row character-race-row--header" role="row">
+                  <span>วันที่</span><span>รายการ</span><span>เทรนเนอร์</span><span>สายวิ่ง</span><span>อันดับ</span><span>คะแนน</span>
+                </div>
+                {detail.history.map((record, index) => <div className="character-race-row" role="row" key={record.race_id || record.id || `${raceName(record)}-${index}`}>
+                  <time data-label="วันที่">{raceDate(record)}</time>
+                  <span data-label="รายการ"><strong>{raceName(record)}</strong><em>{raceTrack(record)}</em></span>
+                  <span data-label="เทรนเนอร์">{record.trainer_name || "-"}</span>
+                  <span data-label="สายวิ่ง">{record.running_style || "-"}</span>
+                  <strong data-label="อันดับ" className="character-race-placement">{racePlacement(record)}</strong>
+                  <strong data-label="คะแนน">{raceScore(record)}</strong>
+                </div>)}
+              </div> : <p className="character-profile-empty">ยังไม่มีประวัติการแข่งขัน</p>}
             </section>
           </>
         )}

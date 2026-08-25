@@ -252,11 +252,14 @@
 .character-aptitude-group .aptitude-item { min-width: 72px; padding: 4px 6px; gap: 15px;}
 
 .character-race-list { border: 1px solid color-mix(in srgb, var(--character-modal-primary) 20%, white); border-radius: 12px; overflow: hidden; }
-.character-race-row { display: grid; grid-template-columns: 48px 1fr auto; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid color-mix(in srgb, var(--character-modal-primary) 16%, white); }
+.character-race-row { display: grid; grid-template-columns: 1.25fr 1.3fr 1fr .7fr .45fr .6fr; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid color-mix(in srgb, var(--character-modal-primary) 16%, white); }
 .character-race-row:last-child { border-bottom: 0; }
-.character-race-row strong { color: var(--character-modal-primary); font-size: 17px; }
-.character-race-row span { color: var(--uma-ink); font-weight: 800; }
-.character-race-row em { color: #6b796d; font-size: 13px; font-style: normal; }
+.character-race-row strong { color: var(--character-modal-primary); font-size: 15px; }
+.character-race-row span, .character-race-row time { color: var(--uma-ink); font-size: 13px; font-weight: 800; }
+.character-race-row em { display: block; margin-top: 3px; color: #6b796d; font-size: 12px; font-style: normal; }
+.character-race-row--header { background: var(--character-modal-soft); padding-block: 9px; }
+.character-race-row--header span { color: var(--character-modal-primary); font-size: 11px; font-weight: 1000; text-transform: uppercase; }
+.character-race-placement { font-size: 17px !important; }
 
 .character-team-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2%; }
 .character-modal-team-card { overflow: hidden; padding: 0; border: 1px solid color-mix(in srgb, var(--character-modal-primary) 28%, white); border-radius: 12px; background: #fff; box-shadow: 0 6px 16px rgba(48, 71, 53, 0.08); cursor: pointer; text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; }
@@ -318,4 +321,7 @@
   .character-aptitude-group { grid-template-columns: 1fr; gap: 6px; }
   .character-team-grid { grid-template-columns: 1fr; }
   .character-profile-trainer { width: calc(100% - 36px); margin: 18px 18px 0; }
+  .character-race-row { grid-template-columns: 1fr 1fr; gap: 9px 14px; padding: 12px; }
+  .character-race-row--header { display: none; }
+  .character-race-row > [data-label]::before { content: attr(data-label); display: block; margin-bottom: 2px; color: var(--character-modal-primary); font-size: 10px; font-weight: 1000; text-transform: uppercase; }
 }
