@@ -97,7 +97,7 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
             <section className="race-history-participants">
               <h3>ผู้เข้าแข่งทั้งหมด ({participants.length})</h3>
               {participants.map((participant) => {
-                const snapshot = participant.snapshot_json || {};
+                const snapshot = participant.snapshot || participant.snapshot_json || {};
                 const participantTurns = turnsByParticipant[participant.participant_id] || [];
                 const participantActions = actionsByParticipant[participant.participant_id] || [];
                 const skills = Array.isArray(snapshot.skills) ? snapshot.skills : [];
