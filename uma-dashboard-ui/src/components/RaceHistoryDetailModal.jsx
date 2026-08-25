@@ -1,27 +1,11 @@
 import { useEffect, useState } from "react";
 import { Badge, Button } from "./ui";
 import { BOT_API_BASE } from "../api/playerApi";
-import speedIcon from "../assets/icons/Speed.webp";
-import staminaIcon from "../assets/icons/Stamina.webp";
-import powerIcon from "../assets/icons/Power.webp";
-import gutIcon from "../assets/icons/Gut.webp";
-import witIcon from "../assets/icons/Wit.webp";
+import { mainStats, aptitudeRows } from "../data/dashboardConfig";
+import StatCell from "./StatCell";
+import AptitudeItem from "./AptitudeItem";
 import { getSkillIcon } from "../utils/getSkillIcon";
 import "../styles/skillsPage.css";
-
-const STAT_DEFINITIONS = [
-  { key: "speed", label: "Speed", icon: speedIcon },
-  { key: "stamina", label: "Stamina", icon: staminaIcon },
-  { key: "power", label: "Power", icon: powerIcon },
-  { key: "gut", label: "Guts", icon: gutIcon },
-  { key: "wit", label: "Wit", icon: witIcon },
-];
-
-const APTITUDE_LABELS = {
-  turf: "Turf", dirt: "Dirt", sprint: "Sprint", mile: "Mile",
-  medium: "Medium", long: "Long", front: "Front", pace: "Pace",
-  late: "Late", end_style: "End",
-};
 
 function formatHistoryDate(value) {
   if (!value) return "-";
@@ -62,6 +46,34 @@ function formatRaceAction(action) {
   if (type === "rush") return `ใช้ Rush +${data.move_forward ?? "-"}`;
   if (type === "block") return `ใช้ Block ถอย ${data.move_back ?? "-"}`;
   return action?.action_type || "-";
+}
+
+function RaceResultTable({ turns }) {
+  return (
+    <section className="race-history-table-section">
+      <span>ผลการทอยแต่ละเทิร์น</span>
+      {turns.length ? <div className="race-history-table-wrap"><table>
+        <thead><tr><th>เทิร์น</th><th>ผลทอย</th><th>คะแนนรวม</th><th>เลน</th><th>อันดับ</th></tr></thead>
+        <tbody>{turns.map((turn) => <tr key={`${turn.participant_id}-${turn.turn_number}`}>
+          <td>T{turn.turn_number}</td><td>+{turn.run_score ?? "-"}</td><td>{turn.score_after ?? "-"}</td><td>{turn.lane ?? "-"}</td><td>#{turn.position ?? "-"}</td>
+        </tr>)}</tbody>
+      </table></div> : <p>ยังไม่มีผลทอยที่บันทึกไว้</p>}
+    </section>
+  );
+}
+
+function RaceActionTable({ actions }) {
+  return (
+    <section className="race-history-table-section">
+      <span>Action Log</span>
+      {actions.length ? <div className="race-history-table-wrap"><table>
+        <thead><tr><th>เทิร์น</th><th>ประเภท</th><th>รายละเอียด</th></tr></thead>
+        <tbody>{actions.map((action) => <tr key={action.action_id}>
+          <td>T{action.turn_number}</td><td><code>{action.action_type}</code></td><td>{formatRaceAction(action)}</td>
+        </tr>)}</tbody>
+      </table></div> : <p>ยังไม่มีบันทึกการกระทำ</p>}
+    </section>
+  );
 }
 
 export default function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
@@ -136,25 +148,28 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
                     <div className="race-history-snapshot-grid">
                       <div className="race-history-snapshot-card race-history-stats-card">
                         <span>ค่าสถานะ</span>
-                        {STAT_DEFINITIONS.some((stat) => baseStats[stat.key] !== null && baseStats[stat.key] !== undefined) ? <div className="race-history-stat-grid">
-                          {STAT_DEFINITIONS.map((stat) => <div className="race-history-stat-chip" key={stat.key}>
-                            <img src={stat.icon} alt="" /><span>{stat.label}</span><strong>{baseStats[stat.key] ?? "-"}</strong>
-                          </div>)}
+                        {mainStats.some((stat) => baseStats[stat.key] !== null && baseStats[stat.key] !== undefined) ? <div className="stats-grid race-history-profile-stats">
+                          {mainStats.map((stat) => <StatCell key={stat.key} statKey={stat.key} label={stat.label} value={baseStats[stat.key]} />)}
                         </div> : <p>{notRecorded}</p>}
                       </div>
                       <div className="race-history-snapshot-card">
                         <span>ความถนัด</span>
-                        {Object.keys(aptitudes).length ? <div className="race-history-aptitude-list">
-                          {Object.entries(aptitudes).filter(([, value]) => value !== null && value !== undefined).map(([key, value]) => <span key={key}><small>{APTITUDE_LABELS[key] || key}</small><strong>{value}</strong></span>)}
+                        {Object.keys(aptitudes).length ? <div className="aptitude-table race-history-profile-aptitudes">
+                          {aptitudeRows.map((row) => <div className="aptitude-row" key={row.title}>
+                            <div className="aptitude-row-title">{row.title}</div>
+                            <div className="aptitude-row-items">{row.items.map((item) => <AptitudeItem key={item.key} label={item.label} value={aptitudes[item.key]} />)}</div>
+                          </div>)}
                         </div> : <p>{notRecorded}</p>}
                       </div>
                       <div className="race-history-snapshot-card race-history-skills-card">
                         <span>สกิล</span>
-                        {skills.length ? <div className="race-history-skill-list">{skills.map((skill, index) => {
+                        {skills.length ? <div className="skill-loadout-list race-history-profile-skills">{skills.map((skill, index) => {
                           const detail = skillDetails(skill);
-                          return <div className="race-history-skill-chip" key={`${detail.id}-${index}`}>
-                            <div className="race-history-skill-icon">{getSkillIcon(detail.icon)}</div>
-                            <div><strong>{detail.name}</strong><code>{detail.id}</code></div>
+                          return <div className="skill-loadout-item" key={`${detail.id}-${index}`}>
+                            <span className="skill-loadout-slot">{index + 1}</span>
+                            <div className="skill-icon-box">{getSkillIcon(detail.icon)}</div>
+                            <span className="skill-loadout-name">{detail.name}</span>
+                            <code className="race-history-skill-id">{detail.id}</code>
                           </div>;
                         })}</div> : <p>{notRecorded}</p>}
                       </div>
@@ -163,14 +178,8 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
                         <strong>{snapshot.zone?.name || snapshot.zone?.zone_name || notRecorded}</strong>
                       </div>
                     </div>
-                    <div className="race-history-timeline">
-                      <span>ผลแต่ละเทิร์น</span>
-                      {participantTurns.length ? participantTurns.map((turn) => <p key={`${turn.participant_id}-${turn.turn_number}`}>T{turn.turn_number}: +{turn.run_score ?? "-"} · Score {turn.score_after} · Lane {turn.lane ?? "-"} · อันดับ {turn.position ?? "-"}</p>) : <p>-</p>}
-                    </div>
-                    <div className="race-history-timeline">
-                      <span>การกระทำ</span>
-                      {participantActions.length ? participantActions.map((action) => <p key={action.action_id}>T{action.turn_number}: {formatRaceAction(action)}</p>) : <p>ยังไม่มีบันทึกการกระทำ</p>}
-                    </div>
+                    <RaceResultTable turns={participantTurns} />
+                    <RaceActionTable actions={participantActions} />
                   </div>
                 </details>;
               })}
