@@ -3,11 +3,13 @@ import requests
 import httpx
 import sqlite3
 import time
+import secrets
 
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse, JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
 from dotenv import load_dotenv
 import uvicorn
 import os
@@ -42,8 +44,24 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 BOT_API_BASE = os.getenv("BOT_API_BASE", "").rstrip("/")
+DISCORD_GUILD_ID = os.getenv("DISCORD_GUILD_ID")
+# Use a separate, high-entropy value in Railway. Falling back to the OAuth
+# secret keeps existing deployments working while they add SESSION_SECRET.
+SESSION_SECRET = os.getenv("SESSION_SECRET") or CLIENT_SECRET
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not SESSION_SECRET:
+    raise RuntimeError("SESSION_SECRET or CLIENT_SECRET must be configured")
+
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=SESSION_SECRET,
+    session_cookie="uma_dashboard_session",
+    max_age=60 * 60 * 24,
+    same_site="lax",
+    https_only=IS_RAILWAY,
+)
 
 
 def get_sqlite_connection():
@@ -181,34 +199,111 @@ def get_player_summary_rows(cur):
     return fetch_all(cur)
 
 
+def login_error_redirect(error: str):
+    return RedirectResponse(
+        f"{FRONTEND_URL.rstrip('/')}?{urlencode({'login_error': error})}"
+    )
+
+
+async def is_discord_guild_member(access_token: str) -> bool:
+    """Check the current user's Guild list obtained through Discord OAuth."""
+    if not DISCORD_GUILD_ID:
+        raise RuntimeError("DISCORD_GUILD_ID is not configured")
+
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        guilds_res = await client.get(
+            "https://discord.com/api/users/@me/guilds",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        guilds_res.raise_for_status()
+
+    return any(str(guild.get("id")) == DISCORD_GUILD_ID for guild in guilds_res.json())
+
+
 @app.get("/login")
-def login():
-    auth_url = f"https://discord.com/api/oauth2/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code&scope=identify"
+def login(request: Request):
+    if not CLIENT_ID or not REDIRECT_URI:
+        return JSONResponse({"detail": "Discord OAuth is not configured"}, status_code=503)
+
+    state = secrets.token_urlsafe(32)
+    request.session["discord_oauth_state"] = state
+    auth_url = "https://discord.com/api/oauth2/authorize?" + urlencode({
+        "client_id": CLIENT_ID,
+        "redirect_uri": REDIRECT_URI,
+        "response_type": "code",
+        "scope": "identify guilds",
+        "state": state,
+    })
     return RedirectResponse(auth_url)
 
-@app.get("/callback")
-async def callback(code: str):
-    data = {
-        'client_id': CLIENT_ID, 'client_secret': CLIENT_SECRET,
-        'grant_type': 'authorization_code', 'code': code, 'redirect_uri': REDIRECT_URI
-    }
-    response = requests.post("https://discord.com/api/oauth2/token", data=data)
-    access_token = response.json().get("access_token")
 
-    user_response = requests.get("https://discord.com/api/users/@me", headers={
-        'Authorization': f'Bearer {access_token}'
-    })
+@app.get("/callback")
+async def callback(
+    request: Request,
+    code: str | None = None,
+    state: str | None = None,
+    error: str | None = None,
+):
+    if error or not code:
+        return login_error_redirect("discord_login_cancelled")
+
+    expected_state = request.session.pop("discord_oauth_state", None)
+    if not expected_state or not state or not secrets.compare_digest(expected_state, state):
+        return login_error_redirect("invalid_login_request")
+
+    data = {
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
+        "grant_type": "authorization_code",
+        "code": code,
+        "redirect_uri": REDIRECT_URI,
+    }
+    response = requests.post("https://discord.com/api/oauth2/token", data=data, timeout=10)
+    if not response.ok:
+        return login_error_redirect("discord_login_failed")
+    access_token = response.json().get("access_token")
+    if not access_token:
+        return login_error_redirect("discord_login_failed")
+
+    user_response = requests.get(
+        "https://discord.com/api/users/@me",
+        headers={"Authorization": f"Bearer {access_token}"},
+        timeout=10,
+    )
+    if not user_response.ok:
+        return login_error_redirect("discord_login_failed")
+
     user_data = user_response.json()
-    # Give each Discord return URL a unique cache key so the browser always
-    # loads the current SPA bundle after login rather than a cached dashboard.
-    params = urlencode({
+    try:
+        if not await is_discord_guild_member(access_token):
+            return login_error_redirect("not_a_server_member")
+    except httpx.HTTPError:
+        return login_error_redirect("guild_check_failed")
+    except RuntimeError:
+        return login_error_redirect("guild_check_not_configured")
+
+    # The signed, HTTP-only cookie is the web login proof. Do not put a
+    # Discord identity in the redirect URL, since users can manufacture it.
+    request.session["discord_user"] = {
         "username": user_data["username"],
         "id": user_data["id"],
         "avatar": user_data.get("avatar") or "",
-        "login_nonce": str(time.time_ns()),
-    })
-    target_url = f"{FRONTEND_URL.rstrip('/')}/dashboard?{params}"
-    return RedirectResponse(target_url)
+    }
+    return RedirectResponse(f"{FRONTEND_URL.rstrip('/')}/dashboard/profile")
+
+
+@app.get("/api/auth/me")
+def get_authenticated_discord_user(request: Request):
+    user = request.session.get("discord_user")
+    if not user:
+        return JSONResponse({"detail": "Authentication required"}, status_code=401)
+    return user
+
+
+@app.post("/api/auth/logout")
+def logout(request: Request):
+    request.session.clear()
+    return {"ok": True}
 
 @app.get("/api/bot-stats/")
 def get_bot_stats():
@@ -303,15 +398,20 @@ async def exchange_discord_code_and_get_user(code: str, redirect_uri: str):
         )
 
         user_res.raise_for_status()
-        return user_res.json()
+        return user_res.json(), access_token
 
 
 @app.get("/callback/mobile")
 async def discord_mobile_callback(code: str):
-    user = await exchange_discord_code_and_get_user(
-        code,
-        redirect_uri=MOBILE_REDIRECT_URI,
-    )
+    try:
+        user, access_token = await exchange_discord_code_and_get_user(
+            code,
+            redirect_uri=MOBILE_REDIRECT_URI,
+        )
+        if not await is_discord_guild_member(access_token):
+            return RedirectResponse("umadnd://callback?error=not_a_server_member")
+    except (httpx.HTTPError, RuntimeError):
+        return RedirectResponse("umadnd://callback?error=discord_login_failed")
     params = urlencode({
         "username": user["username"],
         "id": user["id"],

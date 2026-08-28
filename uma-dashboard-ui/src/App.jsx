@@ -11,47 +11,9 @@ import { getAccountRole, getPlayer, selectAccountRole } from "./api/playerApi";
 import { APP_BASE_URL } from "./api/appConfig";
 import { getDiscordAvatarUrl, resolveSessionAvatar } from "./utils/avatar";
 import { ArrowRight, GraduationCap, Sparkles, Trophy, UsersRound } from "lucide-react";
+import { Capacitor } from "@capacitor/core";
 
 const APP_BASE = APP_BASE_URL;
-
-const SESSION_KEY = "uma_login";
-const SESSION_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
-
-function saveLoginSession({ username, userId, avatarHash }) {
-  localStorage.setItem(
-    SESSION_KEY,
-    JSON.stringify({
-      username,
-      userId,
-      avatarHash,
-      loggedInAt: Date.now(),
-    })
-  );
-}
-
-function loadLoginSession() {
-  const raw = localStorage.getItem(SESSION_KEY);
-  if (!raw) return null;
-
-  try {
-    const session = JSON.parse(raw);
-
-    if (!session.username || !session.userId) {
-      localStorage.removeItem(SESSION_KEY);
-      return null;
-    }
-
-    if (Date.now() - session.loggedInAt > SESSION_MAX_AGE) {
-      localStorage.removeItem(SESSION_KEY);
-      return null;
-    }
-
-    return session;
-  } catch {
-    localStorage.removeItem(SESSION_KEY);
-    return null;
-  }
-}
 
 const ROLE_CHOICES = [
   {
@@ -213,6 +175,8 @@ function RoleSelection({ busy, error, onSelect }) {
 export default function App() {
   const [showIntro, setShowIntro] = useState(true);
   const [routePath, setRoutePath] = useState(window.location.pathname);
+  const [authLoading, setAuthLoading] = useState(!Capacitor.isNativePlatform());
+  const [loginError, setLoginError] = useState("");
 
   const [username, setUsername] = useState("");
   const [userId, setUserId] = useState("");
@@ -244,33 +208,49 @@ export default function App() {
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
+    setLoginError(query.get("login_error") || "");
 
     const queryUsername = query.get("username");
     const queryUserId = query.get("id");
     const queryAvatarHash = query.get("avatar");
 
-    if (queryUsername && queryUserId) {
+    if (Capacitor.isNativePlatform() && queryUsername && queryUserId) {
       setUsername(queryUsername);
       setUserId(queryUserId);
       setAvatarHash(queryAvatarHash || "");
-
-      saveLoginSession({
-        username: queryUsername,
-        userId: queryUserId,
-        avatarHash: queryAvatarHash || "",
-      });
 
       window.history.replaceState({}, document.title, "/dashboard/profile");
       return;
     }
 
-    const session = loadLoginSession();
+    if (Capacitor.isNativePlatform()) return;
 
-    if (session) {
-      setUsername(session.username);
-      setUserId(session.userId);
-      setAvatarHash(session.avatarHash || "");
-    }
+    let cancelled = false;
+    fetch(`${APP_BASE}/api/auth/me`, { credentials: "include", cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Not authenticated");
+        return response.json();
+      })
+      .then((user) => {
+        if (cancelled) return;
+        setUsername(user.username);
+        setUserId(user.id);
+        setAvatarHash(user.avatar || "");
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setUsername("");
+          setUserId("");
+          setAvatarHash("");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setAuthLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -378,7 +358,6 @@ export default function App() {
   }, [avatarUrl, discordAvatarUrl, player?.profile_image_url, userId]);
 
   const handleLogout = () => {
-    localStorage.removeItem(SESSION_KEY);
     sessionStorage.removeItem(`player:${userId}`);
 
     setUsername("");
@@ -387,6 +366,9 @@ export default function App() {
     setPlayer(null);
     setAccountRole(null);
 
+    if (!Capacitor.isNativePlatform()) {
+      void fetch(`${APP_BASE}/api/auth/logout`, { method: "POST", credentials: "include" });
+    }
     window.location.href = "/";
   };
 
@@ -424,8 +406,10 @@ export default function App() {
     }
   };
 
-  const pageContent = !username ? (
-    <LoginPage key="login" appBase={APP_BASE} />
+  const pageContent = authLoading ? (
+    <LoadingScreen key="auth-loading" onFinished={() => {}} />
+  ) : !username ? (
+    <LoginPage key="login" appBase={APP_BASE} loginError={loginError} />
   ) : isRoleLoading ? (
     <LoadingScreen key="role-loading" onFinished={() => {}} />
   ) : !accountRole ? (

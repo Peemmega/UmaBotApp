@@ -5,7 +5,16 @@ import "../styles/login.css";
 import { Capacitor } from "@capacitor/core";
 import { loginWithDiscordApp } from "../services/discordAuth";
 
-export default function LoginPage({ appBase }) {
+const loginErrors = {
+  not_a_server_member: "คุณต้องเข้าร่วม Discord server ก่อนจึงจะเข้าใช้งานได้",
+  guild_check_failed: "ไม่สามารถตรวจสอบสมาชิก Discord ได้ กรุณาลองใหม่อีกครั้ง",
+  guild_check_not_configured: "ระบบยังไม่ได้ตั้งค่า Discord server สำหรับตรวจสอบ",
+  discord_login_cancelled: "ยกเลิกการเข้าสู่ระบบ Discord แล้ว",
+  invalid_login_request: "คำขอเข้าสู่ระบบไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง",
+  discord_login_failed: "เข้าสู่ระบบ Discord ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
+};
+
+export default function LoginPage({ appBase, loginError = "" }) {
   return (
     <div
       className="login-bg-page"
@@ -51,6 +60,12 @@ export default function LoginPage({ appBase }) {
               <img src={discordIcon} className="login-button-icon" />
               Login ด้วย Discord
             </button>
+
+            {loginError && (
+              <p className="login-subtitle" role="alert">
+                {loginErrors[loginError] || "ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง"}
+              </p>
+            )}
 
             <div className="login-footer">
               Login ด้วย Discord เพื่อยืนยันตัวตนของคุณ
