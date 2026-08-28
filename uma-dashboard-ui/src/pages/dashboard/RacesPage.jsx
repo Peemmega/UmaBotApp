@@ -270,9 +270,9 @@ export default function RacesPage({ userId }) {
                     <div className="content-meta-row race-meta-row">
                       <span>{race.venue || "Other"}</span>
                       <span className={`race-surface-tag is-${race.track}`}>{race.track}</span>
+                      <span className="race-distance-label">{race.distance}</span>
                       <span>{race.turn} Turns</span>
                     </div>
-                    <span className="race-distance-label">{race.distance}</span>
                   </div>
                 </div>
               </div>
