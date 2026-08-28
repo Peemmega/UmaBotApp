@@ -19,6 +19,12 @@ const DISTANCE_FILTERS = [
   { value: "long", label: "Long" },
 ];
 
+const SURFACE_FILTERS = [
+  { value: "all", label: "All surfaces" },
+  { value: "turf", label: "Turf" },
+  { value: "dirt", label: "Dirt" },
+];
+
 const PATH_ICON = {
   1: "➡️",
   2: "⤵️",
@@ -29,6 +35,8 @@ const PATH_ICON = {
 export default function RacesPage({ userId }) {
   const [races, setRaces] = useState([]);
   const [activeDistance, setActiveDistance] = useState("all");
+  const [activeSurface, setActiveSurface] = useState("all");
+  const [activeVenue, setActiveVenue] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedRace, setSelectedRace] = useState(null);
   const [raceHistory, setRaceHistory] = useState([]);
@@ -91,9 +99,29 @@ export default function RacesPage({ userId }) {
       const matchDistance =
         activeDistance === "all" || raceDistance === activeDistance;
 
-      return matchSearch && matchDistance;
+      const matchSurface =
+        activeSurface === "all" || String(race.track || "").toLowerCase() === activeSurface;
+
+      const matchVenue =
+        activeVenue === "all" || String(race.venue || "Other") === activeVenue;
+
+      return matchSearch && matchDistance && matchSurface && matchVenue;
     });
-  }, [races, search, activeDistance]);
+  }, [races, search, activeDistance, activeSurface, activeVenue]);
+
+  const venueOptions = useMemo(
+    () => Array.from(new Set(races.map((race) => race.venue || "Other"))).sort((a, b) => a.localeCompare(b)),
+    [races]
+  );
+
+  const resetFilters = () => {
+    setSearch("");
+    setActiveDistance("all");
+    setActiveSurface("all");
+    setActiveVenue("all");
+  };
+
+  const hasActiveFilters = search || activeDistance !== "all" || activeSurface !== "all" || activeVenue !== "all";
 
   const createRaceRoom = async () => {
     if (IS_MAIN_WEB || !selectedRace) return;
@@ -147,12 +175,43 @@ export default function RacesPage({ userId }) {
         />
 
         <div className="skills-toolbar">
+          <div className="race-directory-filter-grid">
           <SearchInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="ค้นหาสนาม..."
           />
 
+            <label className="race-directory-select">
+              <span>Racetrack</span>
+              <select value={activeVenue} onChange={(event) => setActiveVenue(event.target.value)}>
+                <option value="all">All racetracks</option>
+                {venueOptions.map((venue) => <option key={venue} value={venue}>{venue}</option>)}
+              </select>
+            </label>
+
+            {hasActiveFilters ? (
+              <Button variant="ghost" className="race-reset-filters" onClick={resetFilters}>
+                Reset filters
+              </Button>
+            ) : null}
+          </div>
+
+          <div className="race-directory-filter-group">
+            <span className="race-directory-filter-label">Surface</span>
+            <FilterTabs
+              items={SURFACE_FILTERS}
+              value={activeSurface}
+              onChange={(value) => {
+                playSound("click");
+                setActiveSurface(value);
+              }}
+              className="skills-filter-row"
+            />
+          </div>
+
+          <div className="race-directory-filter-group">
+            <span className="race-directory-filter-label">Distance</span>
           <FilterTabs
             items={DISTANCE_FILTERS}
             value={activeDistance}
@@ -162,6 +221,7 @@ export default function RacesPage({ userId }) {
             }}
             className="skills-filter-row"
           />
+          </div>
         </div>
       </GameCard>
       
@@ -176,8 +236,8 @@ export default function RacesPage({ userId }) {
         </StaggerContainer>
       ) : (
         <StaggerContainer
-          className="skills-grid race-grid"
-          key={`${activeDistance}-${search}`}
+          className="skills-grid race-grid race-directory-grid"
+          key={`${activeDistance}-${activeSurface}-${activeVenue}-${search}`}
         >
           {filteredRaces.map((race) => {
           const raceImg = getRaceImage(race);
@@ -193,7 +253,7 @@ export default function RacesPage({ userId }) {
               }}
             >
 
-              <div className="race-stage-icon-box">
+              <div className="race-stage-icon-box race-directory-image">
                   <img
                     src={raceImg}
                     alt={race.name}
@@ -208,10 +268,11 @@ export default function RacesPage({ userId }) {
                 <div className="skill-main-row">
                   <div className="skill-content">
                     <div className="content-meta-row race-meta-row">
-                      <span>{race.distance}</span>
-                      <span>{race.track}</span>
+                      <span>{race.venue || "Other"}</span>
+                      <span className={`race-surface-tag is-${race.track}`}>{race.track}</span>
                       <span>{race.turn} Turns</span>
                     </div>
+                    <span className="race-distance-label">{race.distance}</span>
                   </div>
                 </div>
               </div>

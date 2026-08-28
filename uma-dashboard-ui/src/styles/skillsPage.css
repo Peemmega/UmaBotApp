@@ -16,6 +16,49 @@
   border-top: 1px solid rgba(123, 79, 145, 0.08);
 }
 
+.race-directory-filter-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.5fr) minmax(180px, 0.8fr) auto;
+  align-items: end;
+  gap: var(--uma-space-3);
+}
+
+.race-directory-select,
+.race-directory-filter-group {
+  display: grid;
+  gap: 7px;
+}
+
+.race-directory-select span,
+.race-directory-filter-label {
+  color: var(--uma-muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.race-directory-select select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(123, 79, 145, 0.18);
+  border-radius: var(--uma-radius-xs);
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--uma-ink);
+  font: inherit;
+  font-weight: 800;
+}
+
+.race-reset-filters {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+.race-directory-filter-group + .race-directory-filter-group {
+  margin-top: var(--uma-space-1);
+}
+
 .skills-filter-row {
   display: flex;
   gap: var(--uma-space-2);
@@ -78,6 +121,55 @@
   color: var(--uma-ink);
   box-shadow: 0 12px 26px rgba(59, 41, 66, 0.11);
   overflow: hidden;
+}
+
+.race-directory-grid {
+  gap: var(--uma-space-4);
+}
+
+.race-directory-grid .race-card {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  align-items: stretch;
+  min-height: 128px;
+  padding: 8px;
+  text-align: left;
+}
+
+.race-directory-image {
+  height: 100%;
+  min-height: 110px;
+}
+
+.race-directory-grid .race-card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--uma-space-3) var(--uma-space-4);
+}
+
+.race-directory-grid .race-id {
+  margin-bottom: var(--uma-space-2);
+}
+
+.race-directory-grid .race-meta-row {
+  grid-template-columns: minmax(0, 1.3fr) minmax(70px, 0.8fr) minmax(65px, 0.7fr);
+  margin-bottom: 0;
+}
+
+.race-surface-tag.is-dirt {
+  background: rgba(236, 187, 113, 0.3);
+  color: #88530b;
+}
+
+.race-distance-label {
+  display: block;
+  margin-top: 10px;
+  color: var(--uma-primary-dark);
+  font-size: 12px;
+  font-weight: 1000;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .race-card::before {
@@ -896,6 +988,31 @@
 }
 
 @media (max-width: 640px) {
+  .race-directory-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .race-reset-filters {
+    width: 100%;
+  }
+
+  .race-directory-grid .race-card {
+    grid-template-columns: 106px minmax(0, 1fr);
+    min-height: 102px;
+  }
+
+  .race-directory-image {
+    min-height: 86px;
+  }
+
+  .race-directory-grid .race-card-body {
+    padding: 7px 8px;
+  }
+
+  .race-directory-grid .race-meta-row {
+    grid-template-columns: minmax(0, 1fr) 62px 58px;
+  }
+
   .skills-page {
     gap: 10px;
   }
