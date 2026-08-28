@@ -14,7 +14,53 @@ const loginErrors = {
   discord_login_failed: "เข้าสู่ระบบ Discord ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
 };
 
+function LoginFeedback({ loginError }) {
+  const isNotMember = loginError === "not_a_server_member";
+  const message =
+    loginErrors[loginError] || "ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง";
+
+  return (
+    <div
+      className="login-bg-page"
+      style={{ backgroundImage: `url(${bgImage})` }}
+    >
+      <main className="login-page">
+        <section className="login-card login-feedback-card" role="alert" aria-live="assertive">
+          <div className="login-header">Uma Bot Dashboard</div>
+          <div className="login-body login-feedback-body">
+            <div className="login-feedback-icon" aria-hidden="true">!</div>
+            <div className="login-badge">Tracen Academy RP</div>
+            <h1 className="login-title">
+              {isNotMember ? "ยังเข้าใช้งานไม่ได้" : "เข้าสู่ระบบไม่สำเร็จ"}
+            </h1>
+            <p className="login-feedback-message">{message}</p>
+            {isNotMember && (
+              <p className="login-feedback-hint">
+                โปรดเข้าร่วม Discord Server ของเราก่อน แล้วกลับมาลองเข้าสู่ระบบอีกครั้ง
+              </p>
+            )}
+            <button
+              type="button"
+              className="login-feedback-button"
+              onClick={() => {
+                playSound("click");
+                window.location.href = "/";
+              }}
+            >
+              กลับไปหน้าเข้าสู่ระบบ
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
 export default function LoginPage({ appBase, loginError = "" }) {
+  if (loginError) {
+    return <LoginFeedback loginError={loginError} />;
+  }
+
   return (
     <div
       className="login-bg-page"
@@ -60,12 +106,6 @@ export default function LoginPage({ appBase, loginError = "" }) {
               <img src={discordIcon} className="login-button-icon" />
               Login ด้วย Discord
             </button>
-
-            {loginError && (
-              <p className="login-subtitle" role="alert">
-                {loginErrors[loginError] || "ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง"}
-              </p>
-            )}
 
             <div className="login-footer">
               Login ด้วย Discord เพื่อยืนยันตัวตนของคุณ
