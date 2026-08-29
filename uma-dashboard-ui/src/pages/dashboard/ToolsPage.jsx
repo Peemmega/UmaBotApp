@@ -23,8 +23,10 @@ const WISDOM_VALUES = Array.from({ length: 8 }, (_, index) => index + 1);
 
 function getWitValue({ wisdom, turn, aptitudeBonus }) {
   // Turn 1 always begins at 100 + (10 × Wit), before any aptitude bonus applies.
-  const baseValue = 100 + wisdom * 10 + (turn - 1) * (10 + wisdom * 2);
-  return turn === 1 ? baseValue : Math.round(baseValue * (1 + aptitudeBonus / 100));
+  const baseValue = 100 + wisdom * 10;
+  const witPerTurn = 10 + wisdom * 2;
+  const turnGain = witPerTurn * (1 + aptitudeBonus / 100) * (turn - 1);
+  return Math.round(baseValue + turnGain);
 }
 
 export default function ToolsPage() {
