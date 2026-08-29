@@ -10,8 +10,29 @@ import witIcon from "../../assets/icons/Wit.webp";
 import staminaIcon from "../../assets/icons/Stamina.webp";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 import { describeRaceEffect } from "../../utils/raceEffects";
-import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
+import { Badge, Button, GameCard, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
+
+const STAMINA_EMOJI_PATTERN = /(<a?:Stamina:\d+>)/g;
+
+function renderTextWithIcons(text) {
+  if (!text) return null;
+
+  return String(text).split(STAMINA_EMOJI_PATTERN).map((part, index) => {
+    if (/^<a?:Stamina:\d+>$/.test(part)) {
+      return (
+        <img
+          key={index}
+          src={staminaIcon}
+          alt="Stamina"
+          className="inline-icon"
+        />
+      );
+    }
+
+    return part;
+  });
+}
 
 export default function SkillsPage({ userId, username, onSkillEquipped }) {
   const [skills, setSkills] = useState([]);
@@ -111,35 +132,6 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
     [skills]
   );
 
-  function formatText(text) {
-    if (!text) return "";
-
-    return text
-      .replace(/<:Stamina:\d+>/g, "Stamina") 
-      .replace(/<:Speed:\d+>/g, "Speed")
-      .replace(/<:Power:\d+>/g, "Power");
-  }
-
-  function renderTextWithIcons(text) {
-    if (!text) return null;
-
-    const parts = text.split(/(<:Stamina:\d+>)/g);
-
-    return parts.map((part, index) => {
-      if (part.match(/<:Stamina:\d+>/)) {
-        return (
-          <img
-            key={index}
-            src={staminaIcon}
-            alt="stamina"
-            className="inline-icon"
-          />
-        );
-      }
-      return part;
-    });
-  }
-
   return (
     <section className="skills-page">
       <GameCard className="page-control-card skills-page-card">
@@ -156,15 +148,20 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
             placeholder="Search skill name / id / tag..."
           />
 
-          <FilterTabs
-            items={tags}
-            value={activeTag}
-            onChange={(value) => {
-              playSound("click");
-              setActiveTag(value);
-            }}
-            className="skills-filter-row"
-          />
+          <label className="skill-filter-select">
+            <span>Skill category</span>
+            <select
+              value={activeTag}
+              onChange={(event) => {
+                playSound("click");
+                setActiveTag(event.target.value);
+              }}
+            >
+              {tags.map((tag) => (
+                <option key={tag.value} value={tag.value}>{tag.label}</option>
+              ))}
+            </select>
+          </label>
         </div>
       </GameCard>
       
@@ -314,9 +311,9 @@ function SkillDetail({ skill, className = "" }) {
 
   return (
     <div className={`skill-detail-summary ${className}`}>
-      {description ? <p>{description}</p> : null}
-      {skill.trigger ? <span><b>Condition:</b> {skill.trigger}</span> : null}
-      {effects.length ? <ul>{effects.map((effect, index) => <li key={`${skill.id || skill.name}-${index}`}>{describeRaceEffect(effect)}</li>)}</ul> : null}
+      {description ? <p>{renderTextWithIcons(description)}</p> : null}
+      {skill.trigger ? <span><b>Condition:</b> {renderTextWithIcons(skill.trigger)}</span> : null}
+      {effects.length ? <ul>{effects.map((effect, index) => <li key={`${skill.id || skill.name}-${index}`}>{renderTextWithIcons(describeRaceEffect(effect))}</li>)}</ul> : null}
     </div>
   );
 }

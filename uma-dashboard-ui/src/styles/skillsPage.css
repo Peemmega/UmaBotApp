@@ -24,13 +24,15 @@
 }
 
 .race-directory-select,
-.race-directory-filter-group {
+.race-directory-filter-group,
+.skill-filter-select {
   display: grid;
   gap: 7px;
 }
 
 .race-directory-select span,
-.race-directory-filter-label {
+.race-directory-filter-label,
+.skill-filter-select span {
   color: var(--uma-muted);
   font-size: 12px;
   font-weight: 900;
@@ -38,8 +40,10 @@
   text-transform: uppercase;
 }
 
-.race-directory-select select {
+.race-directory-select select,
+.skill-filter-select select {
   width: 100%;
+  max-width: 300px;
   min-height: 42px;
   border: 1px solid rgba(123, 79, 145, 0.18);
   border-radius: var(--uma-radius-xs);
