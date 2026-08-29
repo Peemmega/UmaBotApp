@@ -2515,7 +2515,21 @@ function parseDiscordBonusDisplay(value = "") {
     match = bonusPattern.exec(text);
   }
 
-  return rows;
+  const capFloorPattern = /\b(CAP|FLOOR)\s*([+-]\d+)\b/gi;
+  match = capFloorPattern.exec(text);
+
+  while (match) {
+    const [, kind, amount] = match;
+    rows.push({
+      icon: BONUS_ICONS.skill,
+      index: match.index,
+      label: kind === "CAP" ? "Cap" : "Floor",
+      value: signed(amount),
+    });
+    match = capFloorPattern.exec(text);
+  }
+
+  return rows.sort((left, right) => left.index - right.index);
 }
 
 function formatRollDice(value, baseTotal) {
