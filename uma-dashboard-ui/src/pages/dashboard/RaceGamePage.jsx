@@ -2301,6 +2301,18 @@ function getActionEffectRows(log) {
   if (!isSkillOrZone) return [];
 
   const rows = [];
+  if (Array.isArray(payload.random_activations)) {
+    payload.random_activations.forEach((activation) => {
+      const name = String(activation?.name || activation?.skill_id || "Random skill");
+      const resultTexts = Array.isArray(activation?.result_texts)
+        ? activation.result_texts
+        : [];
+      resultTexts.forEach((resultText) => {
+        const value = String(resultText || "").trim();
+        if (value) rows.push({ label: name, value });
+      });
+    });
+  }
   const sources = [
     payload.effect,
     payload.effects,
