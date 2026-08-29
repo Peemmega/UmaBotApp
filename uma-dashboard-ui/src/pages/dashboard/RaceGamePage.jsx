@@ -2227,7 +2227,7 @@ function RaceLogItem({ log }) {
         <>
           <p>
             <span>T{log.turn}</span>
-            {log.message}
+            {getRaceActionLogMessage(log)}
           </p>
           {actionEffectRows.length > 0 ? (
             <div className="race-log-action-effects">
@@ -2253,8 +2253,27 @@ function getLogPlayerName(log) {
   if (payloadName) return payloadName;
 
   return String(log.message || "")
+    .replace(/\s+used\s+(?:rush|block)\b.*/i, "")
     .replace(/\s+(?:(?:auto\s+)?ran|(?:wit\s+)?rerolled)\s+[+-]?\d+.*/i, "")
     .trim() || "Racer";
+}
+
+function getRaceActionLogMessage(log) {
+  const payload = log?.payload || {};
+  const actionType = String(payload.action_type || "").toLowerCase();
+  const actor = payload.player_name || getLogPlayerName(log);
+
+  if (actionType === "rush") {
+    return `${actor} ใช้ Rush +${payload.move_forward ?? 0}`;
+  }
+
+  if (actionType === "block") {
+    const target = payload.target_name ? ` กับ ${payload.target_name}` : "";
+    const moveBack = payload.move_back ?? 0;
+    return `${actor} ใช้ Block${target} ถอย ${moveBack}`;
+  }
+
+  return log?.message || "-";
 }
 
 function getScoreFromLogMessage(message = "") {
