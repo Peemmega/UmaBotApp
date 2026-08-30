@@ -47,7 +47,7 @@ function raceName(record) {
 }
 
 function raceTrack(record) {
-  const track = record?.track || record?.track_type || record?.surface || record?.race?.track || "-";
+  const track = record?.track || record?.track_type || record?.race?.track || "-";
   return record?.record_type === "practice" ? `${track} · Practice` : track;
 }
 

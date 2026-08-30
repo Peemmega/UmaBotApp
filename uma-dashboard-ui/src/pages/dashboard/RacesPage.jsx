@@ -19,8 +19,8 @@ const DISTANCE_FILTERS = [
   { value: "long", label: "Long" },
 ];
 
-const SURFACE_FILTERS = [
-  { value: "all", label: "All surfaces" },
+const TRACK_FILTERS = [
+  { value: "all", label: "All tracks" },
   { value: "turf", label: "Turf" },
   { value: "dirt", label: "Dirt" },
 ];
@@ -35,7 +35,7 @@ const PATH_ICON = {
 export default function RacesPage({ userId }) {
   const [races, setRaces] = useState([]);
   const [activeDistance, setActiveDistance] = useState("all");
-  const [activeSurface, setActiveSurface] = useState("all");
+  const [activeTrack, setActiveTrack] = useState("all");
   const [activeVenue, setActiveVenue] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedRace, setSelectedRace] = useState(null);
@@ -107,15 +107,15 @@ export default function RacesPage({ userId }) {
       const matchDistance =
         activeDistance === "all" || raceDistance === activeDistance;
 
-      const matchSurface =
-        activeSurface === "all" || String(race.track || "").toLowerCase() === activeSurface;
+      const matchTrack =
+        activeTrack === "all" || String(race.track || "").toLowerCase() === activeTrack;
 
       const matchVenue =
         activeVenue === "all" || String(race.venue || "Other") === activeVenue;
 
-      return matchSearch && matchDistance && matchSurface && matchVenue;
+      return matchSearch && matchDistance && matchTrack && matchVenue;
     });
-  }, [races, search, activeDistance, activeSurface, activeVenue]);
+  }, [races, search, activeDistance, activeTrack, activeVenue]);
 
   const venueOptions = useMemo(
     () => Array.from(new Set(races.map((race) => race.venue || "Other"))).sort((a, b) => a.localeCompare(b)),
@@ -125,11 +125,11 @@ export default function RacesPage({ userId }) {
   const resetFilters = () => {
     setSearch("");
     setActiveDistance("all");
-    setActiveSurface("all");
+    setActiveTrack("all");
     setActiveVenue("all");
   };
 
-  const hasActiveFilters = search || activeDistance !== "all" || activeSurface !== "all" || activeVenue !== "all";
+  const hasActiveFilters = search || activeDistance !== "all" || activeTrack !== "all" || activeVenue !== "all";
 
   const createRaceRoom = async () => {
     if (IS_MAIN_WEB || !selectedRace) return;
@@ -206,13 +206,13 @@ export default function RacesPage({ userId }) {
           </div>
 
           <div className="race-directory-filter-group">
-            <span className="race-directory-filter-label">Surface</span>
+            <span className="race-directory-filter-label">Track</span>
             <FilterTabs
-              items={SURFACE_FILTERS}
-              value={activeSurface}
+              items={TRACK_FILTERS}
+              value={activeTrack}
               onChange={(value) => {
                 playSound("click");
-                setActiveSurface(value);
+                setActiveTrack(value);
               }}
               className="skills-filter-row"
             />
@@ -245,7 +245,7 @@ export default function RacesPage({ userId }) {
       ) : (
         <StaggerContainer
           className="skills-grid race-grid race-directory-grid"
-          key={`${activeDistance}-${activeSurface}-${activeVenue}-${search}`}
+          key={`${activeDistance}-${activeTrack}-${activeVenue}-${search}`}
         >
           {filteredRaces.map((race) => {
           const raceImg = getRaceImage(race);
