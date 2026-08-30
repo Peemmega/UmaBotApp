@@ -15,6 +15,21 @@ import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger"
 
 const STAMINA_EMOJI_PATTERN = /(<a?:Stamina:\d+>)/g;
 
+const SKILL_ICON_FILTERS = [
+  { value: "Concentration", label: "Concentration" },
+  { value: "Acceleration", label: "Acceleration" },
+  { value: "Velocity", label: "Velocity" },
+  { value: "Recovery", label: "Recovery" },
+  { value: "DecreaseVelocity", label: "Decrease Velocity" },
+  { value: "ReduceSTA", label: "Reduce Stamina" },
+  { value: "LookUp", label: "Look Up" },
+  { value: "Blind", label: "Blind" },
+  { value: "Navigation", label: "Navigation" },
+  { value: "UniqueVelocity", label: "Unique Velocity" },
+  { value: "UniqueAcceleration", label: "Unique Acceleration" },
+  { value: "Passive", label: "Passive" },
+];
+
 function renderTextWithIcons(text) {
   if (!text) return null;
 
@@ -38,6 +53,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
   const [skills, setSkills] = useState([]);
   const [tags, setTags] = useState([{ value: "all", label: "ทั้งหมด" }]);
   const [activeTag, setActiveTag] = useState("all");
+  const [activeIcons, setActiveIcons] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [toast, setToast] = useState(null);
@@ -122,10 +138,12 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
 
       const matchTag =
         activeTag === "all" || skill.tags?.includes(activeTag);
+      const matchIcon =
+        activeIcons.length === 0 || activeIcons.includes(skill.icon);
 
-      return matchSearch && matchTag;
+      return matchSearch && matchTag && matchIcon;
     });
-  }, [skills, search, activeTag]);
+  }, [skills, search, activeTag, activeIcons]);
 
   const skillDetailsById = useMemo(
     () => new Map(skills.map((skill) => [String(skill.id), skill])),
@@ -162,6 +180,48 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
               ))}
             </select>
           </label>
+
+          <div className="skill-icon-filter" aria-label="Filter skills by icon">
+            <span className="skill-icon-filter-label">Skill type</span>
+            <div className="skill-icon-filter-options">
+              {SKILL_ICON_FILTERS.map(({ value, label }) => {
+                const isActive = activeIcons.includes(value);
+
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    className={`skill-icon-filter-button${isActive ? " is-active" : ""}`}
+                    aria-label={label}
+                    aria-pressed={isActive}
+                    title={label}
+                    onClick={() => {
+                      playSound("click");
+                      setActiveIcons((current) => (
+                        current.includes(value)
+                          ? current.filter((icon) => icon !== value)
+                          : [...current, value]
+                      ));
+                    }}
+                  >
+                    {getSkillIcon(value)}
+                  </button>
+                );
+              })}
+              {activeIcons.length > 0 && (
+                <button
+                  type="button"
+                  className="skill-icon-filter-reset"
+                  onClick={() => {
+                    playSound("click");
+                    setActiveIcons([]);
+                  }}
+                >
+                  Clear icons
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </GameCard>
       
@@ -176,7 +236,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
           </StaggerItem>
         </StaggerContainer>
       ) : (
-        <StaggerContainer className="skills-grid" key={`${activeTag}-${search}`}>
+        <StaggerContainer className="skills-grid" key={`${activeTag}-${search}-${activeIcons.join("-")}`}>
           {filteredSkills.map((skill) => (
           <StaggerItem
             as="article"

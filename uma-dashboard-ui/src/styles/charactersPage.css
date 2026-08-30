@@ -245,6 +245,8 @@
 
 .character-profile-section { padding: 22px 28px 10px; }
 .character-profile-section h3 { margin: 0 0 14px; color: var(--character-modal-ink); font-size: 18px; }
+.character-profile-section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.character-profile-section-heading .character-race-record-filter { margin-top: -4px; }
 .character-profile-status, .character-profile-empty { margin: 24px 28px; color: var(--character-modal-muted); font-weight: 700; }
 .character-profile-status.is-error { color: #b43c4f; }
 

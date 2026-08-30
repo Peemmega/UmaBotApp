@@ -369,11 +369,22 @@ export default function CharactersPage({ userId, player, profiles }) {
 
 function CharacterProfileModal({ character, detail, loading, error, onClose, onOpenCharacter, onOpenRace }) {
   const prefersReducedMotion = useReducedMotion();
+  const [historyRecordType, setHistoryRecordType] = useState("all");
   const isTrainer = character.type === "Trainer";
   const profile = detail?.profile || character.profileData || {};
   const imageUrl = profile.profile_image_url || profile.image_url || character.image_url;
   const name = profile.username || profile.name || character.name;
   const traineeTrainer = detail?.related?.trainer;
+  const filteredRaceHistory = useMemo(
+    () => (detail?.history || []).filter((record) => (
+      historyRecordType === "all" || record.record_type === historyRecordType
+    )),
+    [detail?.history, historyRecordType]
+  );
+
+  useEffect(() => {
+    setHistoryRecordType("all");
+  }, [character.id]);
   const members = detail?.related?.members || [];
   const fans = isTrainer ? (detail?.related?.fans ?? profile.fans) : profile.fans;
 
@@ -457,12 +468,28 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
               </div>
             </section>
             <section className="character-profile-section">
-              <h3>ประวัติการแข่ง</h3>
-              {detail?.history?.length ? <div className="character-race-list" role="table" aria-label="Race history">
+              <div className="character-profile-section-heading">
+                <h3>ประวัติการแข่ง ({filteredRaceHistory.length})</h3>
+                <label className="character-race-record-filter">
+                  <span>ประเภท</span>
+                  <select
+                    value={historyRecordType}
+                    onChange={(event) => {
+                      playSound("click");
+                      setHistoryRecordType(event.target.value);
+                    }}
+                  >
+                    <option value="all">All</option>
+                    <option value="official">Official</option>
+                    <option value="practice">Practice</option>
+                  </select>
+                </label>
+              </div>
+              {detail?.history?.length ? (filteredRaceHistory.length ? <div className="character-race-list" role="table" aria-label="Race history">
                 <div className="character-race-row character-race-row--header" role="row">
                   <span>วันที่</span><span>รายการ</span><span>เทรนเนอร์</span><span>สายวิ่ง</span><span>อันดับ</span><span>คะแนน</span>
                 </div>
-                {detail.history.map((record, index) => <button type="button" className="character-race-row character-race-row--button" role="row" key={record.race_id || record.id || `${raceName(record)}-${index}`} onClick={() => onOpenRace(record)}>
+                {filteredRaceHistory.map((record, index) => <button type="button" className="character-race-row character-race-row--button" role="row" key={record.race_id || record.id || `${raceName(record)}-${index}`} onClick={() => onOpenRace(record)}>
                   <time data-label="วันที่">{raceDate(record)}</time>
                   <span data-label="รายการ"><strong>{raceName(record)}</strong><em>{raceTrack(record)}</em></span>
                   <span data-label="เทรนเนอร์">{record.trainer_name || "-"}</span>
@@ -470,7 +497,7 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
                   <strong data-label="อันดับ" className="character-race-placement">{racePlacement(record)}</strong>
                   <strong data-label="คะแนน">{raceScore(record)}</strong>
                 </button>)}
-              </div> : <p className="character-profile-empty">ยังไม่มีประวัติการแข่งขัน</p>}
+              </div> : <p className="character-profile-empty">ไม่พบประวัติการแข่งขันตามประเภทที่เลือก</p>) : <p className="character-profile-empty">ยังไม่มีประวัติการแข่งขัน</p>}
             </section>
           </>
         )}

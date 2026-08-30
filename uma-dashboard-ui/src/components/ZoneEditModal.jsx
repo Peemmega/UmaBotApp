@@ -14,6 +14,7 @@ const ZONE_FIELDS = [
   ["cap_floor", "เพิ่มค่าทอยลูกเต๋าขั้นต่ำและสูงสุด"],
   ["self_heal_stamina", "ฟื้นฟู Stamina"],
   ["modify_current_speed", "เพิ่มอัตราเร่ง"],
+  ["race_speed", "เพิ่ม Speed ในรัน (+1 ต่อ Zone pt)"],
 ];
 
 const normalizeBuild = (build = {}) => ({
@@ -22,6 +23,7 @@ const normalizeBuild = (build = {}) => ({
   cap_floor: build.cap_floor ?? (build.floor ?? 0) + (build.cap ?? 0),
   self_heal_stamina: build.self_heal_stamina ?? 0,
   modify_current_speed: build.modify_current_speed ?? 0,
+  race_speed: build.race_speed ?? 0,
 });
 
 export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }) {
@@ -40,7 +42,8 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
       draft.add_dkh +
       draft.cap_floor +
       draft.self_heal_stamina +
-      draft.modify_current_speed
+      draft.modify_current_speed +
+      draft.race_speed
     );
   }, [draft]);
 
@@ -50,7 +53,8 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
       originalBuild.add_dkh +
       originalBuild.cap_floor +
       originalBuild.self_heal_stamina +
-      originalBuild.modify_current_speed
+      originalBuild.modify_current_speed +
+      originalBuild.race_speed
     );
   }, [originalBuild]);
 

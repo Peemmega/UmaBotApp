@@ -40,6 +40,7 @@ export default function RacesPage({ userId }) {
   const [search, setSearch] = useState("");
   const [selectedRace, setSelectedRace] = useState(null);
   const [raceHistory, setRaceHistory] = useState([]);
+  const [historyRecordType, setHistoryRecordType] = useState("all");
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState("");
   const [selectedRaceResult, setSelectedRaceResult] = useState(null);
@@ -76,6 +77,13 @@ export default function RacesPage({ userId }) {
   }, [selectedRace?.id]);
 
   const [toast, setToast] = useState(null);
+
+  const filteredRaceHistory = useMemo(
+    () => raceHistory.filter((record) => (
+      historyRecordType === "all" || record.record_type === historyRecordType
+    )),
+    [raceHistory, historyRecordType]
+  );
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
@@ -333,13 +341,26 @@ export default function RacesPage({ userId }) {
                 <div className="race-history-section-heading">
                   <div>
                     <span>ประวัติสนาม</span>
-                    <h3>รายการแข่งขันที่ผ่านมา</h3>
+                    <h3>ประวัติการแข่ง ({filteredRaceHistory.length})</h3>
                   </div>
-                  <Badge>{raceHistory.length} รายการ</Badge>
+                  <label className="race-history-record-filter">
+                    <span>ประเภท</span>
+                    <select
+                      value={historyRecordType}
+                      onChange={(event) => {
+                        playSound("click");
+                        setHistoryRecordType(event.target.value);
+                      }}
+                    >
+                      <option value="all">All</option>
+                      <option value="official">Official</option>
+                      <option value="practice">Practice</option>
+                    </select>
+                  </label>
                 </div>
-                {historyLoading ? <p className="race-history-status">กำลังโหลดรายการแข่งขัน...</p> : historyError ? <p className="race-history-status is-error">{historyError}</p> : raceHistory.length ? (
+                {historyLoading ? <p className="race-history-status">กำลังโหลดรายการแข่งขัน...</p> : historyError ? <p className="race-history-status is-error">{historyError}</p> : filteredRaceHistory.length ? (
                   <div className="race-history-summary-list">
-                    {raceHistory.map((record) => <button
+                    {filteredRaceHistory.map((record) => <button
                       type="button"
                       className="race-history-summary-row"
                       key={record.race_id}
@@ -351,7 +372,7 @@ export default function RacesPage({ userId }) {
                       <em>{record.record_type === "practice" ? "Practice" : "Official"}</em>
                     </button>)}
                   </div>
-                ) : <p className="race-history-status">ยังไม่มีการแข่งขันที่จบแล้วในสนามนี้</p>}
+                ) : <p className="race-history-status">{historyRecordType === "all" ? "ยังไม่มีการแข่งขันที่จบแล้วในสนามนี้" : "ไม่พบประวัติการแข่งประเภทที่เลือก"}</p>}
               </section>
 
               <div className="race-room-actions">

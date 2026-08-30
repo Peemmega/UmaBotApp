@@ -13,6 +13,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
     cap_floor: 3,
     self_heal_stamina: 1,
     modify_current_speed: 1,
+    race_speed: 1,
   };
 
   const getZoneEffectLines = (build = {}) => {
@@ -25,6 +26,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
         (build.self_heal_stamina ?? 0) * ZONE_VALUE.self_heal_stamina,
       modify_current_speed:
         (build.modify_current_speed ?? 0) * ZONE_VALUE.modify_current_speed,
+      race_speed: (build.race_speed ?? 0) * ZONE_VALUE.race_speed,
     };
 
     const lines = [];
@@ -37,6 +39,9 @@ export default function ZonePanel({ userId, player, onSaved }) {
     }
     if (effects.modify_current_speed) {
       lines.push(`เพิ่มอัตราเร่ง ${effects.modify_current_speed} ระดับ`);
+    }
+    if (effects.race_speed) {
+      lines.push(`เพิ่ม Speed ในรัน +${effects.race_speed}`);
     }
 
     return lines.length ? lines : ["ยังไม่ได้ตั้งค่าโซน"];

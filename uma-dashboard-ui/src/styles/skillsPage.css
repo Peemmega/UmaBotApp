@@ -16,6 +16,76 @@
   border-top: 1px solid rgba(123, 79, 145, 0.08);
 }
 
+.skill-icon-filter {
+  display: grid;
+  gap: 8px;
+  padding-top: var(--uma-space-3);
+  border-top: 1px solid rgba(123, 79, 145, 0.12);
+}
+
+.skill-icon-filter-label {
+  color: var(--uma-muted);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.skill-icon-filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-icon-filter-button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(123, 79, 145, 0.2);
+  border-radius: var(--uma-radius-xs);
+  background: rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+  transition: transform var(--uma-duration-fast) ease, border-color var(--uma-duration-fast) ease, background var(--uma-duration-fast) ease, box-shadow var(--uma-duration-fast) ease;
+}
+
+.skill-icon-filter-button .skill-icon-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.skill-icon-filter-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(85, 180, 62, 0.62);
+  background: rgba(241, 255, 235, 0.96);
+}
+
+.skill-icon-filter-button.is-active {
+  border-color: var(--uma-primary-dark);
+  background: rgba(139, 220, 92, 0.24);
+  box-shadow: 0 0 0 2px rgba(85, 180, 62, 0.16);
+}
+
+.skill-icon-filter-button:focus-visible,
+.skill-icon-filter-reset:focus-visible {
+  outline: 3px solid rgba(87, 199, 255, 0.55);
+  outline-offset: 2px;
+}
+
+.skill-icon-filter-reset {
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid rgba(123, 79, 145, 0.2);
+  border-radius: var(--uma-radius-xs);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--uma-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .race-directory-filter-grid {
   display: grid;
   grid-template-columns: minmax(220px, 1.5fr) minmax(180px, 0.8fr) auto;
@@ -785,6 +855,35 @@
   margin: 3px 0 0;
   color: var(--uma-ink);
   font-size: 17px;
+}
+
+.race-history-record-filter,
+.character-race-record-filter {
+  display: grid;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.race-history-record-filter > span,
+.character-race-record-filter > span {
+  color: var(--uma-muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.race-history-record-filter select,
+.character-race-record-filter select {
+  min-height: 34px;
+  border: 1px solid rgba(123, 79, 145, 0.2);
+  border-radius: var(--uma-radius-xs);
+  padding: 0 28px 0 9px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--uma-ink);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .race-history-status {
