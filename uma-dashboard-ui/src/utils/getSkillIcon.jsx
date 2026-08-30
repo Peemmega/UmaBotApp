@@ -9,6 +9,7 @@ import icon_blind from "../assets/skill_icon/Blind.webp";
 import icon_navigation from "../assets/skill_icon/Navigation.png";
 import icon_u_velocity from "../assets/skill_icon/UniqueSkillVelocity.webp";
 import icon_u_acceleration from "../assets/skill_icon/UniqueSkillAcceleration.webp";
+import icon_passive from "../assets/skill_icon/Passive.webp";
 
 export function getSkillIcon(icon) {
   const iconMap = {
@@ -22,7 +23,8 @@ export function getSkillIcon(icon) {
     Blind: icon_blind,
     Navigation: icon_navigation,
     UniqueVelocity: icon_u_velocity,
-    UniqueAcceleration: icon_u_acceleration
+    UniqueAcceleration: icon_u_acceleration,
+    Passive: icon_passive
   };
 
   const src = iconMap[icon];

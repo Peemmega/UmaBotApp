@@ -2301,6 +2301,25 @@ function getActionEffectRows(log) {
   if (!isSkillOrZone) return [];
 
   const rows = [];
+  if (Array.isArray(payload.race_stat_changes)) {
+    payload.race_stat_changes.forEach((change) => {
+      const targetName = String(change?.target_name || "").trim();
+      const labelPrefix = targetName && targetName !== "ตัวเอง" ? `${targetName}: ` : "";
+      Object.entries(change?.changes || {}).forEach(([stat, amount]) => {
+        const value = Number(amount) || 0;
+        if (value) rows.push({ label: `${labelPrefix}${stat[0].toUpperCase()}${stat.slice(1)}`, value: signed(value) });
+      });
+
+      const before = change?.stamina_before;
+      const after = change?.stamina_after;
+      if (before && after && Number(before.max_stamina) !== Number(after.max_stamina)) {
+        rows.push({
+          label: `${labelPrefix}Stamina`,
+          value: `${before.current_stamina}/${before.max_stamina} → ${after.current_stamina}/${after.max_stamina}`,
+        });
+      }
+    });
+  }
   if (Array.isArray(payload.random_activations)) {
     payload.random_activations.forEach((activation) => {
       const name = String(activation?.name || activation?.skill_id || "Random skill");
