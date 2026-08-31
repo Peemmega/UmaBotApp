@@ -216,7 +216,7 @@
   align-items: center;
   padding: 28px 58px 28px 28px;
   color: #fff;
-  background: linear-gradient(135deg, var(--character-modal-primary), var(--character-modal-accent));
+  background: var(--uma-gradient-primary);
 }
 
 .character-profile-hero .ui-badge {
@@ -237,7 +237,7 @@
   object-position: top center;
 }
 
-.character-profile-hero h2 { margin: 8px 0 4px; font-size: 29px; }
+.character-profile-hero h2 { margin: 8px 0 4px; font-size: 29px; text-shadow:0 0 8px #1010102e; font-weight: 1000;}
 .character-profile-hero p { margin: 0; opacity: 0.88; font-weight: 700; }
 .character-profile-fans { min-width: 96px; text-align: right; }
 .character-profile-fans span { display: block; font-size: 12px; font-weight: 800; opacity: 0.85; }

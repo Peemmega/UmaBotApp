@@ -14,7 +14,7 @@ import RaceHistoryDetailModal from "../../components/RaceHistoryDetailModal";
 import { playSound } from "../../utils/soundManager";
 
 const APP_API_BASE = APP_BASE_URL;
-const RACE_HISTORY_PAGE_SIZE = 8;
+const RACE_HISTORY_PAGE_SIZE = 6;
 
 const CHARACTER_SUMMARY_SOURCES = [
   BOT_API_BASE,
@@ -62,12 +62,10 @@ function raceDate(record) {
   if (!value) return "-";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "-";
-  return new Intl.DateTimeFormat("th-TH", {
+  return new Intl.DateTimeFormat("th-TH-u-nu-latn", {
     year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
   }).format(date);
 }
 

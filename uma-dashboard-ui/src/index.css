@@ -50,10 +50,10 @@
   --uma-primary-faint: color-mix(in srgb, var(--uma-primary) 14%, transparent);
   --uma-shadow-tint: color-mix(in srgb, var(--uma-primary-dark) 14%, transparent);
 
-  --uma-gradient-primary: linear-gradient(135deg, #8bdc5c 0%, #45bdc9 100%);
-  --uma-gradient-race: linear-gradient(135deg, #8bdc5c 0%, #45bdc9 100%);
-  --uma-gradient-training: linear-gradient(135deg, #8bdc5c 0%, #45bdc9 100%);
-  --uma-gradient-panel: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(245, 255, 241, 0.92));
+  --uma-gradient-primary: linear-gradient(135deg, #9dd241 0%, #82c13c 100%);
+  --uma-gradient-race: linear-gradient(135deg, #9dd241 0%, #82c13c 100%);
+  --uma-gradient-training: linear-gradient(135deg, #9dd241 0%, #82c13c 100%);
+  --uma-gradient-panel: linear-gradient(135deg, #9dd241 0%, #82c13c 100%);
   --uma-shell-glow:
     radial-gradient(circle at 10% 7%, rgba(69, 201, 111, 0.28), transparent 27%),
     radial-gradient(circle at 80% 9%, rgba(85, 220, 166, 0.22), transparent 26%),
