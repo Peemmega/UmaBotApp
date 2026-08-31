@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import "../../styles/charactersPage.css";
-import { Badge, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
+import { Badge, FilterTabs, GameCard, Pagination, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import { DEFAULT_AVATAR_URL, toAbsoluteBotUrl } from "../../utils/avatar";
 import { BOT_API_BASE } from "../../api/playerApi";
@@ -14,6 +14,7 @@ import RaceHistoryDetailModal from "../../components/RaceHistoryDetailModal";
 import { playSound } from "../../utils/soundManager";
 
 const APP_API_BASE = APP_BASE_URL;
+const RACE_HISTORY_PAGE_SIZE = 8;
 
 const CHARACTER_SUMMARY_SOURCES = [
   BOT_API_BASE,
@@ -370,6 +371,7 @@ export default function CharactersPage({ userId, player, profiles }) {
 function CharacterProfileModal({ character, detail, loading, error, onClose, onOpenCharacter, onOpenRace }) {
   const prefersReducedMotion = useReducedMotion();
   const [historyRecordType, setHistoryRecordType] = useState("all");
+  const [historyPage, setHistoryPage] = useState(1);
   const isTrainer = character.type === "Trainer";
   const profile = detail?.profile || character.profileData || {};
   const imageUrl = profile.profile_image_url || profile.image_url || character.image_url;
@@ -381,9 +383,18 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
     )),
     [detail?.history, historyRecordType]
   );
+  const historyPageCount = Math.max(
+    1,
+    Math.ceil(filteredRaceHistory.length / RACE_HISTORY_PAGE_SIZE)
+  );
+  const paginatedRaceHistory = useMemo(() => {
+    const firstRecord = (historyPage - 1) * RACE_HISTORY_PAGE_SIZE;
+    return filteredRaceHistory.slice(firstRecord, firstRecord + RACE_HISTORY_PAGE_SIZE);
+  }, [filteredRaceHistory, historyPage]);
 
   useEffect(() => {
     setHistoryRecordType("all");
+    setHistoryPage(1);
   }, [character.id]);
   const members = detail?.related?.members || [];
   const fans = isTrainer ? (detail?.related?.fans ?? profile.fans) : profile.fans;
@@ -477,6 +488,7 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
                     onChange={(event) => {
                       playSound("click");
                       setHistoryRecordType(event.target.value);
+                      setHistoryPage(1);
                     }}
                   >
                     <option value="all">All</option>
@@ -489,7 +501,7 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
                 <div className="character-race-row character-race-row--header" role="row">
                   <span>วันที่</span><span>รายการ</span><span>เทรนเนอร์</span><span>สายวิ่ง</span><span>อันดับ</span><span>คะแนน</span>
                 </div>
-                {filteredRaceHistory.map((record, index) => <button type="button" className="character-race-row character-race-row--button" role="row" key={record.race_id || record.id || `${raceName(record)}-${index}`} onClick={() => onOpenRace(record)}>
+                {paginatedRaceHistory.map((record, index) => <button type="button" className="character-race-row character-race-row--button" role="row" key={record.race_id || record.id || `${raceName(record)}-${index}`} onClick={() => onOpenRace(record)}>
                   <time data-label="วันที่">{raceDate(record)}</time>
                   <span data-label="รายการ"><strong>{raceName(record)}</strong><em>{raceTrack(record)}</em></span>
                   <span data-label="เทรนเนอร์">{record.trainer_name || "-"}</span>
@@ -497,6 +509,12 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
                   <strong data-label="อันดับ" className="character-race-placement">{racePlacement(record)}</strong>
                   <strong data-label="คะแนน">{raceScore(record)}</strong>
                 </button>)}
+                <Pagination
+                  page={historyPage}
+                  pageCount={historyPageCount}
+                  onPageChange={setHistoryPage}
+                  label="ประวัติการแข่งขัน"
+                />
               </div> : <p className="character-profile-empty">ไม่พบประวัติการแข่งขันตามประเภทที่เลือก</p>) : <p className="character-profile-empty">ยังไม่มีประวัติการแข่งขัน</p>}
             </section>
           </>

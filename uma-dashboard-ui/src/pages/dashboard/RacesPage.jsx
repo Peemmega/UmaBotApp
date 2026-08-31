@@ -5,7 +5,7 @@ import { playSound } from "../../utils/soundManager";
 import { getRaceImage } from "../../utils/raceSchedule.js";
 import Toast from "../../components/Toast";
 import SharedRaceHistoryDetailModal from "../../components/RaceHistoryDetailModal";
-import { Badge, Button, FilterTabs, GameCard, SearchInput, SectionHeader } from "../../components/ui";
+import { Badge, Button, FilterTabs, GameCard, Pagination, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import { BOT_API_BASE } from "../../api/playerApi";
 import { IS_MAIN_WEB } from "../../api/appConfig";
@@ -32,6 +32,8 @@ const PATH_ICON = {
   4: "↘️",
 };
 
+const RACE_HISTORY_PAGE_SIZE = 8;
+
 export default function RacesPage({ userId, profileType = "trainee" }) {
   const [races, setRaces] = useState([]);
   const [activeDistance, setActiveDistance] = useState("all");
@@ -41,6 +43,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
   const [selectedRace, setSelectedRace] = useState(null);
   const [raceHistory, setRaceHistory] = useState([]);
   const [historyRecordType, setHistoryRecordType] = useState("all");
+  const [historyPage, setHistoryPage] = useState(1);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState("");
   const [selectedRaceResult, setSelectedRaceResult] = useState(null);
@@ -56,6 +59,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
     if (!selectedRace?.id) {
       setRaceHistory([]);
       setHistoryError("");
+      setHistoryPage(1);
       return undefined;
     }
 
@@ -67,7 +71,10 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
       signal: controller.signal,
     })
       .then((res) => res.ok ? res.json() : Promise.reject(new Error("Could not load race history")))
-      .then((data) => setRaceHistory(Array.isArray(data?.races) ? data.races : []))
+      .then((data) => {
+        setRaceHistory(Array.isArray(data?.races) ? data.races : []);
+        setHistoryPage(1);
+      })
       .catch((error) => {
         if (error.name !== "AbortError") setHistoryError("ไม่สามารถโหลดประวัติการแข่งขันได้");
       })
@@ -84,6 +91,14 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
     )),
     [raceHistory, historyRecordType]
   );
+  const historyPageCount = Math.max(
+    1,
+    Math.ceil(filteredRaceHistory.length / RACE_HISTORY_PAGE_SIZE)
+  );
+  const paginatedRaceHistory = useMemo(() => {
+    const firstRecord = (historyPage - 1) * RACE_HISTORY_PAGE_SIZE;
+    return filteredRaceHistory.slice(firstRecord, firstRecord + RACE_HISTORY_PAGE_SIZE);
+  }, [filteredRaceHistory, historyPage]);
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
@@ -258,6 +273,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
               onClick={() => {
                 playSound("open");
                 setSelectedRace(race);
+                setHistoryPage(1);
               }}
             >
 
@@ -351,6 +367,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
                       onChange={(event) => {
                         playSound("click");
                         setHistoryRecordType(event.target.value);
+                        setHistoryPage(1);
                       }}
                     >
                       <option value="all">All</option>
@@ -361,7 +378,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
                 </div>
                 {historyLoading ? <p className="race-history-status">กำลังโหลดรายการแข่งขัน...</p> : historyError ? <p className="race-history-status is-error">{historyError}</p> : filteredRaceHistory.length ? (
                   <div className="race-history-summary-list">
-                    {filteredRaceHistory.map((record) => <button
+                    {paginatedRaceHistory.map((record) => <button
                       type="button"
                       className="race-history-summary-row"
                       key={record.race_id}
@@ -372,6 +389,12 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
                       <span><small>คะแนน</small><strong>{Number(record.winner_score || 0).toLocaleString()}</strong></span>
                       <em>{record.record_type === "practice" ? "Practice" : "Official"}</em>
                     </button>)}
+                  <Pagination
+                    page={historyPage}
+                    pageCount={historyPageCount}
+                    onPageChange={setHistoryPage}
+                    label="ประวัติการแข่งขัน"
+                  />
                   </div>
                 ) : <p className="race-history-status">{historyRecordType === "all" ? "ยังไม่มีการแข่งขันที่จบแล้วในสนามนี้" : "ไม่พบประวัติการแข่งประเภทที่เลือก"}</p>}
               </section>
