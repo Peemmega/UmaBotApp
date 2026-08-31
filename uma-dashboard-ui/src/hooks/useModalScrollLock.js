@@ -9,6 +9,7 @@ const MODAL_SELECTOR = [
   ".team-invite-backdrop",
   ".skill-equip-backdrop",
   ".skill-loadout-detail-backdrop",
+  ".skill-preset-backdrop",
   ".character-profile-backdrop",
 ].join(", ");
 

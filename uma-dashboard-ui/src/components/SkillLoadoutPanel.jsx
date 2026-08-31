@@ -4,6 +4,7 @@ import { BOT_API_BASE as API_BASE } from "../api/playerApi";
 import { getSkillIcon } from "../utils/getSkillIcon";
 import { describeRaceEffect } from "../utils/raceEffects";
 import staminaIcon from "../assets/icons/Stamina.webp";
+import SkillLoadoutPresetModal from "./SkillLoadoutPresetModal";
 
 const STAMINA_EMOJI_PATTERN = /(<a?:Stamina:\d+>)/g;
 
@@ -17,23 +18,24 @@ function renderTextWithIcons(text) {
   );
 }
 
-export default function SkillLoadoutPanel({ userId, username, player, refreshKey }) {
+export default function SkillLoadoutPanel({ userId, username, player, refreshKey, onPresetApplied }) {
   const [skills, setSkills] = useState({});
   const [selectedSkill, setSelectedSkill] = useState(null);
+  const [isPresetOpen, setIsPresetOpen] = useState(false);
 
-  useEffect(() => {
+  const loadSkills = async () => {
     if (!userId) return;
 
-    const loadSkills = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/player/${userId}/skills`);
-        const data = await res.json();
-        setSkills(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+    try {
+      const res = await fetch(`${API_BASE}/player/${userId}/skills`);
+      const data = await res.json();
+      setSkills(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
+  useEffect(() => {
     loadSkills();
   }, [userId, refreshKey]);
 
@@ -54,6 +56,12 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
     <section className="skill-loadout-card">
       <div className="title-banner">
         <h2>✨ Skill Loadout</h2>
+      </div>
+
+      <div className="skill-loadout-preset-bar">
+        <button type="button" className="skill-loadout-preset-button" onClick={() => setIsPresetOpen(true)}>
+          Presets
+        </button>
       </div>
 
       <div className="skill-loadout-list">
@@ -153,6 +161,17 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
           </section>
         </div>,
         document.body
+      )}
+
+      {isPresetOpen && (
+        <SkillLoadoutPresetModal
+          userId={userId}
+          onClose={() => setIsPresetOpen(false)}
+          onApplied={(preset) => {
+            loadSkills();
+            onPresetApplied?.(preset);
+          }}
+        />
       )}
 
       {/* <div className="skill-point-box">

@@ -516,6 +516,15 @@ export default function ProfilePage({
               username={player?.username || username}
               player={player}
               refreshKey={skillLoadoutVersion}
+              onPresetApplied={(preset) => {
+                setPlayer((current) => ({
+                  ...current,
+                  zone: {
+                    ...(current?.zone || {}),
+                    ...(preset?.zone || {}),
+                  },
+                }));
+              }}
             />
           </StaggerItem>
 
