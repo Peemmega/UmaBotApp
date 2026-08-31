@@ -147,10 +147,10 @@ export default function SkillLoadoutPresetModal({
                 <span className="skill-preset-slot">{slot}</span>
                 <div className="skill-preset-content">
                   <label>
-                    <span>ชื่อ preset</span>
+                    {/* <span>ชื่อ preset</span> */}
                     <input
                       value={names[slot] ?? preset?.name ?? `Preset ${slot}`}
-                      maxLength={48}
+                      maxLength={32}
                       onChange={(event) => setNames((current) => ({ ...current, [slot]: event.target.value }))}
                     />
                   </label>
@@ -160,16 +160,17 @@ export default function SkillLoadoutPresetModal({
                       <p><b>Zone:</b> {preset.zone?.name || "Default Zone"}</p>
                     </>
                   ) : <p>ยังไม่มี preset ในช่องนี้</p>}
+                  <div className="skill-preset-actions">
+                    {preset ? (
+                      <button type="button" onClick={() => applyPreset(slot)} disabled={isBusy}>ใช้</button>
+                    ) : null}
+                    <button type="button" onClick={() => savePreset(slot)} disabled={isBusy}>
+                      {preset ? "บันทึกทับ" : "บันทึก"}
+                    </button>
+                    {preset ? <button type="button" className="is-danger" onClick={() => deletePreset(slot)} disabled={isBusy}>ลบ</button> : null}
+                  </div>
                 </div>
-                <div className="skill-preset-actions">
-                  {preset ? (
-                    <button type="button" onClick={() => applyPreset(slot)} disabled={isBusy}>ใช้</button>
-                  ) : null}
-                  <button type="button" onClick={() => savePreset(slot)} disabled={isBusy}>
-                    {preset ? "บันทึกทับ" : "บันทึก"}
-                  </button>
-                  {preset ? <button type="button" className="is-danger" onClick={() => deletePreset(slot)} disabled={isBusy}>ลบ</button> : null}
-                </div>
+                
               </article>
             );
           })}
