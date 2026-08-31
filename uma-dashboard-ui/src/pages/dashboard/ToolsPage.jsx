@@ -85,7 +85,6 @@ export default function ToolsPage() {
         </div>
 
         <div className="wit-table-scroll">
-          <p className="wit-calculator-note">ใช้สูตรเดียวกับ Discord: ปัดค่า Wit ที่ฟื้นต่อเทิร์นก่อน แล้วจึงสะสมในแต่ละเทิร์น</p>
           <table className="wit-table">
             <thead>
               <tr>
