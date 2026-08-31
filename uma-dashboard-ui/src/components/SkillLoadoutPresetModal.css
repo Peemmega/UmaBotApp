@@ -20,11 +20,12 @@
   border: 0;
   border-radius: 10px;
   padding: 8px 20%;
-  background: var(--uma-primary);
+  background: var(--uma-gradient-primary);
   color: white;
   font: inherit;
   font-size: 13px;
   font-weight: 900;
+  text-shadow: 0 0 8px #1010102e;
   cursor: pointer;
 }
 
@@ -49,7 +50,7 @@
 }
 
 .skill-preset-header span { font-size: 12px; font-weight: 900; text-transform: uppercase; }
-.skill-preset-header h2 { margin: 3px 0 0; font-size: 26px; }
+.skill-preset-header h2 { margin: 3px 0 0; font-size: 26px; font-weight: 1000; text-shadow: 0 0 8px #1010102e;}
 .skill-preset-header button { width: 34px; height: 34px; border: 0; border-radius: 50%; background: rgba(255,255,255,.18); color: white; font-size: 24px; cursor: pointer; }
 .skill-preset-intro, .skill-preset-message, .skill-preset-loading { margin: 16px 20px; color: var(--uma-ink-soft); font-weight: 700; }
 .skill-preset-message { color: var(--uma-primary-dark); }
@@ -65,7 +66,7 @@
 .skill-preset-skill-list .skill-loadout-item { min-height: 0; padding: 9px; cursor: default; }
 .skill-preset-skill-list .skill-loadout-name { font-size: 13px; }
 .skill-preset-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
-.skill-preset-actions button { border: 0; border-radius: 8px; padding: 0.5% 5%; background: var(--uma-primary); color: white; font: inherit; font-size: 13px; font-weight: 900; cursor: pointer; }
+.skill-preset-actions button { border: 0; border-radius: 8px; padding: 0.5% 5%; background: var(--uma-gradient-primary); color: white; font: inherit; font-size: 13px; font-weight: 900; cursor: pointer; }
 .skill-preset-actions .is-danger { background: #b94b5e; }
 .skill-preset-actions button:disabled { cursor: wait; opacity: .55; }
 
