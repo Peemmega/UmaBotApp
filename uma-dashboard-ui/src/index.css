@@ -26,8 +26,8 @@
   --uma-border: rgba(35, 150, 78, 0.16);
   --uma-border-strong: rgba(35, 150, 78, 0.28);
 
-  --uma-primary: #1c9600;
-  --uma-primary-dark: #b7ff10;
+  --uma-primary: #3f960f;
+  --uma-primary-dark: #157300;
   --uma-on-primary: #ffffff;
   --uma-pink: #ff7fb3;
   --uma-coral: #ff9a7a;
@@ -50,9 +50,9 @@
   --uma-primary-faint: color-mix(in srgb, var(--uma-primary) 14%, transparent);
   --uma-shadow-tint: color-mix(in srgb, var(--uma-primary-dark) 14%, transparent);
 
-  --uma-gradient-primary: linear-gradient(135deg, #45c96f 0%, #55dca6 52%, #8bdc5c 100%);
-  --uma-gradient-race: linear-gradient(135deg, #23964e 0%, #45c96f 48%, #55dca6 100%);
-  --uma-gradient-training: linear-gradient(135deg, #8bdc5c 0%, #45c96f 100%);
+  --uma-gradient-primary: linear-gradient(135deg, #8bdc5c 0%, #45bdc9 100%);
+  --uma-gradient-race: linear-gradient(135deg, #8bdc5c 0%, #45bdc9 100%);
+  --uma-gradient-training: linear-gradient(135deg, #8bdc5c 0%, #45bdc9 100%);
   --uma-gradient-panel: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(245, 255, 241, 0.92));
   --uma-shell-glow:
     radial-gradient(circle at 10% 7%, rgba(69, 201, 111, 0.28), transparent 27%),
