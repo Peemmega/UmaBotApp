@@ -172,7 +172,7 @@
 
 .character-profile-modal {
   --character-modal-primary: var(--uma-primary);
-  --character-modal-accent: var(--uma-mint);
+  --character-modal-accent: var(--uma-primary);
   --character-modal-soft: color-mix(in srgb, var(--character-modal-primary) 12%, transparent);
   --character-modal-surface: var(--uma-surface);
   --character-modal-ink: var(--uma-ink);
@@ -184,7 +184,7 @@
   border: 1px solid color-mix(in srgb, var(--character-modal-primary) 38%, white);
   border-radius: var(--uma-radius-md);
   background: linear-gradient(150deg, var(--character-modal-surface), color-mix(in srgb, var(--character-modal-accent) 13%, var(--character-modal-surface)));
-  box-shadow: 0 28px 70px rgba(22, 13, 31, 0.35);
+  box-shadow: var(--uma-shadow-pop);
 }
 
 .character-profile-modal--trainer {
@@ -200,9 +200,9 @@
   right: 14px;
   width: 34px;
   height: 34px;
-  border: 0;
+  border: 1px solid var(--uma-border);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--uma-surface-raised);
   color: var(--character-modal-ink);
   font-size: 26px;
   line-height: 1;

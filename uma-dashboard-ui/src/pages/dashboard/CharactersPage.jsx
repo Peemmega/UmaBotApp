@@ -371,6 +371,9 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
   const [historyRecordType, setHistoryRecordType] = useState("all");
   const [historyPage, setHistoryPage] = useState(1);
   const isTrainer = character.type === "Trainer";
+  const profileTheme = character.type === "Trainer"
+    ? "trainer"
+    : character.type === "NPC" ? "npc" : "trainee";
   const profile = detail?.profile || character.profileData || {};
   const imageUrl = profile.profile_image_url || profile.image_url || character.image_url;
   const name = profile.username || profile.name || character.name;
@@ -405,7 +408,7 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
 
   return (
     <motion.div
-      className="character-profile-backdrop"
+      className={`character-profile-backdrop profile-theme-${profileTheme} profile-theme-portal`}
       role="presentation"
       onMouseDown={onClose}
       initial={prefersReducedMotion ? false : { opacity: 0 }}
