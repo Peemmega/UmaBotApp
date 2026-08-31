@@ -8,6 +8,7 @@
   padding: 24px;
   background: rgba(0, 0, 0, 0.42);
   backdrop-filter: blur(6px);
+  overscroll-behavior: contain;
 }
 
 .mailbox-modal {
@@ -75,6 +76,8 @@
 .mailbox-list {
   max-height: 48vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 14px 18px 18px;
   display: grid;
   gap: 12px;

@@ -7,6 +7,7 @@ import HorseshoeBackground from "./components/HorseshoeBackground";
 import { getAccountRole, getPlayer, selectAccountRole } from "./api/playerApi";
 import { APP_BASE_URL } from "./api/appConfig";
 import { getDiscordAvatarUrl, resolveSessionAvatar } from "./utils/avatar";
+import useModalScrollLock from "./hooks/useModalScrollLock";
 import { ArrowRight, GraduationCap, Sparkles, Trophy, UsersRound } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 
@@ -170,6 +171,8 @@ function RoleSelection({ busy, error, onSelect }) {
 }
 
 export default function App() {
+  useModalScrollLock();
+
   const [showIntro, setShowIntro] = useState(true);
   const [authLoading, setAuthLoading] = useState(!Capacitor.isNativePlatform());
   const [loginError, setLoginError] = useState("");
