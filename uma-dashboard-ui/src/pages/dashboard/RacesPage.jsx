@@ -32,7 +32,7 @@ const PATH_ICON = {
   4: "↘️",
 };
 
-export default function RacesPage({ userId }) {
+export default function RacesPage({ userId, profileType = "trainee" }) {
   const [races, setRaces] = useState([]);
   const [activeDistance, setActiveDistance] = useState("all");
   const [activeTrack, setActiveTrack] = useState("all");
@@ -291,10 +291,11 @@ export default function RacesPage({ userId }) {
       )}
 
       {selectedRace && createPortal(
-        <div
-          className="zone-edit-backdrop"
-          onClick={() => setSelectedRace(null)}
-        >
+        <div className={`profile-theme-${profileType} profile-theme-portal`}>
+          <div
+            className="zone-edit-backdrop"
+            onClick={() => setSelectedRace(null)}
+          >
           <div
             className="zone-edit-modal race-room-modal"
             onClick={(e) => e.stopPropagation()}
@@ -396,16 +397,19 @@ export default function RacesPage({ userId }) {
               </div>
             </div>
           </div>
+          </div>
         </div>,
         document.body
       )}
 
       {selectedRaceResult && createPortal(
-        <SharedRaceHistoryDetailModal
-          raceId={selectedRaceResult.race_id}
-          fallback={selectedRaceResult}
-          onClose={() => setSelectedRaceResult(null)}
-        />,
+        <div className={`profile-theme-${profileType} profile-theme-portal`}>
+          <SharedRaceHistoryDetailModal
+            raceId={selectedRaceResult.race_id}
+            fallback={selectedRaceResult}
+            onClose={() => setSelectedRaceResult(null)}
+          />
+        </div>,
         document.body
       )}
 

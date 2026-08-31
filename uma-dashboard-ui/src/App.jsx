@@ -2,11 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
-import CardGamePage from "./pages/dashboard/CardGamePage";
-import RaceGamePage from "./pages/dashboard/RaceGamePage";
 import LoadingScreen from "./components/LoadingScreen";
 import HorseshoeBackground from "./components/HorseshoeBackground";
-import PageTransition from "./components/PageTransition";
 import { getAccountRole, getPlayer, selectAccountRole } from "./api/playerApi";
 import { APP_BASE_URL } from "./api/appConfig";
 import { getDiscordAvatarUrl, resolveSessionAvatar } from "./utils/avatar";
@@ -174,7 +171,6 @@ function RoleSelection({ busy, error, onSelect }) {
 
 export default function App() {
   const [showIntro, setShowIntro] = useState(true);
-  const [routePath, setRoutePath] = useState(window.location.pathname);
   const [authLoading, setAuthLoading] = useState(!Capacitor.isNativePlatform());
   const [loginError, setLoginError] = useState("");
 
@@ -191,20 +187,6 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [showRaw, setShowRaw] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    const handleRouteChange = () => {
-      setRoutePath(window.location.pathname);
-    };
-
-    window.addEventListener("popstate", handleRouteChange);
-    window.addEventListener("uma:navigate", handleRouteChange);
-
-    return () => {
-      window.removeEventListener("popstate", handleRouteChange);
-      window.removeEventListener("uma:navigate", handleRouteChange);
-    };
-  }, []);
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
@@ -372,21 +354,6 @@ export default function App() {
     window.location.href = "/";
   };
 
-  const normalizedRoutePath = routePath.replace(/\/+$/, "") || "/";
-  const isTcgRoute =
-    normalizedRoutePath === "/tcg" ||
-    normalizedRoutePath === "/dashboard/tcg" ||
-    normalizedRoutePath === "/dashboard/tcg-fullscreen";
-  const isRaceRoute =
-    normalizedRoutePath === "/race" ||
-    normalizedRoutePath === "/dashboard/race" ||
-    normalizedRoutePath === "/dashboard/race-fullscreen";
-
-  const handleBackToDashboard = () => {
-    window.history.pushState({}, "", "/dashboard/profile");
-    window.dispatchEvent(new Event("uma:navigate"));
-  };
-
   const handleRoleSelection = async (role) => {
     try {
       setIsRoleSaving(true);
@@ -414,26 +381,6 @@ export default function App() {
     <LoadingScreen key="role-loading" onFinished={() => {}} />
   ) : !accountRole ? (
     <RoleSelection busy={isRoleSaving} error={roleError} onSelect={handleRoleSelection} />
-  ) : isTcgRoute && accountRole === "trainee" ? (
-    <PageTransition key="tcg">
-      <CardGamePage
-        fullscreen
-        onBackToDashboard={handleBackToDashboard}
-        username={player?.username || username}
-        userId={userId}
-        avatarUrl={avatarUrl}
-      />
-    </PageTransition>
-  ) : isRaceRoute && accountRole === "trainee" ? (
-    <PageTransition key="race">
-      <RaceGamePage
-        fullscreen
-        onBackToDashboard={handleBackToDashboard}
-        username={player?.username || username}
-        userId={userId}
-        avatarUrl={avatarUrl}
-      />
-    </PageTransition>
   ) : (
     <DashboardPage
       key="dashboard"
@@ -454,7 +401,7 @@ export default function App() {
 
   return (
     <>
-      {!isTcgRoute && !isRaceRoute && <HorseshoeBackground />}
+      <HorseshoeBackground />
 
       <AnimatePresence mode="wait">{pageContent}</AnimatePresence>
 

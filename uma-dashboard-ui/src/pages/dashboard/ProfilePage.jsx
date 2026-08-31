@@ -291,7 +291,8 @@ export default function ProfilePage({
           </StaggerItem>
         )}
         {isInviteOpen && createPortal(
-          <div className="team-invite-backdrop" onClick={() => setIsInviteOpen(false)}>
+          <div className={`profile-theme-${profileType} profile-theme-portal`}>
+            <div className="team-invite-backdrop" onClick={() => setIsInviteOpen(false)}>
             <section className="team-invite-modal" onClick={(event) => event.stopPropagation()}>
               <header className="team-invite-header">
                 <div>
@@ -314,6 +315,7 @@ export default function ProfilePage({
                 )) : <p className="team-invite-empty">No available Trainees with uploaded profiles.</p>}
               </div>
             </section>
+            </div>
           </div>,
           document.body
         )}

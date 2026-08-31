@@ -21,16 +21,12 @@ import SkillsPage from "./dashboard/SkillsPage";
 import CharactersPage from "./dashboard/CharactersPage";
 import QAPage from "./dashboard/QAPage";
 import RacesPage from "./dashboard/RacesPage";
-import CardGamePage from "./dashboard/CardGamePage";
-import RaceGamePage from "./dashboard/RaceGamePage";
 import ToolsPage from "./dashboard/ToolsPage";
 
 const VALID_PAGES = [
   "profile",
   "chars",
   "races",
-  "race",
-  "tcg",
   "skills",
   "tools",
   "tutorials",
@@ -96,18 +92,6 @@ export default function DashboardPage({
   const changePage = (page) => {
     if (!VALID_PAGES.includes(page)) return;
 
-    if (page === "tcg") {
-      window.history.pushState({}, "", "/tcg");
-      window.dispatchEvent(new Event("uma:navigate"));
-      return;
-    }
-
-    if (page === "race") {
-      window.history.pushState({}, "", "/race");
-      window.dispatchEvent(new Event("uma:navigate"));
-      return;
-    }
-
     setActivePage(page);
     window.history.pushState({}, "", `/dashboard/${page}`);
   };
@@ -132,19 +116,7 @@ export default function DashboardPage({
         return <CharactersPage userId={userId} player={player} profiles={profiles} />;
 
       case "races":
-        return <RacesPage userId={userId} />;
-
-      case "race":
-        return (
-          <RaceGamePage
-            username={player?.username || username}
-            userId={userId}
-            avatarUrl={avatarUrl}
-          />
-        );
-
-      case "tcg":
-        return <CardGamePage />;
+        return <RacesPage userId={userId} profileType={activeProfileType} />;
 
       case "qa":
         return <QAPage />;
@@ -230,7 +202,7 @@ export default function DashboardPage({
 
     const interval = setInterval(() => {
       loadUnreadCount();
-    }, 5000);
+    }, 60000);
 
     return () => clearInterval(interval);
   }, [activeProfileType, userId]);

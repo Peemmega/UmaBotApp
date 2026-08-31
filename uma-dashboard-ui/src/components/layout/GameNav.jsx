@@ -10,7 +10,6 @@ import {
   UsersRound,
 } from "lucide-react";
 import { playSound } from "../../utils/soundManager";
-import { IS_MAIN_WEB } from "../../api/appConfig";
 
 export const gameNavItems = [
   { key: "profile", label: "โปรไฟล์", Icon: UserRound },
@@ -30,9 +29,9 @@ export default function GameNav({
   items = gameNavItems,
   profileType = "trainee",
 }) {
-  const baseItems = IS_MAIN_WEB
-    ? items.filter((item) => item.key !== "tcg")
-    : items;
+  const baseItems = items.filter(
+    (item) => item.key !== "tcg" && item.key !== "race"
+  );
   const visibleItems = profileType === "trainee"
     ? baseItems
     : baseItems.filter((item) => item.key !== "skills");
