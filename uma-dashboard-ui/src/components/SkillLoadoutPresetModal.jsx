@@ -131,7 +131,6 @@ export default function SkillLoadoutPresetModal({ userId, currentSkillIds, onClo
           <button type="button" onClick={onClose} aria-label="Close presets">×</button>
         </header>
 
-        <p className="skill-preset-intro">บันทึกชุดสกิลปัจจุบัน 4 ช่องได้สูงสุด 3 ชุด</p>
         {message ? <p className="skill-preset-message">{message}</p> : null}
 
         <div className="skill-preset-list">

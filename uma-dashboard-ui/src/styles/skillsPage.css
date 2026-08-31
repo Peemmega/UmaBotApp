@@ -563,7 +563,7 @@
 .skill-equip-slot-summary span { min-width: 0; overflow: hidden; color: var(--uma-ink); font-size: 14px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
 .skill-equip-slot-button { width: calc(100% - 16px); margin: 0 8px 8px; font-size: 14px !important; }
 
-.skill-detail-summary { color: #526156; font-size: 12px; line-height: 1.4; }
+.skill-detail-summary { color: #526156; font-size: 14px; line-height: 1.4; }
 .skill-detail-summary p { margin: 0 0 6px; }
 .skill-detail-summary > span { display: block; }
 .skill-detail-summary ul { margin: 6px 0 0; padding-left: 17px; }
