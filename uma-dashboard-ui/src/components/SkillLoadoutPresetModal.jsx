@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { BOT_API_BASE } from "../api/playerApi";
+import { getSkillIcon } from "../utils/getSkillIcon";
 import { playSound } from "../utils/soundManager";
 import "./SkillLoadoutPresetModal.css";
 
@@ -13,14 +14,9 @@ async function presetRequest(path, options) {
   return data;
 }
 
-export default function SkillLoadoutPresetModal({
-  userId,
-  currentSkillIds,
-  currentZone,
-  onClose,
-  onApplied,
-}) {
+export default function SkillLoadoutPresetModal({ userId, currentSkillIds, onClose, onApplied }) {
   const [presets, setPresets] = useState([]);
+  const [skillCatalog, setSkillCatalog] = useState([]);
   const [names, setNames] = useState({});
   const [loading, setLoading] = useState(true);
   const [busySlot, setBusySlot] = useState(null);
@@ -29,9 +25,13 @@ export default function SkillLoadoutPresetModal({
   const loadPresets = async () => {
     setLoading(true);
     try {
-      const data = await presetRequest(`/player/${userId}/skill-loadout-presets`);
+      const [data, allSkills] = await Promise.all([
+        presetRequest(`/player/${userId}/skill-loadout-presets`),
+        presetRequest("/skills?tag=all"),
+      ]);
       const nextPresets = Array.isArray(data.presets) ? data.presets : [];
       setPresets(nextPresets);
+      setSkillCatalog(Array.isArray(allSkills) ? allSkills : []);
       setNames((current) => {
         const next = { ...current };
         nextPresets.forEach((preset) => {
@@ -64,11 +64,7 @@ export default function SkillLoadoutPresetModal({
       await presetRequest(`/player/${userId}/skill-loadout-presets/${slot}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          skill_ids: currentSkillIds,
-          zone: currentZone,
-        }),
+        body: JSON.stringify({ name, skill_ids: currentSkillIds }),
       });
       playSound("save");
       setMessage(`บันทึก ${name} แล้ว`);
@@ -101,9 +97,7 @@ export default function SkillLoadoutPresetModal({
     setBusySlot(slot);
     setMessage("");
     try {
-      await presetRequest(`/player/${userId}/skill-loadout-presets/${slot}`, {
-        method: "DELETE",
-      });
+      await presetRequest(`/player/${userId}/skill-loadout-presets/${slot}`, { method: "DELETE" });
       playSound("close");
       setMessage("ลบ preset แล้ว");
       await loadPresets();
@@ -115,6 +109,10 @@ export default function SkillLoadoutPresetModal({
   };
 
   const presetBySlot = new Map(presets.map((preset) => [preset.slot, preset]));
+  const skillById = useMemo(
+    () => new Map(skillCatalog.map((skill) => [String(skill.id), skill])),
+    [skillCatalog]
+  );
 
   return createPortal(
     <div className="skill-preset-backdrop" onMouseDown={onClose}>
@@ -133,21 +131,20 @@ export default function SkillLoadoutPresetModal({
           <button type="button" onClick={onClose} aria-label="Close presets">×</button>
         </header>
 
-        <p className="skill-preset-intro">บันทึกชุดสกิลปัจจุบัน 4 ช่องและ Zone ได้สูงสุด 3 ชุด</p>
+        <p className="skill-preset-intro">บันทึกชุดสกิลปัจจุบัน 4 ช่องได้สูงสุด 3 ชุด</p>
         {message ? <p className="skill-preset-message">{message}</p> : null}
 
         <div className="skill-preset-list">
           {PRESET_SLOTS.map((slot) => {
             const preset = presetBySlot.get(slot);
             const isBusy = busySlot === slot;
-            const skillIds = preset?.skill_ids?.filter(Boolean) || [];
+            const skillIds = preset?.skill_ids || [];
 
             return (
               <article className="skill-preset-item" key={slot}>
                 <span className="skill-preset-slot">{slot}</span>
                 <div className="skill-preset-content">
                   <label>
-                    {/* <span>ชื่อ preset</span> */}
                     <input
                       value={names[slot] ?? preset?.name ?? `Preset ${slot}`}
                       maxLength={32}
@@ -155,22 +152,32 @@ export default function SkillLoadoutPresetModal({
                     />
                   </label>
                   {preset ? (
-                    <>
-                      <p><b>Skills:</b> {skillIds.length ? skillIds.join(" · ") : "ไม่มีสกิล"}</p>
-                      <p><b>Zone:</b> {preset.zone?.name || "Default Zone"}</p>
-                    </>
+                    <div className="skill-loadout-list skill-preset-skill-list">
+                      {skillIds.map((skillId, index) => {
+                        const skill = skillId ? skillById.get(String(skillId)) : null;
+                        return (
+                          <div className="skill-loadout-item" key={`${slot}-${index}`}>
+                            <span className="skill-loadout-slot">{index + 1}</span>
+                            {skill ? (
+                              <>
+                                <div className="skill-icon-box">{getSkillIcon(skill.icon)}</div>
+                                <span className="skill-loadout-name">{skill.name}</span>
+                                <span className="skill-loadout-cd">{skill.cost ?? 0}</span>
+                              </>
+                            ) : <span className="skill-loadout-empty">ยังไม่ได้ติดตั้งสกิล</span>}
+                          </div>
+                        );
+                      })}
+                    </div>
                   ) : <p>ยังไม่มี preset ในช่องนี้</p>}
                   <div className="skill-preset-actions">
-                    {preset ? (
-                      <button type="button" onClick={() => applyPreset(slot)} disabled={isBusy}>ใช้</button>
-                    ) : null}
+                    {preset ? <button type="button" onClick={() => applyPreset(slot)} disabled={isBusy}>ใช้</button> : null}
                     <button type="button" onClick={() => savePreset(slot)} disabled={isBusy}>
                       {preset ? "บันทึกทับ" : "บันทึก"}
                     </button>
                     {preset ? <button type="button" className="is-danger" onClick={() => deletePreset(slot)} disabled={isBusy}>ลบ</button> : null}
                   </div>
                 </div>
-                
               </article>
             );
           })}

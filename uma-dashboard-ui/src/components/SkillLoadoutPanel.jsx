@@ -18,7 +18,7 @@ function renderTextWithIcons(text) {
   );
 }
 
-export default function SkillLoadoutPanel({ userId, username, player, refreshKey, onPresetApplied }) {
+export default function SkillLoadoutPanel({ userId, username, player, refreshKey }) {
   const [skills, setSkills] = useState({});
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [isPresetOpen, setIsPresetOpen] = useState(false);
@@ -167,11 +167,9 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
         <SkillLoadoutPresetModal
           userId={userId}
           currentSkillIds={currentSkillIds}
-          currentZone={player?.zone || {}}
           onClose={() => setIsPresetOpen(false)}
-          onApplied={(preset) => {
+          onApplied={() => {
             loadSkills();
-            onPresetApplied?.(preset);
           }}
         />
       )}
