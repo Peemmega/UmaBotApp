@@ -51,19 +51,13 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
   }, [selectedSkill]);
 
   const slots = ["slot_1", "slot_2", "slot_3", "slot_4"];
+  const currentSkillIds = slots.map((slotKey) => skills?.[slotKey]?.id || null);
 
   return (
     <section className="skill-loadout-card">
       <div className="title-banner">
         <h2>✨ Skill Loadout</h2>
       </div>
-
-      <div className="skill-loadout-preset-bar">
-        <button type="button" className="skill-loadout-preset-button" onClick={() => setIsPresetOpen(true)}>
-          Presets
-        </button>
-      </div>
-
       <div className="skill-loadout-list">
         {slots.map((slotKey, index) => {
           const skill = skills?.[slotKey];
@@ -108,6 +102,12 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
             </button>
           );
         })}
+      </div>
+
+      <div className="skill-loadout-preset-bar">
+        <button type="button" className="skill-loadout-preset-button" onClick={() => setIsPresetOpen(true)}>
+          Presets
+        </button>
       </div>
 
       {selectedSkill && createPortal(
@@ -166,6 +166,8 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
       {isPresetOpen && (
         <SkillLoadoutPresetModal
           userId={userId}
+          currentSkillIds={currentSkillIds}
+          currentZone={player?.zone || {}}
           onClose={() => setIsPresetOpen(false)}
           onApplied={(preset) => {
             loadSkills();

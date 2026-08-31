@@ -13,7 +13,13 @@ async function presetRequest(path, options) {
   return data;
 }
 
-export default function SkillLoadoutPresetModal({ userId, onClose, onApplied }) {
+export default function SkillLoadoutPresetModal({
+  userId,
+  currentSkillIds,
+  currentZone,
+  onClose,
+  onApplied,
+}) {
   const [presets, setPresets] = useState([]);
   const [names, setNames] = useState({});
   const [loading, setLoading] = useState(true);
@@ -58,7 +64,11 @@ export default function SkillLoadoutPresetModal({ userId, onClose, onApplied }) 
       await presetRequest(`/player/${userId}/skill-loadout-presets/${slot}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({
+          name,
+          skill_ids: currentSkillIds,
+          zone: currentZone,
+        }),
       });
       playSound("save");
       setMessage(`บันทึก ${name} แล้ว`);
