@@ -32,9 +32,9 @@ export default function GameNav({
   const baseItems = items.filter(
     (item) => item.key !== "tcg" && item.key !== "race"
   );
-  const visibleItems = profileType === "trainee"
-    ? baseItems
-    : baseItems.filter((item) => item.key !== "skills");
+  // const visibleItems = profileType === "trainee"
+  //   ? baseItems
+  //   : baseItems.filter((item) => item.key !== "skills");
 
   return (
     <nav className="sidebar game-nav" aria-label="Game navigation">
