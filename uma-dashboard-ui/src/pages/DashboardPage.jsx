@@ -120,16 +120,6 @@ export default function DashboardPage({
       case "races":
         return <RacesPage userId={userId} profileType={activeProfileType} />;
 
-      case "race-replay": {
-        const raceId = new URLSearchParams(window.location.search).get("race");
-        return (
-          <RaceReplayPage
-            raceId={raceId}
-            onBack={() => changePage("races")}
-          />
-        );
-      }
-
       case "qa":
         return <QAPage />;
 
@@ -270,6 +260,11 @@ export default function DashboardPage({
       )}
     </>
   );
+
+  if (activePage === "race-replay") {
+    const raceId = new URLSearchParams(window.location.search).get("race");
+    return <RaceReplayPage raceId={raceId} onBack={() => changePage("races")} />;
+  }
 
   return (
     <AppShell

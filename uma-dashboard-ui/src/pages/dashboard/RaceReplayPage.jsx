@@ -202,7 +202,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
           <div className="race-replay-stage">
             <img src={raceBackground(race)} alt="สนามแข่ง" />
             <div className="race-replay-stage-shade" />
-            <RacePositionTrack players={replayPlayers} room={race} />
+            <RacePositionTrack players={replayPlayers} />
             <div className="race-replay-lane-labels" aria-hidden="true">
               {Array.from({ length: LANE_COUNT }, (_, index) => <span key={index}>Lane {index + 1}</span>)}
             </div>
