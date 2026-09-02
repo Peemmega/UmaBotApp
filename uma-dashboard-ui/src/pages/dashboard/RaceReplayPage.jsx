@@ -11,10 +11,15 @@ import {
 } from "lucide-react";
 import { BOT_API_BASE } from "../../api/playerApi";
 import RacePositionTrack from "../../components/RacePositionTrack";
+import { resolveRaceAvatar } from "../../utils/avatar";
 import "../../styles/raceReplayPage.css";
 
 const LANE_COUNT = 6;
 const EMPTY_LIST = [];
+
+function laneCenterY(lane) {
+  return 12 + (Math.min(LANE_COUNT, Math.max(1, Number(lane) || 1)) - 1) * 15;
+}
 
 function formatAction(action) {
   const data = action?.action_data || action?.action_data_json || {};
@@ -29,19 +34,20 @@ function formatAction(action) {
   return data.summary || action?.action_type || "การกระทำ";
 }
 
-function raceBackground(race) {
-  const key = String(race?.stage_key || "").toLowerCase();
-  if (key.includes("dirt")) return "/race_bg/path_2_bg.webp";
-  if (key.includes("long")) return "/race_bg/path_4_bg.webp";
-  return "/race_bg/turn_result_temp.png";
-}
+function participantAvatar(participant, currentProfileImage = "") {
+  const snapshot = participant?.snapshot || participant?.snapshot_json || {};
+  const savedAvatar = resolveRaceAvatar({
+    profile_image_url: currentProfileImage || snapshot.profile_image_url || participant?.profile_image_url,
+    avatar: snapshot.avatar_url || snapshot.avatar || participant?.avatar,
+    thumbnail: snapshot.thumbnail || participant?.thumbnail,
+  }, "");
+  if (savedAvatar) return savedAvatar;
 
-function participantAvatar(participant) {
   const mobId = String(participant?.mob_id || "");
   return /^[a-z0-9_-]+$/i.test(mobId) ? `/mobs/${mobId}.webp` : "";
 }
 
-function buildReplayState(participants, turns, selectedTurn) {
+function buildReplayState(participants, turns, selectedTurn, playerAvatars) {
   const finalDistance = Math.max(
     1,
     ...participants.map((participant) => Number(participant.final_score) || 0),
@@ -72,7 +78,7 @@ function buildReplayState(participants, turns, selectedTurn) {
       progress_ratio: 0.055 + (score / finalDistance) * 0.89,
       rank: Number(latest?.position) || null,
       running_style: participant.running_style,
-      track_avatar: participantAvatar(participant),
+      track_avatar: participantAvatar(participant, playerAvatars[String(participant.participant_id)]),
       latestTurn: latest,
       finalRank: participant.final_rank,
     };
@@ -95,6 +101,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
   const [error, setError] = useState(raceId ? "" : "ไม่พบรายการการแข่งขันที่ต้องการดูรีเพลย์");
   const [selectedTurn, setSelectedTurn] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playerAvatars, setPlayerAvatars] = useState({});
 
   useEffect(() => {
     if (!raceId) return undefined;
@@ -119,6 +126,27 @@ export default function RaceReplayPage({ raceId, onBack }) {
   const totalTurns = Math.max(Number(race.total_turns) || 0, ...turns.map((turn) => Number(turn.turn_number) || 0), 0);
 
   useEffect(() => {
+    const persistentParticipants = participants.filter((participant) => participant?.uma_id);
+    if (!persistentParticipants.length) return undefined;
+
+    let cancelled = false;
+    Promise.all(persistentParticipants.map(async (participant) => {
+      const response = await fetch(`${BOT_API_BASE}/player/${encodeURIComponent(participant.uma_id)}`);
+      if (!response.ok) return [String(participant.participant_id), ""];
+      const player = await response.json();
+      return [String(participant.participant_id), resolveRaceAvatar(player, "")];
+    }))
+      .then((entries) => {
+        if (!cancelled) setPlayerAvatars(Object.fromEntries(entries.filter(([, avatar]) => avatar)));
+      })
+      .catch(() => {
+        if (!cancelled) setPlayerAvatars({});
+      });
+
+    return () => { cancelled = true; };
+  }, [participants]);
+
+  useEffect(() => {
     if (!isPlaying || selectedTurn >= totalTurns) return undefined;
     const timer = window.setTimeout(() => {
       const nextTurn = Math.min(selectedTurn + 1, totalTurns);
@@ -129,8 +157,8 @@ export default function RaceReplayPage({ raceId, onBack }) {
   }, [isPlaying, selectedTurn, totalTurns]);
 
   const replayPlayers = useMemo(
-    () => buildReplayState(participants, turns, selectedTurn),
-    [participants, selectedTurn, turns],
+    () => buildReplayState(participants, turns, selectedTurn, playerAvatars),
+    [participants, playerAvatars, selectedTurn, turns],
   );
   const participantById = useMemo(
     () => new Map(participants.map((participant) => [String(participant.participant_id), participant])),
@@ -202,9 +230,16 @@ export default function RaceReplayPage({ raceId, onBack }) {
           <div className="race-replay-stage">
             {/* <img src={raceBackground(race)} alt="สนามแข่ง" /> */}
             <div className="race-replay-stage-shade" />
+            <div className="race-replay-lane-guides" aria-hidden="true">
+              {Array.from({ length: LANE_COUNT }, (_, index) => (
+                <span key={index} style={{ "--lane-y": `${laneCenterY(index + 1)}%` }} />
+              ))}
+            </div>
             <RacePositionTrack players={replayPlayers} />
             <div className="race-replay-lane-labels" aria-hidden="true">
-              {Array.from({ length: LANE_COUNT }, (_, index) => <span key={index}>Lane {index + 1}</span>)}
+              {Array.from({ length: LANE_COUNT }, (_, index) => (
+                <span key={index} style={{ "--lane-y": `${laneCenterY(index + 1)}%` }}>Lane {index + 1}</span>
+              ))}
             </div>
           </div>
           <div className="race-replay-controls">
