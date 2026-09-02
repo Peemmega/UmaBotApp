@@ -33,7 +33,7 @@ function raceBackground(race) {
   const key = String(race?.stage_key || "").toLowerCase();
   if (key.includes("dirt")) return "/race_bg/path_2_bg.webp";
   if (key.includes("long")) return "/race_bg/path_4_bg.webp";
-  return "/race_bg/main.webp";
+  return "/race_bg/turn_result_temp.png";
 }
 
 function participantAvatar(participant) {
