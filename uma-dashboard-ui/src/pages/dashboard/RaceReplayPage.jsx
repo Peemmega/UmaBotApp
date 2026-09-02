@@ -200,7 +200,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
         <main className="race-replay-track-panel">
           <div className="race-replay-track-header"><span>START</span><strong>{selectedTurn === totalTurns && totalTurns ? "FINISH" : `TURN ${selectedTurn}`}</strong><span>FINISH</span></div>
           <div className="race-replay-stage">
-            <img src={raceBackground(race)} alt="สนามแข่ง" />
+            {/* <img src={raceBackground(race)} alt="สนามแข่ง" /> */}
             <div className="race-replay-stage-shade" />
             <RacePositionTrack players={replayPlayers} />
             <div className="race-replay-lane-labels" aria-hidden="true">
