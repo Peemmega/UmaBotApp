@@ -136,6 +136,13 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose, onOp
     (result[action.participant_id] ||= []).push(action);
     return result;
   }, {});
+  const openReplay = () => {
+    if (onOpenReplay) {
+      onOpenReplay(raceId);
+      return;
+    }
+    window.location.assign(`/dashboard/race-replay?race=${encodeURIComponent(raceId)}`);
+  };
 
   return (
     <div className="zone-edit-backdrop race-history-backdrop" onClick={onClose}>
@@ -213,7 +220,7 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose, onOp
             <Button
               variant="primary"
               className="race-history-replay-btn"
-              onClick={() => onOpenReplay?.(raceId)}
+              onClick={openReplay}
               disabled={loading || Boolean(error)}
             >
               <Play size={16} fill="currentColor" /> ดูรีเพลย์การแข่งขัน
