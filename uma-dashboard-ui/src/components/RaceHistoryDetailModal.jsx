@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Play } from "lucide-react";
 import { Badge, Button } from "./ui";
 import { BOT_API_BASE } from "../api/playerApi";
 import { mainStats, aptitudeRows } from "../data/dashboardConfig";
@@ -81,7 +82,7 @@ function RaceActionTable({ actions }) {
   );
 }
 
-export default function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
+export default function RaceHistoryDetailModal({ raceId, fallback, onClose, onOpenReplay }) {
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -209,6 +210,14 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose }) {
           )}
 
           <div className="race-room-actions race-history-detail-actions">
+            <Button
+              variant="primary"
+              className="race-history-replay-btn"
+              onClick={() => onOpenReplay?.(raceId)}
+              disabled={loading || Boolean(error)}
+            >
+              <Play size={16} fill="currentColor" /> ดูรีเพลย์การแข่งขัน
+            </Button>
             <Button variant="ghost" className="zone-cancel-btn" onClick={onClose}>ปิด</Button>
           </div>
         </div>

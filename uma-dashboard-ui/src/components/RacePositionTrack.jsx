@@ -25,6 +25,9 @@ function getPlayerScore(player) {
 }
 
 function getRelativePlayerProgress(player, players) {
+  const explicitProgress = Number(player?.progress_ratio);
+  if (Number.isFinite(explicitProgress)) return clamp(explicitProgress, 0.04, 0.96);
+
   const scoreList = (Array.isArray(players) ? players : []).map(getPlayerScore);
   const minScore = Math.min(...scoreList);
   const maxScore = Math.max(...scoreList);
@@ -48,7 +51,7 @@ function getLaneCenterY(lane) {
   return 12 + (clamp(Number(lane) || 1, 1, LANE_COUNT) - 1) * 15;
 }
 
-function buildTrackPlayers(players, room) {
+function buildTrackPlayers(players) {
   const basePlayers = (Array.isArray(players) ? players : []).map((player, index) => ({
     ...player,
     display_number: Number(player?.display_number) || index + 1,
@@ -103,10 +106,10 @@ function buildTrackPlayers(players, room) {
   });
 }
 
-export default function RacePositionTrack({ players, room, currentUserId }) {
+export default function RacePositionTrack({ players, currentUserId }) {
   const trackPlayers = useMemo(
-    () => buildTrackPlayers(players, room),
-    [players, room]
+    () => buildTrackPlayers(players),
+    [players]
   );
 
   return (

@@ -429,6 +429,12 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
             raceId={selectedRaceResult.race_id}
             fallback={selectedRaceResult}
             onClose={() => setSelectedRaceResult(null)}
+            onOpenReplay={(raceId) => {
+              setSelectedRaceResult(null);
+              setSelectedRace(null);
+              window.history.pushState({}, "", `/dashboard/race-replay?race=${encodeURIComponent(raceId)}`);
+              window.dispatchEvent(new PopStateEvent("popstate"));
+            }}
           />
         </div>,
         document.body

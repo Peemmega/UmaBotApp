@@ -1,0 +1,38 @@
+.race-replay-page {
+  min-height: calc(100vh - 130px);
+  padding: 18px;
+  border-radius: 18px;
+  color: #f4fff7;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(89, 218, 146, .18), transparent 35%),
+    linear-gradient(135deg, #071f2c, #0b3d3c 55%, #10251f);
+  box-shadow: 0 20px 52px rgba(4, 15, 25, .26);
+}
+
+.race-replay-header { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; margin-bottom: 16px; }
+.race-replay-header h1 { margin: 2px 0; font-size: clamp(20px, 3vw, 30px); color: #fff; }
+.race-replay-header span, .race-replay-header p, .race-replay-panel-caption { margin: 0; color: rgba(224, 255, 238, .72); font-size: 12px; font-weight: 800; }
+.race-replay-header > div > span { color: #84ffc0; letter-spacing: .13em; }
+.race-replay-back, .race-replay-controls button, .race-replay-timeline button, .race-replay-loading button { border: 1px solid rgba(196, 255, 219, .3); border-radius: 10px; background: rgba(3, 28, 37, .68); color: #f4fff7; font: inherit; font-weight: 800; cursor: pointer; }
+.race-replay-back { display: inline-flex; align-items: center; gap: 5px; padding: 9px 12px; }
+.race-replay-turn-counter { display: inline-flex; align-items: center; gap: 7px; padding: 10px 12px; border: 1px solid rgba(137, 255, 188, .34); border-radius: 10px; background: rgba(12, 62, 59, .72); color: #c6ffdc; font-weight: 900; white-space: nowrap; }
+.race-replay-layout { display: grid; grid-template-columns: minmax(205px, .78fr) minmax(440px, 1.8fr) minmax(230px, .9fr); gap: 14px; min-height: 570px; }
+.race-replay-log-panel, .race-replay-score-panel { min-width: 0; padding: 15px; border: 1px solid rgba(186, 255, 213, .2); border-radius: 14px; background: linear-gradient(180deg, rgba(16, 70, 70, .82), rgba(5, 32, 42, .88)); box-shadow: inset 0 1px rgba(255,255,255,.1); }
+.race-replay-log-panel h2, .race-replay-score-panel h2 { display: flex; align-items: center; gap: 7px; margin: 0 0 4px; color: #bcffdc; font-size: 15px; text-transform: uppercase; }
+.race-replay-log-list, .race-replay-score-list { display: grid; gap: 8px; margin: 14px 0 0; padding: 0; overflow: auto; max-height: 490px; }
+.race-replay-log-entry { padding: 10px; border-left: 3px solid #6eea9b; border-radius: 7px; background: rgba(255,255,255,.08); display: grid; gap: 3px; }
+.race-replay-log-entry.is-action { border-left-color: #ffd15e; }
+.race-replay-log-entry b { color: #fff; font-size: 13px; }.race-replay-log-entry span { color: #dff9e7; font-size: 12px; }.race-replay-log-entry em { color: rgba(213, 255, 229, .7); font-size: 11px; font-style: normal; }
+.race-replay-empty { color: rgba(224,255,238,.7); font-weight: 800; font-size: 13px; }
+.race-replay-track-panel { display: grid; grid-template-rows: auto minmax(350px, 1fr) auto auto; gap: 10px; min-width: 0; }
+.race-replay-track-header { display: flex; justify-content: space-between; color: #a9ffd0; font-size: 11px; font-weight: 1000; letter-spacing: .13em; }.race-replay-track-header strong { color: #fff5ae; }
+.race-replay-stage { position: relative; min-height: 350px; overflow: hidden; border: 2px solid rgba(196, 255, 216, .48); border-radius: 16px; background: #d9ecd4; box-shadow: 0 16px 34px rgba(0,0,0,.3); }
+.race-replay-stage > img, .race-replay-stage-shade { position: absolute; inset: 0; width: 100%; height: 100%; }.race-replay-stage > img { object-fit: fill; }.race-replay-stage-shade { background: linear-gradient(90deg, rgba(238,255,239,.1), transparent 50%, rgba(14,44,33,.2)); }
+.race-replay-stage .race-position-track { left: 11%; right: 9%; top: 12%; bottom: 10%; z-index: 2; }.race-replay-stage .race-position-lane { border-top-width: 3px; border-top-color: rgba(69, 148, 76, .92); box-shadow: 0 1px rgba(255,255,255,.8); }.race-replay-stage .race-track-marker-wrap { transition: left 850ms cubic-bezier(.22,.8,.25,1), top 850ms cubic-bezier(.22,.8,.25,1), transform 850ms cubic-bezier(.22,.8,.25,1); }.race-replay-stage .race-player-marker { width: 48px; height: 48px; border-width: 3px; }.race-replay-stage .race-player-marker__number { transform: scale(.82); transform-origin: top left; }
+.race-replay-lane-labels { position: absolute; z-index: 3; top: 12%; bottom: 10%; left: 9px; display: flex; flex-direction: column; justify-content: space-around; color: #275935; font-size: 10px; font-weight: 1000; text-shadow: 0 1px #fff; }
+.race-replay-controls { display: flex; justify-content: center; gap: 8px; }.race-replay-controls button { min-height: 38px; padding: 7px 10px; display: grid; place-items: center; }.race-replay-controls button:disabled { opacity: .38; cursor: not-allowed; }.race-replay-controls .race-replay-play { display: inline-flex; gap: 7px; padding-inline: 16px; background: linear-gradient(180deg, #55ce7d, #219654); border-color: #b9ffcd; color: white; }
+.race-replay-timeline { display: flex; gap: 6px; padding-bottom: 3px; overflow-x: auto; }.race-replay-timeline button { min-width: 40px; padding: 7px 9px; font-size: 12px; }.race-replay-timeline button.active { border-color: #fff1a1; background: #edb833; color: #463400; }
+.race-replay-score-list { list-style: none; }.race-replay-score-list li { display: grid; grid-template-columns: 28px 36px minmax(0, 1fr) auto; align-items: center; gap: 7px; padding: 8px; border-radius: 10px; background: rgba(255,255,255,.08); }.race-replay-score-list li.is-leading { background: linear-gradient(90deg, rgba(246, 198, 57, .33), rgba(255,255,255,.09)); box-shadow: inset 3px 0 #ffd45f; }.race-replay-score-list li > strong { color: #ffe17d; font-size: 13px; }.race-replay-avatar { width: 34px; height: 34px; display: grid; place-items: center; border: 2px solid #9ff4b9; border-radius: 50%; background: #377c63; color: #fff; font-weight: 1000; overflow: hidden; }.race-replay-avatar img { width: 100%; height: 100%; object-fit: cover; }.race-replay-score-list b, .race-replay-score-list small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.race-replay-score-list b { color: #fff; font-size: 12px; }.race-replay-score-list small { color: rgba(225,255,236,.66); font-size: 10px; }.race-replay-score-list em { color: #b9ffce; font-size: 12px; font-style: normal; font-weight: 900; }
+.race-replay-loading { min-height: 300px; display: grid; place-content: center; gap: 12px; color: #5d736d; font-weight: 900; text-align: center; }.race-replay-loading.is-error { color: #aa4050; }.race-replay-loading button { padding: 9px 12px; }
+@media (max-width: 1080px) { .race-replay-layout { grid-template-columns: minmax(220px, .7fr) minmax(380px, 1.35fr); }.race-replay-score-panel { grid-column: 1 / -1; }.race-replay-score-list { grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: 180px; }.race-replay-score-list li { min-width: 0; } }
+@media (max-width: 720px) { .race-replay-page { padding: 12px; }.race-replay-header { grid-template-columns: auto 1fr; }.race-replay-turn-counter { grid-column: 1 / -1; justify-self: start; }.race-replay-layout { grid-template-columns: 1fr; }.race-replay-log-panel { order: 2; }.race-replay-track-panel { order: 1; }.race-replay-score-panel { grid-column: auto; order: 3; }.race-replay-score-list { grid-template-columns: 1fr; }.race-replay-stage { min-height: 300px; }.race-replay-stage .race-player-marker { width: 38px; height: 38px; } }

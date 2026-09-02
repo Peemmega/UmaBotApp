@@ -22,6 +22,7 @@ import CharactersPage from "./dashboard/CharactersPage";
 import QAPage from "./dashboard/QAPage";
 import RacesPage from "./dashboard/RacesPage";
 import ToolsPage from "./dashboard/ToolsPage";
+import RaceReplayPage from "./dashboard/RaceReplayPage";
 
 const VALID_PAGES = [
   "profile",
@@ -31,6 +32,7 @@ const VALID_PAGES = [
   "tools",
   "tutorials",
   "qa",
+  "race-replay",
 ];
 
 function getPageFromPath() {
@@ -117,6 +119,16 @@ export default function DashboardPage({
 
       case "races":
         return <RacesPage userId={userId} profileType={activeProfileType} />;
+
+      case "race-replay": {
+        const raceId = new URLSearchParams(window.location.search).get("race");
+        return (
+          <RaceReplayPage
+            raceId={raceId}
+            onBack={() => changePage("races")}
+          />
+        );
+      }
 
       case "qa":
         return <QAPage />;
