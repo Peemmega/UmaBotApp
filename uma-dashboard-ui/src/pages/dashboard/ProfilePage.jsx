@@ -507,7 +507,7 @@ export default function ProfilePage({
           </section>
           </StaggerItem>
 
-          <StaggerItem className="profile-mobile-skill-loadout">
+          <StaggerItem>
             <SkillLoadoutPanel
               userId={userId}
               username={player?.username || username}

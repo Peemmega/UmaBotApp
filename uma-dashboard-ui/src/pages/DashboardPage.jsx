@@ -23,6 +23,7 @@ import QAPage from "./dashboard/QAPage";
 import RacesPage from "./dashboard/RacesPage";
 import ToolsPage from "./dashboard/ToolsPage";
 import RaceReplayPage from "./dashboard/RaceReplayPage";
+import NewsPage from "./dashboard/NewsPage";
 
 const VALID_PAGES = [
   "profile",
@@ -33,6 +34,7 @@ const VALID_PAGES = [
   "tutorials",
   "qa",
   "race-replay",
+  "news",
 ];
 
 function getPageFromPath() {
@@ -125,6 +127,9 @@ export default function DashboardPage({
 
       case "tools":
         return <ToolsPage />;
+
+      case "news":
+        return <NewsPage />;
 
       case "profile":
       default:
@@ -283,11 +288,7 @@ export default function DashboardPage({
       rightRail={
         activeProfileType === "trainee" ? (
           <RightRail
-            userId={userId}
-            username={player?.username || username}
-            player={player}
-            skillLoadoutVersion={skillLoadoutVersion}
-            page={activePage}
+            onNavigate={changePage}
           />
         ) : null
       }
