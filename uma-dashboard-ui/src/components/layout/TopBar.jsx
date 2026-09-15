@@ -17,8 +17,8 @@ export default function TopBar({
           <span>TA</span>
         </span>
         <div>
-          <p className="topbar-kicker">UmaDnD Racing Club</p>
-          <h1 className="dashboard-title">Tracen Academy RP</h1>
+          <p className="topbar-kicker">Umamusume New Frontier</p>
+          <h1 className="dashboard-title">Tracen Academy Site</h1>
         </div>
       </div>
 
