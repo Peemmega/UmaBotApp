@@ -1,3 +1,12 @@
+@font-face {
+  font-family: "Noto Sans Thai";
+  src: url("./assets/fonts/NotoSansThai-VariableFont_wdth,wght.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  font-display: swap;
+}
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -11,8 +20,8 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --sans: "Noto Sans Thai", system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: "Noto Sans Thai", system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
   /* Uma-style design tokens */
@@ -127,7 +136,7 @@
 
 body {
   margin: 0;
-  font-family: 'Nunito', 'M PLUS Rounded 1c', sans-serif;
+  font-family: var(--sans);
 }
 
 #root {
@@ -144,7 +153,7 @@ body {
 
 h1,
 h2 {
-  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-family: 'Fredoka', "Noto Sans Thai", sans-serif;
   font-weight: 500;
   color: var(--text-h);
   letter-spacing: 0;
