@@ -14,11 +14,18 @@ function getEventDate(event) {
 function formatEventDate(event) {
   const date = getEventDate(event);
   if (!date) return event.time || "กำหนดการเร็ว ๆ นี้";
-  return new Intl.DateTimeFormat("th-TH", {
-    weekday: "short",
+  const shortDate = new Intl.DateTimeFormat("th-TH", {
+    day: "numeric",
+    month: "short",
+  }).format(date);
+  const weekday = new Intl.DateTimeFormat("th-TH", { weekday: "short" }).format(date);
+  const time = new Intl.DateTimeFormat("th-TH", {
     hour: "2-digit",
     minute: "2-digit",
+    hour12: false,
   }).format(date);
+
+  return `${shortDate} (${weekday}) · ${time}`;
 }
 
 function eventMeta(event) {
