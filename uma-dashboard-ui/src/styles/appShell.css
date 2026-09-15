@@ -440,6 +440,8 @@
   flex-direction: column;
   gap: var(--uma-space-3);
   position: sticky;
+  padding: 10px;
+  border-radius: var(--uma-radius-xs);
 }
 
 .right-rail-heading {

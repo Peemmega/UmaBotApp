@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { CalendarDays, CirclePlus, Flag, Trophy, Users, X } from "lucide-react";
 import { BOT_API_BASE } from "../../api/playerApi";
 import { GameCard, SectionHeader } from "../../components/ui";
@@ -34,7 +35,7 @@ function DetailsModal({ item, onClose }) {
   const image = getNewsImage(item);
   const conditions = [item.venue, item.track, item.distance].filter(Boolean).join(" · ");
 
-  return <div className="news-modal-backdrop" role="presentation" onMouseDown={onClose}>
+  const modal = <div className="news-modal-backdrop" role="presentation" onMouseDown={onClose}>
     <section className="news-detail-modal" role="dialog" aria-modal="true" aria-labelledby="news-detail-title" onMouseDown={(event) => event.stopPropagation()}>
       <button type="button" className="news-modal-close" onClick={onClose} aria-label="ปิดรายละเอียด"><X size={20} /></button>
       {image ? <img className="news-detail-image" src={image} alt="" /> : null}
@@ -53,6 +54,8 @@ function DetailsModal({ item, onClose }) {
       </div>
     </section>
   </div>;
+
+  return typeof document === "undefined" ? modal : createPortal(modal, document.body);
 }
 
 export default function NewsPage() {

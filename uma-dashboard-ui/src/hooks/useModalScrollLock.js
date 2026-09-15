@@ -11,6 +11,7 @@ const MODAL_SELECTOR = [
   ".skill-loadout-detail-backdrop",
   ".skill-preset-backdrop",
   ".character-profile-backdrop",
+  ".news-modal-backdrop",
 ].join(", ");
 
 export default function useModalScrollLock() {
