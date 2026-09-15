@@ -22,6 +22,7 @@ export default function NewsListingCard({ item, onDetails, compact = false }) {
     onClick={isClickable ? openDetails : undefined}
     onKeyDown={handleKeyDown}
   >
+    {image ? <img className="news-listing-banner" src={image} alt="" loading="lazy" /> : null}
     <div className="news-listing-content">
       <div className="news-listing-meta">
         <span className="news-listing-kind">{kind === "event" ? "Event" : "Race"}</span>
@@ -33,7 +34,5 @@ export default function NewsListingCard({ item, onDetails, compact = false }) {
         Details <ChevronsRight size={22} strokeWidth={3} aria-hidden="true" />
       </span>
     </div>
-    
-    {image ? <img className="news-listing-banner" src={image} alt="" loading="lazy" /> : null}
   </article>;
 }
