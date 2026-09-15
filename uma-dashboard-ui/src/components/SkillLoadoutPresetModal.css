@@ -12,14 +12,14 @@
 
 .skill-loadout-preset-bar {
   display: flex;
-  justify-content: center;
+  justify-content: right;
   padding: 6px 18px 12px;
 }
 
 .skill-loadout-preset-button {
   border: 0;
   border-radius: 10px;
-  padding: 8px 20%;
+  padding: 8px 5%;
   background: var(--uma-gradient-primary);
   color: white;
   font: inherit;

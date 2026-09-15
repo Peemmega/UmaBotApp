@@ -92,14 +92,14 @@
 
 .app-shell-layout,
 .dashboard-layout {
-  width: min(100%, 1500px);
+  width: min(100%, 1600px);
   margin: 0 auto;
   display: grid;
   grid-template-columns:
-    clamp(190px, 14vw, 238px)
-    minmax(0, 940px)
-    clamp(270px, 20vw, 330px);
-  gap: clamp(var(--uma-space-4), 2vw, 34px);
+    clamp(190px, 14vw, 240px)
+    minmax(0, 800px)
+    clamp(270px, 20vw, 500px);
+  gap: clamp(var(--uma-space-4), 2vw, 24px);
   align-items: start;
   justify-content: center;
 }

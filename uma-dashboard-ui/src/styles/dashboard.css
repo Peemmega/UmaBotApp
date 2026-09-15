@@ -112,7 +112,7 @@ body {
 }
 
 .aptitude-row-title {
-  font-size: clamp(20px, 3vw, 28px);
+  font-size: clamp(18px, 3vw, 22px);
   font-weight: 900;
   color: #7c3f15;
   text-align: center;
@@ -130,7 +130,7 @@ body {
 }
 
 .aptitude-name {
-  font-size: clamp(18px, 3vw, 26px);
+  font-size: clamp(16px, 3vw, 18px);
   font-weight: 900;
   color: #7c3f15;
 }
@@ -442,7 +442,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 
 .profile-section-header {
@@ -996,13 +996,6 @@ body {
   align-items: center;
 }
 
-.aptitude-row-title {
-  font-size: 22px;
-  font-weight: 900;
-  color: #7c3f15;
-  text-align: center;
-}
-
 .aptitude-item {
   min-width: 0;
   display: flex;
@@ -1014,12 +1007,6 @@ body {
   padding: 10px 14px;
   min-height: 50px;
   box-shadow: inset 0 -3px 0 rgba(123, 79, 145, 0.169);
-}
-
-.aptitude-name {
-  font-size: 20px;
-  font-weight: 900;
-  color: #7c3f15;
 }
 
 .aptitude-grade-image {
@@ -1673,8 +1660,8 @@ html {
 
 .skill-loadout-list {
   padding: var(--uma-space-3);
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--uma-space-2);
 }
 
@@ -1682,7 +1669,7 @@ html {
   min-height: 48px;
   padding: 7px 9px;
   border-radius: var(--uma-radius-sm);
-  background: rgba(255, 253, 248, 0.88);
+  background: rgba(255, 255, 255);
   border: 1px solid rgba(123, 79, 145, 0.12);
   display: flex;
   align-items: center;

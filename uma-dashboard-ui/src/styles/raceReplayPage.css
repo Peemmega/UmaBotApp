@@ -42,36 +42,35 @@
 @media (max-width: 1080px) { .race-replay-layout { grid-template-columns: minmax(220px, .7fr) minmax(380px, 1.35fr); }.race-replay-score-panel { grid-column: 1 / -1; }.race-replay-score-list { grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: 180px; }.race-replay-score-list li { min-width: 0; } }
 @media (max-width: 720px) { .race-replay-page { padding: 12px; }.race-replay-header { grid-template-columns: auto 1fr; }.race-replay-turn-counter { grid-column: 1 / -1; justify-self: start; }.race-replay-layout { grid-template-columns: 1fr; }.race-replay-log-panel { order: 2; }.race-replay-track-panel { order: 1; }.race-replay-score-panel { grid-column: auto; order: 3; }.race-replay-score-list { grid-template-columns: 1fr; }.race-replay-stage { min-height: 300px; }.race-replay-stage .race-player-marker { width: 38px; height: 38px; } }
 
-/* The replay is a viewing surface first: give the track the dominant canvas and
-   keep supporting information near, but not in competition with it. */
+/* Desktop replay keeps the live log, track preview, and score visible together. */
 @media (min-width: 1081px) {
   .race-replay-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(244px, .42fr);
-    grid-template-rows: minmax(540px, 1fr) auto;
+    grid-template-columns: minmax(220px, .78fr) minmax(500px, 1.8fr) minmax(240px, .9fr);
+    grid-template-rows: minmax(540px, 1fr);
     gap: 14px 18px;
   }
 
   .race-replay-track-panel {
-    grid-column: 1;
+    grid-column: 2;
     grid-row: 1;
     grid-template-rows: auto minmax(460px, 1fr) auto auto;
   }
 
   .race-replay-score-panel {
-    grid-column: 2;
-    grid-row: 1 / span 2;
+    grid-column: 3;
+    grid-row: 1;
   }
 
   .race-replay-log-panel {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 1;
     padding: 12px 14px;
   }
 
   .race-replay-log-list {
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    max-height: 174px;
-    margin-top: 9px;
+    grid-template-columns: 1fr;
+    max-height: calc(100dvh - 190px);
+    margin-top: 14px;
   }
 
   .race-replay-stage { min-height: 460px; }
