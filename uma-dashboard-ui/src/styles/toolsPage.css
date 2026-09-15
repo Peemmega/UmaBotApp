@@ -1,5 +1,7 @@
 .tools-page {
   width: min(100%, 1120px);
+  min-width: 0;
+  max-width: 100%;
   color: var(--uma-ink);
 }
 
@@ -44,6 +46,9 @@
 .tools-page-description { position: relative; z-index: 1; margin: 0; padding: 0 var(--uma-space-5) var(--uma-space-5); color: var(--uma-muted); font-size: 13px; font-weight: 700; text-align: left; }
 
 .wit-calculator {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: clamp(14px, 2vw, 24px);
   border: 1px solid color-mix(in srgb, var(--uma-primary) 34%, transparent);
   border-radius: var(--uma-radius-md);
@@ -86,7 +91,7 @@
 .wit-control select { position: relative; z-index: 1; width: 100%; margin-top: 7px; padding: 4px 0; border: 0; outline: none; background: transparent; color: var(--uma-ink); font: inherit; font-size: 18px; font-weight: 1000; cursor: pointer; }
 .wit-rate-card strong { position: relative; z-index: 1; display: block; margin-top: 4px; color: var(--uma-primary-dark); font-size: 23px; line-height: 1; }
 
-.wit-table-scroll { overflow-x: auto; border: 1px solid color-mix(in srgb, var(--uma-primary) 34%, transparent); border-radius: var(--uma-radius-sm); box-shadow: 0 6px 15px color-mix(in srgb, var(--uma-primary-dark) 6%, transparent); }
+.wit-table-scroll { min-width: 0; max-width: 100%; overflow-x: auto; border: 1px solid color-mix(in srgb, var(--uma-primary) 34%, transparent); border-radius: var(--uma-radius-sm); box-shadow: 0 6px 15px color-mix(in srgb, var(--uma-primary-dark) 6%, transparent); }
 .wit-table-scroll-hint { display: none; }
 .wit-table { width: 100%; min-width: 720px; border-collapse: separate; border-spacing: 0; text-align: center; font-variant-numeric: tabular-nums; }
 .wit-table th, .wit-table td { padding: 10px 12px; border-right: 1px solid color-mix(in srgb, var(--uma-primary) 18%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--uma-primary) 18%, transparent); font-weight: 900; }
@@ -103,7 +108,7 @@
   .tools-page-header-card .ui-section-header { padding: 14px 14px 8px; align-items: flex-start; }
   .tools-page-description { padding: 0 14px 14px; font-size: 12px; line-height: 1.5; }
   .tools-page-icon { width: 44px; height: 44px; border-radius: 14px; flex: 0 0 44px; }
-  .wit-calculator { margin-inline: -2px; padding: 12px; border-radius: 10px; }
+  .wit-calculator { padding: 12px; border-radius: 10px; }
   .wit-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-bottom: 12px; }
   .wit-control, .wit-rate-card { min-width: 0; padding: 10px; }
   .wit-rate-card { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; }
