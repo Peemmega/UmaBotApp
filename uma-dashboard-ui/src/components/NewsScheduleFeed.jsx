@@ -24,7 +24,7 @@ function getDate(item) {
 
 function timestamp(item) {
   if (!item.date) return "กำหนดการเร็ว ๆ นี้";
-  return `${String(item.date).replaceAll("-", "/")} ${item.time || "—"} (ICT)`;
+  return `${String(item.date).replaceAll("-", "/")} ${item.time || "—"} (GMT+7)`;
 }
 
 function loadSettings() {

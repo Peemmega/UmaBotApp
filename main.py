@@ -442,6 +442,12 @@ if os.path.exists(FRONTEND_DIST):
             StaticFiles(directory=os.path.join(FRONTEND_DIST, "role_selection_banner")),
             name="role-selection-banners",
         )
+    if os.path.exists(os.path.join(FRONTEND_DIST, "eventBanners")):
+        app.mount(
+            "/eventBanners",
+            StaticFiles(directory=os.path.join(FRONTEND_DIST, "eventBanners")),
+            name="event-banners",
+        )
     if os.path.exists(os.path.join(FRONTEND_DIST, "music")):
         app.mount("/music", StaticFiles(directory=os.path.join(FRONTEND_DIST, "music")), name="music-assets")
 
