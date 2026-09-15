@@ -1809,11 +1809,12 @@ html {
   margin: 0;
   font-size: 14px;
   line-height: 1.55;
+  font-weight: 600;
 }
 
 .skill-loadout-detail-effects { margin-top: 14px; }
 .skill-loadout-detail-effects ul { margin: 7px 0 0; padding-left: 20px; }
-.skill-loadout-detail-effects li { margin-top: 4px; line-height: 1.5; }
+.skill-loadout-detail-effects li { margin-top: 4px; line-height: 1.5; font-size: 15px; font-weight: 600; }
 
 .skill-loadout-inline-icon {
   width: 20px;
