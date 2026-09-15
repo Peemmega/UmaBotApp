@@ -324,6 +324,8 @@ export default function CharactersPage({ userId, player, profiles }) {
               <img
                 src={toAbsoluteBotUrl(character.image_url) || DEFAULT_AVATAR_URL}
                 alt={character.name}
+                loading="lazy"
+                decoding="async"
               />
             </div>
 

@@ -6,7 +6,7 @@ import AptitudeItem from "../../components/AptitudeItem";
 import ResourcePill from "../../components/ResourcePill";
 import EditStatsModal from "../../components/EditStatsModal";
 import ZonePanel from "../../components/ZonePanel";
-import { BOT_API_BASE, uploadProfileImage } from "../../api/playerApi";
+import { BOT_API_BASE, uploadPresetProfileImage, uploadProfileImage } from "../../api/playerApi";
 import statIcon from "../../assets/icons/statsPoint.webp";
 import skillIcon from "../../assets/icons/skillPoint.webp";
 import editIcon from "../../assets/icons/change_icon.webp";
@@ -40,6 +40,9 @@ export default function ProfilePage({
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadError, setUploadError] = useState("");
+  const [presetImageMessage, setPresetImageMessage] = useState("");
+  const [presetImageError, setPresetImageError] = useState("");
+  const [uploadingPresetImage, setUploadingPresetImage] = useState(false);
   const [teamMembers, setTeamMembers] = useState([]);
   const [teamFans, setTeamFans] = useState(0);
   const [availableTrainees, setAvailableTrainees] = useState([]);
@@ -184,15 +187,24 @@ export default function ProfilePage({
     event.target.value = "";
   };
 
-  const handleCropComplete = (croppedFile) => {
+  const handleCropComplete = async (croppedFile) => {
     if (cropTarget === "trainee") {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       setSelectedImageFile(croppedFile);
       setPreviewUrl(URL.createObjectURL(croppedFile));
     } else {
-      const reader = new FileReader();
-      reader.onload = () => onSaveProfile({ imageUrl: String(reader.result || "") });
-      reader.readAsDataURL(croppedFile);
+      try {
+        setUploadingPresetImage(true);
+        setPresetImageError("");
+        setPresetImageMessage("");
+        const result = await uploadPresetProfileImage(userId, profileType, croppedFile);
+        onSaveProfile?.({ imageUrl: result.image_url });
+        setPresetImageMessage("Profile image updated.");
+      } catch (err) {
+        setPresetImageError(String(err.message || err));
+      } finally {
+        setUploadingPresetImage(false);
+      }
     }
     setCropImageFile(null);
     setCropTarget("");
@@ -231,6 +243,7 @@ export default function ProfilePage({
                       accept="image/jpeg,image/png,image/webp"
                       className="profile-image-input"
                       onChange={handlePresetImageUpload}
+                      disabled={uploadingPresetImage}
                     />
                   </label>
                   {profileImage && (
@@ -238,10 +251,14 @@ export default function ProfilePage({
                       type="button"
                       className="profile-image-remove-btn"
                       onClick={() => onSaveProfile({ imageUrl: "" })}
+                      disabled={uploadingPresetImage}
                     >
                       Remove image
                     </button>
                   )}
+                  {uploadingPresetImage ? <div className="profile-image-success">Uploading...</div> : null}
+                  {presetImageMessage ? <div className="profile-image-success">{presetImageMessage}</div> : null}
+                  {presetImageError ? <div className="profile-image-error">{presetImageError}</div> : null}
                 </div>
               </div>
               {isTrainer || profileType === "npc" ? (

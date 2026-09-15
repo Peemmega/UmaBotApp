@@ -7,7 +7,7 @@ import MailboxModal from "../components/MailboxModal";
 import RenameModal from "../components/RenameModal";
 import PageTransition from "../components/PageTransition";
 import { AppShell, GameNav, RightRail, TopBar } from "../components/layout";
-import { BOT_API_BASE } from "../api/playerApi";
+import { BOT_API_BASE, uploadPresetProfileImage } from "../api/playerApi";
 import {
   PROFILE_TYPES,
   loadActiveProfileType,
@@ -79,16 +79,48 @@ export default function DashboardPage({
     if (accountRole !== "trainer" && accountRole !== "npc") return;
 
     const profile = profiles[accountRole];
-    fetch(`${BOT_API_BASE}/profiles/preset`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user_id: String(userId),
-        profile_type: accountRole,
-        name: profile?.name || accountRole,
-        image_url: profile?.imageUrl || "",
-      }),
-    }).catch(console.error);
+    const imageUrl = String(profile?.imageUrl || "");
+    let cancelled = false;
+
+    async function persistProfilePreset() {
+      // Upgrade a legacy Base64 image in localStorage on the next visit. This
+      // prevents an older browser cache from writing the large value back.
+      if (imageUrl.startsWith("data:image/")) {
+        const response = await fetch(imageUrl);
+        const imageBlob = await response.blob();
+        const migrated = await uploadPresetProfileImage(
+          userId,
+          accountRole,
+          new File([imageBlob], "profile.webp", { type: imageBlob.type || "image/webp" })
+        );
+        if (!cancelled) {
+          setProfiles((current) => ({
+            ...current,
+            [accountRole]: {
+              ...current[accountRole],
+              imageUrl: migrated.image_url,
+            },
+          }));
+        }
+        return;
+      }
+
+      await fetch(`${BOT_API_BASE}/profiles/preset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: String(userId),
+          profile_type: accountRole,
+          name: profile?.name || accountRole,
+          image_url: imageUrl,
+        }),
+      });
+    }
+
+    persistProfilePreset().catch(console.error);
+    return () => {
+      cancelled = true;
+    };
   }, [accountRole, profiles, userId]);
 
   const activeProfile = profiles[activeProfileType] || profiles.trainee;

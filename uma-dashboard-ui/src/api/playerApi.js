@@ -39,3 +39,15 @@ export async function uploadProfileImage(userId, file) {
     body: formData,
   });
 }
+
+export async function uploadPresetProfileImage(userId, profileType, file) {
+  const formData = new FormData();
+  formData.append("user_id", String(userId));
+  formData.append("profile_type", profileType);
+  formData.append("file", file);
+
+  return request("/profiles/preset-image", {
+    method: "POST",
+    body: formData,
+  });
+}
