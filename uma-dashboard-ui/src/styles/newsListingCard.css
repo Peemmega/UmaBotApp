@@ -3,7 +3,7 @@
 .news-listing-card.is-clickable:hover { transform: translateY(-4px); border-color: var(--uma-border-strong); box-shadow: var(--uma-shadow-card); }
 .news-listing-card.is-clickable:active { transform: translateY(-1px) scale(.992); }
 .news-listing-card.is-clickable:focus-visible { outline: none; box-shadow: var(--uma-focus-ring), var(--uma-shadow-card); }
-.news-listing-banner { display: block; width: calc(100% - 28px); max-height: 270px; margin: 14px 14px 0; border-radius: var(--uma-radius-sm); object-fit: cover; }
+.news-listing-banner { display: block; width: calc(100% - 28px); max-height: 320px; margin: 14px 14px 0; border-radius: var(--uma-radius-sm); object-fit: cover; }
 .news-listing-card.is-clickable .news-listing-banner { transition: transform 280ms ease, filter 280ms ease; }.news-listing-card.is-clickable:hover .news-listing-banner { transform: scale(1.015); filter: saturate(1.05); }
 .news-listing-content { display: grid; padding: 18px 20px 16px; }
 .news-listing-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 11px; }
