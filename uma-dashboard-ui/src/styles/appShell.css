@@ -97,8 +97,8 @@
   display: grid;
   grid-template-columns:
     clamp(190px, 14vw, 240px)
-    minmax(0, 800px)
-    clamp(270px, 20vw, 500px);
+    minmax(0, 850px)
+    clamp(270px, 24vw, 600px);
   gap: clamp(var(--uma-space-4), 2vw, 24px);
   align-items: start;
   justify-content: center;

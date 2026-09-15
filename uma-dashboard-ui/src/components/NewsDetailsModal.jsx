@@ -16,7 +16,7 @@ export default function NewsDetailsModal({ item, onClose }) {
   const modal = <div className="news-modal-backdrop" role="presentation" onMouseDown={onClose}>
     <section className="news-detail-modal" role="dialog" aria-modal="true" aria-labelledby="news-detail-title" onMouseDown={(event) => event.stopPropagation()}>
       <button type="button" className="news-modal-close" onClick={onClose} aria-label="ปิดรายละเอียด"><X size={20} /></button>
-      {image ? <img className="news-detail-image" src={image} alt="" /> : null}
+      {image ? <img className={`news-detail-image${isRace ? " is-race" : ""}`} src={image} alt="" /> : null}
       <div className="news-detail-body">
         <p className={`news-type-label ${isRace ? "race" : "event"}`}>{isRace ? "Race" : "Event"}</p>
         <h2 id="news-detail-title">{item.name}</h2>

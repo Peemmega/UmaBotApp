@@ -16,5 +16,5 @@ export function getNewsDescription(item) {
 
 export function getNewsTimestamp(item) {
   if (!item.date) return "กำหนดการเร็ว ๆ นี้";
-  return `${String(item.date).replaceAll("-", "/")} ${item.time || "--:--"} (GMT+7)`;
+  return `${String(item.date).replaceAll("-", "/")} ${item.time || "--:--"}`;
 }
