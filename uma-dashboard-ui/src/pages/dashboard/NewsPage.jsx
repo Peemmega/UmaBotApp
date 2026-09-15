@@ -12,6 +12,25 @@ function monthLabel(key) {
     .format(new Date(Number(year), Number(month) - 1, 1));
 }
 
+const MONTH_SHORT_LABELS = [
+  "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+  "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+];
+
+function monthShortLabel(key) {
+  return MONTH_SHORT_LABELS[Number(key.slice(-2)) - 1] || key;
+}
+
+function currentBangkokMonthKey() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "2-digit",
+  }).formatToParts(new Date());
+  const part = (type) => parts.find((item) => item.type === type)?.value;
+  return `${part("year")}-${part("month")}`;
+}
+
 export default function NewsPage() {
   const [items, setItems] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
@@ -30,7 +49,8 @@ export default function NewsPage() {
     `${a.date || ""}T${a.time || ""}`.localeCompare(`${b.date || ""}T${b.time || ""}`)
   )), [items]);
   const months = useMemo(() => [...new Set(ordered.map((item) => String(item.date || "").slice(0, 7)).filter(Boolean))], [ordered]);
-  const activeMonth = selectedMonth || months[0] || "";
+  const currentMonth = useMemo(currentBangkokMonthKey, []);
+  const activeMonth = selectedMonth || (months.includes(currentMonth) ? currentMonth : months[0]) || "";
   const visibleItems = ordered.filter((item) => String(item.date || "").startsWith(activeMonth));
 
   return <main className="news-page" aria-label="News">
@@ -40,7 +60,7 @@ export default function NewsPage() {
     </GameCard>
 
     <nav className="news-month-tabs" aria-label="เลือกเดือน">
-      {months.map((month) => <button type="button" key={month} className={activeMonth === month ? "is-active" : ""} onClick={() => setSelectedMonth(month)}>{monthLabel(month)}</button>)}
+      {months.map((month) => <button type="button" key={month} className={activeMonth === month ? "is-active" : ""} aria-label={monthLabel(month)} onClick={() => setSelectedMonth(month)}>{monthShortLabel(month)}</button>)}
     </nav>
 
     <section className="news-month-section" aria-label={activeMonth ? monthLabel(activeMonth) : "News"}>
