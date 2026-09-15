@@ -1,4 +1,4 @@
-import NewsScheduleDesk from "../NewsScheduleDesk";
+import NewsScheduleFeed from "../NewsScheduleFeed";
 import SkillLoadoutPanel from "../SkillLoadoutPanel";
 
 export default function RightRail({
@@ -21,7 +21,7 @@ export default function RightRail({
         />
       ) : null}
 
-      <NewsScheduleDesk />
+      <NewsScheduleFeed />
     </aside>
   );
 }
