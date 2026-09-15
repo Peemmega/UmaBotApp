@@ -334,11 +334,7 @@ export default function ProfilePage({
           {error ? <div className="error-box">{error}</div> : null}
 
           <StaggerItem>
-          <section className="profile-card">
-            <div className="title-banner">
-              <h2>Trainee Profile</h2>
-            </div>
-
+          <section className="profile-card profile-identity-card">
             <div className="profile-body">
               <div className="profile-avatar-wrap">
                 {currentAvatarUrl ? (
@@ -386,6 +382,7 @@ export default function ProfilePage({
               </div>
 
               <div className="profile-info">
+                <p className="profile-identity-kicker">Trainee profile</p>
                 <div className="profile-name-row">
                   <div className="profile-name">{player?.username || username}</div>
 

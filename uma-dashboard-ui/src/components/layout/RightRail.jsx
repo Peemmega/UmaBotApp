@@ -6,19 +6,20 @@ export default function RightRail({
   username,
   player,
   skillLoadoutVersion,
+  page = "profile",
 }) {
-  return (
-    <aside className="dashboard-right-panel right-rail">
-      {/* <div className="right-rail-heading">
-        <span>Live Trainee Desk</span>
-      </div> */}
+  const showSkillPreset = page === "profile";
 
-      <SkillLoadoutPanel
-        userId={userId}
-        username={player?.username || username}
-        player={player}
-        refreshKey={skillLoadoutVersion}
-      />
+  return (
+    <aside className={`dashboard-right-panel right-rail right-rail-${page}`}>
+      {showSkillPreset ? (
+        <SkillLoadoutPanel
+          userId={userId}
+          username={player?.username || username}
+          player={player}
+          refreshKey={skillLoadoutVersion}
+        />
+      ) : null}
 
       <RaceCalendar />
     </aside>

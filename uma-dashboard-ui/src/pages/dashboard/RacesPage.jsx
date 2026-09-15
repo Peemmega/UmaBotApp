@@ -83,6 +83,15 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
     return () => controller.abort();
   }, [selectedRace?.id]);
 
+  useEffect(() => {
+    if (!selectedRace) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setSelectedRace(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [selectedRace]);
+
   const [toast, setToast] = useState(null);
 
   const filteredRaceHistory = useMemo(
@@ -204,7 +213,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
           />
 
             <label className="race-directory-select">
-              <span>Racetrack</span>
+              <span>Venue</span>
               <select value={activeVenue} onChange={(event) => setActiveVenue(event.target.value)}>
                 <option value="all">All racetracks</option>
                 {venueOptions.map((venue) => <option key={venue} value={venue}>{venue}</option>)}
@@ -219,7 +228,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
           </div>
 
           <div className="race-directory-filter-group">
-            <span className="race-directory-filter-label">Track</span>
+            <span className="race-directory-filter-label">Surface</span>
             <FilterTabs
               items={TRACK_FILTERS}
               value={activeTrack}
@@ -268,10 +277,20 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
               as="article"
               className="ui-game-card race-card"
               key={race.id}
+              role="button"
+              tabIndex={0}
               onClick={() => {
                 playSound("open");
                 setSelectedRace(race);
                 setHistoryPage(1);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  playSound("open");
+                  setSelectedRace(race);
+                  setHistoryPage(1);
+                }
               }}
             >
 
@@ -289,12 +308,13 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
 
                 <div className="skill-main-row">
                   <div className="skill-content">
-                    <div className="content-meta-row race-meta-row">
+                  <div className="content-meta-row race-meta-row">
                       <span>{race.venue || "Other"}</span>
                       <span className={`race-surface-tag is-${race.track}`}>{race.track}</span>
                       <span className="race-distance-label">{race.distance}</span>
-                      <span>{race.turn} Turns</span>
-                    </div>
+                    <span>{race.turn} Turns</span>
+                  </div>
+                  <span className="race-card-action">ดูรายละเอียด</span>
                   </div>
                 </div>
               </div>
@@ -312,8 +332,19 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
           >
           <div
             className="zone-edit-modal race-room-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="race-room-title"
             onClick={(e) => e.stopPropagation()}
           >
+            <button
+              type="button"
+              className="race-room-close"
+              aria-label="Close race lobby"
+              onClick={() => setSelectedRace(null)}
+            >
+              ×
+            </button>
             <div className="title-banner">
               <h2>Race Lobby</h2>
             </div>
@@ -321,7 +352,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
             <div className="zone-edit-body">
               <div className="race-room-header">
                 <div>
-                  <h2>{selectedRace.name}</h2>
+                  <h2 id="race-room-title">{selectedRace.name}</h2>
                   <p>ข้อมูลสนามแข่ง</p>
                 </div>
 

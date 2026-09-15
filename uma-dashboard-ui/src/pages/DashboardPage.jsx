@@ -287,6 +287,7 @@ export default function DashboardPage({
             username={player?.username || username}
             player={player}
             skillLoadoutVersion={skillLoadoutVersion}
+            page={activePage}
           />
         ) : null
       }

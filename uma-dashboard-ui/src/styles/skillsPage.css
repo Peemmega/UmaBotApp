@@ -133,6 +133,16 @@
   margin-top: var(--uma-space-1);
 }
 
+.race-directory-filter-group {
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--uma-space-3);
+}
+
+.race-directory-filter-label {
+  text-align: right;
+}
+
 .skills-filter-row {
   display: flex;
   gap: var(--uma-space-2);
@@ -227,8 +237,25 @@
 }
 
 .race-directory-grid .race-meta-row {
-  grid-template-columns: minmax(0,1fr) minmax(50px,.6fr) minmax(50px,.5fr) minmax(65px, .5fr);
-  margin-bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.race-directory-grid .race-meta-row span {
+  flex: 0 0 auto;
+  min-height: 26px;
+  padding-inline: 9px;
+}
+
+.race-card-action {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  color: var(--uma-primary-dark);
+  font-size: 13px;
+  font-weight: 900;
 }
 
 .race-surface-tag.is-dirt {
@@ -739,6 +766,30 @@
   overflow: hidden;
 }
 
+.race-room-modal .title-banner { padding-right: 62px; }
+
+.race-room-close {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--uma-border-strong);
+  border-radius: 50%;
+  background: var(--uma-surface);
+  color: var(--uma-ink);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.race-room-close:hover,
+.race-room-close:focus-visible {
+  background: color-mix(in srgb, var(--uma-primary) 13%, #fff);
+  outline: none;
+}
+
 .race-room-header {
   display: grid;
   grid-template-columns: 1fr 210px;
@@ -1112,7 +1163,7 @@
   }
 
   .race-directory-grid .race-meta-row {
-    grid-template-columns: minmax(0, 1fr) 62px 58px;
+    gap: 4px;
   }
 
   .skills-page {

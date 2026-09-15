@@ -1,142 +1,96 @@
 import { useEffect, useMemo, useState } from "react";
+import { CalendarDays, ChevronRight, Flag, Radio } from "lucide-react";
 import "../styles/raceCalendar.css";
-import { raceImageMap, fallbackRaceImg } from "../utils/raceSchedule.js";
-import { Button } from "./ui";
 import { BOT_API_BASE } from "../api/playerApi";
 
-const monthNames = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
+function getEventDate(event) {
+  const raw = event.start_at || event.starts_at || event.datetime || (
+    event.date && event.time ? `${event.date}T${event.time}` : event.date
+  );
+  const parsed = raw ? new Date(raw) : null;
+  return parsed && !Number.isNaN(parsed.getTime()) ? parsed : null;
+}
 
-const getRaceImage = (raceId) => raceImageMap?.[raceId] || fallbackRaceImg;
+function formatEventDate(event) {
+  const date = getEventDate(event);
+  if (!date) return event.time || "กำหนดการเร็ว ๆ นี้";
+  return new Intl.DateTimeFormat("th-TH", {
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function eventMeta(event) {
+  return [event.venue, event.track, event.distance].filter(Boolean).join(" · ");
+}
 
 export default function RaceCalendar() {
-  const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([]);
 
-  const year = currentDate.getFullYear();
-  const month = currentDate.getMonth();
-
   useEffect(() => {
-    const loadCalendar = async () => {
-      try {
-        const res = await fetch(`${BOT_API_BASE}/race/calendar`);
-        const data = await res.json();
-        setEvents(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    loadCalendar();
+    const controller = new AbortController();
+    fetch(`${BOT_API_BASE}/race/calendar`, { signal: controller.signal })
+      .then((res) => res.ok ? res.json() : [])
+      .then((data) => {
+        const sorted = [...(Array.isArray(data) ? data : [])].sort((left, right) => (
+          (getEventDate(left)?.getTime() || Number.MAX_SAFE_INTEGER)
+          - (getEventDate(right)?.getTime() || Number.MAX_SAFE_INTEGER)
+        ));
+        const now = Date.now();
+        const upcoming = sorted.filter((event) => (getEventDate(event)?.getTime() || 0) >= now);
+        setEvents(upcoming.length ? upcoming : sorted);
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") console.error(error);
+      });
+    return () => controller.abort();
   }, []);
 
-  const days = useMemo(() => {
-    const firstDay = new Date(year, month, 1).getDay();
-    const lastDate = new Date(year, month + 1, 0).getDate();
+  const schedule = useMemo(() => {
+    return events.slice(0, 3);
+  }, [events]);
 
-    const result = [];
-    for (let i = 0; i < firstDay; i++) result.push(null);
-    for (let day = 1; day <= lastDate; day++) result.push(day);
-
-    return result;
-  }, [year, month]);
-
-  const eventsThisMonth = events.filter((event) => {
-    const d = new Date(event.date);
-    return d.getFullYear() === year && d.getMonth() === month;
-  });
-
-  const getEventByDay = (day) => {
-    if (!day) return null;
-
-    return eventsThisMonth.find((event) => {
-      const d = new Date(event.date);
-      return d.getDate() === day;
-    });
-  };
-
-  const changeMonth = (amount) => {
-    setCurrentDate(new Date(year, month + amount, 1));
-  };
+  const featuredEvent = schedule[0];
 
   return (
-    <aside className="race-calendar-side">
-      <section className="race-calendar-card">
-        <div className="race-calendar-header">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="race-calendar-nav-button"
-            onClick={() => changeMonth(-1)}
-            aria-label="Previous month"
-          >
-            ‹
-          </Button>
-          <h3>{monthNames[month]}</h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="race-calendar-nav-button"
-            onClick={() => changeMonth(1)}
-            aria-label="Next month"
-          >
-            ›
-          </Button>
+    <section className="race-desk" aria-labelledby="race-desk-title">
+      <header className="race-desk-header">
+        <span className="race-desk-icon" aria-hidden="true"><Radio size={17} /></span>
+        <div>
+          <p>Race desk</p>
+          <h3 id="race-desk-title">ตารางแข่ง</h3>
         </div>
+      </header>
 
-        <div className="race-weekdays">
-          <span>Su</span>
-          <span>Mo</span>
-          <span>Tu</span>
-          <span>We</span>
-          <span>Th</span>
-          <span>Fr</span>
-          <span>Sa</span>
+      {featuredEvent ? (
+        <article className="race-desk-featured">
+          <div className="race-desk-featured-label"><Flag size={15} /> สนามถัดไป</div>
+          <strong>{featuredEvent.name || featuredEvent.id}</strong>
+          <span>{eventMeta(featuredEvent) || "รายละเอียดสนามกำลังอัปเดต"}</span>
+          <time>{formatEventDate(featuredEvent)}</time>
+        </article>
+      ) : (
+        <div className="race-desk-empty">
+          <CalendarDays size={20} aria-hidden="true" />
+          <span>ยังไม่มีรายการแข่งที่กำหนดไว้</span>
         </div>
+      )}
 
-        <div className="race-days">
-          {days.map((day, index) => {
-            const event = getEventByDay(day);
+      {schedule.length > 1 ? (
+        <ol className="race-desk-list">
+          {schedule.slice(1).map((event) => (
+            <li key={`${event.id}-${event.date}-${event.time}`}>
+              <time>{formatEventDate(event)}</time>
+              <span><strong>{event.name || event.id}</strong><small>{eventMeta(event)}</small></span>
+            </li>
+          ))}
+        </ol>
+      ) : null}
 
-            return (
-              <div
-                key={index}
-                className={`race-day ${day ? "" : "empty"} ${event ? "has-event" : ""}`}
-              >
-                {event && <span className="race-day-icon">{"\u{1F3C7}"}</span>}
-                <span>{day}</span>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <div className="race-list-title">รายการแข่ง</div>
-
-      <section className="race-list">
-        {eventsThisMonth.length === 0 ? (
-          <div className="race-empty">ยังไม่มีรายการแข่งเดือนนี้</div>
-        ) : (
-          eventsThisMonth.map((event) => (
-            <div className="race-item" key={`${event.id}-${event.date}`}>
-              <img
-                src={getRaceImage(event.id)}
-                alt={event.name}
-                />
-
-              <div className="race-info">
-                <h4>{event.name}</h4>
-                <p>{event.track} / {event.distance}</p>
-                <span>
-                  {new Date(event.date).getDate()}/{month + 1}/{year} {event.time}
-                </span>
-              </div>
-            </div>
-          ))
-        )}
-      </section>
-    </aside>
+      <a className="race-desk-link" href="/dashboard/races">
+        ดูรายการแข่งทั้งหมด <ChevronRight size={16} aria-hidden="true" />
+      </a>
+    </section>
   );
 }
