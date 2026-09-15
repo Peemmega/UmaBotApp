@@ -153,10 +153,17 @@ body {
 
 h1,
 h2 {
-  font-family: 'Fredoka', "Noto Sans Thai", sans-serif;
+  font-family: var(--heading);
   font-weight: 500;
   color: var(--text-h);
   letter-spacing: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--sans);
 }
 
 h1 {

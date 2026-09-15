@@ -7,6 +7,7 @@ import ResourcePill from "../../components/ResourcePill";
 import EditStatsModal from "../../components/EditStatsModal";
 import ZonePanel from "../../components/ZonePanel";
 import { BOT_API_BASE, uploadPresetProfileImage, uploadProfileImage } from "../../api/playerApi";
+import { toAbsoluteBotUrl } from "../../utils/avatar";
 import statIcon from "../../assets/icons/statsPoint.webp";
 import skillIcon from "../../assets/icons/skillPoint.webp";
 import editIcon from "../../assets/icons/change_icon.webp";
@@ -216,6 +217,7 @@ export default function ProfilePage({
     const isTrainer = profileType === "trainer";
     const profileName = profile?.name || (isTrainer ? "Trainer" : "NPC");
     const profileImage = profile?.imageUrl || "";
+    const profileImageUrl = toAbsoluteBotUrl(profileImage);
     const filteredInvitees = availableTrainees.filter((trainee) =>
       trainee.username.toLowerCase().includes(inviteSearch.trim().toLowerCase())
     );
@@ -230,8 +232,8 @@ export default function ProfilePage({
             </div>
             <div className="profile-body role-profile-body">
               <div className="profile-avatar-wrap">
-                {profileImage ? (
-                  <img src={profileImage} alt={profileName} className="profile-avatar" />
+                {profileImageUrl ? (
+                  <img src={profileImageUrl} alt={profileName} className="profile-avatar" />
                 ) : (
                   <div className="profile-avatar placeholder">{isTrainer ? "🎓" : "👤"}</div>
                 )}
@@ -361,7 +363,7 @@ export default function ProfilePage({
                 )}
                 {trainerProfile?.image_url && (
                   <img
-                    src={trainerProfile.image_url}
+                    src={toAbsoluteBotUrl(trainerProfile.image_url)}
                     alt={`Trainer ${trainerProfile.username}`}
                     title={`Trainer: ${trainerProfile.username}`}
                     className="profile-trainer-avatar"

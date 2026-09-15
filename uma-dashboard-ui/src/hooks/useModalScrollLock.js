@@ -3,7 +3,6 @@ import { useEffect } from "react";
 const MODAL_SELECTOR = [
   ".mailbox-backdrop",
   ".rename-backdrop",
-  ".modal-backdrop",
   ".zone-edit-backdrop",
   ".profile-crop-backdrop",
   ".team-invite-backdrop",
