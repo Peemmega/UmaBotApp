@@ -87,6 +87,7 @@
 .wit-rate-card strong { position: relative; z-index: 1; display: block; margin-top: 4px; color: var(--uma-primary-dark); font-size: 23px; line-height: 1; }
 
 .wit-table-scroll { overflow-x: auto; border: 1px solid color-mix(in srgb, var(--uma-primary) 34%, transparent); border-radius: var(--uma-radius-sm); box-shadow: 0 6px 15px color-mix(in srgb, var(--uma-primary-dark) 6%, transparent); }
+.wit-table-scroll-hint { display: none; }
 .wit-table { width: 100%; min-width: 720px; border-collapse: separate; border-spacing: 0; text-align: center; font-variant-numeric: tabular-nums; }
 .wit-table th, .wit-table td { padding: 10px 12px; border-right: 1px solid color-mix(in srgb, var(--uma-primary) 18%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--uma-primary) 18%, transparent); font-weight: 900; }
 .wit-table tr > *:last-child { border-right: 0; }.wit-table tbody tr:last-child > * { border-bottom: 0; }
@@ -98,9 +99,25 @@
 .wit-table tbody tr:hover td, .wit-table tbody tr:hover th { background: color-mix(in srgb, var(--uma-primary) 12%, var(--uma-surface)); color: var(--uma-primary-dark); }
 
 @media (max-width: 600px) {
-  .tools-page-header-card .ui-section-header { padding: 14px 14px 8px; }
-  .tools-page-description { padding: 0 14px 14px; }
-  .tools-page-icon { width: 44px; height: 44px; border-radius: 14px; flex: 0 0 auto; }
-  .wit-control, .wit-rate-card { min-width: 0; flex-basis: 100%; }
-  .wit-table th, .wit-table td { padding: 8px 10px; }
+  .tools-page-header-card { margin-top: 0; }
+  .tools-page-header-card .ui-section-header { padding: 14px 14px 8px; align-items: flex-start; }
+  .tools-page-description { padding: 0 14px 14px; font-size: 12px; line-height: 1.5; }
+  .tools-page-icon { width: 44px; height: 44px; border-radius: 14px; flex: 0 0 44px; }
+  .wit-calculator { margin-inline: -2px; padding: 12px; border-radius: 10px; }
+  .wit-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-bottom: 12px; }
+  .wit-control, .wit-rate-card { min-width: 0; padding: 10px; }
+  .wit-rate-card { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; }
+  .wit-rate-card strong { margin: 0; font-size: 25px; }
+  .wit-control select { min-height: 34px; margin-top: 3px; font-size: 16px; }
+  .wit-table-scroll-hint { display: flex; align-items: center; gap: 6px; margin: 2px 2px 8px; color: var(--uma-muted); font-size: 12px; font-weight: 800; }
+  .wit-table-scroll { -webkit-overflow-scrolling: touch; overscroll-behavior-inline: contain; scrollbar-width: thin; }
+  .wit-table { min-width: 650px; }
+  .wit-table th, .wit-table td { min-width: 48px; padding: 9px 8px; font-size: 13px; }
+  .wit-table .wit-label-cell, .wit-table tbody th { position: sticky; left: 0; z-index: 1; min-width: 54px; box-shadow: 2px 0 5px rgba(31, 83, 50, 0.12); }
+  .wit-table .wit-label-cell { z-index: 3; }
+}
+
+@media (max-width: 380px) {
+  .wit-controls { grid-template-columns: 1fr; }
+  .wit-rate-card { grid-column: auto; }
 }

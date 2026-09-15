@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Calculator, Gauge, Route, Sparkles } from "lucide-react";
+import { Calculator, Gauge, MoveHorizontal, Route, Sparkles } from "lucide-react";
 import { GameCard, SectionHeader } from "../../components/ui";
 import "../../styles/toolsPage.css";
 
@@ -84,7 +84,8 @@ export default function ToolsPage() {
           </div>
         </div>
 
-        <div className="wit-table-scroll">
+        <p className="wit-table-scroll-hint"><MoveHorizontal size={16} /> เลื่อนตารางด้านข้างเพื่อดูทุก Turn</p>
+        <div className="wit-table-scroll" tabIndex="0" aria-label="Wit results table. Scroll horizontally to view every turn.">
           <table className="wit-table">
             <thead>
               <tr>

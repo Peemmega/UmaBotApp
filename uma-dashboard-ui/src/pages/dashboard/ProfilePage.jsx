@@ -401,7 +401,7 @@ export default function ProfilePage({
               </div>
 
               <div className="profile-info">
-                <p className="profile-identity-kicker">Trainee profile</p>
+                <p className="profile-identity-kicker">โปรไฟล์</p>
                 <div className="profile-name-row">
                   <div className="profile-name">{player?.username || username}</div>
 

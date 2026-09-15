@@ -537,8 +537,9 @@ body {
 .profile-identity-kicker {
   margin: 0 0 4px;
   color: var(--uma-primary-dark);
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 900;
+  text-align: left;
 }
 
 .profile-identity-card .profile-name {
@@ -1141,10 +1142,10 @@ body {
 /* MISC BUTTONS */
 .white-btn,
 .green-btn {
-  min-width: 140px;
+  min-width: 120px;
   border-radius: 16px;
-  padding: 12px 22px;
-  font-size: 18px;
+  padding: 4px 18px;
+  font-size: 16px;
   font-weight: 900;
   cursor: pointer;
 }
