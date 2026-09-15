@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { CalendarDays, ChevronRight, CirclePlus, Flag, Trophy, Users, X } from "lucide-react";
+import { CalendarDays, CirclePlus, Flag, Trophy, Users, X } from "lucide-react";
 import { BOT_API_BASE } from "../../api/playerApi";
-import { getRaceImage } from "../../utils/raceSchedule";
+import { GameCard, SectionHeader } from "../../components/ui";
+import NewsListingCard from "../../components/NewsListingCard";
+import { getNewsDescription, getNewsImage, getNewsKind } from "../../utils/newsItems";
 import "../../styles/newsPage.css";
 
 const BANNERS = [
@@ -16,16 +18,6 @@ const EMPTY_EVENT = {
   name: "", date: "", time: "19:00", image_url: "", description: "", details: "", capacity: "",
 };
 
-function kindOf(item) {
-  return String(item.kind || "race").toLowerCase() === "event" ? "event" : "race";
-}
-
-function itemImage(item) {
-  return kindOf(item) === "event"
-    ? item.image_url || item.image || item.thumbnail
-    : getRaceImage(item);
-}
-
 function shortDate(item) {
   return `${String(item.date || "").replaceAll("-", "/")} · ${item.time || "--:--"} GMT+7`;
 }
@@ -36,14 +28,10 @@ function monthLabel(key) {
     .format(new Date(Number(year), Number(month) - 1, 1));
 }
 
-function descriptionFor(item) {
-  return item.description || [item.venue, item.track, item.distance].filter(Boolean).join(" · ") || "รายละเอียดกำลังอัปเดต";
-}
-
 function DetailsModal({ item, onClose }) {
   if (!item) return null;
-  const isRace = kindOf(item) === "race";
-  const image = itemImage(item);
+  const isRace = getNewsKind(item) === "race";
+  const image = getNewsImage(item);
   const conditions = [item.venue, item.track, item.distance].filter(Boolean).join(" · ");
 
   return <div className="news-modal-backdrop" role="presentation" onMouseDown={onClose}>
@@ -54,7 +42,7 @@ function DetailsModal({ item, onClose }) {
         <p className={`news-type-label ${isRace ? "race" : "event"}`}>{isRace ? "Race" : "Event"}</p>
         <h2 id="news-detail-title">{item.name}</h2>
         <time><CalendarDays size={16} /> {shortDate(item)}</time>
-        <p className="news-detail-summary">{descriptionFor(item)}</p>
+        <p className="news-detail-summary">{getNewsDescription(item)}</p>
         {isRace ? <div className="news-detail-facts">
           <div><Trophy size={18} /><span><b>เงื่อนไขการแข่งขัน</b>{conditions || "รายละเอียดสนามกำลังอัปเดต"}</span></div>
           <div><Users size={18} /><span><b>จำนวนผู้เข้าแข่ง</b>{item.capacity || "ตามจำนวนที่ห้องแข่งรองรับ"}</span></div>
@@ -112,17 +100,16 @@ export default function NewsPage() {
     }
   };
 
-  return <main className="news-page" aria-labelledby="news-page-title">
-    <header className="news-page-header">
-      <div>
-        <p className="news-page-kicker">Community board</p>
-        <h1 id="news-page-title">News</h1>
-        <p>กำหนดการ Event และการแข่งขันทั้งหมด เรียงตามวันเวลา GMT+7</p>
-      </div>
-      <button type="button" className="news-create-button" onClick={() => setIsEditorOpen((open) => !open)}>
-        <CirclePlus size={19} /> เพิ่ม Event
-      </button>
-    </header>
+  return <main className="news-page" aria-label="News">
+    <GameCard as="header" className="news-page-header-card">
+      <SectionHeader
+        kicker="Community board"
+        title="News"
+        titleClassName="news-page-title"
+        action={<button type="button" className="news-create-button" onClick={() => setIsEditorOpen((open) => !open)}><CirclePlus size={19} /> เพิ่ม Event</button>}
+      />
+      <p className="news-page-description">กำหนดการ Event และการแข่งขันทั้งหมด เรียงตามวันเวลา GMT+7</p>
+    </GameCard>
 
     {isEditorOpen ? <form className="news-event-editor" onSubmit={saveEvent}>
       <div className="news-editor-heading"><div><h2>เพิ่ม Event ใหม่</h2><p>ข้อมูลนี้จะแยกเก็บจากรายการแข่ง และแสดงใน News ตามวันเวลา</p></div><button type="button" onClick={() => setIsEditorOpen(false)} aria-label="ปิดฟอร์ม"><X size={18} /></button></div>
@@ -143,15 +130,8 @@ export default function NewsPage() {
 
     <section className="news-month-section" aria-label={activeMonth ? monthLabel(activeMonth) : "News"}>
       <div className="news-month-title"><CalendarDays size={22} /><h2>{activeMonth ? monthLabel(activeMonth) : "ยังไม่มีรายการ"}</h2><span>{visibleItems.length} รายการ</span></div>
-      <div className="news-timeline">
-        {visibleItems.map((item) => <article className="news-timeline-item" key={`${item.id}-${item.date}-${item.time}`}>
-          <time className="news-timeline-date">{shortDate(item)}</time>
-          <div className="news-timeline-marker" aria-hidden="true" />
-          <div className="news-entry-card">
-            {itemImage(item) ? <img src={itemImage(item)} alt="" loading="lazy" /> : null}
-            <div><p className={`news-type-label ${kindOf(item)}`}>{kindOf(item) === "race" ? "Race" : "Event"}</p><h3>{item.name}</h3><p>{descriptionFor(item)}</p><button type="button" onClick={() => setSelectedItem(item)}>ดูรายละเอียด <ChevronRight size={17} /></button></div>
-          </div>
-        </article>)}
+      <div className="news-page-list">
+        {visibleItems.map((item) => <NewsListingCard key={`${item.id}-${item.date}-${item.time}`} item={item} onDetails={setSelectedItem} />)}
         {!visibleItems.length ? <p className="news-empty">ยังไม่มี Event หรือการแข่งขันในเดือนนี้</p> : null}
       </div>
     </section>

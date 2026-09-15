@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, SlidersHorizontal, X } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 import { BOT_API_BASE } from "../api/playerApi";
-import { getRaceImage } from "../utils/raceSchedule";
+import NewsListingCard from "./NewsListingCard";
+import { getNewsKind } from "../utils/newsItems";
 import "../styles/newsScheduleFeed.css";
 
 const FILTERS = [
@@ -12,19 +13,10 @@ const FILTERS = [
 const LIMITS = [3, 5, 8];
 const SETTINGS_KEY = "uma-news-feed-settings";
 
-function getKind(item) {
-  return String(item.kind || "race").toLowerCase() === "event" ? "event" : "race";
-}
-
 function getDate(item) {
   const value = item.date && item.time ? `${item.date}T${item.time}` : item.date;
   const date = value ? new Date(value) : null;
   return date && !Number.isNaN(date.getTime()) ? date : null;
-}
-
-function timestamp(item) {
-  if (!item.date) return "กำหนดการเร็ว ๆ นี้";
-  return `${String(item.date).replaceAll("-", "/")} ${item.time || "—"} (GMT+7)`;
 }
 
 function loadSettings() {
@@ -39,25 +31,14 @@ function loadSettings() {
   }
 }
 
-function getImage(item) {
-  return getKind(item) === "event"
-    ? item.image_url || item.thumbnail || item.image
-    : getRaceImage(item);
-}
-
-function getDescription(item) {
-  if (item.description) return item.description;
-  return [item.venue, item.track, item.distance].filter(Boolean).join(" · ") || "รายละเอียดกำลังอัปเดต";
-}
-
-export default function NewsScheduleFeed() {
+export default function NewsScheduleFeed({ onViewAll }) {
   const [items, setItems] = useState([]);
   const [settings, setSettings] = useState(loadSettings);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch(`${BOT_API_BASE}/race/calendar`, { signal: controller.signal })
+    fetch(`${BOT_API_BASE}/news`, { signal: controller.signal })
       .then((res) => res.ok ? res.json() : [])
       .then((data) => {
         const ordered = [...(Array.isArray(data) ? data : [])].sort((left, right) => (
@@ -78,12 +59,13 @@ export default function NewsScheduleFeed() {
   }, [settings]);
 
   const visibleItems = useMemo(() => items
-    .filter((item) => settings.filter === "all" || getKind(item) === settings.filter)
+    .filter((item) => settings.filter === "all" || getNewsKind(item) === settings.filter)
     .slice(0, settings.limit), [items, settings]);
 
   return <section className="news-schedule-feed" aria-labelledby="news-schedule-title">
     <header className="news-schedule-header">
       <div><p>Community board</p><h3 id="news-schedule-title">News</h3></div>
+      <button type="button" className="news-view-all" onClick={onViewAll}>ดู Event ทั้งหมด</button>
       <button
         type="button"
         className="news-settings-toggle"
@@ -112,24 +94,7 @@ export default function NewsScheduleFeed() {
     </div> : null}
 
     <div className="news-card-list">
-      {visibleItems.map((item) => {
-        const kind = getKind(item);
-        const image = getImage(item);
-        return <article className="news-card" key={`${item.id}-${item.date}-${item.time}`}>
-          {image ? <img className="news-card-banner" src={image} alt="" loading="lazy" /> : null}
-          <div className="news-card-content">
-            <div className="news-card-meta">
-              <span className={`news-card-type is-${kind}`}>{kind === "event" ? "Event" : "Race"}</span>
-              <time>{timestamp(item)}</time>
-            </div>
-            <h4>{item.name || item.title || item.id}</h4>
-            <p>{getDescription(item)}</p>
-            <a className="news-card-details" href={kind === "race" ? "/dashboard/races" : `#${item.id}`}>
-              Details <ChevronRight size={18} strokeWidth={3} aria-hidden="true" />
-            </a>
-          </div>
-        </article>;
-      })}
+      {visibleItems.map((item) => <NewsListingCard key={`${item.id}-${item.date}-${item.time}`} item={item} compact onDetails={onViewAll} />)}
       {!visibleItems.length ? <p className="news-feed-empty">ยังไม่มีรายการตามตัวเลือกนี้</p> : null}
     </div>
   </section>;
