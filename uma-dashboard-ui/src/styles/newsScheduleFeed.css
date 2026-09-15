@@ -1,4 +1,4 @@
-.news-schedule-feed { display: grid; gap: 12px; color: var(--uma-ink); }
+.news-schedule-feed { display: grid; gap: 12px; color: var(--uma-ink);background:white;box-shadow:var(--uma-shadow-soft);border-radius:var(--uma-radius-md);padding:5% 3%; text-align: left; }
 .news-schedule-header { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
 .news-schedule-header p, .news-schedule-header h3 { margin: 0; }
 .news-schedule-header p { color: var(--uma-muted); font-size: .68rem; font-weight: 800; }

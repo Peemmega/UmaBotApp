@@ -31,7 +31,7 @@ function loadSettings() {
   }
 }
 
-export default function NewsScheduleFeed({ onViewAll }) {
+export default function NewsScheduleFeed({ onViewAll, onItemSelected }) {
   const [items, setItems] = useState([]);
   const [settings, setSettings] = useState(loadSettings);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -64,7 +64,7 @@ export default function NewsScheduleFeed({ onViewAll }) {
 
   return <section className="news-schedule-feed" aria-labelledby="news-schedule-title">
     <header className="news-schedule-header">
-      <div><p>Community board</p><h3 id="news-schedule-title">News</h3></div>
+      <div><p>ตารางเวลาอีเว้น</p><h3 id="news-schedule-title">Events</h3></div>
       <button type="button" className="news-view-all" onClick={onViewAll}>ดู Event ทั้งหมด</button>
       <button
         type="button"
@@ -94,7 +94,7 @@ export default function NewsScheduleFeed({ onViewAll }) {
     </div> : null}
 
     <div className="news-card-list">
-      {visibleItems.map((item) => <NewsListingCard key={`${item.id}-${item.date}-${item.time}`} item={item} compact onDetails={onViewAll} />)}
+      {visibleItems.map((item) => <NewsListingCard key={`${item.id}-${item.date}-${item.time}`} item={item} compact onDetails={onItemSelected} />)}
       {!visibleItems.length ? <p className="news-feed-empty">ยังไม่มีรายการตามตัวเลือกนี้</p> : null}
     </div>
   </section>;

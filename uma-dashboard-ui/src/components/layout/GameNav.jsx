@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  CalendarDays,
   PanelsTopLeft,
   CircleHelp,
   Calculator,
@@ -15,6 +16,7 @@ export const gameNavItems = [
   { key: "profile", label: "โปรไฟล์", Icon: UserRound },
   { key: "chars", label: "ตัวละคร", Icon: UsersRound },
   { key: "races", label: "รายการแข่ง", Icon: Trophy },
+  { key: "news", label: "ตารางกิจกรรม", Icon: CalendarDays },
   // { key: "tcg", label: "TCG", Icon: PanelsTopLeft },
   { key: "skills", label: "สกิล", Icon: Sparkles },
   { key: "race", label: "ห้องซ้อมวิ่ง", Icon: Flag },
