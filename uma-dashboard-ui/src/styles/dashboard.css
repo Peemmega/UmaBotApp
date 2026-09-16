@@ -549,7 +549,7 @@ body {
 }
 
 .profile-identity-card .profile-id { text-align: left; }
-.profile-identity-card .profile-resources { margin-top: 12px; gap: 9px; }
+.profile-identity-card .profile-resources { margin-top: 24px; gap: 9px; }
 .profile-identity-card .resource-pill { min-height: 40px; padding: 3px 12px; box-shadow: none; }
 .profile-identity-card .resource-label { color: var(--uma-muted); font-size: 12px; }
 .profile-identity-card .resource-value { color: var(--uma-ink); font-size: 18px; }
