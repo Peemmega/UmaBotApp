@@ -671,3 +671,64 @@ code {
     transform: none;
   }
 }
+
+/* Custom cursors with native fallbacks for browsers that do not support .ani. */
+:root {
+  --cursor-default: url("./assets/cursors/Normal Select.ani"), default;
+  --cursor-link: url("./assets/cursors/Link Select.ani"), pointer;
+  --cursor-text: url("./assets/cursors/Text Select.ani"), text;
+  --cursor-busy: url("./assets/cursors/Busy.ani"), wait;
+  --cursor-unavailable: url("./assets/cursors/Unavailable.ani"), not-allowed;
+  --cursor-help: url("./assets/cursors/Help Select.ani"), help;
+  --cursor-move: url("./assets/cursors/Move.ani"), move;
+}
+
+html,
+body,
+#root {
+  cursor: var(--cursor-default);
+}
+
+a[href],
+button:not(:disabled),
+input[type="button"]:not(:disabled),
+input[type="submit"]:not(:disabled),
+input[type="reset"]:not(:disabled),
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled),
+select:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+summary {
+  cursor: var(--cursor-link) !important;
+}
+
+input:not([type]),
+input[type="email"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="url"],
+textarea,
+[contenteditable="true"] {
+  cursor: var(--cursor-text) !important;
+}
+
+:disabled,
+[aria-disabled="true"] {
+  cursor: var(--cursor-unavailable) !important;
+}
+
+[aria-busy="true"],
+.cursor-busy {
+  cursor: var(--cursor-busy) !important;
+}
+
+.cursor-help {
+  cursor: var(--cursor-help) !important;
+}
+
+.cursor-move {
+  cursor: var(--cursor-move) !important;
+}
