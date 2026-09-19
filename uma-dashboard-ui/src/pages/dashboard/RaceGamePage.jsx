@@ -1868,7 +1868,7 @@ function RaceSkillPreview({ preview }) {
           {preview.kind === "zone" ? <Zap size={22} /> : getSkillIcon(preview.icon)}
         </div>
         <div>
-          <div className="skill-id">{preview.id}</div>
+          {/* <div className="skill-id">{preview.id}</div> */}
           <h3>{preview.name}</h3>
         </div>
       </div>

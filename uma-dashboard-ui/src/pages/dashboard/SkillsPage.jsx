@@ -111,6 +111,23 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
     }, 3000);
   };
 
+  const hasActiveFilters = Boolean(
+    search.trim() ||
+    activeAptitude !== "all" ||
+    activeDetail !== "all" ||
+    activeRarity !== "all" ||
+    activeIcons.length
+  );
+
+  const resetFilters = () => {
+    playSound("click");
+    setSearch("");
+    setActiveAptitude("all");
+    setActiveDetail("all");
+    setActiveRarity("all");
+    setActiveIcons([]);
+  };
+
   useEffect(() => {
     fetch(`${BOT_API_BASE}/skills/categories`)
       .then((res) => res.json())
@@ -199,11 +216,21 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
         />
 
         <div className="skills-toolbar">
-          <SearchInput
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search skill name / id / tag..."
-          />
+          <div className="skills-search-row">
+            <SearchInput
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search skill name / id / tag..."
+            />
+            <Button
+              variant="ghost"
+              className="skills-reset-filters"
+              disabled={!hasActiveFilters}
+              onClick={resetFilters}
+            >
+              Reset filters
+            </Button>
+          </div>
 
           <div className="skill-category-filter-grid">
             <label className="skill-filter-select">
@@ -322,7 +349,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
               <div className="skill-icon-box">
                 {getSkillIcon(skill.icon)}
               </div>
-              <div className="skill-id">{skill.id}</div>
+              {/* <div className="skill-id">{skill.id}</div> */}
               <h3>{skill.name}</h3>
             </div>
 

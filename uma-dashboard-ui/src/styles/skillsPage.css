@@ -23,6 +23,18 @@
   border-top: 1px solid rgba(123, 79, 145, 0.12);
 }
 
+.skills-search-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--uma-space-3);
+}
+
+.skills-reset-filters {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
 .skill-category-filter-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 300px));
@@ -674,6 +686,14 @@
 }
 
 @media (max-width: 640px) {
+  .skills-search-row {
+    grid-template-columns: 1fr;
+  }
+
+  .skills-reset-filters {
+    width: 100%;
+  }
+
   .skill-category-filter-grid {
     grid-template-columns: 1fr;
   }
