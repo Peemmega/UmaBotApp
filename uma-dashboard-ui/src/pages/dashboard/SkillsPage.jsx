@@ -15,6 +15,13 @@ import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger"
 
 const STAMINA_EMOJI_PATTERN = /(<a?:Stamina:\d+>)/g;
 
+const SKILL_RARITY_OPTIONS = [
+  { value: "all", label: "All rarities" },
+  { value: "common", label: "Common" },
+  { value: "rare", label: "Rare" },
+  { value: "unique", label: "Unique" },
+];
+
 const SKILL_ICON_FILTERS = [
   { value: "concentration", label: "Concentration", icon: "Concentration_rare" },
   { value: "acceleration", label: "Acceleration", icon: "acceleration" },
@@ -45,6 +52,13 @@ const SKILL_ICON_VARIANTS = {
   passive: ["Passive", "Passive_rare"],
 };
 
+function getSkillRarity(icon) {
+  const iconKey = String(icon || "");
+  if (iconKey.startsWith("Unique")) return "unique";
+  if (iconKey.endsWith("_rare")) return "rare";
+  return "common";
+}
+
 function renderTextWithIcons(text) {
   if (!text) return null;
 
@@ -72,6 +86,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
   });
   const [activeAptitude, setActiveAptitude] = useState("all");
   const [activeDetail, setActiveDetail] = useState("all");
+  const [activeRarity, setActiveRarity] = useState("all");
   const [activeIcons, setActiveIcons] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedSkill, setSelectedSkill] = useState(null);
@@ -159,13 +174,15 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
         activeAptitude === "all" || skill.aptitude_categories?.includes(activeAptitude);
       const matchDetail =
         activeDetail === "all" || skill.detail_categories?.includes(activeDetail);
+      const matchRarity =
+        activeRarity === "all" || getSkillRarity(skill.icon) === activeRarity;
       const matchIcon = activeIcons.length === 0 || activeIcons.some((filter) =>
         SKILL_ICON_VARIANTS[filter]?.includes(skill.icon)
       );
 
-      return matchSearch && matchAptitude && matchDetail && matchIcon;
+      return matchSearch && matchAptitude && matchDetail && matchRarity && matchIcon;
     });
-  }, [skills, search, activeAptitude, activeDetail, activeIcons]);
+  }, [skills, search, activeAptitude, activeDetail, activeRarity, activeIcons]);
 
   const skillDetailsById = useMemo(
     () => new Map(skills.map((skill) => [String(skill.id), skill])),
@@ -215,6 +232,21 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
               >
                 {(skillCategories.detail || []).map((category) => (
                   <option key={category.value} value={category.value}>{category.label}</option>
+                ))}
+              </select>
+            </label>
+
+            <label className="skill-filter-select">
+              <span>Skill rarity</span>
+              <select
+                value={activeRarity}
+                onChange={(event) => {
+                  playSound("click");
+                  setActiveRarity(event.target.value);
+                }}
+              >
+                {SKILL_RARITY_OPTIONS.map((rarity) => (
+                  <option key={rarity.value} value={rarity.value}>{rarity.label}</option>
                 ))}
               </select>
             </label>
@@ -275,7 +307,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
           </StaggerItem>
         </StaggerContainer>
       ) : (
-        <StaggerContainer className="skills-grid" key={`${activeAptitude}-${activeDetail}-${search}-${activeIcons.join("-")}`}>
+        <StaggerContainer className="skills-grid" key={`${activeAptitude}-${activeDetail}-${activeRarity}-${search}-${activeIcons.join("-")}`}>
           {filteredSkills.map((skill) => (
           <StaggerItem
             as="article"
