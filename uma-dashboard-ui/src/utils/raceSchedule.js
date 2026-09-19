@@ -38,6 +38,8 @@ import TokyoDaishoten from "../assets/race_thumnail/TokyoDaishoten.webp";
 import VictoriaMileTokyo from "../assets/race_thumnail/VictoriaMileTokyo.webp";
 import YasudaKinen from "../assets/race_thumnail/YasudaKinen.webp";
 import ZenNipponJuniorYushun from "../assets/race_thumnail/ZenNipponJuniorYushun.webp";
+import G2Race from "../assets/race_thumnail/G2_race.webp";
+import G3Race from "../assets/race_thumnail/G3_race.webp";
 
 export const fallbackRaceImg = Debut;
 
@@ -89,8 +91,15 @@ export function normalizeRaceImageKey(value = "") {
 }
 
 export function getRaceImage(race) {
+  const raceName = String(race?.name || "");
+
+  // Grade art is intentionally shared: it makes every GII/GIII race readable
+  // in the directory even when that race does not have bespoke local artwork.
+  if (/\(GII\)/i.test(raceName)) return G2Race;
+  if (/\(GIII\)/i.test(raceName)) return G3Race;
+
   const idKey = normalizeRaceImageKey(race?.id);
-  const nameKey = normalizeRaceImageKey(String(race?.name || "").replace(/\d+m?$/i, ""));
+  const nameKey = normalizeRaceImageKey(raceName.replace(/\d+m?$/i, ""));
 
   return raceImageMap[race?.id] || raceImageMap[idKey] || raceImageMap[nameKey] || fallbackRaceImg;
 }
