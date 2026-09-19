@@ -34,7 +34,7 @@ const SKILL_ICON_FILTERS = [
   { value: "navigation", label: "Navigation", icon: "navigation" },
   { value: "uniqueVelocity", label: "Unique Velocity", icon: "UniqueVelocity" },
   { value: "uniqueAcceleration", label: "Unique Acceleration", icon: "UniqueAcceleration" },
-  { value: "passive", label: "Passive", icon: "Passive_rare" },
+  { value: "passive", label: "Passive", icon: "passive" },
 ];
 
 const SKILL_ICON_VARIANTS = {
@@ -49,7 +49,7 @@ const SKILL_ICON_VARIANTS = {
   navigation: ["Navigation", "Navigation_rare", "navigation"],
   uniqueVelocity: ["UniqueVelocity"],
   uniqueAcceleration: ["UniqueAcceleration"],
-  passive: ["Passive", "Passive_rare"],
+  passive: ["Passive", "Passive_rare", "passive"],
 };
 
 function getSkillRarity(icon) {

@@ -15,6 +15,7 @@ import icon_navigation_common from "../assets/skill_icon/navigation_common.png";
 import icon_u_velocity from "../assets/skill_icon/UniqueSkillVelocity.webp";
 import icon_u_acceleration from "../assets/skill_icon/UniqueSkillAcceleration.webp";
 import icon_passive from "../assets/skill_icon/Passive.webp";
+import icon_passive_common from "../assets/skill_icon/passive_common.png";
 
 export function getSkillIcon(icon) {
   const iconMap = {
@@ -32,6 +33,7 @@ export function getSkillIcon(icon) {
     ReduceSTA_rare: icon_reduce_sta,
     Blind_rare: icon_blind,
     Passive_rare: icon_passive,
+    passive: icon_passive_common,
     acceleration: icon_acceleration_common,
     velocity: icon_velocity_common,
     stamina: icon_recovery_common,
