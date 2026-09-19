@@ -16,19 +16,34 @@ import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger"
 const STAMINA_EMOJI_PATTERN = /(<a?:Stamina:\d+>)/g;
 
 const SKILL_ICON_FILTERS = [
-  { value: "Concentration", label: "Concentration" },
-  { value: "Acceleration", label: "Acceleration" },
-  { value: "Velocity", label: "Velocity" },
-  { value: "Recovery", label: "Recovery" },
-  { value: "DecreaseVelocity", label: "Decrease Velocity" },
-  { value: "ReduceSTA", label: "Reduce Stamina" },
-  { value: "LookUp", label: "Look Up" },
-  { value: "Blind", label: "Blind" },
-  { value: "Navigation", label: "Navigation" },
-  { value: "UniqueVelocity", label: "Unique Velocity" },
-  { value: "UniqueAcceleration", label: "Unique Acceleration" },
-  { value: "Passive", label: "Passive" },
+  { value: "concentration", label: "Concentration", icon: "Concentration_rare" },
+  { value: "acceleration", label: "Acceleration", icon: "acceleration" },
+  { value: "velocity", label: "Velocity", icon: "velocity" },
+  { value: "recovery", label: "Recovery", icon: "stamina" },
+  { value: "decreaseVelocity", label: "Decrease Velocity", icon: "DecreaseVelocity_rare" },
+  { value: "reduceSta", label: "Reduce Stamina", icon: "ReduceSTA_rare" },
+  { value: "lookup", label: "Look Up", icon: "lookup" },
+  { value: "blind", label: "Blind", icon: "Blind_rare" },
+  { value: "navigation", label: "Navigation", icon: "navigation" },
+  { value: "uniqueVelocity", label: "Unique Velocity", icon: "UniqueVelocity" },
+  { value: "uniqueAcceleration", label: "Unique Acceleration", icon: "UniqueAcceleration" },
+  { value: "passive", label: "Passive", icon: "Passive_rare" },
 ];
+
+const SKILL_ICON_VARIANTS = {
+  concentration: ["Concentration", "Concentration_rare"],
+  acceleration: ["Acceleration", "Acceleration_rare", "acceleration"],
+  velocity: ["Velocity", "Velocity_rare", "velocity"],
+  recovery: ["Recovery", "Recovery_rare", "stamina"],
+  decreaseVelocity: ["DecreaseVelocity", "DecreaseVelocity_rare"],
+  reduceSta: ["ReduceSTA", "ReduceSTA_rare"],
+  lookup: ["LookUp", "LookUp_rare", "lookup"],
+  blind: ["Blind", "Blind_rare"],
+  navigation: ["Navigation", "Navigation_rare", "navigation"],
+  uniqueVelocity: ["UniqueVelocity"],
+  uniqueAcceleration: ["UniqueAcceleration"],
+  passive: ["Passive", "Passive_rare"],
+};
 
 function renderTextWithIcons(text) {
   if (!text) return null;
@@ -138,8 +153,9 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
 
       const matchTag =
         activeTag === "all" || skill.tags?.includes(activeTag);
-      const matchIcon =
-        activeIcons.length === 0 || activeIcons.includes(skill.icon);
+      const matchIcon = activeIcons.length === 0 || activeIcons.some((filter) =>
+        SKILL_ICON_VARIANTS[filter]?.includes(skill.icon)
+      );
 
       return matchSearch && matchTag && matchIcon;
     });
@@ -184,7 +200,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
           <div className="skill-icon-filter" aria-label="Filter skills by icon">
             <span className="skill-icon-filter-label">Skill type</span>
             <div className="skill-icon-filter-options">
-              {SKILL_ICON_FILTERS.map(({ value, label }) => {
+              {SKILL_ICON_FILTERS.map(({ value, label, icon }) => {
                 const isActive = activeIcons.includes(value);
 
                 return (
@@ -204,7 +220,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
                       ));
                     }}
                   >
-                    {getSkillIcon(value)}
+                    {getSkillIcon(icon)}
                   </button>
                 );
               })}
