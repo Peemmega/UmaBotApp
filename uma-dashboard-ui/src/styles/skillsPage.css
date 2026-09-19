@@ -23,6 +23,12 @@
   border-top: 1px solid rgba(123, 79, 145, 0.12);
 }
 
+.skill-category-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 300px));
+  gap: var(--uma-space-3);
+}
+
 .skill-icon-filter-label {
   color: var(--uma-muted);
   font-size: 12px;
@@ -668,6 +674,10 @@
 }
 
 @media (max-width: 640px) {
+  .skill-category-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
   .skill-equip-buttons {
     grid-template-columns: 1fr;
   }

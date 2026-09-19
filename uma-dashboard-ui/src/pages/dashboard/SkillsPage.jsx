@@ -66,8 +66,12 @@ function renderTextWithIcons(text) {
 
 export default function SkillsPage({ userId, username, onSkillEquipped }) {
   const [skills, setSkills] = useState([]);
-  const [tags, setTags] = useState([{ value: "all", label: "ทั้งหมด" }]);
-  const [activeTag, setActiveTag] = useState("all");
+  const [skillCategories, setSkillCategories] = useState({
+    aptitude: [{ value: "all", label: "All aptitudes" }],
+    detail: [{ value: "all", label: "All details" }],
+  });
+  const [activeAptitude, setActiveAptitude] = useState("all");
+  const [activeDetail, setActiveDetail] = useState("all");
   const [activeIcons, setActiveIcons] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedSkill, setSelectedSkill] = useState(null);
@@ -93,9 +97,9 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
   };
 
   useEffect(() => {
-    fetch(`${BOT_API_BASE}/skills/tags`)
+    fetch(`${BOT_API_BASE}/skills/categories`)
       .then((res) => res.json())
-      .then((data) => setTags(data))
+      .then((data) => setSkillCategories(data))
       .catch(console.error);
 
     fetch(`${BOT_API_BASE}/skills?tag=all`)
@@ -151,15 +155,17 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
         skill.id.toLowerCase().includes(q) ||
         skill.tags?.some((tag) => tag.toLowerCase().includes(q))
 
-      const matchTag =
-        activeTag === "all" || skill.tags?.includes(activeTag);
+      const matchAptitude =
+        activeAptitude === "all" || skill.aptitude_categories?.includes(activeAptitude);
+      const matchDetail =
+        activeDetail === "all" || skill.detail_categories?.includes(activeDetail);
       const matchIcon = activeIcons.length === 0 || activeIcons.some((filter) =>
         SKILL_ICON_VARIANTS[filter]?.includes(skill.icon)
       );
 
-      return matchSearch && matchTag && matchIcon;
+      return matchSearch && matchAptitude && matchDetail && matchIcon;
     });
-  }, [skills, search, activeTag, activeIcons]);
+  }, [skills, search, activeAptitude, activeDetail, activeIcons]);
 
   const skillDetailsById = useMemo(
     () => new Map(skills.map((skill) => [String(skill.id), skill])),
@@ -182,20 +188,37 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
             placeholder="Search skill name / id / tag..."
           />
 
-          <label className="skill-filter-select">
-            <span>Skill category</span>
-            <select
-              value={activeTag}
-              onChange={(event) => {
-                playSound("click");
-                setActiveTag(event.target.value);
-              }}
-            >
-              {tags.map((tag) => (
-                <option key={tag.value} value={tag.value}>{tag.label}</option>
-              ))}
-            </select>
-          </label>
+          <div className="skill-category-filter-grid">
+            <label className="skill-filter-select">
+              <span>Skill aptitude</span>
+              <select
+                value={activeAptitude}
+                onChange={(event) => {
+                  playSound("click");
+                  setActiveAptitude(event.target.value);
+                }}
+              >
+                {(skillCategories.aptitude || []).map((category) => (
+                  <option key={category.value} value={category.value}>{category.label}</option>
+                ))}
+              </select>
+            </label>
+
+            <label className="skill-filter-select">
+              <span>Detail skill</span>
+              <select
+                value={activeDetail}
+                onChange={(event) => {
+                  playSound("click");
+                  setActiveDetail(event.target.value);
+                }}
+              >
+                {(skillCategories.detail || []).map((category) => (
+                  <option key={category.value} value={category.value}>{category.label}</option>
+                ))}
+              </select>
+            </label>
+          </div>
 
           <div className="skill-icon-filter" aria-label="Filter skills by icon">
             <span className="skill-icon-filter-label">Skill type</span>
@@ -252,7 +275,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
           </StaggerItem>
         </StaggerContainer>
       ) : (
-        <StaggerContainer className="skills-grid" key={`${activeTag}-${search}-${activeIcons.join("-")}`}>
+        <StaggerContainer className="skills-grid" key={`${activeAptitude}-${activeDetail}-${search}-${activeIcons.join("-")}`}>
           {filteredSkills.map((skill) => (
           <StaggerItem
             as="article"
