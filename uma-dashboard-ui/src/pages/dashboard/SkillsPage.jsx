@@ -345,7 +345,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
               setSelectedSkill(skill);
             }}
           >
-            <div className="skill-top-row">
+            <div className={`skill-top-row rarity-${getSkillRarity(skill.icon)}`}>
               <div className="skill-icon-box">
                 {getSkillIcon(skill.icon)}
               </div>

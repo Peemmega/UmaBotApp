@@ -329,6 +329,30 @@
   margin-bottom: var(--uma-space-3);
 }
 
+.skill-top-row.rarity-rare,
+.skill-top-row.rarity-unique {
+  padding: 8px 10px;
+  border-radius: 11px;
+}
+
+.skill-top-row.rarity-rare {
+  border: 1px solid rgba(190, 139, 23, 0.46);
+  background: linear-gradient(105deg, #fff5c9, #f3c854 52%, #fff2b0);
+}
+
+.skill-top-row.rarity-rare h3 {
+  color: #714b03;
+}
+
+.skill-top-row.rarity-unique {
+  border: 1px solid rgba(188, 101, 206, 0.42);
+  background: linear-gradient(105deg, #ffc3dc, #ffd9a8 23%, #fff6a4 43%, #bff2c4 62%, #b8ddff 80%, #dac4ff);
+}
+
+.skill-top-row.rarity-unique h3 {
+  color: #503069;
+}
+
 .skill-id {
   color: var(--uma-primary-dark);
   font-size: 13px;
