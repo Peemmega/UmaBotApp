@@ -1,6 +1,7 @@
 import { createPortal } from "react-dom";
 import { CalendarDays, Flag, MapPin, Trophy, Users, X } from "lucide-react";
 import { getNewsDescription, getNewsImage, getNewsKind } from "../utils/newsItems";
+import RaceRegistrationPanel from "./RaceRegistrationPanel";
 import "../styles/newsPage.css";
 
 function shortDate(item) {
@@ -27,7 +28,7 @@ function formatDirection(value) {
   return "";
 }
 
-export default function NewsDetailsModal({ item, onClose }) {
+export default function NewsDetailsModal({ item, onClose, userId, profileType }) {
   if (!item) return null;
   const isRace = getNewsKind(item) === "race";
   const image = getNewsImage(item);
@@ -57,6 +58,7 @@ export default function NewsDetailsModal({ item, onClose }) {
           <div><Flag size={18} /><span><b>เกี่ยวกับ Event นี้</b>{item.details || "อ่านประกาศกิจกรรม แล้วเข้าร่วมตามเวลาที่กำหนด"}</span></div>
           <div><Users size={18} /><span><b>จำนวนผู้เข้าร่วม</b>{item.capacity || "ไม่จำกัดจำนวน (หากมีการเปลี่ยนแปลงจะแจ้งในประกาศ)"}</span></div>
         </div>}
+        {isRace && userId ? <RaceRegistrationPanel event={item} userId={userId} profileType={profileType} /> : null}
       </div>
     </section>
   </div>;

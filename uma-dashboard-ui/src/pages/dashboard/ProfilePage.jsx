@@ -298,7 +298,7 @@ export default function ProfilePage({
                 )}
                 <div className="profile-avatar-actions">
                   <label className="profile-image-btn profile-image-upload-label">
-                    Upload image
+                    เปลี่ยนรูป
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
@@ -307,16 +307,7 @@ export default function ProfilePage({
                       disabled={uploadingPresetImage}
                     />
                   </label>
-                  {profileImage && (
-                    <button
-                      type="button"
-                      className="profile-image-remove-btn"
-                      onClick={() => onSaveProfile({ imageUrl: "" })}
-                      disabled={uploadingPresetImage}
-                    >
-                      Remove image
-                    </button>
-                  )}
+                  
                   {uploadingPresetImage ? <div className="profile-image-success">Uploading...</div> : null}
                   {presetImageMessage ? <div className="profile-image-success">{presetImageMessage}</div> : null}
                   {presetImageError ? <div className="profile-image-error">{presetImageError}</div> : null}

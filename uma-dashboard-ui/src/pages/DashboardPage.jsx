@@ -161,7 +161,7 @@ export default function DashboardPage({
         return <ToolsPage />;
 
       case "news":
-        return <NewsPage />;
+        return <NewsPage userId={userId} profileType={activeProfileType} />;
 
       case "profile":
       default:
@@ -317,7 +317,7 @@ export default function DashboardPage({
         />
       }
       nav={<GameNav activePage={activePage} onChangePage={changePage} profileType={activeProfileType} />}
-      rightRail={<RightRail onNavigate={changePage} />}
+      rightRail={<RightRail onNavigate={changePage} userId={userId} profileType={activeProfileType} />}
       modals={modals}
     >
       <AnimatePresence mode="wait">

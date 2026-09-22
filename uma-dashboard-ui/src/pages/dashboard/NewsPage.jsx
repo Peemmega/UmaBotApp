@@ -31,7 +31,7 @@ function currentBangkokMonthKey() {
   return `${part("year")}-${part("month")}`;
 }
 
-export default function NewsPage() {
+export default function NewsPage({ userId, profileType }) {
   const [items, setItems] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
@@ -70,6 +70,6 @@ export default function NewsPage() {
         {!visibleItems.length ? <p className="news-empty">ยังไม่มี Event หรือการแข่งขันในเดือนนี้</p> : null}
       </div>
     </section>
-    <NewsDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} />
+    <NewsDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} userId={userId} profileType={profileType} />
   </main>;
 }

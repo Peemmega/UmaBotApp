@@ -22,6 +22,7 @@ export default function MailboxModal({ userId, profileType = "trainee", onClose,
   const [closing, setClosing] = useState(false);
   const [activeTab, setActiveTab] = useState("list");
   const [pendingInvitation, setPendingInvitation] = useState(null);
+  const [pendingRegistration, setPendingRegistration] = useState(null);
 
   const closeModal = () => {
     playSound("close");
@@ -159,7 +160,9 @@ export default function MailboxModal({ userId, profileType = "trainee", onClose,
                   key={mail.id}
                   className={`mail-item ${mail.is_read ? "read" : "unread"}`}
                   onClick={() => {
-                    if (mail.invitation_id && profileType === "trainee") {
+                    if (mail.action_type?.startsWith("race_registration_")) {
+                      setPendingRegistration(mail);
+                    } else if (mail.invitation_id && profileType === "trainee") {
                       setPendingInvitation(mail);
                     } else if (!mail.is_read) markRead(mail.id);
                   }}
@@ -202,7 +205,76 @@ export default function MailboxModal({ userId, profileType = "trainee", onClose,
             <button onClick={() => respondToInvitation(true)}>Join team</button>
           </div>
         )}
+        {pendingRegistration && (
+          <RaceRegistrationMailDialog
+            mail={pendingRegistration}
+            userId={userId}
+            profileType={profileType}
+            onClose={() => setPendingRegistration(null)}
+            onCompleted={async () => {
+              setPendingRegistration(null);
+              await markRead(pendingRegistration.id);
+              await loadMailbox();
+            }}
+          />
+        )}
       </div>
     </div>
   );
+}
+
+function RaceRegistrationMailDialog({ mail, userId, profileType, onClose, onCompleted }) {
+  const [detail, setDetail] = useState(null);
+  const [availability, setAvailability] = useState("self");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const isTrainerApproval = mail.action_type === "race_registration_trainer";
+
+  useEffect(() => {
+    fetch(`${BOT_API_BASE}/race-registrations/${mail.action_id}`)
+      .then((response) => response.ok ? response.json() : response.json().then((data) => Promise.reject(new Error(data.detail))))
+      .then(setDetail)
+      .catch((reason) => setError(String(reason.message || reason)));
+  }, [mail.action_id]);
+
+  const respond = async (accepted) => {
+    try {
+      setBusy(true);
+      setError("");
+      const response = await fetch(`${BOT_API_BASE}/race-registrations/${mail.action_id}/respond`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          actor_user_id: String(userId),
+          accepted,
+          availability: isTrainerApproval ? null : availability,
+          mail_id: mail.id,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || "ไม่สามารถตอบคำขอได้");
+      await onCompleted();
+    } catch (reason) {
+      setError(String(reason.message || reason));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return <div className="mailbox-invite-dialog mailbox-registration-dialog" role="dialog" aria-modal="true">
+    <h3>{isTrainerApproval ? "อนุมัติการลงทะเบียน?" : "ยืนยันการลงทะเบียน?"}</h3>
+    {detail ? <>
+      <p><strong>{detail.race_name}</strong><br />{detail.venue || "สนามกำลังอัปเดต"} · {detail.race_date} {detail.race_time} GMT+7</p>
+      {isTrainerApproval ? <p>เมื่ออนุมัติ ระบบจะส่งแบบฟอร์มความพร้อมไปให้สาวม้า</p> : <fieldset className="mailbox-availability"><legend>ความพร้อมในการแข่ง</legend>
+        <label><input type="radio" name="availability" value="self" checked={availability === "self"} onChange={() => setAvailability("self")} /> สะดวกลงแข่งเอง</label>
+        <label><input type="radio" name="availability" value="bot_auto" checked={availability === "bot_auto"} onChange={() => setAvailability("bot_auto")} /> ให้ Bot Auto</label>
+      </fieldset>}
+    </> : <p>กำลังโหลดรายละเอียด...</p>}
+    {error ? <p className="mailbox-registration-error">{error}</p> : null}
+    <div className="mailbox-registration-actions">
+      <button type="button" disabled={busy} onClick={() => respond(false)}>ปฏิเสธ</button>
+      <button type="button" disabled={busy || !detail} onClick={() => respond(true)}>{isTrainerApproval ? "อนุมัติ" : "ยืนยัน"}</button>
+      <button type="button" className="mailbox-registration-close" disabled={busy} onClick={onClose}>ยกเลิก</button>
+    </div>
+  </div>;
 }
