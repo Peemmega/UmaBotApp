@@ -6,6 +6,7 @@ import minusIcon from "../assets/icons/reduce.webp";
 
 import { playSound } from "../utils/soundManager";
 import { BOT_API_BASE } from "../api/playerApi";
+import { IS_MAIN_WEB } from "../api/appConfig";
 
 const STAT_KEYS = [
   ["speed", "Speed"],
@@ -14,7 +15,7 @@ const STAT_KEYS = [
   ["gut", "Gut"],
   ["wit", "Wit"],
 ];
-const MAX_STAT = 8;
+const MAX_STAT = IS_MAIN_WEB ? 8 : 12;
 
 export default function EditStatsModal({ userId, player, onClose, onSaved }) {
   const [draftStats, setDraftStats] = useState({
