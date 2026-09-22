@@ -32,9 +32,7 @@
 .character-card {
   position: relative;
   border-radius: var(--uma-radius-sm);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 255, 241, 0.93)),
-    white;
+  background:white;
   border: 1px solid rgba(69, 201, 111, 0.22);
   overflow: hidden;
   box-shadow: 0 12px 26px rgba(59, 41, 66, 0.1);
