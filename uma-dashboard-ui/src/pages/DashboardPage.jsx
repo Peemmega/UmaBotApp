@@ -317,13 +317,7 @@ export default function DashboardPage({
         />
       }
       nav={<GameNav activePage={activePage} onChangePage={changePage} profileType={activeProfileType} />}
-      rightRail={
-        activeProfileType === "trainee" ? (
-          <RightRail
-            onNavigate={changePage}
-          />
-        ) : null
-      }
+      rightRail={<RightRail onNavigate={changePage} />}
       modals={modals}
     >
       <AnimatePresence mode="wait">

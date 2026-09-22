@@ -178,7 +178,7 @@ function RoleUnavailable({ onLogout }) {
         <h1 id="role-unavailable-title">ยังไม่มียศ</h1>
         <p className="role-selection-intro">บัญชี Discord นี้ยังไม่มียศ Trainer, Umamusume หรือ NPC ในเซิร์ฟเวอร์</p>
         <p className="role-selection-note">หลังได้รับยศแล้ว ให้เข้าสู่ระบบ Discord ใหม่เพื่ออัปเดตบทบาทในเว็บ</p>
-        <button type="button" className="role-unavailable-login" onClick={onLogout}>ออกจากระบบ</button>
+        <button type="button" className="role-unavailable-login" onClick={onLogout}>ออกจากระบบและเข้าสู่ระบบใหม่</button>
       </section>
     </main>
   );
@@ -389,7 +389,7 @@ export default function App() {
     });
   }, [avatarUrl, discordAvatarUrl, player?.profile_image_url, userId]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     sessionStorage.removeItem(`player:${userId}`);
 
     setUsername("");
@@ -401,7 +401,15 @@ export default function App() {
     setAccountRole(null);
 
     if (!Capacitor.isNativePlatform()) {
-      void fetch(`${APP_BASE}/api/auth/logout`, { method: "POST", credentials: "include" });
+      try {
+        await fetch(`${APP_BASE}/api/auth/logout`, {
+          method: "POST",
+          credentials: "include",
+          cache: "no-store",
+        });
+      } catch (err) {
+        console.warn("Could not clear the server session before logout.", err);
+      }
     }
     window.location.href = "/";
   };
