@@ -7,9 +7,7 @@
 .skills-toolbar {
   padding: var(--uma-space-4) var(--uma-space-5) var(--uma-space-5);
   border-radius: 0 0 var(--uma-radius-md) var(--uma-radius-md);
-  background:
-    radial-gradient(circle at 0 0, rgba(139, 220, 92, 0.18), transparent 38%),
-    rgba(255, 255, 255, 0.62);
+  background: white;
   display: flex;
   flex-direction: column;
   gap: var(--uma-space-4);

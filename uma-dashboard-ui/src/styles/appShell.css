@@ -156,7 +156,7 @@
   border-bottom: 1px solid var(--uma-border);
   background: white;
   backdrop-filter: blur(18px);
-  box-shadow: 0 12px 30px var(--uma-shadow-tint);
+  box-shadow: var(--uma-shadow-soft);
 }
 
 .topbar-brand {
@@ -178,7 +178,7 @@
   color: var(--uma-on-primary);
   font-size: 17px;
   font-weight: 1000;
-  box-shadow: 0 10px 24px var(--uma-shadow-tint);
+  box-shadow: var(--uma-shadow-soft);
   overflow: hidden;
 }
 
@@ -248,7 +248,7 @@
 .profile-switcher-btn.active {
   background: var(--uma-gradient-primary);
   color: var(--uma-on-primary);
-  box-shadow: 0 4px 10px var(--uma-shadow-tint);
+  box-shadow: var(--uma-shadow-soft);
 }
 
 .topbar-status {
@@ -353,7 +353,7 @@
   border: 1px solid var(--uma-surface-glass-strong);
   border-radius: var(--uma-radius-md);
   background:white;
-  box-shadow: 0 14px 30px var(--uma-shadow-tint);
+  box-shadow: var(--uma-shadow-soft);
   backdrop-filter: blur(14px);
   display: flex;
   flex-direction: column;
@@ -414,16 +414,13 @@
   background: var(--uma-surface-glass);
   color: var(--uma-ink);
   transform: translateX(2px);
-  box-shadow: 0 8px 16px var(--uma-shadow-tint);
+  box-shadow: var(--uma-shadow-soft);
 }
 
 .game-nav-btn.active,
 .sidebar-btn.active {
-  background:
-    linear-gradient(90deg, var(--uma-primary-faint), var(--uma-surface-glass-strong)),
-    var(--uma-surface-glass);
   color: var(--uma-ink);
-  box-shadow: 0 10px 20px var(--uma-shadow-tint), inset 0 0 0 1px var(--uma-primary-faint);
+  box-shadow: var(--uma-shadow-soft);
 }
 
 .game-nav-btn.active .game-nav-active-bar,
