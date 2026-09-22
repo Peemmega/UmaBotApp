@@ -16,6 +16,8 @@ import { Badge, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import ProfileImageCropModal from "../../components/ProfileImageCropModal";
 import SkillLoadoutPanel from "../../components/SkillLoadoutPanel";
+import TeamMemberProfileModal from "../../components/TeamMemberProfileModal";
+import RaceHistoryDetailModal from "../../components/RaceHistoryDetailModal";
 
 const fansIcon = `${BOT_API_BASE}/app/assets/icons/fans.png`;
 
@@ -52,6 +54,11 @@ export default function ProfilePage({
   const [inviteSearch, setInviteSearch] = useState("");
   const [cropImageFile, setCropImageFile] = useState(null);
   const [cropTarget, setCropTarget] = useState("");
+  const [selectedTeamMember, setSelectedTeamMember] = useState(null);
+  const [teamMemberDetail, setTeamMemberDetail] = useState(null);
+  const [teamMemberDetailLoading, setTeamMemberDetailLoading] = useState(false);
+  const [teamMemberDetailError, setTeamMemberDetailError] = useState("");
+  const [selectedTeamRace, setSelectedTeamRace] = useState(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -87,6 +94,58 @@ export default function ProfilePage({
       .then((data) => setTrainerProfile(data?.trainer || null))
       .catch(() => setTrainerProfile(null));
   }, [profileType, userId]);
+
+  useEffect(() => {
+    if (!selectedTeamMember) return undefined;
+
+    const controller = new AbortController();
+    const memberId = selectedTeamMember.user_id || selectedTeamMember.id;
+
+    async function loadTeamMemberDetail() {
+      setTeamMemberDetailLoading(true);
+      setTeamMemberDetailError("");
+      setTeamMemberDetail(null);
+
+      try {
+        const [profileRes, skillsRes, historyRes] = await Promise.all([
+          fetch(`${BOT_API_BASE}/player/${encodeURIComponent(memberId)}?username=${encodeURIComponent(selectedTeamMember.username || selectedTeamMember.name || "Unknown")}`, { signal: controller.signal }),
+          fetch(`${BOT_API_BASE}/player/${encodeURIComponent(memberId)}/skills`, { signal: controller.signal }),
+          fetch(`${BOT_API_BASE}/player/${encodeURIComponent(memberId)}/race-history`, { signal: controller.signal }),
+        ]);
+        if (!profileRes.ok) throw new Error("Could not load team member profile.");
+
+        const [profile, skills, history] = await Promise.all([
+          profileRes.json(),
+          skillsRes.ok ? skillsRes.json() : {},
+          historyRes.ok ? historyRes.json() : {},
+        ]);
+        if (!controller.signal.aborted) {
+          setTeamMemberDetail({ profile, skills, history: history?.races || history?.history || [] });
+        }
+      } catch (err) {
+        if (err.name !== "AbortError" && !controller.signal.aborted) {
+          setTeamMemberDetailError("Could not load this team member's profile.");
+        }
+      } finally {
+        if (!controller.signal.aborted) setTeamMemberDetailLoading(false);
+      }
+    }
+
+    loadTeamMemberDetail();
+    return () => controller.abort();
+  }, [selectedTeamMember]);
+
+  const openTeamMemberProfile = (member) => {
+    playSound("open");
+    setSelectedTeamRace(null);
+    setSelectedTeamMember(member);
+  };
+
+  const closeTeamMemberProfile = () => {
+    playSound("close");
+    setSelectedTeamRace(null);
+    setSelectedTeamMember(null);
+  };
 
   const inviteTrainee = async (traineeUserId) => {
     const res = await fetch(`${BOT_API_BASE}/trainer/invitations`, {
@@ -295,7 +354,20 @@ export default function ProfilePage({
               <div className="trainer-team-list">
                 <div className="trainer-team-grid">
                   {teamMembers.length ? teamMembers.map((member) => (
-                    <article className="trainer-team-member" key={member.user_id}>
+                    <article
+                      className="trainer-team-member"
+                      key={member.user_id}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Open ${member.username}'s profile`}
+                      onClick={() => openTeamMemberProfile(member)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          openTeamMemberProfile(member);
+                        }
+                      }}
+                    >
                       <img src={member.image_url} alt={member.username} />
                       <h3>{member.username}</h3>
                       <Badge>{member.fans} Fans</Badge>
@@ -339,6 +411,25 @@ export default function ProfilePage({
           document.body
         )}
       </StaggerContainer>
+      {selectedTeamMember && createPortal(
+        <TeamMemberProfileModal
+          member={selectedTeamMember}
+          detail={teamMemberDetail}
+          loading={teamMemberDetailLoading}
+          error={teamMemberDetailError}
+          onClose={closeTeamMemberProfile}
+          onOpenRace={setSelectedTeamRace}
+        />,
+        document.body
+      )}
+      {selectedTeamRace && createPortal(
+        <RaceHistoryDetailModal
+          raceId={selectedTeamRace.race_id}
+          fallback={selectedTeamRace}
+          onClose={() => setSelectedTeamRace(null)}
+        />,
+        document.body
+      )}
       {cropModal}
       </>
     );
