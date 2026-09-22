@@ -50,6 +50,7 @@ import staminaIcon from "../../assets/icons/Stamina.webp";
 import witIcon from "../../assets/icons/Wit.webp";
 import skillIcon from "../../assets/skill_icon/Velocity.webp";
 import { getRaceImage } from "../../utils/raceSchedule.js";
+import { describeRaceEffect, getRaceEffectDescriptor } from "../../utils/raceEffects";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 import TimingRaceGauge from "../../components/TimingRaceGauge";
 import RaceDicePreviewImage from "../../components/RaceDicePreviewImage";
@@ -60,6 +61,7 @@ import "../../styles/raceGamePage.css";
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
 const DICE_COLOR_OPTIONS = ["white", "gold"];
 const LANE_OPTIONS = [1, 2, 3, 4, 5, 6];
+const LANE_HELP_TEXT = "เลือกตำแหน่งเลน 1–6 ล่วงหน้า การเปลี่ยนจะมีผลตอนเริ่มเทิร์นถัดไป และแผนเลนที่ตั้งไว้จะแสดงเป็นสถานะ Pending จนกว่าจะมีผล";
 const RACE_STYLE_COOKIE = "uma_race_last_style";
 const RACE_STYLE_COOKIE_MAX_AGE = 60 * 60 * 24 * 180;
 const RACE_MUSIC_VOLUME_COOKIE = "uma_race_music_volume";
@@ -86,6 +88,13 @@ const BOT_OPTIONS = [
   { id: "fujimasa_march", label: "Fujimasa March" },
   { id: "beyond_the_light", label: "Beyond The Light" },
   { id: "oguri_cap", label: "Oguri Cap" },
+  { id: "sakura_bakushin_o", label: "Sakura Bakushin O" },
+  { id: "symboli_rudolf", label: "Symboli Rudolf" },
+  { id: "narita_brain", label: "Narita Brian" },
+  { id: "kitasan_black", label: "Kitasan Black" },
+  { id: "duramente", label: "Duramente" },
+  { id: "cheval_grand", label: "Cheval Grand" },
+  { id: "calstone_light_o", label: "Calstone Light O" },
   { id: "obey_your_master", label: "Obey Your Master" },
   { id: "orfevre", label: "Orfevre" },
   { id: "gentildonna", label: "Gentildonna" },
@@ -259,6 +268,25 @@ const RACE_STAGE_BG_BY_PATH_TYPE = {
   3: "/race_bg/path_3_bg.webp",
   4: "/race_bg/path_4_bg.webp",
   end: "/race_bg/path_end.webp",
+};
+const PATH_EFFECTS_BY_TYPE = {
+  1: [
+    { label: "STA", value: "เสีย 1 ครั้ง", tone: "debuff" },
+  ],
+  2: [
+    { label: "STA", value: "เสีย 1 ครั้ง", tone: "debuff" },
+    { label: "Dice Cap", value: "-5 รอบนี้", tone: "debuff" },
+    { label: "WIT", value: "min/max +1 ต่อ WIT", tone: "buff" },
+  ],
+  3: [
+    { label: "STA", value: "เสีย 2 ครั้ง", tone: "debuff" },
+    { label: "POW", value: "โบนัสผลรวม ×3 รอบนี้", tone: "buff" },
+    { label: "Speed", value: "-5% หนึ่งครั้ง", tone: "debuff" },
+  ],
+  4: [
+    { label: "STA", value: "ไม่เสีย", tone: "buff" },
+    { label: "WIT", value: "min/max +3 ต่อ WIT", tone: "buff" },
+  ],
 };
 const MAX_RACE_RANK_IMAGE_INDEX = 17;
 const RACE_BGM_TRACKS = [
@@ -558,13 +586,13 @@ export default function RaceGamePage({
   const [actionBusy, setActionBusy] = useState("");
   const [error, setError] = useState("");
   const [showSkills, setShowSkills] = useState(false);
+  const [raceInfoView, setRaceInfoView] = useState("scoreboard");
   const [skillPreview, setSkillPreview] = useState(null);
   const [skillLibrary, setSkillLibrary] = useState([]);
   const [diceTableColor, setDiceTableColor] = useState("white");
   const [hiddenRoomIds, setHiddenRoomIds] = useState(() => new Set());
   const [selectedBot, setSelectedBot] = useState("rookie_front");
   const [selectedBotLevel, setSelectedBotLevel] = useState(1);
-  const [runDiceColorCache, setRunDiceColorCache] = useState({});
   const [musicNowPlaying, setMusicNowPlaying] = useState(null);
   const [musicVolume, setMusicVolume] = useState(getSavedRaceMusicVolume);
   const requestRef = useRef(false);
@@ -739,6 +767,10 @@ export default function RaceGamePage({
     () => getAptitudeRows(room, myPlayer),
     [myPlayer, room]
   );
+  const raceInfoEffects = useMemo(
+    () => getCurrentRaceInfoEffects(room, myPlayer),
+    [myPlayer, room]
+  );
   const latestRollByName = useMemo(
     () => getLatestRollByName(room?.action_logs || []),
     [room?.action_logs]
@@ -748,10 +780,9 @@ export default function RaceGamePage({
     [latestRollByName, myPlayer?.name]
   );
   const myConfirmTurnScore = getRunnerTurnScore(myPlayer, room, myLatestRoll);
-  const myRunDiceColorKey = getRunDiceColorKey(room, myPlayer, room?.turn);
   const myRunDiceColor = useMemo(
-    () => runDiceColorCache[myRunDiceColorKey] || getRunnerCurrentDiceColor(myPlayer, room, myLatestRoll),
-    [myLatestRoll, myPlayer, myRunDiceColorKey, room, runDiceColorCache]
+    () => getRunnerCurrentDiceColor(myPlayer, room, myLatestRoll),
+    [myLatestRoll, myPlayer, room]
   );
   const raceRunners = useMemo(
     () => getRaceRunnersByCurrentSpeed(room?.players || [], latestRollByName),
@@ -938,20 +969,6 @@ export default function RaceGamePage({
     };
   }, []);
 
-  useEffect(() => {
-    if (!isConfirmingTurn || !myPlayer || !room?.room_id) return;
-
-    const nextTurnKey = getRunDiceColorKey(room, myPlayer, Number(room.turn) + 1);
-    if (!nextTurnKey) return;
-
-    const nextTurnColor = getRunnerPreRollDiceColor(myPlayer, room);
-    setRunDiceColorCache((current) => (
-      current[nextTurnKey] === nextTurnColor
-        ? current
-        : { ...current, [nextTurnKey]: nextTurnColor }
-    ));
-  }, [isConfirmingTurn, myPlayer, room]);
-
   const refreshRooms = useCallback(async (extraHiddenRoomIds = []) => {
     try {
       setLoading(true);
@@ -1132,17 +1149,8 @@ export default function RaceGamePage({
     [timingRoomId, userId]
   );
 
-  const handleConfirmTurn = () => {
-    const nextTurnKey = getRunDiceColorKey(room, myPlayer, Number(room?.turn) + 1);
-    if (nextTurnKey) {
-      setRunDiceColorCache((current) => ({
-        ...current,
-        [nextTurnKey]: getRunnerPreRollDiceColor(myPlayer, room),
-      }));
-    }
-
-    return runAction("confirm", () => confirmRaceTurn(room.room_id, playerPayload));
-  };
+  const handleConfirmTurn = () =>
+    runAction("confirm", () => confirmRaceTurn(room.room_id, playerPayload));
 
   const handleReroll = () =>
     runAction("reroll", () => rerollRaceTurn(room.room_id, playerPayload));
@@ -1171,12 +1179,12 @@ export default function RaceGamePage({
     <section className={`race-page ${fullscreen ? "race-fullscreen-page" : ""}`} onClickCapture={handleRaceButtonSound}>
         <header className="race-hero">
           <div>
-            <span className="race-kicker">Online Race</span>
-            <h2>Race Lobby</h2>
+            <span className="race-kicker">ห้องซ้อมออนไลน์</span>
+            <h2>ห้องล็อบบี้</h2>
           </div>
           <div className="race-toolbar">
             <button type="button" className="race-menu-home-btn" onClick={onBackToDashboard}>
-              Main Site
+              กลับหน้าหลัก
             </button>
             <button type="button" onClick={() => refreshRooms()} disabled={loading}>
               <RefreshCw size={16} />
@@ -1189,7 +1197,7 @@ export default function RaceGamePage({
 
         <div className="race-create-panel">
           <label>
-            Track
+            สนาม
             <select
               value={selectedStage}
               onChange={(event) => setSelectedStage(event.target.value)}
@@ -1204,7 +1212,7 @@ export default function RaceGamePage({
           <label>
             Gameplay
             <select value={gameplayMode} onChange={(event) => setGameplayMode(event.target.value)}>
-              <option value="manual">Dice Gameplay</option>
+              <option value="manual">ทอยลูกเต๋า</option>
               <option value="timing">Timing Gauge</option>
             </select>
           </label>
@@ -1233,7 +1241,7 @@ export default function RaceGamePage({
 
         <div className="race-room-grid">
           {rooms.length === 0 ? (
-            <div className="race-empty">No web race rooms yet.</div>
+            <div className="race-empty">ยังไม่มีห้องซ้อมถูกสร้าง</div>
           ) : (
             rooms.map((item) => {
               const raceImage = getRaceImage(roomRaceImageSource(item));
@@ -1260,7 +1268,7 @@ export default function RaceGamePage({
                       onClick={() => handleJoin(item)}
                       disabled={Boolean(actionBusy) || !canJoinRoom}
                     >
-                      {item.is_joined ? "Rejoin" : "Join"}
+                      {item.is_joined ? "เข้าร่วมใหม่" : "เข้าร่วม"}
                     </button>
                   </div>
                 </article>
@@ -1471,40 +1479,55 @@ export default function RaceGamePage({
 
         {laneSystemEnabled && myPlayer ? (
           <section className="race-lane-control-card race-hud-panel">
-            <div className="race-lane-control-copy">
-              <span>Lane Command</span>
-              <strong>Lane {myPlayer.current_lane ?? 1}</strong>
-              <small>
-                {myPlayer.pending_lane
-                  ? `Changing to Lane ${myPlayer.pending_lane} next turn`
-                  : "No hidden lane change queued"}
-              </small>
-            </div>
-            <div className="race-lane-button-row">
-              {LANE_OPTIONS.map((lane) => {
-                const isCurrent = Number(myPlayer.current_lane) === lane;
-                const isPending = Number(myPlayer.pending_lane) === lane;
-                const canChangeLane =
-                  room?.phase === "running" &&
-                  !isRaceEnded(room) &&
-                  !isWebTiming &&
-                  !Boolean(actionBusy);
-                return (
-                  <button
-                    key={lane}
-                    type="button"
-                    className={[
-                      "race-lane-btn",
-                      isCurrent ? "is-current" : "",
-                      isPending ? "is-pending" : "",
-                    ].filter(Boolean).join(" ")}
-                    onClick={() => handleChangeLane(lane)}
-                    disabled={!canChangeLane}
+            <div className="race-lane-info">
+              <span>Race Info</span>
+              <div className="race-info-summary">
+                <strong>{isWebTiming ? `${room.leader_distance || 0}m` : `Turn ${room.turn || 0}`}</strong>
+                <small>{isWebTiming ? `${room.finish_distance || 0}m finish` : `/${room.max_turn || "-"}`}</small>
+              </div>
+              <div className="race-info-details">
+                <span>{room.track || "Track"} · {isWebTiming ? `${room.finish_distance || 0}m` : room.distance || "Distance"}</span>
+                <span>{room.current_path?.label || "Start"}</span>
+              </div>
+              <div className="race-info-effects" aria-label="Active race effects">
+                {raceInfoEffects.length > 0 ? raceInfoEffects.map((effect, index) => (
+                  <em
+                    key={`${effect.label}-${effect.value}-${index}`}
+                    className={effect.tone ? `is-${effect.tone}` : ""}
                   >
-                    {lane}
-                  </button>
-                );
-              })}
+                    {effect.label}: {effect.value}
+                  </em>
+                )) : <em className="is-empty">No active effect</em>}
+              </div>
+            </div>
+            <div className="race-lane-selector">
+              <span className="race-lane-selector-title">Lane · {myPlayer.current_lane ?? 1}</span>
+              <div className="race-lane-button-row">
+                {LANE_OPTIONS.map((lane) => {
+                  const isCurrent = Number(myPlayer.current_lane) === lane;
+                  const isPending = Number(myPlayer.pending_lane) === lane;
+                  const canChangeLane =
+                    room?.phase === "running" &&
+                    !isRaceEnded(room) &&
+                    !isWebTiming &&
+                    !actionBusy;
+                  return (
+                    <button
+                      key={lane}
+                      type="button"
+                      className={[
+                        "race-lane-btn",
+                        isCurrent ? "is-current" : "",
+                        isPending ? "is-pending" : "",
+                      ].filter(Boolean).join(" ")}
+                      onClick={() => handleChangeLane(lane)}
+                      disabled={!canChangeLane}
+                    >
+                      {lane}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </section>
         ) : null}
@@ -1522,24 +1545,53 @@ export default function RaceGamePage({
         )}
 
         <aside className="race-score-panel race-hud-panel">
-          <PanelTitle icon={<Trophy size={16} />} title="Scoreboard" />
-          <div className="race-score-list uma-scroll">
-            {raceScoreCards}
+          <div className="race-info-panel-header">
+            <PanelTitle
+              icon={raceInfoView === "scoreboard" ? <Trophy size={16} /> : <Radio size={16} />}
+              title={raceInfoView === "scoreboard" ? "Scoreboard" : "Race Commentary"}
+            />
+            <div className="race-info-view-tabs" role="tablist" aria-label="Race information view">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={raceInfoView === "scoreboard"}
+                className={raceInfoView === "scoreboard" ? "is-active" : ""}
+                onClick={() => setRaceInfoView("scoreboard")}
+              >
+                <Trophy size={14} />
+                ตารางอันดับ
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={raceInfoView === "commentary"}
+                className={raceInfoView === "commentary" ? "is-active" : ""}
+                onClick={() => setRaceInfoView("commentary")}
+              >
+                <Radio size={14} />
+                Race logs
+              </button>
+            </div>
           </div>
-          <div className="race-status-panel">
-            <div><Activity size={16} /><span>{room.phase}</span></div>
-            <div><Radio size={16} /><span>{socketStatus}</span></div>
-          </div>
-        </aside>
 
-        <section className="race-log-panel race-hud-panel">
-          <PanelTitle icon={<Radio size={16} />} title="Race Commentary" />
-          <div className="race-log-list uma-scroll">
-            {(room.action_logs || []).slice().reverse().map((log) => (
-              <RaceLogItem key={log.id} log={log} />
-            ))}
-          </div>
-        </section>
+          {raceInfoView === "scoreboard" ? (
+            <>
+              <div className="race-score-list uma-scroll">
+                {raceScoreCards}
+              </div>
+              <div className="race-status-panel">
+                <div><Activity size={16} /><span>{room.phase}</span></div>
+                <div><Radio size={16} /><span>{socketStatus}</span></div>
+              </div>
+            </>
+          ) : (
+            <div className="race-log-list race-info-log-list uma-scroll">
+              {(room.action_logs || []).slice().reverse().map((log) => (
+                <RaceLogItem key={log.id} log={log} />
+              ))}
+            </div>
+          )}
+        </aside>
 
         <aside className={`race-command-panel race-hud-panel uma-scroll ${room.phase === "running" ? "is-running" : ""} ${room.phase === "running" && room.gameplay_mode === "timing" ? "is-timing" : ""}`}>
           {room.phase === "waiting" ? (
@@ -1816,7 +1868,7 @@ function RaceSkillPreview({ preview }) {
           {preview.kind === "zone" ? <Zap size={22} /> : getSkillIcon(preview.icon)}
         </div>
         <div>
-          <div className="skill-id">{preview.id}</div>
+          {/* <div className="skill-id">{preview.id}</div> */}
           <h3>{preview.name}</h3>
         </div>
       </div>
@@ -2033,11 +2085,6 @@ function getRunnerPreRollDiceColor(player, room) {
   return isRunnerInGoldRange(player, room) ? "gold" : "white";
 }
 
-function getRunDiceColorKey(room, player, turn) {
-  if (!room?.room_id || !player?.id || turn === undefined || turn === null) return "";
-  return `${room.room_id}:${player.id}:${turn}`;
-}
-
 function normalizeDiceColor(value = "") {
   const color = String(value || "").trim().toLowerCase();
   if (color === "gold" || color === "golden") return "gold";
@@ -2049,22 +2096,53 @@ function isRunnerInGoldRange(player, room) {
   const playerScore = Number(player?.score);
   if (!Number.isFinite(playerScore)) return false;
 
-  const goldRange = Math.max(0, 20 + getRunnerGoldRangeBonus(player));
+  const goldRange = getRunnerGoldRangeValue(player);
+  const goldLaneTolerance = getRunnerGoldLaneTolerance(player);
   const competitors = (room?.players || []).filter((other) => String(other?.id) !== String(player?.id));
+
+  // The dice service treats a solo runner as Gold.
+  if (competitors.length === 0) return true;
 
   return competitors.some((other) => {
     const otherScore = Number(other?.score);
-    return Number.isFinite(otherScore) && Math.abs(otherScore - playerScore) <= goldRange;
+    const otherLane = Number(other?.current_lane);
+    const playerLane = Number(player?.current_lane);
+    return (
+      Number.isFinite(otherScore) &&
+      Math.abs(otherScore - playerScore) <= goldRange &&
+      Number.isFinite(playerLane) &&
+      Number.isFinite(otherLane) &&
+      Math.abs(otherLane - playerLane) <= goldLaneTolerance
+    );
   });
 }
 
-function getRunnerGoldRangeBonus(player) {
-  return firstFiniteNumber(
+function getRunnerGoldRangeValue(player) {
+  const bonus = firstFiniteNumber(
+    player?.gold_range_bonus_this_turn,
     player?.pending_bonus?.gold_range,
-    player?.buffs?.gold_range,
-    player?.buffs?.pending_bonus?.gold_range,
-    player?.last_roll?.pending_bonus?.gold_range
+    player?.buffs?.gold_range
   ) ?? 0;
+  const penalty = Math.abs(firstFiniteNumber(
+    player?.enemy_gold_range_penalty_next_turn,
+    player?.pending_bonus?.enemy_gold_range_penalty,
+    player?.buffs?.enemy_gold_range_penalty
+  ) ?? 0);
+  return Math.max(1, 20 + bonus - penalty);
+}
+
+function getRunnerGoldLaneTolerance(player) {
+  const bonus = firstFiniteNumber(
+    player?.gold_lane_bonus_this_turn,
+    player?.pending_bonus?.gold_lane,
+    player?.buffs?.gold_lane
+  ) ?? 0;
+  const penalty = Math.abs(firstFiniteNumber(
+    player?.enemy_gold_lane_penalty_next_turn,
+    player?.pending_bonus?.enemy_gold_lane_penalty,
+    player?.buffs?.enemy_gold_lane_penalty
+  ) ?? 0);
+  return Math.max(0, 1 + bonus - penalty);
 }
 
 function firstFiniteNumber(...values) {
@@ -2156,7 +2234,7 @@ function RaceLogItem({ log }) {
         <>
           <p>
             <span>T{log.turn}</span>
-            {log.message}
+            {getRaceActionLogMessage(log)}
           </p>
           {actionEffectRows.length > 0 ? (
             <div className="race-log-action-effects">
@@ -2182,8 +2260,27 @@ function getLogPlayerName(log) {
   if (payloadName) return payloadName;
 
   return String(log.message || "")
+    .replace(/\s+used\s+(?:rush|block)\b.*/i, "")
     .replace(/\s+(?:(?:auto\s+)?ran|(?:wit\s+)?rerolled)\s+[+-]?\d+.*/i, "")
     .trim() || "Racer";
+}
+
+function getRaceActionLogMessage(log) {
+  const payload = log?.payload || {};
+  const actionType = String(payload.action_type || "").toLowerCase();
+  const actor = payload.player_name || getLogPlayerName(log);
+
+  if (actionType === "rush") {
+    return `${actor} ใช้ Rush +${payload.move_forward ?? 0}`;
+  }
+
+  if (actionType === "block") {
+    const target = payload.target_name ? ` กับ ${payload.target_name}` : "";
+    const moveBack = payload.move_back ?? 0;
+    return `${actor} ใช้ Block${target} ถอย ${moveBack}`;
+  }
+
+  return log?.message || "-";
 }
 
 function getScoreFromLogMessage(message = "") {
@@ -2204,6 +2301,37 @@ function getActionEffectRows(log) {
   if (!isSkillOrZone) return [];
 
   const rows = [];
+  if (Array.isArray(payload.race_stat_changes)) {
+    payload.race_stat_changes.forEach((change) => {
+      const targetName = String(change?.target_name || "").trim();
+      const labelPrefix = targetName && targetName !== "ตัวเอง" ? `${targetName}: ` : "";
+      Object.entries(change?.changes || {}).forEach(([stat, amount]) => {
+        const value = Number(amount) || 0;
+        if (value) rows.push({ label: `${labelPrefix}${stat[0].toUpperCase()}${stat.slice(1)}`, value: signed(value) });
+      });
+
+      const before = change?.stamina_before;
+      const after = change?.stamina_after;
+      if (before && after && Number(before.max_stamina) !== Number(after.max_stamina)) {
+        rows.push({
+          label: `${labelPrefix}Stamina`,
+          value: `${before.current_stamina}/${before.max_stamina} → ${after.current_stamina}/${after.max_stamina}`,
+        });
+      }
+    });
+  }
+  if (Array.isArray(payload.random_activations)) {
+    payload.random_activations.forEach((activation) => {
+      const name = String(activation?.name || activation?.skill_id || "Random skill");
+      const resultTexts = Array.isArray(activation?.result_texts)
+        ? activation.result_texts
+        : [];
+      resultTexts.forEach((resultText) => {
+        const value = String(resultText || "").trim();
+        if (value) rows.push({ label: name, value });
+      });
+    });
+  }
   const sources = [
     payload.effect,
     payload.effects,
@@ -2242,10 +2370,41 @@ function getActionEffectRows(log) {
   return rows.slice(0, 8);
 }
 
+function getCurrentRaceInfoEffects(room, player) {
+  const pathType = Number(room?.current_path?.type);
+  const rows = [...(PATH_EFFECTS_BY_TYPE[pathType] || [])];
+  [
+    room?.current_path?.effect,
+    room?.current_path?.effects,
+    room?.current_path?.active_effects,
+    room?.active_effects,
+    player?.active_effects,
+    player?.effects,
+    player?.buffs,
+    player?.pending_bonus,
+  ].forEach((source) => collectEffectRows(source, rows));
+
+  const seen = new Set();
+  return rows.filter((row) => {
+    const key = `${row.label}:${row.value}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 3);
+}
+
 function collectEffectRows(source, rows) {
   if (!source) return;
   if (Array.isArray(source)) {
     source.forEach((item) => collectEffectRows(item, rows));
+    return;
+  }
+  const descriptor = getRaceEffectDescriptor(source);
+  if (descriptor) {
+    rows.push({
+      label: ["modify_enemy_gold_lane_range", "modify_gold_lane_range"].includes(descriptor.type) ? "Lane Effect" : "Effect",
+      value: describeRaceEffect(descriptor),
+    });
     return;
   }
   if (typeof source === "string") {
@@ -2387,7 +2546,21 @@ function parseDiscordBonusDisplay(value = "") {
     match = bonusPattern.exec(text);
   }
 
-  return rows;
+  const capFloorPattern = /\b(CAP|FLOOR)\s*([+-]\d+)\b/gi;
+  match = capFloorPattern.exec(text);
+
+  while (match) {
+    const [, kind, amount] = match;
+    rows.push({
+      icon: BONUS_ICONS.skill,
+      index: match.index,
+      label: kind === "CAP" ? "Cap" : "Floor",
+      value: signed(amount),
+    });
+    match = capFloorPattern.exec(text);
+  }
+
+  return rows.sort((left, right) => left.index - right.index);
 }
 
 function formatRollDice(value, baseTotal) {

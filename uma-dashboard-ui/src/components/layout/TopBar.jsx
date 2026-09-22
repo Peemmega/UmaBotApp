@@ -2,7 +2,14 @@ import discordIcon from "../../assets/icons/discord_icon.webp";
 import mailIcon from "../../assets/icons/mail_icon.webp";
 import { playSound } from "../../utils/soundManager";
 
-export default function TopBar({ unreadCount = 0, onMailClick, onLogout }) {
+export default function TopBar({
+  unreadCount = 0,
+  onMailClick,
+  onLogout,
+  profileDesk = "Trainee Desk",
+  notificationPermission = "unsupported",
+  onEnableNotifications,
+}) {
   return (
     <header className="topbar">
       <div className="topbar-brand">
@@ -10,13 +17,19 @@ export default function TopBar({ unreadCount = 0, onMailClick, onLogout }) {
           <span>TA</span>
         </span>
         <div>
-          <p className="topbar-kicker">UmaDnD Racing Club</p>
-          <h1 className="dashboard-title">Tracen Academy RP</h1>
+          <p className="topbar-kicker">Umamusume New Frontier</p>
+          <h1 className="dashboard-title">Tracen Academy Site</h1>
         </div>
       </div>
 
       <div className="dashboard-actions">
-        <span className="topbar-status">Trainee Desk</span>
+        <span className="topbar-status">{profileDesk}</span>
+
+        {notificationPermission !== "granted" && notificationPermission !== "unsupported" && (
+          <button type="button" className="notification-btn" onClick={onEnableNotifications}>
+            Enable alerts
+          </button>
+        )}
 
         <a
           className="discord-btn"

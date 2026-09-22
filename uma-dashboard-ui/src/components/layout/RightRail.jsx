@@ -1,26 +1,14 @@
-import RaceCalendar from "../RaceCalendar";
-import SkillLoadoutPanel from "../SkillLoadoutPanel";
+import { useState } from "react";
+import NewsDetailsModal from "../NewsDetailsModal";
+import NewsScheduleFeed from "../NewsScheduleFeed";
 
-export default function RightRail({
-  userId,
-  username,
-  player,
-  skillLoadoutVersion,
-}) {
+export default function RightRail({ onNavigate }) {
+  const [selectedItem, setSelectedItem] = useState(null);
+
   return (
     <aside className="dashboard-right-panel right-rail">
-      {/* <div className="right-rail-heading">
-        <span>Live Trainee Desk</span>
-      </div> */}
-
-      <SkillLoadoutPanel
-        userId={userId}
-        username={player?.username || username}
-        player={player}
-        refreshKey={skillLoadoutVersion}
-      />
-
-      <RaceCalendar />
+      <NewsScheduleFeed onViewAll={() => onNavigate("news")} onItemSelected={setSelectedItem} />
+      <NewsDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} />
     </aside>
   );
 }

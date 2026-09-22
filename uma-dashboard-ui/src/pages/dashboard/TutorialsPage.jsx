@@ -35,6 +35,11 @@ const mechanics = [
     text: "สกิลใช้ Wit Mana ตามค่าใช้จ่าย และมีเงื่อนไข/คูลดาวน์ของตัวเอง ผลอาจเพิ่มเต๋า, เพิ่มคะแนน, ฟื้น Stamina, ปรับตำแหน่ง หรือรบกวนคู่แข่ง.",
   },
   {
+    title: "Lane / เลน",
+    icon: "🏎️",
+    text: "Lane คือช่องตำแหน่งในการแข่ง มีตั้งแต่ 1 ถึง 6 เลือกด้วย /game lane target_lane:1-6 หรือปุ่ม Lane Command บนเว็บ การเลือกไม่ได้ย้ายทันที แต่จะตั้งเป็น Pending และมีผลเมื่อเริ่มเทิร์นถัดไป จึงควรวางแผนก่อนยืนยันเทิร์น.",
+  },
+  {
     title: "Zone",
     icon: "🌟",
     text: "Zone คือความสามารถพิเศษของผู้เล่น ใช้ได้หนึ่งครั้งต่อการแข่งขัน เลือกจังหวะที่ตารางเต๋าและเงื่อนไขของคุณคุ้มค่าที่สุด.",
@@ -110,7 +115,7 @@ export default function TutorialsPage() {
           <ol className="tutorial-turn-flow">
             <li><div><strong>เช็กสถานการณ์</strong><span>ดู Phase, Path, Stamina, ตำแหน่ง และผลของคู่แข่ง</span></div></li>
             <li><div><strong>ใช้ Skill หรือ Zone</strong><span>ใช้เมื่อเงื่อนไขตรงและผลจะช่วยการทอยเทิร์นนี้หรือเทิร์นถัดไป</span></div></li>
-            <li><div><strong>ตั้งเลนล่วงหน้า</strong><span>ใช้ <code>/game lane target_lane:1-6</code> ก่อนยืนยัน หากต้องการเปลี่ยนเลนในเทิร์นถัดไป</span></div></li>
+            <li><div><strong>ตั้งเลนล่วงหน้า</strong><span>ใช้ /game lane target_lane:1-6 ก่อนยืนยัน หากต้องการเปลี่ยนเลนในเทิร์นถัดไป</span></div></li>
             <li><div><strong>Run และตัดสินใจ Reroll</strong><span>ตรวจโบนัสและคะแนนจากผลทอยก่อนใช้สิทธิ์ Reroll หรือ WIT Reroll</span></div></li>
             <li><div><strong>ยืนยันผล</strong><span>เมื่อพร้อมแล้วกดยืนยันเพื่อให้การแข่งขันเดินต่อ</span></div></li>
           </ol>

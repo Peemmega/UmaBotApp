@@ -1,7 +1,9 @@
 import {
   BookOpen,
+  CalendarDays,
   PanelsTopLeft,
   CircleHelp,
+  Calculator,
   Flag,
   Sparkles,
   Trophy,
@@ -9,27 +11,32 @@ import {
   UsersRound,
 } from "lucide-react";
 import { playSound } from "../../utils/soundManager";
-import { IS_MAIN_WEB } from "../../api/appConfig";
 
 export const gameNavItems = [
-  { key: "profile", label: "Profile", Icon: UserRound },
-  { key: "chars", label: "Chars", Icon: UsersRound },
-  { key: "races", label: "Races", Icon: Trophy },
-  { key: "race", label: "Race", Icon: Flag },
-  { key: "tcg", label: "TCG", Icon: PanelsTopLeft },
-  { key: "skills", label: "Skills", Icon: Sparkles },
-  { key: "tutorials", label: "Tutorials", Icon: BookOpen },
-  { key: "qa", label: "Q&A", Icon: CircleHelp },
+  { key: "profile", label: "โปรไฟล์", Icon: UserRound },
+  { key: "chars", label: "ตัวละคร", Icon: UsersRound },
+  { key: "races", label: "รายการแข่ง", Icon: Trophy },
+  { key: "news", label: "ตารางกิจกรรม", Icon: CalendarDays },
+  // { key: "tcg", label: "TCG", Icon: PanelsTopLeft },
+  { key: "skills", label: "สกิล", Icon: Sparkles },
+  { key: "race", label: "ห้องซ้อมวิ่ง", Icon: Flag },
+  { key: "tools", label: "เครื่องมือคำนวณ", Icon: Calculator },
+  { key: "tutorials", label: "คู่มือ", Icon: BookOpen },
+  // { key: "qa", label: "Q&A", Icon: CircleHelp },
 ];
 
 export default function GameNav({
   activePage,
   onChangePage,
   items = gameNavItems,
+  profileType = "trainee",
 }) {
-  const visibleItems = IS_MAIN_WEB
-    ? items.filter((item) => item.key !== "tcg")
-    : items;
+  const baseItems = items.filter(
+    (item) => item.key !== "tcg" && item.key !== "race"
+  );
+  const visibleItems = profileType === "trainee" || profileType === "trainer"
+    ? baseItems
+    : baseItems.filter((item) => item.key !== "skills");
 
   return (
     <nav className="sidebar game-nav" aria-label="Game navigation">

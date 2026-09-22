@@ -1,17 +1,21 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { mainStats, aptitudeRows } from "../../data/dashboardConfig";
 import StatCell from "../../components/StatCell";
 import AptitudeItem from "../../components/AptitudeItem";
 import ResourcePill from "../../components/ResourcePill";
 import EditStatsModal from "../../components/EditStatsModal";
 import ZonePanel from "../../components/ZonePanel";
-import { BOT_API_BASE, uploadProfileImage } from "../../api/playerApi";
+import { BOT_API_BASE, uploadPresetProfileImage, uploadProfileImage } from "../../api/playerApi";
+import { toAbsoluteBotUrl } from "../../utils/avatar";
 import statIcon from "../../assets/icons/statsPoint.webp";
 import skillIcon from "../../assets/icons/skillPoint.webp";
 import editIcon from "../../assets/icons/change_icon.webp";
 import { playSound } from "../../utils/soundManager";
-import { Badge, SectionHeader } from "../../components/ui";
+import { Badge, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
+import ProfileImageCropModal from "../../components/ProfileImageCropModal";
+import SkillLoadoutPanel from "../../components/SkillLoadoutPanel";
 
 const fansIcon = `${BOT_API_BASE}/app/assets/icons/fans.png`;
 
@@ -21,10 +25,15 @@ export default function ProfilePage({
   avatarUrl,
   player,
   setPlayer,
+  profile,
+  profileType = "trainee",
+  onSaveProfile,
+  onRequestRename,
   error,
   isEditStatsOpen,
   setIsEditStatsOpen,
   setIsRenameOpen,
+  skillLoadoutVersion,
 }) {
   const [equippedSkills, setEquippedSkills] = useState({});
   const [selectedImageFile, setSelectedImageFile] = useState(null);
@@ -32,6 +41,17 @@ export default function ProfilePage({
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadError, setUploadError] = useState("");
+  const [presetImageMessage, setPresetImageMessage] = useState("");
+  const [presetImageError, setPresetImageError] = useState("");
+  const [uploadingPresetImage, setUploadingPresetImage] = useState(false);
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [teamFans, setTeamFans] = useState(0);
+  const [availableTrainees, setAvailableTrainees] = useState([]);
+  const [trainerProfile, setTrainerProfile] = useState(null);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [inviteSearch, setInviteSearch] = useState("");
+  const [cropImageFile, setCropImageFile] = useState(null);
+  const [cropTarget, setCropTarget] = useState("");
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -42,6 +62,44 @@ export default function ProfilePage({
       .then((data) => setEquippedSkills(data))
       .catch(console.error);
   }, [userId]);
+
+  const loadTrainerTeam = async () => {
+    const [teamRes, availableRes] = await Promise.all([
+      fetch(`${BOT_API_BASE}/trainer/${userId}/team`),
+      fetch(`${BOT_API_BASE}/trainer/${userId}/available-trainees`),
+    ]);
+    if (teamRes.ok) {
+      const data = await teamRes.json();
+      setTeamMembers(data.members || []);
+      setTeamFans(data.fans || 0);
+    }
+    if (availableRes.ok) setAvailableTrainees((await availableRes.json()).trainees || []);
+  };
+
+  useEffect(() => {
+    if (profileType === "trainer" && userId) loadTrainerTeam().catch(console.error);
+  }, [profileType, userId]);
+
+  useEffect(() => {
+    if (profileType !== "trainee" || !userId) return;
+    fetch(`${BOT_API_BASE}/trainee/${userId}/trainer`)
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => setTrainerProfile(data?.trainer || null))
+      .catch(() => setTrainerProfile(null));
+  }, [profileType, userId]);
+
+  const inviteTrainee = async (traineeUserId) => {
+    const res = await fetch(`${BOT_API_BASE}/trainer/invitations`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ trainer_user_id: String(userId), trainee_user_id: String(traineeUserId) }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Could not send invitation");
+    setIsInviteOpen(false);
+    setInviteSearch("");
+    await loadTrainerTeam();
+  };
 
   useEffect(() => {
     return () => {
@@ -75,9 +133,12 @@ export default function ProfilePage({
       return;
     }
 
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setSelectedImageFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Please select an image file.");
+      return;
+    }
+    setCropTarget("trainee");
+    setCropImageFile(file);
   };
 
   const handleUploadImage = async () => {
@@ -94,6 +155,10 @@ export default function ProfilePage({
         profile_image_url: result.profile_image_url,
         profile_image_updated_at: result.profile_image_updated_at,
       }));
+      onSaveProfile?.({
+        name: player?.username || username,
+        imageUrl: result.profile_image_url,
+      });
       setUploadMessage("Profile image updated.");
       setSelectedImageFile(null);
       if (previewUrl) {
@@ -110,6 +175,175 @@ export default function ProfilePage({
     }
   };
 
+  const handlePresetImageUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file.");
+      event.target.value = "";
+      return;
+    }
+    setCropTarget("preset");
+    setCropImageFile(file);
+    event.target.value = "";
+  };
+
+  const handleCropComplete = async (croppedFile) => {
+    if (cropTarget === "trainee") {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setSelectedImageFile(croppedFile);
+      setPreviewUrl(URL.createObjectURL(croppedFile));
+    } else {
+      try {
+        setUploadingPresetImage(true);
+        setPresetImageError("");
+        setPresetImageMessage("");
+        const result = await uploadPresetProfileImage(userId, profileType, croppedFile);
+        onSaveProfile?.({ imageUrl: result.image_url });
+        setPresetImageMessage("Profile image updated.");
+      } catch (err) {
+        setPresetImageError(String(err.message || err));
+      } finally {
+        setUploadingPresetImage(false);
+      }
+    }
+    setCropImageFile(null);
+    setCropTarget("");
+  };
+
+  const cropModal = cropImageFile ? <ProfileImageCropModal file={cropImageFile} onCancel={() => { setCropImageFile(null); setCropTarget(""); }} onConfirm={handleCropComplete} /> : null;
+
+  if (profileType !== "trainee") {
+    const isTrainer = profileType === "trainer";
+    const profileName = profile?.name || (isTrainer ? "Trainer" : "NPC");
+    const profileImage = profile?.imageUrl || "";
+    const profileImageUrl = toAbsoluteBotUrl(profileImage);
+    const filteredInvitees = availableTrainees.filter((trainee) =>
+      trainee.username.toLowerCase().includes(inviteSearch.trim().toLowerCase())
+    );
+
+    return (
+      <>
+      <StaggerContainer className={`dashboard-shell profile-stagger role-profile role-profile-${profileType}`}>
+        <StaggerItem>
+          <section className="profile-card">
+            <div className="title-banner">
+              <h2>{isTrainer ? "Trainer Profile" : "NPC Profile"}</h2>
+            </div>
+            <div className="profile-body role-profile-body">
+              <div className="profile-avatar-wrap">
+                {profileImageUrl ? (
+                  <img src={profileImageUrl} alt={profileName} className="profile-avatar" />
+                ) : (
+                  <div className="profile-avatar placeholder">{isTrainer ? "🎓" : "👤"}</div>
+                )}
+                <div className="profile-avatar-actions">
+                  <label className="profile-image-btn profile-image-upload-label">
+                    Upload image
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="profile-image-input"
+                      onChange={handlePresetImageUpload}
+                      disabled={uploadingPresetImage}
+                    />
+                  </label>
+                  {profileImage && (
+                    <button
+                      type="button"
+                      className="profile-image-remove-btn"
+                      onClick={() => onSaveProfile({ imageUrl: "" })}
+                      disabled={uploadingPresetImage}
+                    >
+                      Remove image
+                    </button>
+                  )}
+                  {uploadingPresetImage ? <div className="profile-image-success">Uploading...</div> : null}
+                  {presetImageMessage ? <div className="profile-image-success">{presetImageMessage}</div> : null}
+                  {presetImageError ? <div className="profile-image-error">{presetImageError}</div> : null}
+                </div>
+              </div>
+              {isTrainer || profileType === "npc" ? (
+                <div className="profile-info">
+                  <div className="profile-name-row">
+                    <div className="profile-name">{profileName}</div>
+                    <button
+                      type="button"
+                      className="rename-btn"
+                      onClick={() => {
+                        onRequestRename?.();
+                      }}
+                    >
+                      <img src={editIcon} alt="Rename trainer" />
+                    </button>
+                  </div>
+                  {isTrainer && (
+                    <div className="profile-resources trainer-profile-fans">
+                      <ResourcePill icon={fansIcon} label="Team Fans" value={teamFans} />
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          </section>
+        </StaggerItem>
+
+        {isTrainer && (
+          <StaggerItem>
+            <section className="sheet-card trainer-team-card">
+              <div className="title-banner"><h2>My Uma Musume Team</h2></div>
+              <div className="trainer-team-list">
+                <div className="trainer-team-grid">
+                  {teamMembers.length ? teamMembers.map((member) => (
+                    <article className="trainer-team-member" key={member.user_id}>
+                      <img src={member.image_url} alt={member.username} />
+                      <h3>{member.username}</h3>
+                      <Badge>{member.fans} Fans</Badge>
+                    </article>
+                  )) : <p className="trainer-team-empty">No team members yet.</p>}
+                </div>
+                <div className="trainer-team-invite-action">
+                  <button className="profile-image-upload-btn" onClick={() => setIsInviteOpen(true)}>Invite to team</button>
+                </div>
+              </div>
+            </section>
+          </StaggerItem>
+        )}
+        {isInviteOpen && createPortal(
+          <div className={`profile-theme-${profileType} profile-theme-portal`}>
+            <div className="team-invite-backdrop" onClick={() => setIsInviteOpen(false)}>
+            <section className="team-invite-modal" onClick={(event) => event.stopPropagation()}>
+              <header className="team-invite-header">
+                <div>
+                  <span>Team Management</span>
+                  <h2>Invite an Uma Musume</h2>
+                </div>
+                <button className="team-invite-close" onClick={() => setIsInviteOpen(false)} aria-label="Close">×</button>
+              </header>
+              <div className="team-invite-toolbar">
+                <SearchInput value={inviteSearch} onChange={(event) => setInviteSearch(event.target.value)} placeholder="Search Trainee name..." />
+              </div>
+              <div className="team-invite-grid">
+                {filteredInvitees.length ? filteredInvitees.map((trainee) => (
+                  <article className="team-invite-card" key={trainee.user_id}>
+                    <img src={trainee.image_url} alt={trainee.username} />
+                    <h3>{trainee.username}</h3>
+                    <Badge>{trainee.fans} Fans</Badge>
+                    <button onClick={() => inviteTrainee(trainee.user_id).catch((err) => alert(err.message))}>Invite</button>
+                  </article>
+                )) : <p className="team-invite-empty">No available Trainees with uploaded profiles.</p>}
+              </div>
+            </section>
+            </div>
+          </div>,
+          document.body
+        )}
+      </StaggerContainer>
+      {cropModal}
+      </>
+    );
+  }
+
   return (
     <>
       {error ? <div className="error-box">{error}</div> : null}
@@ -119,17 +353,21 @@ export default function ProfilePage({
           {error ? <div className="error-box">{error}</div> : null}
 
           <StaggerItem>
-          <section className="profile-card">
-            <div className="title-banner">
-              <h2>Trainee Profile</h2>
-            </div>
-
+          <section className="profile-card profile-identity-card">
             <div className="profile-body">
               <div className="profile-avatar-wrap">
                 {currentAvatarUrl ? (
                   <img src={currentAvatarUrl} alt="profile" className="profile-avatar" />
                 ) : (
                   <div className="profile-avatar placeholder">{"\u{1F464}"}</div>
+                )}
+                {trainerProfile?.image_url && (
+                  <img
+                    src={toAbsoluteBotUrl(trainerProfile.image_url)}
+                    alt={`Trainer ${trainerProfile.username}`}
+                    title={`Trainer: ${trainerProfile.username}`}
+                    className="profile-trainer-avatar"
+                  />
                 )}
                 <div className="profile-avatar-actions">
                   <input
@@ -163,6 +401,7 @@ export default function ProfilePage({
               </div>
 
               <div className="profile-info">
+                <p className="profile-identity-kicker">โปรไฟล์</p>
                 <div className="profile-name-row">
                   <div className="profile-name">{player?.username || username}</div>
 
@@ -288,6 +527,15 @@ export default function ProfilePage({
           </StaggerItem>
 
           <StaggerItem>
+            <SkillLoadoutPanel
+              userId={userId}
+              username={player?.username || username}
+              player={player}
+              refreshKey={skillLoadoutVersion}
+            />
+          </StaggerItem>
+
+          <StaggerItem>
           <ZonePanel
               userId={userId}
               player={player}
@@ -303,6 +551,7 @@ export default function ProfilePage({
             />
           </StaggerItem>
         </StaggerContainer>
+      {cropModal}
     </>
   );
 }

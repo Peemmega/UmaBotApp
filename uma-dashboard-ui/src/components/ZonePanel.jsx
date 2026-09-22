@@ -13,6 +13,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
     cap_floor: 3,
     self_heal_stamina: 1,
     modify_current_speed: 1,
+    race_speed: 1,
   };
 
   const getZoneEffectLines = (build = {}) => {
@@ -25,26 +26,30 @@ export default function ZonePanel({ userId, player, onSaved }) {
         (build.self_heal_stamina ?? 0) * ZONE_VALUE.self_heal_stamina,
       modify_current_speed:
         (build.modify_current_speed ?? 0) * ZONE_VALUE.modify_current_speed,
+      race_speed: (build.race_speed ?? 0) * ZONE_VALUE.race_speed,
     };
 
     const lines = [];
 
-    if (effects.flat) lines.push(`✨ เพิ่มผลรวม +${effects.flat}`);
-    if (effects.add_dkh) lines.push(`🎲 เพิ่มลูกเต๋า d/kh +${effects.add_dkh}`);
-    if (effects.cap_floor) lines.push(`🧱📈 เพิ่มแต้มขั้นต่ำและสูงสุด +${effects.cap_floor}`);
+    if (effects.flat) lines.push(`เพิ่มผลรวม +${effects.flat}`);
+    if (effects.add_dkh) lines.push(`เพิ่มจำนวนลูกเต๋า d/kh +${effects.add_dkh}`);
+    if (effects.cap_floor) lines.push(`เพิ่มแต้มขั้นต่ำและสูงสุด +${effects.cap_floor}`);
     if (effects.self_heal_stamina) {
-      lines.push(`❤️ ฟื้นฟู STA ตัวเอง +${effects.self_heal_stamina}`);
+      lines.push(`ฟื้นฟู stamina ตัวเอง +${effects.self_heal_stamina}`);
     }
     if (effects.modify_current_speed) {
-      lines.push(`👟 เพิ่มอัตราเร่ง ${effects.modify_current_speed} ระดับ`);
+      lines.push(`เพิ่มอัตราเร่ง ${effects.modify_current_speed} ระดับ`);
+    }
+    if (effects.race_speed) {
+      lines.push(`เพิ่ม Speed ในรัน +${effects.race_speed}`);
     }
 
-    return lines.length ? lines : ["Zone ทำงาน แต่ยังไม่มีค่าที่อัปไว้"];
+    return lines.length ? lines : ["ยังไม่ได้ตั้งค่าโซน"];
   };
   return (
     <section className="sheet-card">
       <div className="title-banner">
-        <h2>Zone</h2>
+        <h2>โซน</h2>
       </div>
 
       <div className="padding-content">
@@ -62,7 +67,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
           {zone.image_url ? (
             <img src={zone.image_url} className="zone-main-image" />
           ) : (
-            <div className="zone-image-placeholder">Zone Image</div>
+            <div className="zone-image-placeholder">ภาพโซน</div>
           )}
         </div>
 

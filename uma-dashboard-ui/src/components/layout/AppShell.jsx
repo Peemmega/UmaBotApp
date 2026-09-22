@@ -6,9 +6,10 @@ export default function AppShell({
   rightRail,
   children,
   modals,
+  profileType = "trainee",
 }) {
   return (
-    <div className="dashboard-page app-shell">
+    <div className={`dashboard-page app-shell profile-theme-${profileType}`}>
       {topBar}
 
       <div className="dashboard-layout app-shell-layout">

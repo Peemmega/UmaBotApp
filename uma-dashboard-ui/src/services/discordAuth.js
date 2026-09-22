@@ -12,7 +12,7 @@ export async function loginWithDiscordApp() {
     `?client_id=${DISCORD_CLIENT_ID}` +
     `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
     `&response_type=code` +
-    `&scope=identify`;
+    `&scope=identify%20guilds`;
 
   await Browser.open({ url });
 }
@@ -27,6 +27,12 @@ export function setupDiscordDeepLink() {
       const username = url.searchParams.get("username");
       const id = url.searchParams.get("id");
       const avatar = url.searchParams.get("avatar") || "";
+      const error = url.searchParams.get("error");
+
+      if (error) {
+        window.location.href = `/?login_error=${encodeURIComponent(error)}`;
+        return;
+      }
 
       window.location.href =
         `/dashboard?username=${username}` +

@@ -1,0 +1,128 @@
+.tools-page {
+  width: min(100%, 1120px);
+  min-width: 0;
+  max-width: 100%;
+  color: var(--uma-ink);
+}
+
+.tools-page-header-card {
+  position: relative;
+  margin: 4px 0 18px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 92% 12%, color-mix(in srgb, var(--uma-primary) 30%, transparent), transparent 25%),
+    radial-gradient(circle at 0 100%, color-mix(in srgb, var(--uma-primary) 24%, transparent), transparent 32%),
+    linear-gradient(135deg, color-mix(in srgb, var(--uma-surface) 98%, transparent), color-mix(in srgb, var(--uma-bg-soft) 90%, var(--uma-surface)));
+}
+
+.tools-page-header-card::after {
+  content: "";
+  position: absolute;
+  right: -24px;
+  bottom: -50px;
+  width: 150px;
+  height: 150px;
+  border: 16px solid color-mix(in srgb, var(--uma-primary) 12%, transparent);
+  border-radius: 50%;
+}
+
+.tools-page-icon {
+  z-index: 1;
+  width: 52px;
+  height: 52px;
+  border: 3px solid rgba(255, 255, 255, 0.88);
+  border-radius: 16px;
+  color: var(--uma-primary-dark);
+  background: color-mix(in srgb, var(--uma-surface) 96%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 52px;
+  box-shadow: 0 8px 16px color-mix(in srgb, var(--uma-primary-dark) 16%, transparent);
+}
+
+.tools-page-header-card .ui-section-header { position: relative; z-index: 1; }
+.tools-title { color: var(--uma-ink); }
+.tools-page-description { position: relative; z-index: 1; margin: 0; padding: 0 var(--uma-space-5) var(--uma-space-5); color: var(--uma-muted); font-size: 13px; font-weight: 700; text-align: left; }
+
+.wit-calculator {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: clamp(14px, 2vw, 24px);
+  border: 1px solid color-mix(in srgb, var(--uma-primary) 34%, transparent);
+  border-radius: var(--uma-radius-md);
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--uma-primary) 17%, transparent), transparent 30%),
+    linear-gradient(180deg, color-mix(in srgb, var(--uma-surface) 98%, transparent), color-mix(in srgb, var(--uma-bg-soft) 94%, var(--uma-surface)));
+  box-shadow: 0 12px 26px color-mix(in srgb, var(--uma-primary-dark) 11%, transparent);
+}
+
+.wit-controls { display: flex; align-items: stretch; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+
+.wit-control, .wit-rate-card {
+  position: relative;
+  min-width: 170px;
+  flex: 1;
+  padding: 11px 13px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--uma-primary) 27%, transparent);
+  border-radius: var(--uma-radius-sm);
+  background: color-mix(in srgb, var(--uma-surface) 78%, transparent);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.wit-rate-card {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--uma-bg-soft) 94%, var(--uma-surface)), color-mix(in srgb, var(--uma-surface) 86%, transparent));
+}
+
+.wit-rate-card::after {
+  content: "";
+  position: absolute;
+  width: 62px;
+  height: 62px;
+  right: -19px;
+  bottom: -30px;
+  border: 9px solid color-mix(in srgb, var(--uma-primary) 14%, transparent);
+  border-radius: 50%;
+}
+
+.wit-control span, .wit-rate-card span { position: relative; z-index: 1; display: flex; align-items: center; gap: 6px; color: var(--uma-muted); font-size: 12px; font-weight: 1000; }
+.wit-control select { position: relative; z-index: 1; width: 100%; margin-top: 7px; padding: 4px 0; border: 0; outline: none; background: transparent; color: var(--uma-ink); font: inherit; font-size: 18px; font-weight: 1000; cursor: pointer; }
+.wit-rate-card strong { position: relative; z-index: 1; display: block; margin-top: 4px; color: var(--uma-primary-dark); font-size: 23px; line-height: 1; }
+
+.wit-table-scroll { min-width: 0; max-width: 100%; overflow-x: auto; border: 1px solid color-mix(in srgb, var(--uma-primary) 34%, transparent); border-radius: var(--uma-radius-sm); box-shadow: 0 6px 15px color-mix(in srgb, var(--uma-primary-dark) 6%, transparent); }
+.wit-table-scroll-hint { display: none; }
+.wit-table { width: 100%; min-width: 720px; border-collapse: separate; border-spacing: 0; text-align: center; font-variant-numeric: tabular-nums; }
+.wit-table th, .wit-table td { padding: 10px 12px; border-right: 1px solid color-mix(in srgb, var(--uma-primary) 18%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--uma-primary) 18%, transparent); font-weight: 900; }
+.wit-table tr > *:last-child { border-right: 0; }.wit-table tbody tr:last-child > * { border-bottom: 0; }
+.wit-table thead th { color: var(--uma-primary-dark); background: color-mix(in srgb, var(--uma-bg-soft) 82%, var(--uma-surface)); }
+.wit-table .wit-turn-heading { padding: 9px; color: #fff; background: var(--uma-gradient-primary); letter-spacing: .04em; }
+.wit-table .wit-label-cell, .wit-table tbody th { background: linear-gradient(90deg, color-mix(in srgb, var(--uma-primary) 16%, var(--uma-surface)), color-mix(in srgb, var(--uma-bg-soft) 88%, var(--uma-surface))); color: var(--uma-primary-dark); }
+.wit-table tbody td { color: var(--uma-ink); background: color-mix(in srgb, var(--uma-surface) 82%, transparent); }
+.wit-table tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--uma-bg-soft) 56%, var(--uma-surface)); }
+.wit-table tbody tr:hover td, .wit-table tbody tr:hover th { background: color-mix(in srgb, var(--uma-primary) 12%, var(--uma-surface)); color: var(--uma-primary-dark); }
+
+@media (max-width: 600px) {
+  .tools-page-header-card { margin-top: 0; }
+  .tools-page-header-card .ui-section-header { padding: 14px 14px 8px; align-items: flex-start; }
+  .tools-page-description { padding: 0 14px 14px; font-size: 12px; line-height: 1.5; }
+  .tools-page-icon { width: 44px; height: 44px; border-radius: 14px; flex: 0 0 44px; }
+  .wit-calculator { padding: 12px; border-radius: 10px; }
+  .wit-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-bottom: 12px; }
+  .wit-control, .wit-rate-card { min-width: 0; padding: 10px; }
+  .wit-rate-card { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; }
+  .wit-rate-card strong { margin: 0; font-size: 25px; }
+  .wit-control select { min-height: 34px; margin-top: 3px; font-size: 16px; }
+  .wit-table-scroll-hint { display: flex; align-items: center; gap: 6px; margin: 2px 2px 8px; color: var(--uma-muted); font-size: 12px; font-weight: 800; }
+  .wit-table-scroll { -webkit-overflow-scrolling: touch; overscroll-behavior-inline: contain; scrollbar-width: thin; }
+  .wit-table { min-width: 650px; }
+  .wit-table th, .wit-table td { min-width: 48px; padding: 9px 8px; font-size: 13px; }
+  .wit-table .wit-label-cell, .wit-table tbody th { position: sticky; left: 0; z-index: 1; min-width: 54px; box-shadow: 2px 0 5px rgba(31, 83, 50, 0.12); }
+  .wit-table .wit-label-cell { z-index: 3; }
+}
+
+@media (max-width: 380px) {
+  .wit-controls { grid-template-columns: 1fr; }
+  .wit-rate-card { grid-column: auto; }
+}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import "../styles/dashboard.css";
 import "../styles/mailbox.css";
@@ -7,7 +7,13 @@ import MailboxModal from "../components/MailboxModal";
 import RenameModal from "../components/RenameModal";
 import PageTransition from "../components/PageTransition";
 import { AppShell, GameNav, RightRail, TopBar } from "../components/layout";
-import { BOT_API_BASE } from "../api/playerApi";
+import { BOT_API_BASE, uploadPresetProfileImage } from "../api/playerApi";
+import {
+  PROFILE_TYPES,
+  loadActiveProfileType,
+  loadProfilePresets,
+  saveProfilePresets,
+} from "../data/profilePresets";
 
 import ProfilePage from "./dashboard/ProfilePage";
 import TutorialsPage from "./dashboard/TutorialsPage";
@@ -15,18 +21,20 @@ import SkillsPage from "./dashboard/SkillsPage";
 import CharactersPage from "./dashboard/CharactersPage";
 import QAPage from "./dashboard/QAPage";
 import RacesPage from "./dashboard/RacesPage";
-import CardGamePage from "./dashboard/CardGamePage";
-import RaceGamePage from "./dashboard/RaceGamePage";
+import ToolsPage from "./dashboard/ToolsPage";
+import RaceReplayPage from "./dashboard/RaceReplayPage";
+import NewsPage from "./dashboard/NewsPage";
 
 const VALID_PAGES = [
   "profile",
   "chars",
   "races",
-  "race",
-  "tcg",
   "skills",
+  "tools",
   "tutorials",
   "qa",
+  "race-replay",
+  "news",
 ];
 
 function getPageFromPath() {
@@ -41,6 +49,7 @@ export default function DashboardPage({
   avatarUrl,
   player,
   setPlayer,
+  accountRole,
   error,
   onLogout,
 }) {
@@ -48,23 +57,76 @@ export default function DashboardPage({
   const [isMailboxOpen, setIsMailboxOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
+  const [isPresetRenameOpen, setIsPresetRenameOpen] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState(() =>
+    typeof Notification === "undefined" ? "unsupported" : Notification.permission
+  );
+  const previousUnreadCount = useRef(null);
   const [activePage, setActivePage] = useState(getPageFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
+  const [profiles, setProfiles] = useState(() => loadProfilePresets(userId, username));
+  const [activeProfileType, setActiveProfileType] = useState(() => accountRole || loadActiveProfileType(userId));
+
+  useEffect(() => {
+    const nextProfiles = loadProfilePresets(userId, player?.username || username);
+    setProfiles(nextProfiles);
+    setActiveProfileType(accountRole || loadActiveProfileType(userId));
+  }, [accountRole, userId, username]);
+
+  useEffect(() => {
+    if (!userId) return;
+    saveProfilePresets(userId, profiles);
+    if (accountRole !== "trainer" && accountRole !== "npc") return;
+
+    const profile = profiles[accountRole];
+    const imageUrl = String(profile?.imageUrl || "");
+    let cancelled = false;
+
+    async function persistProfilePreset() {
+      // Upgrade a legacy Base64 image in localStorage on the next visit. This
+      // prevents an older browser cache from writing the large value back.
+      if (imageUrl.startsWith("data:image/")) {
+        const response = await fetch(imageUrl);
+        const imageBlob = await response.blob();
+        const migrated = await uploadPresetProfileImage(
+          userId,
+          accountRole,
+          new File([imageBlob], "profile.webp", { type: imageBlob.type || "image/webp" })
+        );
+        if (!cancelled) {
+          setProfiles((current) => ({
+            ...current,
+            [accountRole]: {
+              ...current[accountRole],
+              imageUrl: migrated.image_url,
+            },
+          }));
+        }
+        return;
+      }
+
+      await fetch(`${BOT_API_BASE}/profiles/preset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: String(userId),
+          profile_type: accountRole,
+          name: profile?.name || accountRole,
+          image_url: imageUrl,
+        }),
+      });
+    }
+
+    persistProfilePreset().catch(console.error);
+    return () => {
+      cancelled = true;
+    };
+  }, [accountRole, profiles, userId]);
+
+  const activeProfile = profiles[activeProfileType] || profiles.trainee;
 
   const changePage = (page) => {
     if (!VALID_PAGES.includes(page)) return;
-
-    if (page === "tcg") {
-      window.history.pushState({}, "", "/tcg");
-      window.dispatchEvent(new Event("uma:navigate"));
-      return;
-    }
-
-    if (page === "race") {
-      window.history.pushState({}, "", "/race");
-      window.dispatchEvent(new Event("uma:navigate"));
-      return;
-    }
 
     setActivePage(page);
     window.history.pushState({}, "", `/dashboard/${page}`);
@@ -87,25 +149,19 @@ export default function DashboardPage({
         );
 
       case "chars":
-        return <CharactersPage />;
+        return <CharactersPage userId={userId} player={player} profiles={profiles} />;
 
       case "races":
-        return <RacesPage userId={userId} />;
-
-      case "race":
-        return (
-          <RaceGamePage
-            username={player?.username || username}
-            userId={userId}
-            avatarUrl={avatarUrl}
-          />
-        );
-
-      case "tcg":
-        return <CardGamePage />;
+        return <RacesPage userId={userId} profileType={activeProfileType} />;
 
       case "qa":
         return <QAPage />;
+
+      case "tools":
+        return <ToolsPage />;
+
+      case "news":
+        return <NewsPage />;
 
       case "profile":
       default:
@@ -116,10 +172,23 @@ export default function DashboardPage({
             avatarUrl={avatarUrl}
             player={player}
             setPlayer={setPlayer}
+            profile={activeProfile}
+            profileType={activeProfileType}
+            onSaveProfile={(changes) => {
+              setProfiles((current) => ({
+                ...current,
+                [activeProfileType]: {
+                  ...current[activeProfileType],
+                  ...changes,
+                },
+              }));
+            }}
+            onRequestRename={() => setIsPresetRenameOpen(true)}
             error={error}
             isEditStatsOpen={isEditStatsOpen}
             setIsEditStatsOpen={setIsEditStatsOpen}
             setIsRenameOpen={setIsRenameOpen}
+            skillLoadoutVersion={skillLoadoutVersion}
           />
         );
     }
@@ -128,12 +197,25 @@ export default function DashboardPage({
   const loadUnreadCount = async () => {
     try {
       const res = await fetch(
-        `${BOT_API_BASE}/mailbox/${userId}`
+        `${BOT_API_BASE}/mailbox/${userId}?profile_type=${activeProfileType}`
       );
 
       const data = await res.json();
       const unread = data.filter((m) => !m.is_read).length;
+      const previous = previousUnreadCount.current;
       setUnreadCount(unread);
+      previousUnreadCount.current = unread;
+      if (previous !== null && unread > previous && Notification.permission === "granted") {
+        const notification = new Notification("UmaDnD — New mail", {
+          body: `You have ${unread} unread message${unread === 1 ? "" : "s"}.`,
+          icon: "/uma-icon.webp",
+        });
+        notification.onclick = () => {
+          window.focus();
+          setIsMailboxOpen(true);
+          notification.close();
+        };
+      }
     } catch (err) {
       console.error(err);
     }
@@ -154,20 +236,28 @@ export default function DashboardPage({
   useEffect(() => {
     if (!userId) return;
 
+    previousUnreadCount.current = null;
     loadUnreadCount();
 
     const interval = setInterval(() => {
       loadUnreadCount();
-    }, 5000);
+    }, 60000);
 
     return () => clearInterval(interval);
-  }, [userId]);
+  }, [activeProfileType, userId]);
+
+  const enableNotifications = async () => {
+    if (typeof Notification === "undefined") return;
+    const permission = await Notification.requestPermission();
+    setNotificationPermission(permission);
+  };
 
   const modals = (
     <>
       {isMailboxOpen && (
         <MailboxModal
           userId={userId}
+          profileType={activeProfileType}
           onClose={() => {
             setIsMailboxOpen(false);
             loadUnreadCount();
@@ -190,26 +280,49 @@ export default function DashboardPage({
           }}
         />
       )}
+
+      {isPresetRenameOpen && (
+        <RenameModal
+          currentName={activeProfile?.name || ""}
+          saveLocally
+          onClose={() => setIsPresetRenameOpen(false)}
+          onSave={(name) => {
+            setProfiles((current) => ({
+              ...current,
+              [activeProfileType]: { ...current[activeProfileType], name },
+            }));
+            setIsPresetRenameOpen(false);
+          }}
+        />
+      )}
     </>
   );
 
+  if (activePage === "race-replay") {
+    const raceId = new URLSearchParams(window.location.search).get("race");
+    return <RaceReplayPage raceId={raceId} onBack={() => changePage("races")} />;
+  }
+
   return (
     <AppShell
+      profileType={activeProfileType}
       topBar={
         <TopBar
           unreadCount={unreadCount}
           onMailClick={() => setIsMailboxOpen(true)}
           onLogout={onLogout}
+          profileDesk={PROFILE_TYPES[activeProfileType]?.desk}
+          notificationPermission={notificationPermission}
+          onEnableNotifications={enableNotifications}
         />
       }
-      nav={<GameNav activePage={activePage} onChangePage={changePage} />}
+      nav={<GameNav activePage={activePage} onChangePage={changePage} profileType={activeProfileType} />}
       rightRail={
-        <RightRail
-          userId={userId}
-          username={player?.username || username}
-          player={player}
-          skillLoadoutVersion={skillLoadoutVersion}
-        />
+        activeProfileType === "trainee" ? (
+          <RightRail
+            onNavigate={changePage}
+          />
+        ) : null
       }
       modals={modals}
     >

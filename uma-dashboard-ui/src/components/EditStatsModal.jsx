@@ -14,6 +14,7 @@ const STAT_KEYS = [
   ["gut", "Gut"],
   ["wit", "Wit"],
 ];
+const MAX_STAT = 8;
 
 export default function EditStatsModal({ userId, player, onClose, onSaved }) {
   const [draftStats, setDraftStats] = useState({
@@ -51,7 +52,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
   const draftPoints = totalPool - usedPoints;
 
   const increaseStat = (key) => {
-    if (draftPoints <= 0) return;
+    if (draftPoints <= 0 || (draftStats[key] ?? 0) >= MAX_STAT) return;
 
     setDraftStats((prev) => ({
       ...prev,
@@ -153,7 +154,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
                         playSound("click"); 
                         increaseStat(key)
                       }}
-                    disabled={draftPoints <= 0 || saving}
+                    disabled={draftPoints <= 0 || value >= MAX_STAT || saving}
                   >
                     <img src={plusIcon} alt="plus" />
                   </button>

@@ -6,7 +6,7 @@ export default function ZoneEffectsGrid({ build }) {
   if (!entries.length) {
     return (
       <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-5 text-white/50">
-        ยังไม่มีการอัปเกรด Zone Build
+        ยังไม่มีการอัปเกรดโซน
       </div>
     );
   }

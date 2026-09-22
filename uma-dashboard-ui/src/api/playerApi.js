@@ -18,11 +18,35 @@ export function getPlayer(userId, username = "Unknown") {
   return request(`/player/${encodeURIComponent(userId)}?username=${encodeURIComponent(username)}`);
 }
 
+export function getAccountRole(userId) {
+  return request(`/account/${encodeURIComponent(userId)}/role`);
+}
+
+export function selectAccountRole({ userId, username, role }) {
+  return request("/account/role", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: String(userId), username, role }),
+  });
+}
+
 export async function uploadProfileImage(userId, file) {
   const formData = new FormData();
   formData.append("file", file);
 
   return request(`/player/${encodeURIComponent(userId)}/profile-image`, {
+    method: "POST",
+    body: formData,
+  });
+}
+
+export async function uploadPresetProfileImage(userId, profileType, file) {
+  const formData = new FormData();
+  formData.append("user_id", String(userId));
+  formData.append("profile_type", profileType);
+  formData.append("file", file);
+
+  return request("/profiles/preset-image", {
     method: "POST",
     body: formData,
   });
