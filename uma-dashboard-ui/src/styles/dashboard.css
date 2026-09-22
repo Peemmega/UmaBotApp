@@ -1879,6 +1879,13 @@ html {
   backdrop-filter: blur(8px);
 }
 
+/* Team profile itself is layered at 5000.  Keep its nested skill dialog
+   above that profile even though the shared skill backdrop rule is declared
+   later in this stylesheet. */
+.skill-loadout-detail-backdrop.team-member-skill-detail-backdrop {
+  z-index: 5100;
+}
+
 .skill-loadout-detail-modal {
   position: relative;
   width: min(100%, 440px);
