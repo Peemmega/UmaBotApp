@@ -870,7 +870,8 @@ body {
 .team-member-aptitude-group .aptitude-item { min-width: 72px; padding: 4px 6px; gap: 15px; }
 
 .team-member-skill-list { display: grid; gap: 8px; }
-.team-member-skill { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 10px; min-height: 52px; padding: 8px 10px; border: 1px solid color-mix(in srgb, var(--team-member-primary) 20%, white); border-radius: 11px; background: rgba(255,255,255,.82); }
+.team-member-skill { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 8px 10px; border: 1px solid color-mix(in srgb, var(--team-member-primary) 20%, white); border-radius: 11px; background: rgba(255,255,255,.82); cursor: pointer; font: inherit; text-align: left; transition: background .18s ease, transform .18s ease; }
+.team-member-skill:hover, .team-member-skill:focus-visible { background: var(--team-member-soft); outline: none; transform: translateX(2px); }
 .team-member-skill .skill-icon-box { width: 38px; height: 38px; }
 .team-member-skill .skill-icon-img { width: 34px; height: 34px; object-fit: contain; }
 .team-member-skill strong, .team-member-skill span { display: block; }
@@ -893,6 +894,7 @@ body {
 .team-member-race-row span strong { color: var(--team-member-primary); font-size: 14px; }
 .team-member-race-row span em { margin-top: 3px; color: var(--uma-muted); font-size: 11px; font-style: normal; font-weight: 700; }
 .team-member-race-row > b { color: var(--team-member-primary); font-size: 17px; }
+.team-member-skill-detail-backdrop { z-index: 5100; }
 
 .trainer-team-empty {
   grid-column: 1 / -1;
@@ -990,7 +992,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .trainer-team-member,
-  .team-member-race-row { transition: none; }
+  .team-member-race-row,
+  .team-member-skill { transition: none; }
 }
 
 .trainer-profile-fans {

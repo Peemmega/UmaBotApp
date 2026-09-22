@@ -12,7 +12,7 @@ export async function loginWithDiscordApp() {
     `?client_id=${DISCORD_CLIENT_ID}` +
     `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
     `&response_type=code` +
-    `&scope=identify%20guilds`;
+    `&scope=identify%20guilds%20guilds.members.read`;
 
   await Browser.open({ url });
 }
@@ -27,6 +27,7 @@ export function setupDiscordDeepLink() {
       const username = url.searchParams.get("username");
       const id = url.searchParams.get("id");
       const avatar = url.searchParams.get("avatar") || "";
+      const discordRole = url.searchParams.get("discord_role") || "";
       const error = url.searchParams.get("error");
 
       if (error) {
@@ -37,7 +38,8 @@ export function setupDiscordDeepLink() {
       window.location.href =
         `/dashboard?username=${username}` +
         `&id=${id}` +
-        `&avatar=${avatar}`;
+        `&avatar=${avatar}` +
+        `&discord_role=${discordRole}`;
     }
   });
 }

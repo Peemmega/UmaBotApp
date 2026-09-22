@@ -1,11 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { mainStats, aptitudeRows } from "../data/dashboardConfig";
 import { toAbsoluteBotUrl } from "../utils/avatar";
 import { getSkillIcon } from "../utils/getSkillIcon";
+import { describeRaceEffect } from "../utils/raceEffects";
+import staminaIcon from "../assets/icons/Stamina.webp";
 import StatCell from "./StatCell";
 import AptitudeItem from "./AptitudeItem";
 
 const skillSlots = ["slot_1", "slot_2", "slot_3", "slot_4"];
+const STAMINA_EMOJI_PATTERN = /(<a?:Stamina:\d+>)/g;
+
+function renderTextWithIcons(text) {
+  if (!text) return null;
+  return String(text).split(STAMINA_EMOJI_PATTERN).map((part, index) => (
+    /^<a?:Stamina:\d+>$/.test(part)
+      ? <img key={index} src={staminaIcon} alt="Stamina" className="skill-loadout-inline-icon" />
+      : part
+  ));
+}
 
 function formatFans(value) {
   return new Intl.NumberFormat().format(Number(value) || 0);
@@ -48,6 +61,7 @@ function zoneEffects(build = {}) {
 }
 
 export default function TeamMemberProfileModal({ member, detail, loading, error, onClose, onOpenRace }) {
+  const [selectedSkill, setSelectedSkill] = useState(null);
   const profile = detail?.profile || {};
   const races = Array.isArray(detail?.history) ? detail.history : [];
   const equippedSkills = skillSlots
@@ -58,10 +72,26 @@ export default function TeamMemberProfileModal({ member, detail, loading, error,
   const zone = profile.zone || {};
 
   useEffect(() => {
-    const closeOnEscape = (event) => event.key === "Escape" && onClose();
+    const closeOnEscape = (event) => {
+      if (event.key !== "Escape") return;
+      if (selectedSkill) setSelectedSkill(null);
+      else onClose();
+    };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [onClose]);
+  }, [onClose, selectedSkill]);
+
+  useEffect(() => {
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+    };
+  }, []);
 
   return (
     <div className="team-member-profile-backdrop profile-theme-trainee profile-theme-portal" role="presentation" onMouseDown={onClose}>
@@ -99,11 +129,11 @@ export default function TeamMemberProfileModal({ member, detail, loading, error,
             <section className="team-member-profile-section">
               <h3>Skill</h3>
               {equippedSkills.length ? <div className="team-member-skill-list">
-                {equippedSkills.map((skill) => <article className="team-member-skill" key={skill.id}>
+                {equippedSkills.map((skill) => <button type="button" className="team-member-skill" key={skill.id} onClick={() => setSelectedSkill(skill)}>
                   <div className="skill-icon-box">{getSkillIcon(skill.icon)}</div>
                   <div><strong>{skill.name || skill.id}</strong><span>{skill.id}</span></div>
                   <small>CD {skill.cooldown ?? 0}</small>
-                </article>)}
+                </button>)}
               </div> : <p className="team-member-profile-empty">ยังไม่ได้ติดตั้งสกิล</p>}
             </section>
 
@@ -128,6 +158,28 @@ export default function TeamMemberProfileModal({ member, detail, loading, error,
           </div>
         )}
       </section>
+      {selectedSkill && createPortal(
+        <div className="skill-loadout-detail-backdrop team-member-skill-detail-backdrop" onMouseDown={(event) => { event.stopPropagation(); setSelectedSkill(null); }}>
+          <section className="skill-loadout-detail-modal" role="dialog" aria-modal="true" aria-labelledby="team-member-skill-detail-title" onMouseDown={(event) => event.stopPropagation()}>
+            <button type="button" className="skill-loadout-detail-close" aria-label="Close skill details" onClick={() => setSelectedSkill(null)}>×</button>
+            <div className="skill-loadout-detail-heading">
+              <div className="skill-icon-box">{getSkillIcon(selectedSkill.icon)}</div>
+              <div><span>{selectedSkill.id}</span><h3 id="team-member-skill-detail-title">{selectedSkill.name}</h3></div>
+            </div>
+            <div className="skill-loadout-detail-meta">
+              <span>CD {selectedSkill.cooldown ?? 0}</span>
+              <span>Cost {selectedSkill.cost ?? 0}</span>
+              {selectedSkill.target ? <span>{renderTextWithIcons(selectedSkill.target)}</span> : null}
+            </div>
+            {selectedSkill.trigger ? <p><strong>เงื่อนไข:</strong> {renderTextWithIcons(selectedSkill.trigger)}</p> : null}
+            {Array.isArray(selectedSkill.effects) && selectedSkill.effects.length ? <div className="skill-loadout-detail-effects">
+              <strong>ผลของสกิล</strong>
+              <ul>{selectedSkill.effects.map((effect, index) => <li key={`${selectedSkill.id}-${index}`}>{renderTextWithIcons(describeRaceEffect(effect))}</li>)}</ul>
+            </div> : null}
+          </section>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

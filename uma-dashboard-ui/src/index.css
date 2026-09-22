@@ -519,6 +519,9 @@ code {
 .role-selection-note { margin: 22px 0 0; color: #707987; font-size: 0.84rem; text-align: center; }
 .role-selection-status { margin-top: 18px; color: #397852 !important; text-align: center; }
 .role-selection-error { margin-top: 18px; color: #c93e55 !important; text-align: center; }
+.role-unavailable { max-width: 500px; text-align: center; }
+.role-unavailable .role-selection-crest { margin-inline: auto; }
+.role-unavailable-login { margin-top: 22px; padding: 11px 18px; border: 0; border-radius: 11px; background: #475467; color: #fff; font: inherit; font-weight: 900; cursor: pointer; }
 
 .role-confirm-backdrop {
   position: fixed;

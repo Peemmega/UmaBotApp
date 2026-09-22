@@ -45,6 +45,17 @@ REDIRECT_URI = os.getenv("REDIRECT_URI")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 BOT_API_BASE = os.getenv("BOT_API_BASE", "").rstrip("/")
 DISCORD_GUILD_ID = os.getenv("DISCORD_GUILD_ID")
+# Role IDs are intentionally stable across the production and test Discord
+# servers. A member may only enter the dashboard with one of these roles.
+DISCORD_ACCOUNT_ROLE_MAP = {
+    "1551918141989322812": "trainer",
+    "1551918275288502323": "trainee",
+    "1551918844862406716": "npc",
+    "1551919765097021460": "trainer",
+    "1551919842787860511": "trainee",
+    "1551919922341224507": "npc",
+}
+DISCORD_ACCOUNT_ROLE_PRIORITY = ("trainer", "npc", "trainee")
 # Use a separate, high-entropy value in Railway. Falling back to the OAuth
 # secret keeps existing deployments working while they add SESSION_SECRET.
 SESSION_SECRET = os.getenv("SESSION_SECRET") or CLIENT_SECRET
@@ -220,6 +231,26 @@ async def is_discord_guild_member(access_token: str) -> bool:
     return any(str(guild.get("id")) == DISCORD_GUILD_ID for guild in guilds_res.json())
 
 
+async def get_discord_account_role(access_token: str) -> str | None:
+    """Resolve the app role from the current OAuth user's member roles."""
+    if not DISCORD_GUILD_ID:
+        raise RuntimeError("DISCORD_GUILD_ID is not configured")
+
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        member_res = await client.get(
+            f"https://discord.com/api/users/@me/guilds/{DISCORD_GUILD_ID}/member",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        member_res.raise_for_status()
+
+    assigned_roles = {
+        DISCORD_ACCOUNT_ROLE_MAP[role_id]
+        for role_id in member_res.json().get("roles", [])
+        if role_id in DISCORD_ACCOUNT_ROLE_MAP
+    }
+    return next((role for role in DISCORD_ACCOUNT_ROLE_PRIORITY if role in assigned_roles), None)
+
+
 @app.get("/login")
 def login(request: Request):
     if not CLIENT_ID or not REDIRECT_URI:
@@ -231,7 +262,7 @@ def login(request: Request):
         "client_id": CLIENT_ID,
         "redirect_uri": REDIRECT_URI,
         "response_type": "code",
-        "scope": "identify guilds",
+        "scope": "identify guilds guilds.members.read",
         "state": state,
     })
     return RedirectResponse(auth_url)
@@ -277,6 +308,7 @@ async def callback(
     try:
         if not await is_discord_guild_member(access_token):
             return login_error_redirect("not_a_server_member")
+        discord_role = await get_discord_account_role(access_token)
     except httpx.HTTPError:
         return login_error_redirect("guild_check_failed")
     except RuntimeError:
@@ -288,6 +320,8 @@ async def callback(
         "username": user_data["username"],
         "id": user_data["id"],
         "avatar": user_data.get("avatar") or "",
+        "discord_role": discord_role,
+        "discord_role_checked": True,
     }
     return RedirectResponse(f"{FRONTEND_URL.rstrip('/')}/dashboard/profile")
 
@@ -297,7 +331,13 @@ def get_authenticated_discord_user(request: Request):
     user = request.session.get("discord_user")
     if not user:
         return JSONResponse({"detail": "Authentication required"}, status_code=401)
-    return user
+    return {
+        "username": user["username"],
+        "id": user["id"],
+        "avatar": user.get("avatar") or "",
+        "discord_role": user.get("discord_role"),
+        "discord_role_checked": bool(user.get("discord_role_checked")),
+    }
 
 
 @app.post("/api/auth/logout")
@@ -410,12 +450,14 @@ async def discord_mobile_callback(code: str):
         )
         if not await is_discord_guild_member(access_token):
             return RedirectResponse("umadnd://callback?error=not_a_server_member")
+        discord_role = await get_discord_account_role(access_token)
     except (httpx.HTTPError, RuntimeError):
         return RedirectResponse("umadnd://callback?error=discord_login_failed")
     params = urlencode({
         "username": user["username"],
         "id": user["id"],
         "avatar": user.get("avatar") or "",
+        "discord_role": discord_role or "",
         "login_nonce": str(time.time_ns()),
     })
 

@@ -8,7 +8,7 @@ import { getAccountRole, getPlayer, selectAccountRole } from "./api/playerApi";
 import { APP_BASE_URL } from "./api/appConfig";
 import { getDiscordAvatarUrl, resolveSessionAvatar } from "./utils/avatar";
 import useModalScrollLock from "./hooks/useModalScrollLock";
-import { ArrowRight, GraduationCap, Sparkles, Trophy, UsersRound } from "lucide-react";
+import { ArrowRight, GraduationCap, ShieldAlert, Sparkles, Trophy, UsersRound } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 
 const APP_BASE = APP_BASE_URL;
@@ -170,6 +170,20 @@ function RoleSelection({ busy, error, onSelect }) {
   );
 }
 
+function RoleUnavailable({ onLogout }) {
+  return (
+    <main className="role-selection-page">
+      <section className="role-selection-card role-unavailable" aria-labelledby="role-unavailable-title">
+        <span className="role-selection-crest"><ShieldAlert size={22} /></span>
+        <h1 id="role-unavailable-title">ยังไม่มียศ</h1>
+        <p className="role-selection-intro">บัญชี Discord นี้ยังไม่มียศ Trainer, Umamusume หรือ NPC ในเซิร์ฟเวอร์</p>
+        <p className="role-selection-note">หลังได้รับยศแล้ว ให้เข้าสู่ระบบ Discord ใหม่เพื่ออัปเดตบทบาทในเว็บ</p>
+        <button type="button" className="role-unavailable-login" onClick={onLogout}>ออกจากระบบ</button>
+      </section>
+    </main>
+  );
+}
+
 export default function App() {
   useModalScrollLock();
 
@@ -180,6 +194,8 @@ export default function App() {
   const [username, setUsername] = useState("");
   const [userId, setUserId] = useState("");
   const [avatarHash, setAvatarHash] = useState("");
+  const [discordRole, setDiscordRole] = useState(undefined);
+  const [isDiscordRoleChecked, setIsDiscordRoleChecked] = useState(false);
 
   const [player, setPlayer] = useState(null);
   const [accountRole, setAccountRole] = useState(null);
@@ -198,11 +214,15 @@ export default function App() {
     const queryUsername = query.get("username");
     const queryUserId = query.get("id");
     const queryAvatarHash = query.get("avatar");
+    const hasQueryDiscordRole = query.has("discord_role");
+    const queryDiscordRole = query.get("discord_role");
 
     if (Capacitor.isNativePlatform() && queryUsername && queryUserId) {
       setUsername(queryUsername);
       setUserId(queryUserId);
       setAvatarHash(queryAvatarHash || "");
+      setDiscordRole(queryDiscordRole || null);
+      setIsDiscordRoleChecked(hasQueryDiscordRole);
 
       window.history.replaceState({}, document.title, "/dashboard/profile");
       return;
@@ -221,12 +241,16 @@ export default function App() {
         setUsername(user.username);
         setUserId(user.id);
         setAvatarHash(user.avatar || "");
+        setDiscordRole(user.discord_role || null);
+        setIsDiscordRoleChecked(Boolean(user.discord_role_checked));
       })
       .catch(() => {
         if (!cancelled) {
           setUsername("");
           setUserId("");
           setAvatarHash("");
+          setDiscordRole(undefined);
+          setIsDiscordRoleChecked(false);
         }
       })
       .finally(() => {
@@ -244,6 +268,29 @@ export default function App() {
     let cancelled = false;
     setIsRoleLoading(true);
     setRoleError("");
+    if (isDiscordRoleChecked && !discordRole) {
+      setAccountRole(null);
+      setIsRoleLoading(false);
+      return undefined;
+    }
+
+    if (isDiscordRoleChecked) {
+      selectAccountRole({ userId, username, role: discordRole })
+        .then((result) => {
+          if (!cancelled) setAccountRole(result.role);
+        })
+        .catch((err) => {
+          if (!cancelled) setRoleError(String(err.message || err));
+        })
+        .finally(() => {
+          if (!cancelled) setIsRoleLoading(false);
+        });
+
+      return () => {
+        cancelled = true;
+      };
+    }
+
     getAccountRole(userId)
       .then((data) => {
         if (!cancelled) setAccountRole(data.role || null);
@@ -258,7 +305,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [userId, username]);
+  }, [discordRole, isDiscordRoleChecked, userId, username]);
 
   useEffect(() => {
     if (!username || !userId || accountRole !== "trainee") return;
@@ -348,6 +395,8 @@ export default function App() {
     setUsername("");
     setUserId("");
     setAvatarHash("");
+    setDiscordRole(undefined);
+    setIsDiscordRoleChecked(false);
     setPlayer(null);
     setAccountRole(null);
 
@@ -382,6 +431,8 @@ export default function App() {
     <LoginPage key="login" appBase={APP_BASE} loginError={loginError} />
   ) : isRoleLoading ? (
     <LoadingScreen key="role-loading" onFinished={() => {}} />
+  ) : isDiscordRoleChecked && !discordRole ? (
+    <RoleUnavailable onLogout={handleLogout} />
   ) : !accountRole ? (
     <RoleSelection busy={isRoleSaving} error={roleError} onSelect={handleRoleSelection} />
   ) : (
