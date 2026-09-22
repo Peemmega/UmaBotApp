@@ -1,5 +1,4 @@
 import { createPortal } from "react-dom";
-import { useEffect } from "react";
 import { CalendarDays, Flag, MapPin, Trophy, Users, X } from "lucide-react";
 import { getNewsDescription, getNewsImage, getNewsKind } from "../utils/newsItems";
 import "../styles/newsPage.css";
@@ -29,18 +28,6 @@ function formatDirection(value) {
 }
 
 export default function NewsDetailsModal({ item, onClose }) {
-  useEffect(() => {
-    if (!item || typeof document === "undefined") return undefined;
-    const previousBodyOverflow = document.body.style.overflow;
-    const previousHtmlOverflow = document.documentElement.style.overflow;
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previousBodyOverflow;
-      document.documentElement.style.overflow = previousHtmlOverflow;
-    };
-  }, [item]);
-
   if (!item) return null;
   const isRace = getNewsKind(item) === "race";
   const image = getNewsImage(item);
