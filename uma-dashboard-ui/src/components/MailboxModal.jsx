@@ -158,13 +158,15 @@ export default function MailboxModal({ userId, profileType = "trainee", onClose,
               return (
                 <div
                   key={mail.id}
-                  className={`mail-item ${mail.is_read ? "read" : "unread"}`}
+                  className={`mail-item ${mail.is_read ? "read is-history" : "unread"}`}
+                  aria-disabled={mail.is_read}
                   onClick={() => {
+                    if (mail.is_read) return;
                     if (mail.action_type?.startsWith("race_registration_")) {
                       setPendingRegistration(mail);
                     } else if (mail.invitation_id && profileType === "trainee") {
                       setPendingInvitation(mail);
-                    } else if (!mail.is_read) markRead(mail.id);
+                    } else markRead(mail.id);
                   }}
                 >
                   <img src={icon} alt="reward" className="mail-item-icon" />
