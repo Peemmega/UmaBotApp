@@ -154,9 +154,7 @@
   justify-content: space-between;
   gap: var(--uma-space-5);
   border-bottom: 1px solid var(--uma-border);
-  background:
-    linear-gradient(90deg, var(--uma-surface-glass-strong), var(--uma-surface-tint)),
-    var(--uma-surface-glass-strong);
+  background: white;
   backdrop-filter: blur(18px);
   box-shadow: 0 12px 30px var(--uma-shadow-tint);
 }
@@ -354,9 +352,7 @@
   padding: 10px;
   border: 1px solid var(--uma-surface-glass-strong);
   border-radius: var(--uma-radius-md);
-  background:
-    linear-gradient(180deg, var(--uma-surface-glass-strong), var(--uma-surface-tint)),
-    var(--uma-surface-glass);
+  background:white;
   box-shadow: 0 14px 30px var(--uma-shadow-tint);
   backdrop-filter: blur(14px);
   display: flex;
