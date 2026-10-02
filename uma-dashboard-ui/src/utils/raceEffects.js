@@ -31,12 +31,12 @@ export function describeRaceEffect(effect) {
 
   if (descriptor.type === "modify_enemy_gold_lane_range") {
     const action = Number(descriptor.value) < 0 ? "ลด" : "เพิ่ม";
-    return `${action}ช่วง Gold Lane ของคู่แข่ง ${amount} ${duration}`.trim();
+    return `${action}ช่วงเลน In Pack ของคู่แข่ง ${amount} ${duration}`.trim();
   }
 
   if (descriptor.type === "modify_gold_lane_range") {
     const action = Number(descriptor.value) < 0 ? "ลด" : "เพิ่ม";
-    return `${action}ช่วง Gold Lane ของตัวเอง ${amount} ${duration}`.trim();
+    return `${action}ช่วงเลน In Pack ของตัวเอง ${amount} ${duration}`.trim();
   }
 
   return `${descriptor.type.replace(/_/g, " ")}${amount ? ` ${Number(descriptor.value) > 0 ? "+" : ""}${descriptor.value}` : ""}${duration ? ` ${duration}` : ""}`;

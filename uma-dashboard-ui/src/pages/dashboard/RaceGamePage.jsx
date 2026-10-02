@@ -60,6 +60,7 @@ import "../../styles/raceGamePage.css";
 
 const STYLE_OPTIONS = ["Front", "Pace", "Late", "End"];
 const DICE_COLOR_OPTIONS = ["white", "gold"];
+const PACK_STATUS_LABELS = { white: "Off Pack", gold: "In Pack" };
 const LANE_OPTIONS = [1, 2, 3, 4, 5, 6];
 const LANE_HELP_TEXT = "เลือกตำแหน่งเลน 1–6 ล่วงหน้า การเปลี่ยนจะมีผลตอนเริ่มเทิร์นถัดไป และแผนเลนที่ตั้งไว้จะแสดงเป็นสถานะ Pending จนกว่าจะมีผล";
 const RACE_STYLE_COOKIE = "uma_race_last_style";
@@ -179,7 +180,7 @@ const EFFECT_LABELS = {
   floor: "Floor",
   cap: "Cap",
   selected: "Selected",
-  gold_range: "Gold range",
+  gold_range: "In Pack range",
   modify_current_speed: "Max speed",
   current_max_speed: "Max speed",
   max_speed: "Max speed",
@@ -1390,7 +1391,7 @@ export default function RaceGamePage({
                         className={diceTableColor === color ? "active" : ""}
                         onClick={() => setDiceTableColor(color)}
                       >
-                        {color}
+                        {PACK_STATUS_LABELS[color] || color}
                       </button>
                     ))}
                   </div>
@@ -2216,7 +2217,11 @@ function RaceLogItem({ log }) {
           </div>
           <div className="race-log-summary-dice">
             {formatRollDice(summary.dice || summary.base_total || "-", summary.base_total)}
-            {summary.distance_color ? <em>{summary.distance_color}</em> : null}
+            {summary.distance_color ? (
+              <em>
+                {PACK_STATUS_LABELS[String(summary.distance_color).toLowerCase()] || summary.distance_color}
+              </em>
+            ) : null}
           </div>
           <div className="race-log-bonus-list">
             {bonusRows.length > 0
