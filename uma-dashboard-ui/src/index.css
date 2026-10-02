@@ -446,7 +446,7 @@ code {
   text-transform: uppercase;
 }
 
-.role-selection-card h1 { margin: 3px 0 0; color: #27313e; font-size: clamp(1.7rem, 3.4vw, 2.35rem); }
+.role-selection-card h1 { margin: 15px 0 0; color: #27313e; font-size: 24px; }
 .role-selection-intro { margin: 17px 0 0; color: #657180; font-size: 1rem; }
 
 .role-selection-grid {
