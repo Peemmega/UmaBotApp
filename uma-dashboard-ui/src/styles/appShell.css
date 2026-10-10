@@ -6,9 +6,7 @@
   color: var(--uma-on-primary);
   overflow-x: hidden;
   padding:
-    calc(142px + var(--uma-space-5))
-    clamp(10px, 1.2vw, 18px)
-    calc(var(--uma-space-8) + var(--uma-space-4));
+  calc(var(--ui-topbar-height,146px) + 28px) clamp(16px, 16vw, 180px) 48px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
