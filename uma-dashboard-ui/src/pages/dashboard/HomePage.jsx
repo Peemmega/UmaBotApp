@@ -1,22 +1,49 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDownRight, ArrowLeft, ArrowRight, CalendarDays, ChevronRight, Flag, Sparkles, Trophy } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowDownRight, CalendarDays, ChevronRight, Flag, Sparkles, Trophy } from "lucide-react";
 import { BOT_API_BASE } from "../../api/playerApi";
 import NewsListingCard from "../../components/NewsListingCard";
 import NewsDetailsModal from "../../components/NewsDetailsModal";
 import { getNewsKind } from "../../utils/newsItems";
 import "../../styles/homePage.css";
 
-const FILTERS = [
-  { key: "all", label: "ทั้งหมด" },
-  { key: "event", label: "อีเวนต์" },
-  { key: "race", label: "การแข่งขัน" },
-];
+function bangkokDateKey(date) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const part = (type) => parts.find((item) => item.type === type)?.value;
+  return `${part("year")}-${part("month")}-${part("day")}`;
+}
+
+function parseBangkokDate(value, time = "00:00") {
+  if (!value) return null;
+  let dateValue = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) dateValue = `${dateValue}T${time || "00:00"}`;
+  if (!/(Z|[+-]\d{2}:?\d{2})$/i.test(dateValue)) dateValue += "+07:00";
+  const date = new Date(dateValue);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function getEventStart(item) {
+  return parseBangkokDate(
+    item.start_at || item.starts_at || item.datetime || item.date,
+    item.time || "00:00"
+  );
+}
+
+function getEventEnd(item, start) {
+  const end = parseBangkokDate(
+    item.end_at || item.ends_at || item.end_datetime || item.end_date,
+    item.end_time || "23:59:59"
+  );
+  return end || parseBangkokDate(bangkokDateKey(start), "23:59:59");
+}
 
 export default function HomePage({ username, userId, profileType, onNavigate }) {
   const [items, setItems] = useState([]);
-  const [filter, setFilter] = useState("all");
   const [selectedItem, setSelectedItem] = useState(null);
-  const listRef = useRef(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -33,13 +60,23 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
     return () => window.removeEventListener("uma:close-overlays", closeOverlays);
   }, []);
 
-  const visibleItems = useMemo(() => [...items]
-    .filter((item) => filter === "all" || getNewsKind(item) === filter)
-    .sort((a, b) => `${b.date || ""}T${b.time || ""}`.localeCompare(`${a.date || ""}T${a.time || ""}`)), [items, filter]);
-
-  const scrollEvents = (direction) => {
-    listRef.current?.scrollBy({ left: direction * Math.max(listRef.current.clientWidth * 0.78, 280), behavior: "smooth" });
-  };
+  const upcomingEvents = useMemo(() => {
+    const now = new Date();
+    return items
+      .filter((item) => getNewsKind(item) === "event")
+      .map((item) => {
+        const start = getEventStart(item);
+        return { item, start, end: start ? getEventEnd(item, start) : null };
+      })
+      .filter(({ start, end }) => start && end && end >= now)
+      .sort((a, b) => {
+        const aIsOngoing = a.start <= now;
+        const bIsOngoing = b.start <= now;
+        if (aIsOngoing !== bIsOngoing) return aIsOngoing ? -1 : 1;
+        return aIsOngoing ? a.end - b.end : a.start - b.start;
+      })
+      .slice(0, 6);
+  }, [items]);
 
   return (
     <main className="home-page">
@@ -63,25 +100,15 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
           <div>
             <span className="home-eyebrow home-eyebrow-dark"><CalendarDays size={15} /> CAMPUS BULLETIN</span>
             <h2 id="home-events-title">ข่าวสาร &amp; กิจกรรม</h2>
-            <p>เรื่องราวและการแข่งขันที่กำลังเกิดขึ้นในโรงเรียน</p>
+            <p>กิจกรรมที่กำลังดำเนินอยู่และกำลังจะมาถึง</p>
           </div>
           <button type="button" className="home-view-all" onClick={() => onNavigate("news")}>ดูตารางทั้งหมด <ChevronRight size={17} /></button>
         </header>
 
-        <div className="home-event-toolbar">
-          <div className="home-filter-tabs" role="tablist" aria-label="กรองกิจกรรม">
-            {FILTERS.map((option) => <button type="button" role="tab" aria-selected={filter === option.key} className={filter === option.key ? "is-active" : ""} key={option.key} onClick={() => setFilter(option.key)}>{option.label}</button>)}
-          </div>
-          <div className="home-event-controls">
-            <span>{visibleItems.length.toString().padStart(2, "0")} รายการ</span>
-            <button type="button" aria-label="เลื่อนกิจกรรมไปทางซ้าย" onClick={() => scrollEvents(-1)}><ArrowLeft size={17} /></button>
-            <button type="button" aria-label="เลื่อนกิจกรรมไปทางขวา" onClick={() => scrollEvents(1)}><ArrowRight size={17} /></button>
-          </div>
-        </div>
-
-        {visibleItems.length ? <div className="home-event-track" ref={listRef}>
-          {visibleItems.map((item, index) => <div className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><span className="home-event-index">{String(index + 1).padStart(2, "0")}</span><NewsListingCard item={item} onDetails={setSelectedItem} /></div>)}
-        </div> : <div className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีกิจกรรมในหมวดนี้ ลองเลือกหมวดอื่นดูนะ</span></div>}
+        <div className="home-event-summary"><span>UPCOMING EVENTS</span><span>{upcomingEvents.length} / 6 รายการ</span></div>
+        {upcomingEvents.length ? <div className="home-event-grid">
+          {upcomingEvents.map(({ item }, index) => <div className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><span className="home-event-index">{String(index + 1).padStart(2, "0")}</span><NewsListingCard item={item} compact onDetails={setSelectedItem} /></div>)}
+        </div> : <div className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีกิจกรรมที่กำลังมาถึงหรือกำลังดำเนินอยู่</span></div>}
       </section>
 
       <section className="home-lower-note">
