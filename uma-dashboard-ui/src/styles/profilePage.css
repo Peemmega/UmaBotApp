@@ -38,7 +38,7 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(75px, 100px) minmax(0, 1fr);
+  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
   gap: clamp(18px, 3vw, 42px);
   min-height: 310px;
   padding: 52px clamp(18px, 3.4vw, 48px) 28px;
@@ -60,7 +60,7 @@
 .profile-redesign .profile-hero .profile-avatar {
   display: block;
   width: 100%;
-  height: clamp(73px, 7.5vw, 93px);
+  height: clamp(116px, 12vw, 148px);
   border: 0;
   border-radius: 10px;
   object-fit: cover;
@@ -206,7 +206,7 @@
   margin: 0;
   padding: 7px;
   border: 1px solid #d7e8d7;
-  border-radius: 999px;
+  border-radius: 10px;
   background: rgba(255,255,255,.94);
   box-shadow: 0 7px 22px rgba(35, 91, 50, .11);
 }
@@ -215,7 +215,7 @@
   flex: 1;
   min-width: 0;
   border: 0;
-  border-radius: 999px;
+  border-radius: 6px;
   padding: 11px 14px;
   background: transparent;
   color: #426c4d;
@@ -450,7 +450,7 @@
 .profile-redesign .trainer-team-list { color: var(--profile-ink); }
 
 .profile-redesign .profile-identity-card .profile-body {
-  grid-template-columns: minmax(115px, 12.5%) minmax(0, 1fr);
+  grid-template-columns: minmax(184px, 20%) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) 92px;
   align-items: stretch;
   gap: 12px clamp(18px, 2.4vw, 34px);
@@ -611,8 +611,8 @@
 .profile-redesign .profile-identity-card .resource-icon { width: 26px; height: 26px; flex: 0 0 auto; }
 
 @media (max-width: 900px) {
-  .profile-redesign .profile-hero .profile-body { grid-template-columns: 78px minmax(0,1fr); padding: 45px 20px 20px; gap: 18px; }
-  .profile-redesign .profile-hero .profile-avatar { height: 73px; }
+  .profile-redesign .profile-hero .profile-body { grid-template-columns: 124px minmax(0,1fr); padding: 45px 20px 20px; gap: 18px; }
+  .profile-redesign .profile-hero .profile-avatar { height: 116px; }
   .profile-redesign .profile-hero .profile-info { padding: 16px; }
   .profile-redesign .profile-resources { gap: 6px; }
   .profile-redesign .profile-resources > div { padding: 8px; }
@@ -623,8 +623,8 @@
 
 @media (max-width: 720px) {
   .profile-redesign .profile-hero-art { height: 200px; }
-  .profile-redesign .profile-hero .profile-body { grid-template-columns: 63px minmax(0,1fr); padding-top: 70px; }
-  .profile-redesign .profile-hero .profile-avatar { height: 60px; }
+  .profile-redesign .profile-hero .profile-body { grid-template-columns: 100px minmax(0,1fr); padding-top: 70px; }
+  .profile-redesign .profile-hero .profile-avatar { height: 96px; }
   .profile-redesign .profile-hero .profile-info { align-self: end; }
   .profile-redesign .profile-resources { grid-template-columns: repeat(3,minmax(0,1fr)); }
   .profile-redesign .resource-icon { width: 21px; height: 21px; }
@@ -636,8 +636,8 @@
 
 @media (max-width: 520px) {
   .profile-redesign .profile-hero .profile-body { grid-template-columns: 1fr; gap: 8px; padding: 110px 13px 15px; }
-  .profile-redesign .profile-hero .profile-avatar-wrap { width: 65px; margin-left: 7px; padding: 5px; }
-  .profile-redesign .profile-hero .profile-avatar { width: 100%; height: 61px; }
+  .profile-redesign .profile-hero .profile-avatar-wrap { width: 104px; margin-left: 7px; padding: 7px; }
+  .profile-redesign .profile-hero .profile-avatar { width: 100%; height: 98px; }
   .profile-redesign .profile-hero .profile-info { width: 100%; }
   .profile-redesign .profile-name { font-size: 25px; }
   .profile-redesign .profile-resources { margin-top: 12px; }
@@ -672,7 +672,7 @@
 
 @media (max-width: 900px) {
   .profile-redesign .profile-identity-card .profile-body {
-    grid-template-columns: minmax(90px, 13%) minmax(0, 1fr);
+    grid-template-columns: minmax(144px, 20.8%) minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) 82px;
     min-height: 310px;
     padding: 20px;
@@ -682,7 +682,7 @@
 
 @media (max-width: 720px) {
   .profile-redesign .profile-identity-card .profile-body {
-    grid-template-columns: 70px minmax(0, 1fr);
+    grid-template-columns: 112px minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) 80px;
     min-height: 290px;
     padding: 16px;
@@ -702,14 +702,14 @@
   .profile-redesign .profile-identity-card .profile-avatar-wrap {
     grid-column: 1;
     grid-row: 1;
-    width: 60px;
+    width: 80px;
     margin: 0;
     padding: 6px 6px 8px;
   }
   .profile-redesign .profile-identity-card .profile-avatar {
     flex: none;
-    width: 46px;
-    height: 46px;
+    width: 68px;
+    height: 68px;
   }
   .profile-redesign .profile-identity-card .profile-avatar-actions { gap: 4px; }
   .profile-redesign .profile-identity-card .profile-image-btn,
@@ -743,8 +743,8 @@
   .profile-redesign { gap: 14px; }
   .profile-redesign .profile-hero { min-height: 284px; border-radius: 18px; }
   .profile-redesign .profile-hero-art { height: 238px; }
-  .profile-redesign .profile-hero .profile-body { grid-template-columns: minmax(75px, 93px) minmax(0, 1fr); gap: 22px; min-height: 284px; padding: 38px 22px 18px; }
-  .profile-redesign .profile-hero .profile-avatar { height: clamp(65px, 6vw, 83px); }
+  .profile-redesign .profile-hero .profile-body { grid-template-columns: minmax(120px, 148px) minmax(0, 1fr); gap: 22px; min-height: 284px; padding: 38px 22px 18px; }
+  .profile-redesign .profile-hero .profile-avatar { height: clamp(104px, 9.6vw, 132px); }
   .profile-redesign .profile-hero .profile-info { padding: 16px 18px; border-radius: 16px; }
   .profile-redesign .profile-hero .profile-name { font-size: clamp(24px, 2.2vw, 32px); }
   .profile-redesign .profile-hero .profile-resources { gap: 7px; margin-top: 12px; }
@@ -753,7 +753,7 @@
   .profile-redesign .profile-hero .resource-value { font-size: 20px; }
   .profile-redesign .profile-hero .resource-icon { width: 24px; height: 24px; }
   .profile-redesign .profile-identity-card .profile-body {
-    grid-template-columns: minmax(103px, 11%) minmax(0, 1fr);
+    grid-template-columns: minmax(164px, 17.6%) minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) 76px;
     min-height: 284px;
     padding: 14px 16px 12px;
