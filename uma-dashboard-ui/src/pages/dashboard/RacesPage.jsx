@@ -49,6 +49,15 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
   const [selectedRaceResult, setSelectedRaceResult] = useState(null);
 
   useEffect(() => {
+    const closeOverlays = () => {
+      setSelectedRace(null);
+      setSelectedRaceResult(null);
+    };
+    window.addEventListener("uma:close-overlays", closeOverlays);
+    return () => window.removeEventListener("uma:close-overlays", closeOverlays);
+  }, []);
+
+  useEffect(() => {
     fetch(`${BOT_API_BASE}/races`)
       .then((res) => res.json())
       .then((data) => setRaces(Array.isArray(data) ? data : []))

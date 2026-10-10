@@ -305,4 +305,125 @@
   font-weight: 900;
   cursor: pointer;
 }
-.mailbox-registration-dialog { place-content: stretch; align-content: center; text-align: left; }.mailbox-registration-dialog h3 { text-align: center; }.mailbox-registration-dialog p { color: rgba(255,255,255,.88); line-height: 1.55; }.mailbox-availability { display: grid; gap: 9px; margin: 0; border: 1px solid rgba(255,255,255,.35); border-radius: 10px; padding: 11px; }.mailbox-availability legend { padding: 0 5px; font-size: 13px; font-weight: 900; }.mailbox-availability label { display: flex; align-items: center; gap: 8px; cursor: pointer; }.mailbox-registration-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }.mailbox-registration-actions .mailbox-registration-close { grid-column: 1 / -1; background: transparent; color: white; }.mailbox-registration-error { color: #ffd3d9 !important; font-weight: 800; }
+.registration-confirm-backdrop {
+  position: fixed;
+  z-index: 7000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(27, 20, 39, .64);
+  backdrop-filter: blur(6px);
+  animation: registrationBackdropIn .18s ease-out;
+}
+
+.registration-confirm-modal {
+  --registration-primary: var(--uma-primary);
+  --registration-ink: var(--uma-ink);
+  position: relative;
+  width: min(560px, 100%);
+  max-height: min(720px, calc(100vh - 40px));
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--registration-primary) 36%, white);
+  border-radius: var(--uma-radius-md, 20px);
+  background: linear-gradient(150deg, var(--uma-surface), color-mix(in srgb, var(--registration-primary) 8%, var(--uma-surface)));
+  box-shadow: var(--uma-shadow-pop);
+  animation: registrationModalIn .22s cubic-bezier(.2,.8,.25,1);
+}
+
+.registration-confirm-close {
+  position: absolute;
+  z-index: 1;
+  top: 13px;
+  right: 13px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255,255,255,.58);
+  border-radius: 50%;
+  background: rgba(255,255,255,.16);
+  color: white;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.registration-confirm-close:hover, .registration-confirm-close:focus-visible { background: white; color: var(--registration-primary); outline: 2px solid rgba(255,255,255,.7); }
+.registration-confirm-close:disabled { opacity: .55; cursor: not-allowed; }
+
+.registration-confirm-hero {
+  display: grid;
+  grid-template-columns: 66px 1fr;
+  align-items: center;
+  gap: 17px;
+  min-height: 144px;
+  padding: 28px 62px 26px 27px;
+  color: white;
+  background: var(--uma-gradient-primary);
+}
+
+.registration-confirm-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 2px solid rgba(255,255,255,.78);
+  border-radius: 18px;
+  background: rgba(255,255,255,.17);
+  font-size: 31px;
+}
+
+.registration-confirm-hero span { font-size: 12px; font-weight: 900; opacity: .88; }
+.registration-confirm-hero h2 { margin: 4px 0 3px; font-size: clamp(20px, 4vw, 26px); line-height: 1.2; font-weight: 1000; }
+.registration-confirm-hero p { margin: 0; font-size: 13px; font-weight: 700; opacity: .86; }
+
+.registration-confirm-content { display: grid; gap: 15px; padding: 22px 26px 19px; }
+.registration-race-summary { border: 1px solid color-mix(in srgb, var(--registration-primary) 22%, white); border-radius: 14px; padding: 16px; background: white; box-shadow: var(--uma-shadow-soft); }
+.registration-detail-label { color: var(--registration-primary); font-size: 12px; font-weight: 900; }
+.registration-race-summary h3 { margin: 3px 0 13px; color: var(--registration-ink); font-size: 20px; line-height: 1.3; }
+.registration-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.registration-detail-grid > div { display: grid; gap: 3px; min-width: 0; border-radius: 10px; padding: 10px 11px; background: color-mix(in srgb, var(--registration-primary) 8%, white); }
+.registration-detail-grid span { color: var(--uma-muted); font-size: 11px; font-weight: 800; }
+.registration-detail-grid strong { color: var(--registration-ink); font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; }
+.registration-confirm-note, .registration-confirm-loading { margin: 0; color: var(--uma-muted); font-size: 14px; line-height: 1.6; }
+
+.registration-availability { display: grid; gap: 9px; margin: 0; border: 0; padding: 0; }
+.registration-availability legend { margin-bottom: 9px; padding: 0; color: var(--registration-ink); font-size: 15px; font-weight: 900; }
+.registration-availability label { display: flex; align-items: center; gap: 11px; border: 1px solid var(--uma-border); border-radius: 12px; padding: 11px 13px; background: white; cursor: pointer; transition: border-color .16s ease, background .16s ease, box-shadow .16s ease; }
+.registration-availability label:hover, .registration-availability label:focus-within { border-color: color-mix(in srgb, var(--registration-primary) 50%, white); }
+.registration-availability label.is-selected { border-color: var(--registration-primary); background: color-mix(in srgb, var(--registration-primary) 7%, white); box-shadow: 0 0 0 2px color-mix(in srgb, var(--registration-primary) 13%, transparent); }
+.registration-availability input { width: 18px; height: 18px; margin: 0; accent-color: var(--registration-primary); }
+.registration-availability label span { display: grid; gap: 2px; }
+.registration-availability label strong { color: var(--registration-ink); font-size: 14px; }
+.registration-availability label small { color: var(--uma-muted); font-size: 12px; }
+.registration-confirm-error { margin: 0; border-left: 3px solid #c34358; border-radius: 6px; padding: 9px 11px; background: #fff0f2; color: #a52e44; font-size: 13px; font-weight: 800; line-height: 1.45; }
+
+.registration-confirm-actions { display: flex; justify-content: flex-end; gap: 9px; padding: 15px 26px 22px; border-top: 1px solid color-mix(in srgb, var(--registration-primary) 13%, white); }
+.registration-confirm-actions button { min-height: 42px; border: 1px solid transparent; border-radius: 11px; padding: 9px 14px; font: inherit; font-size: 13px; font-weight: 900; cursor: pointer; transition: transform .16s ease, filter .16s ease; }
+.registration-confirm-actions button:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(.97); }
+.registration-confirm-actions button:focus-visible { outline: 3px solid color-mix(in srgb, var(--registration-primary) 38%, white); outline-offset: 2px; }
+.registration-confirm-actions button:disabled { opacity: .52; cursor: not-allowed; }
+.registration-action-secondary { margin-right: auto; background: white; border-color: var(--uma-border) !important; color: var(--uma-muted); }
+.registration-action-decline { background: color-mix(in srgb, var(--registration-primary) 8%, white); color: var(--uma-primary-dark); }
+.registration-action-primary { background: var(--uma-gradient-primary); color: var(--uma-on-primary, white); box-shadow: 0 5px 14px color-mix(in srgb, var(--registration-primary) 23%, transparent); }
+
+@keyframes registrationBackdropIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes registrationModalIn { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+@media (max-width: 560px) {
+  .registration-confirm-backdrop { padding: 12px; }
+  .registration-confirm-modal { max-height: calc(100vh - 24px); border-radius: 16px; }
+  .registration-confirm-hero { grid-template-columns: 52px 1fr; gap: 12px; min-height: 124px; padding: 23px 50px 21px 18px; }
+  .registration-confirm-icon { width: 52px; height: 52px; border-radius: 15px; font-size: 26px; }
+  .registration-confirm-content { padding: 17px 17px 15px; }
+  .registration-race-summary { padding: 13px; }
+  .registration-race-summary h3 { font-size: 18px; }
+  .registration-confirm-actions { gap: 7px; padding: 13px 17px 17px; }
+  .registration-confirm-actions button { padding-inline: 10px; font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .registration-confirm-backdrop, .registration-confirm-modal { animation: none; }
+  .registration-availability label, .registration-confirm-actions button { transition: none; }
+}

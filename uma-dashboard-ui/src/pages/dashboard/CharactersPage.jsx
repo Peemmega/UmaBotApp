@@ -85,6 +85,16 @@ export default function CharactersPage({ userId, player, profiles }) {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState("");
   const [selectedRaceResult, setSelectedRaceResult] = useState(null);
+
+  useEffect(() => {
+    const closeOverlays = () => {
+      setSelectedCharacter(null);
+      setSelectedRaceResult(null);
+    };
+    window.addEventListener("uma:close-overlays", closeOverlays);
+    return () => window.removeEventListener("uma:close-overlays", closeOverlays);
+  }, []);
+
   const openCharacterProfile = (character) => {
     playSound("open");
     setSelectedRaceResult(null);

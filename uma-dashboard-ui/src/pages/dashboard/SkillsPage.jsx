@@ -93,6 +93,12 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
   const [toast, setToast] = useState(null);
   const [equippedSkills, setEquippedSkills] = useState({});
 
+  useEffect(() => {
+    const closeOverlays = () => setSelectedSkill(null);
+    window.addEventListener("uma:close-overlays", closeOverlays);
+    return () => window.removeEventListener("uma:close-overlays", closeOverlays);
+  }, []);
+
   const loadEquippedSkills = async () => {
     if (!userId) return;
     try {

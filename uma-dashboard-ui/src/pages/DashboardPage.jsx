@@ -3,7 +3,7 @@ import { AnimatePresence } from "framer-motion";
 import "../styles/dashboard.css";
 import "../styles/mailbox.css";
 
-import MailboxModal from "../components/MailboxModal";
+import MailboxModal, { RaceRegistrationMailDialog } from "../components/MailboxModal";
 import RenameModal from "../components/RenameModal";
 import PageTransition from "../components/PageTransition";
 import { AppShell, GameNav, RightRail, TopBar } from "../components/layout";
@@ -55,6 +55,7 @@ export default function DashboardPage({
 }) {
   const [isEditStatsOpen, setIsEditStatsOpen] = useState(false);
   const [isMailboxOpen, setIsMailboxOpen] = useState(false);
+  const [registrationMail, setRegistrationMail] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isPresetRenameOpen, setIsPresetRenameOpen] = useState(false);
@@ -263,6 +264,26 @@ export default function DashboardPage({
             loadUnreadCount();
           }}
           onMailChanged={loadUnreadCount}
+          onOpenRegistration={(mail) => {
+            setIsMailboxOpen(false);
+            setIsEditStatsOpen(false);
+            setIsRenameOpen(false);
+            setIsPresetRenameOpen(false);
+            window.dispatchEvent(new Event("uma:close-overlays"));
+            setRegistrationMail(mail);
+          }}
+        />
+      )}
+
+      {registrationMail && (
+        <RaceRegistrationMailDialog
+          mail={registrationMail}
+          userId={userId}
+          onClose={() => setRegistrationMail(null)}
+          onCompleted={async () => {
+            setRegistrationMail(null);
+            await loadUnreadCount();
+          }}
         />
       )}
 

@@ -37,6 +37,12 @@ export default function NewsPage({ userId, profileType }) {
   const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
+    const closeOverlays = () => setSelectedItem(null);
+    window.addEventListener("uma:close-overlays", closeOverlays);
+    return () => window.removeEventListener("uma:close-overlays", closeOverlays);
+  }, []);
+
+  useEffect(() => {
     const controller = new AbortController();
     fetch(`${BOT_API_BASE}/news`, { signal: controller.signal })
       .then((response) => response.ok ? response.json() : [])

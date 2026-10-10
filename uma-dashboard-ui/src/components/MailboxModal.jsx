@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 import statsIcon from "../assets/mail/stats_mail_icon.webp";
 import skillIcon from "../assets/mail/skill_pt_mail_icon.webp";
@@ -15,14 +16,13 @@ const rewardIconMap = {
   aptitude: aptitudeIcon,
 };
 
-export default function MailboxModal({ userId, profileType = "trainee", onClose, onMailChanged }) {
+export default function MailboxModal({ userId, profileType = "trainee", onClose, onMailChanged, onOpenRegistration }) {
   const [mails, setMails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [closing, setClosing] = useState(false);
   const [activeTab, setActiveTab] = useState("list");
   const [pendingInvitation, setPendingInvitation] = useState(null);
-  const [pendingRegistration, setPendingRegistration] = useState(null);
 
   const closeModal = () => {
     playSound("close");
@@ -163,7 +163,7 @@ export default function MailboxModal({ userId, profileType = "trainee", onClose,
                   onClick={() => {
                     if (mail.is_read) return;
                     if (mail.action_type?.startsWith("race_registration_")) {
-                      setPendingRegistration(mail);
+                      onOpenRegistration?.(mail);
                     } else if (mail.invitation_id && profileType === "trainee") {
                       setPendingInvitation(mail);
                     } else markRead(mail.id);
@@ -207,25 +207,12 @@ export default function MailboxModal({ userId, profileType = "trainee", onClose,
             <button onClick={() => respondToInvitation(true)}>Join team</button>
           </div>
         )}
-        {pendingRegistration && (
-          <RaceRegistrationMailDialog
-            mail={pendingRegistration}
-            userId={userId}
-            profileType={profileType}
-            onClose={() => setPendingRegistration(null)}
-            onCompleted={async () => {
-              setPendingRegistration(null);
-              await markRead(pendingRegistration.id);
-              await loadMailbox();
-            }}
-          />
-        )}
       </div>
     </div>
   );
 }
 
-function RaceRegistrationMailDialog({ mail, userId, profileType, onClose, onCompleted }) {
+export function RaceRegistrationMailDialog({ mail, userId, onClose, onCompleted }) {
   const [detail, setDetail] = useState(null);
   const [availability, setAvailability] = useState("self");
   const [error, setError] = useState("");
@@ -263,20 +250,86 @@ function RaceRegistrationMailDialog({ mail, userId, profileType, onClose, onComp
     }
   };
 
-  return <div className="mailbox-invite-dialog mailbox-registration-dialog" role="dialog" aria-modal="true">
-    <h3>{isTrainerApproval ? "อนุมัติการลงทะเบียน?" : "ยืนยันการลงทะเบียน?"}</h3>
-    {detail ? <>
-      <p><strong>{detail.race_name}</strong><br />{detail.venue || "สนามกำลังอัปเดต"} · {detail.race_date} {detail.race_time} GMT+7</p>
-      {isTrainerApproval ? <p>เมื่ออนุมัติ ระบบจะส่งแบบฟอร์มความพร้อมไปให้สาวม้า</p> : <fieldset className="mailbox-availability"><legend>ความพร้อมในการแข่ง</legend>
-        <label><input type="radio" name="availability" value="self" checked={availability === "self"} onChange={() => setAvailability("self")} /> สะดวกลงแข่งเอง</label>
-        <label><input type="radio" name="availability" value="bot_auto" checked={availability === "bot_auto"} onChange={() => setAvailability("bot_auto")} /> ให้ Bot Auto</label>
-      </fieldset>}
-    </> : <p>กำลังโหลดรายละเอียด...</p>}
-    {error ? <p className="mailbox-registration-error">{error}</p> : null}
-    <div className="mailbox-registration-actions">
-      <button type="button" disabled={busy} onClick={() => respond(false)}>ปฏิเสธ</button>
-      <button type="button" disabled={busy || !detail} onClick={() => respond(true)}>{isTrainerApproval ? "อนุมัติ" : "ยืนยัน"}</button>
-      <button type="button" className="mailbox-registration-close" disabled={busy} onClick={onClose}>ยกเลิก</button>
-    </div>
-  </div>;
+  useEffect(() => {
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape" && !busy) onClose();
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [busy, onClose]);
+
+  useEffect(() => {
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+    };
+  }, []);
+
+  const raceTime = detail?.race_time || "00:00";
+  const normalizedRaceTime = raceTime.length === 5 ? `${raceTime}:00` : raceTime;
+  const raceDate = detail?.race_date
+    ? new Date(`${detail.race_date}T${normalizedRaceTime}+07:00`).toLocaleString("th-TH", {
+      dateStyle: "long",
+      timeStyle: "short",
+      timeZone: "Asia/Bangkok",
+    })
+    : "";
+
+  return createPortal(
+    <div className="registration-confirm-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !busy) onClose(); }}>
+      <section className="registration-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="registration-confirm-title" onMouseDown={(event) => event.stopPropagation()}>
+        <button type="button" className="registration-confirm-close" aria-label="ปิดหน้าต่าง" disabled={busy} onClick={onClose}>×</button>
+        <header className="registration-confirm-hero">
+          <div className="registration-confirm-icon" aria-hidden="true">🏁</div>
+          <div>
+            <span>{isTrainerApproval ? "คำขอจาก Umamusume" : "คำขอจาก Trainer"}</span>
+            <h2 id="registration-confirm-title">{isTrainerApproval ? "อนุมัติการลงทะเบียน?" : "ยืนยันการลงทะเบียน?"}</h2>
+            <p>ตรวจสอบข้อมูลการแข่งขันก่อนยืนยัน</p>
+          </div>
+        </header>
+
+        <div className="registration-confirm-content">
+          {detail ? <>
+            <section className="registration-race-summary" aria-label="ข้อมูลการแข่งขัน">
+              <span className="registration-detail-label">รายการแข่งขัน</span>
+              <h3>{detail.race_name}</h3>
+              <div className="registration-detail-grid">
+                <div><span>วันและเวลา</span><strong>{raceDate}</strong></div>
+                <div><span>สนาม</span><strong>{detail.venue || "กำลังอัปเดต"}</strong></div>
+              </div>
+            </section>
+            {isTrainerApproval ? (
+              <p className="registration-confirm-note">เมื่ออนุมัติแล้ว ระบบจะส่งแบบฟอร์มยืนยันความพร้อมให้ Umamusume</p>
+            ) : (
+              <fieldset className="registration-availability">
+                <legend>ความพร้อมในการแข่ง</legend>
+                <label className={availability === "self" ? "is-selected" : ""}>
+                  <input type="radio" name="availability" value="self" checked={availability === "self"} onChange={() => setAvailability("self")} />
+                  <span><strong>ลงแข่งเอง</strong><small>ฉันพร้อมเข้าร่วมการแข่งขัน</small></span>
+                </label>
+                <label className={availability === "bot_auto" ? "is-selected" : ""}>
+                  <input type="radio" name="availability" value="bot_auto" checked={availability === "bot_auto"} onChange={() => setAvailability("bot_auto")} />
+                  <span><strong>ใช้ Bot Auto</strong><small>ให้บอทลงแข่งแทน</small></span>
+                </label>
+              </fieldset>
+            )}
+          </> : <p className="registration-confirm-loading">กำลังโหลดรายละเอียดการแข่งขัน…</p>}
+          {error ? <p className="registration-confirm-error" role="alert">{error}</p> : null}
+        </div>
+
+        <footer className="registration-confirm-actions">
+          <button type="button" className="registration-action-secondary" disabled={busy} onClick={onClose}>ปิด</button>
+          <button type="button" className="registration-action-decline" disabled={busy || !detail} onClick={() => respond(false)}>ปฏิเสธ</button>
+          <button type="button" className="registration-action-primary" disabled={busy || !detail} onClick={() => respond(true)}>
+            {busy ? "กำลังบันทึก…" : isTrainerApproval ? "อนุมัติคำขอ" : "ยืนยันการลงทะเบียน"}
+          </button>
+        </footer>
+      </section>
+    </div>,
+    document.body
+  );
 }

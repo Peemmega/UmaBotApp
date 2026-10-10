@@ -62,6 +62,18 @@ export default function ProfilePage({
   const fileInputRef = useRef(null);
 
   useEffect(() => {
+    const closeOverlays = () => {
+      setIsInviteOpen(false);
+      setCropImageFile(null);
+      setCropTarget("");
+      setSelectedTeamMember(null);
+      setSelectedTeamRace(null);
+    };
+    window.addEventListener("uma:close-overlays", closeOverlays);
+    return () => window.removeEventListener("uma:close-overlays", closeOverlays);
+  }, []);
+
+  useEffect(() => {
     if (!userId) return;
 
     fetch(`${BOT_API_BASE}/player/${userId}/skills`)
