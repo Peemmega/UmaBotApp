@@ -258,17 +258,6 @@ export function RaceRegistrationMailDialog({ mail, userId, onClose, onCompleted 
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [busy, onClose]);
 
-  useEffect(() => {
-    const previousBodyOverflow = document.body.style.overflow;
-    const previousHtmlOverflow = document.documentElement.style.overflow;
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previousBodyOverflow;
-      document.documentElement.style.overflow = previousHtmlOverflow;
-    };
-  }, []);
-
   const raceTime = detail?.race_time || "00:00";
   const normalizedRaceTime = raceTime.length === 5 ? `${raceTime}:00` : raceTime;
   const raceDate = detail?.race_date
