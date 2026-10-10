@@ -2,7 +2,6 @@ import "../../styles/appShell.css";
 
 export default function AppShell({
   topBar,
-  rightRail,
   children,
   modals,
   profileType = "trainee",
@@ -12,8 +11,6 @@ export default function AppShell({
       {topBar}
 
       <div className="dashboard-layout app-shell-layout">
-        {rightRail}
-
         <div className="dashboard-shell app-shell-main">{children}</div>
       </div>
 

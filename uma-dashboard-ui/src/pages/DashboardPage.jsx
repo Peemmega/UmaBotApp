@@ -6,7 +6,7 @@ import "../styles/mailbox.css";
 import MailboxModal, { RaceRegistrationMailDialog } from "../components/MailboxModal";
 import RenameModal from "../components/RenameModal";
 import PageTransition from "../components/PageTransition";
-import { AppShell, GameNav, RightRail, TopBar } from "../components/layout";
+import { AppShell, GameNav, TopBar } from "../components/layout";
 import { BOT_API_BASE, uploadPresetProfileImage } from "../api/playerApi";
 import {
   PROFILE_TYPES,
@@ -343,7 +343,6 @@ export default function DashboardPage({
           nav={<GameNav activePage={activePage} onChangePage={changePage} profileType={activeProfileType} />}
         />
       }
-      rightRail={<RightRail onNavigate={changePage} userId={userId} profileType={activeProfileType} />}
       modals={modals}
     >
       <AnimatePresence mode="wait">
