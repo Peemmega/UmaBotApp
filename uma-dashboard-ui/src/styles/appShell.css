@@ -92,7 +92,7 @@
 
 .app-shell-layout,
 .dashboard-layout {
-  width: min(100%, 1600px);
+  width: min(100%, var(--ui-page-width, 1320px));
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -154,7 +154,7 @@
 }
 
 .topbar-main {
-  width: min(100%, 1600px);
+  width: min(100%, var(--ui-page-width, 1320px));
   min-height: 52px;
   margin: 0 auto;
   display: flex;
@@ -164,7 +164,7 @@
 }
 
 .topbar .game-nav {
-  width: min(100%, 1600px);
+  width: min(100%, var(--ui-page-width, 1320px));
   margin: 0 auto;
   padding: 5px 0 0;
   border: 0;

@@ -5,9 +5,9 @@ export const gameNavItems = [
   { key: "profile", label: "โปรไฟล์", Icon: UserRound },
   { key: "chars", label: "ตัวละคร", Icon: UsersRound },
   { key: "races", label: "รายการแข่ง", Icon: Trophy },
-  { key: "news", label: "ตารางกิจกรรม", Icon: CalendarDays },
+  { key: "news", label: "กิจกรรม", Icon: CalendarDays },
   { key: "skills", label: "สกิล", Icon: Sparkles },
   { key: "race", label: "ห้องซ้อมวิ่ง", Icon: Flag },
-  { key: "tools", label: "เครื่องมือคำนวณ", Icon: Calculator },
+  { key: "tools", label: "เครื่องมือ", Icon: Calculator },
   { key: "tutorials", label: "เอกสาร", Icon: BookOpen, href: "https://docs.google.com/document/d/1Pi9xiyC6ontJzZ-cISxPAxtUi0LBWfMnmoWNUib8uCo/edit?usp=sharing" },
 ];
