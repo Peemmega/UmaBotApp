@@ -78,7 +78,7 @@ button:disabled { cursor: not-allowed; }
 
 /* Two horizontal navigation rows, measured by AppShell at every width. */
 .app-shell {
-  padding: calc(var(--ui-topbar-height, 146px) + 28px) clamp(16px, 4vw, 56px) 48px;
+  padding: calc(var(--ui-topbar-height, 146px) + 28px) clamp(20px, 18vw, 15%) 48px;
   background: var(--uma-bg);
   overflow-x: clip;
 }
