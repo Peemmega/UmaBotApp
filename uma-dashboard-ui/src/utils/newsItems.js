@@ -1,13 +1,21 @@
 import { getRaceImage } from "./raceSchedule";
 
 export function getNewsKind(item) {
-  return String(item.kind || "race").toLowerCase() === "event" ? "event" : "race";
+  const value = String(item.kind || item.type || item.category || "race")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "");
+
+  if (["event", "activity", "activities", "กิจกรรม"].includes(value)) return "event";
+  if (["news", "announcement", "ข่าว", "ข่าวสาร"].includes(value)) return "news";
+  if (["patch", "patchnote", "patchnotes", "changelog", "แพตช์โน้ต", "แพตช์โน๊ต"].includes(value)) return "patch";
+  return "race";
 }
 
 export function getNewsImage(item) {
-  return getNewsKind(item) === "event"
-    ? item.image_url || item.thumbnail || item.image
-    : getRaceImage(item);
+  return getNewsKind(item) === "race"
+    ? getRaceImage(item)
+    : item.image_url || item.thumbnail || item.image;
 }
 
 export function getNewsDescription(item) {

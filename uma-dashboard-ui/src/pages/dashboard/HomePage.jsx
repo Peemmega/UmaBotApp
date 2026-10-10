@@ -6,7 +6,7 @@ import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger"
 import { BOT_API_BASE } from "../../api/playerApi";
 import NewsListingCard from "../../components/NewsListingCard";
 import NewsDetailsModal from "../../components/NewsDetailsModal";
-import { getNewsKind, getNewsTimestamp } from "../../utils/newsItems";
+import { getNewsKind } from "../../utils/newsItems";
 import homeHeroImage from "../../assets/bg/Home_Image.webp";
 import "../../styles/homePage.css";
 
@@ -40,14 +40,6 @@ function formatBangkokMonth(monthKey) {
   }).format(new Date(Date.UTC(year, month - 1, 1, 12)));
 }
 
-function formatBangkokDay(date) {
-  return new Intl.DateTimeFormat("th-TH", {
-    timeZone: "Asia/Bangkok",
-    weekday: "short",
-    day: "2-digit",
-  }).format(date);
-}
-
 function parseBangkokDate(value, time = "00:00") {
   if (!value) return null;
   let dateValue = String(value).trim();
@@ -77,6 +69,7 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeMonthEvent, setActiveMonthEvent] = useState(0);
   const [carouselDirection, setCarouselDirection] = useState(1);
+  const [activeNewsFilter, setActiveNewsFilter] = useState("all");
   const prefersReducedMotion = useReducedMotion();
   const currentMonth = bangkokMonthKey(new Date());
 
@@ -95,23 +88,6 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
     return () => window.removeEventListener("uma:close-overlays", closeOverlays);
   }, []);
 
-  const upcomingEvents = useMemo(() => {
-    const now = new Date();
-    return items
-      .map((item) => {
-        const start = getEventStart(item);
-        return { item, start, end: start ? getEventEnd(item, start) : null };
-      })
-      .filter(({ start, end }) => start && end && end >= now)
-      .sort((a, b) => {
-        const aIsOngoing = a.start <= now;
-        const bIsOngoing = b.start <= now;
-        if (aIsOngoing !== bIsOngoing) return aIsOngoing ? -1 : 1;
-        return aIsOngoing ? a.end - b.end : a.start - b.start;
-      })
-      .slice(0, 6);
-  }, [items]);
-
   const thisMonthEvents = useMemo(() => {
     return items
       .filter((item) => getNewsKind(item) === "event" && String(item.date || "").startsWith(currentMonth))
@@ -123,6 +99,37 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
       .sort((a, b) => a.start - b.start)
       .slice(0, 6);
   }, [items, currentMonth]);
+
+  const filteredHomeItems = useMemo(() => {
+    const now = new Date();
+    const eligibleItems = items
+      .map((item) => {
+        const kind = getNewsKind(item);
+        const start = getEventStart(item);
+        const end = start ? getEventEnd(item, start) : null;
+        return { item, kind, start, end };
+      })
+      .filter(({ kind, start, end }) => {
+        if (activeNewsFilter !== "all" && kind !== activeNewsFilter) return false;
+        if (kind === "event" || kind === "race") return start && end && end >= now;
+        return true;
+      });
+
+    return eligibleItems
+      .sort((a, b) => {
+        const aIsSchedule = a.kind === "event" || a.kind === "race";
+        const bIsSchedule = b.kind === "event" || b.kind === "race";
+        if (aIsSchedule !== bIsSchedule) return aIsSchedule ? -1 : 1;
+        if (aIsSchedule) {
+          const aIsOngoing = a.start <= now;
+          const bIsOngoing = b.start <= now;
+          if (aIsOngoing !== bIsOngoing) return aIsOngoing ? -1 : 1;
+          return aIsOngoing ? a.end - b.end : a.start - b.start;
+        }
+        return (b.start?.getTime() || 0) - (a.start?.getTime() || 0);
+      })
+      .slice(0, 6);
+  }, [items, activeNewsFilter]);
 
   const activeMonthEventIndex = thisMonthEvents.length
     ? activeMonthEvent % thisMonthEvents.length
@@ -182,15 +189,7 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
                   transition={{ duration: prefersReducedMotion ? 0 : 0.2, ease: "easeOut" }}
                   aria-live="polite"
                 >
-                  <button type="button" className="home-month-event" onClick={() => setSelectedItem(activeMonthEventItem.item)}>
-                    <time dateTime={activeMonthEventItem.start.toISOString()}>{formatBangkokDay(activeMonthEventItem.start)}</time>
-                    <span className="home-month-event-copy">
-                      <small className="home-month-event-label">EVENT</small>
-                      <strong>{activeMonthEventItem.item.name || activeMonthEventItem.item.title || activeMonthEventItem.item.id}</strong>
-                      <small>{getNewsTimestamp(activeMonthEventItem.item)}</small>
-                    </span>
-                    <ChevronRight size={17} aria-hidden="true" />
-                  </button>
+                  <NewsListingCard item={activeMonthEventItem.item} onDetails={setSelectedItem} />
                 </motion.div>
               </AnimatePresence>
               <div className="home-month-controls" aria-label="เปลี่ยนกิจกรรม">
@@ -205,10 +204,24 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
           </section>
 
           <section className="home-upcoming-panel" aria-label="กิจกรรมและการแข่งขันที่กำลังมาถึง">
-            <div className="home-event-summary"><span>UPCOMING EVENTS &amp; RACES</span><span>{upcomingEvents.length} / 6 รายการ</span></div>
-            {upcomingEvents.length ? <StaggerContainer className="home-event-grid">
-              {upcomingEvents.map(({ item }) => <StaggerItem className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} compact onDetails={setSelectedItem} /></StaggerItem>)}
-            </StaggerContainer> : <Reveal className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีกิจกรรมหรือการแข่งขันที่กำลังมาถึงหรือกำลังดำเนินอยู่</span></Reveal>}
+            <div className="home-event-summary"><span>NEWS &amp; EVENTS</span><span>{filteredHomeItems.length} / 6 รายการ</span></div>
+            <nav className="home-news-filters" aria-label="กรองข่าวสาร">
+              {[
+                ["all", "ข่าวทั้งหมด"],
+                ["event", "กิจกรรม"],
+                ["race", "การแข่ง"],
+                ["patch", "แพตช์โน้ต"],
+              ].map(([filter, label]) => <button
+                type="button"
+                key={filter}
+                className={activeNewsFilter === filter ? "is-active" : ""}
+                aria-pressed={activeNewsFilter === filter}
+                onClick={() => setActiveNewsFilter(filter)}
+              >{label}</button>)}
+            </nav>
+            {filteredHomeItems.length ? <StaggerContainer className="home-event-grid">
+              {filteredHomeItems.map(({ item }) => <StaggerItem className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} compact onDetails={setSelectedItem} /></StaggerItem>)}
+            </StaggerContainer> : <Reveal className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีรายการในหมวดนี้</span></Reveal>}
           </section>
         </div>
       </section>

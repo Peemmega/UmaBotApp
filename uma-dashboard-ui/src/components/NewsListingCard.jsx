@@ -4,6 +4,12 @@ import "../styles/newsListingCard.css";
 
 export default function NewsListingCard({ item, onDetails, compact = false }) {
   const kind = getNewsKind(item);
+  const kindLabel = {
+    event: "Event",
+    race: "Race",
+    news: "News",
+    patch: "Patch Note",
+  }[kind];
   const image = getNewsImage(item);
   const isClickable = typeof onDetails === "function";
   const openDetails = () => onDetails?.(item);
@@ -25,7 +31,7 @@ export default function NewsListingCard({ item, onDetails, compact = false }) {
     {image ? <img className="news-listing-banner" src={image} alt="" loading="lazy" /> : null}
     <div className="news-listing-content">
       <div className="news-listing-meta">
-        <span className="news-listing-kind">{kind === "event" ? "Event" : "Race"}</span>
+        <span className="news-listing-kind">{kindLabel}</span>
         <time>{getNewsTimestamp(item)}</time>
       </div>
       <h3>{item.name || item.title || item.id}</h3>

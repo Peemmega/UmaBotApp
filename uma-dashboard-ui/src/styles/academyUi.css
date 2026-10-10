@@ -271,7 +271,7 @@ button:disabled { cursor: not-allowed; }
 .home-section-heading h2 { font-size: clamp(26px, 3.1vw, 39px); line-height: 1.4; margin: 10px 0 6px; }
 .home-section-heading p { font-size: 13px; line-height: 1.7; }
 .home-view-all { min-height: 40px; padding: 8px 12px; border: 1px solid var(--uma-border-strong); border-radius: 8px; color: var(--uma-primary-dark); background: #fff; }
-.home-events-layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 7fr); align-items: stretch; gap: 18px; }
+.home-events-layout { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); align-items: stretch; gap: 18px; }
 .home-month-panel { min-width: 0; display: flex; flex-direction: column; align-self: stretch; padding: 16px; border: 1px solid var(--uma-border); border-radius: 14px; background: #fff; box-shadow: var(--uma-shadow-soft); }
 .home-month-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
 .home-month-kicker { display: inline-flex; align-items: center; gap: 6px; color: var(--uma-primary-dark); font-size: 9px; font-weight: 750; letter-spacing: .09em; }
