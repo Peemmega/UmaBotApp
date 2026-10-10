@@ -218,7 +218,7 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
                 onClick={() => setActiveNewsFilter(filter)}
               >{label}</button>)}
             </nav>
-            {filteredHomeItems.length ? <StaggerContainer className="home-event-grid">
+            {filteredHomeItems.length ? <StaggerContainer className={`home-event-grid${filteredHomeItems.length > 3 ? " is-filling" : ""}`}>
               {filteredHomeItems.map(({ item }) => <StaggerItem className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} compact onDetails={setSelectedItem} /></StaggerItem>)}
             </StaggerContainer> : <Reveal className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีรายการในหมวดนี้</span></Reveal>}
           </section>

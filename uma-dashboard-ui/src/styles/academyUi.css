@@ -136,11 +136,15 @@ button:disabled { cursor: not-allowed; }
   font-weight: 650;
   gap: 7px;
 }
+.topbar .dashboard-actions .discord-btn { border-color: #5865f2; background: #5865f2; color: #fff; }
+.topbar .dashboard-actions .mail-btn { border-color: #82c13c; background: var(--uma-gradient-primary); color: #fff; }
 .topbar :is(.discord-btn, .mail-btn, .notification-btn, .danger-btn):hover {
   transform: none;
   background: var(--uma-bg-soft);
   border-color: var(--uma-border-strong);
 }
+.topbar .dashboard-actions .discord-btn:hover { border-color: #4752c4; background: #4752c4; color: #fff; }
+.topbar .dashboard-actions .mail-btn:hover { border-color: #70ad31; background: var(--uma-gradient-primary); color: #fff; filter: brightness(.94); }
 .topbar .danger-btn { color: #ac4c50; }
 .topbar :is(.discord-btn-icon, .mail-icon) { width: 20px; height: 20px; }
 .topbar .game-nav {
@@ -262,7 +266,7 @@ button:disabled { cursor: not-allowed; }
 .home-eyebrow { color: var(--uma-primary-dark); font-size: 10px; letter-spacing: .13em; font-weight: 750; }
 .home-eyebrow svg, .home-eyebrow-dark svg { color: var(--uma-pink); }
 .home-hero h1 { font-size: clamp(38px, 4.3vw, 68px); line-height: 1.35; letter-spacing: -.045em; margin: 20px 0; font-weight: 850; }
-.home-hero-copy p { color: #546451; font-size: 16px; line-height: 1.9; }
+.home-hero-copy p { color: #000000; font-size: 16px; line-height: 1.9; }
 .home-hero-actions { flex-wrap: wrap; gap: 12px; }
 .home-primary-action { min-height: 48px; padding: 0 20px; border-radius: 8px; background: var(--uma-gradient-primary); font-size: 13px; box-shadow: none; }
 .home-primary-action:hover { background: var(--uma-primary-dark); box-shadow: var(--uma-shadow-card); }
