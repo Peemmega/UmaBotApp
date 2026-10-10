@@ -23,7 +23,9 @@ import RacesPage from "./dashboard/RacesPage";
 import ToolsPage from "./dashboard/ToolsPage";
 import RaceReplayPage from "./dashboard/RaceReplayPage";
 import NewsPage from "./dashboard/NewsPage";
+import NewsDetailsPage from "./dashboard/NewsDetailsPage";
 import HomePage from "./dashboard/HomePage";
+import { getNewsKind } from "../utils/newsItems";
 
 const VALID_PAGES = [
   "home",
@@ -38,7 +40,20 @@ const VALID_PAGES = [
   "news",
 ];
 
+function getNewsRouteFromPath() {
+  const segments = window.location.pathname.split("/").filter(Boolean);
+  if (segments.length < 4 || segments[0] !== "dashboard" || segments[1] !== "news") return null;
+  const kind = segments.at(-1);
+  if (!["event", "race", "news", "patch"].includes(kind)) return null;
+  try {
+    return { name: decodeURIComponent(segments.slice(2, -1).join("/")), kind };
+  } catch {
+    return null;
+  }
+}
+
 function getPageFromPath() {
+  if (getNewsRouteFromPath()) return "news-detail";
   const normalizedPath = window.location.pathname.replace(/\/+$/, "");
   const page = normalizedPath.split("/").pop();
   return VALID_PAGES.includes(page) ? page : "home";
@@ -65,6 +80,7 @@ export default function DashboardPage({
   );
   const previousUnreadCount = useRef(null);
   const [activePage, setActivePage] = useState(getPageFromPath);
+  const [newsRoute, setNewsRoute] = useState(getNewsRouteFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
   const [profiles, setProfiles] = useState(() => loadProfilePresets(userId, username));
   const [activeProfileType, setActiveProfileType] = useState(() => accountRole || loadActiveProfileType(userId));
@@ -130,14 +146,24 @@ export default function DashboardPage({
   const changePage = (page) => {
     if (!VALID_PAGES.includes(page)) return;
 
+    setNewsRoute(null);
     setActivePage(page);
     window.history.pushState({}, "", `/dashboard/${page}`);
+  };
+
+  const openNewsDetail = (item) => {
+    const name = String(item?.name || item?.title || item?.id || "").trim();
+    if (!name) return;
+    const kind = getNewsKind(item);
+    setNewsRoute({ name, kind, item, fromPage: activePage === "news-detail" ? "news" : activePage });
+    setActivePage("news-detail");
+    window.history.pushState({}, "", `/dashboard/news/${encodeURIComponent(name)}/${kind}`);
   };
 
   const renderMiddlePage = () => {
     switch (activePage) {
       case "home":
-        return <HomePage username={player?.username || username} userId={userId} profileType={activeProfileType} onNavigate={changePage} />;
+        return <HomePage username={player?.username || username} onNavigate={changePage} onOpenNews={openNewsDetail} />;
 
       case "tutorials":
         return <TutorialsPage />;
@@ -166,7 +192,22 @@ export default function DashboardPage({
         return <ToolsPage />;
 
       case "news":
-        return <NewsPage userId={userId} profileType={activeProfileType} />;
+        return <NewsPage onOpenNews={openNewsDetail} />;
+
+      case "news-detail":
+        return <NewsDetailsPage
+          name={newsRoute?.name}
+          kind={newsRoute?.kind}
+          initialItem={newsRoute?.item}
+          userId={userId}
+          profileType={activeProfileType}
+          onBack={() => {
+            const page = VALID_PAGES.includes(newsRoute?.fromPage) ? newsRoute.fromPage : "news";
+            setNewsRoute(null);
+            setActivePage(page);
+            window.history.replaceState({}, "", `/dashboard/${page}`);
+          }}
+        />;
 
       case "race-replay":
         return <RaceReplayPage raceId={new URLSearchParams(window.location.search).get("race")} onBack={() => changePage("races")} />;
@@ -232,6 +273,7 @@ export default function DashboardPage({
   useEffect(() => {
     const handlePopState = () => {
       setActivePage(getPageFromPath());
+      setNewsRoute(getNewsRouteFromPath());
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -337,7 +379,7 @@ export default function DashboardPage({
           onLogout={onLogout}
           notificationPermission={notificationPermission}
           onEnableNotifications={enableNotifications}
-          nav={<GameNav activePage={activePage === "race-replay" ? "races" : activePage} onChangePage={changePage} profileType={activeProfileType} />}
+          nav={<GameNav activePage={activePage === "race-replay" ? "races" : activePage === "news-detail" ? "news" : activePage} onChangePage={changePage} profileType={activeProfileType} />}
         />
       }
       modals={modals}

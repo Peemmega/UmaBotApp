@@ -28,9 +28,11 @@ function formatDirection(value) {
   return "";
 }
 
-export default function NewsDetailsModal({ item, onClose, userId, profileType }) {
+export function NewsDetailsContent({ item, userId, profileType }) {
   if (!item) return null;
-  const isRace = getNewsKind(item) === "race";
+  const kind = getNewsKind(item);
+  const isRace = kind === "race";
+  const kindLabel = { event: "Event", race: "Race", news: "News", patch: "Patch Note" }[kind] || "Event";
   const image = getNewsImage(item);
   const course = item.course || {};
   const venue = course.venue || item.venue;
@@ -41,10 +43,10 @@ export default function NewsDetailsModal({ item, onClose, userId, profileType })
   const fansRequired = formatFans(item.requirements?.fans_required ?? item.fans_required);
   const firstPlaceFans = formatFans(item.fans_reward_first);
 
-  return <Dialog onClose={onClose} className="news-detail-modal" backdropClassName="news-modal-backdrop" closeClassName="news-modal-close" labelledBy="news-detail-title" profileType={profileType}>
+  return <>
       {image ? <img className={`news-detail-image${isRace ? " is-race" : ""}`} src={image} alt="" /> : null}
       <div className="news-detail-body">
-        <p className={`news-type-label ${isRace ? "race" : "event"}`}>{isRace ? "Race" : "Event"}</p>
+        <p className={`news-type-label ${kind}`}>{kindLabel}</p>
         <h2 id="news-detail-title">{item.name}</h2>
         <time><CalendarDays size={16} /> {shortDate(item)}</time>
         <p className="news-detail-summary">{getNewsDescription(item)}</p>
@@ -53,10 +55,17 @@ export default function NewsDetailsModal({ item, onClose, userId, profileType })
           <div><Users size={18} /><span><b>เงื่อนไขแฟน</b>{fansRequired ? `ต้องมีอย่างน้อย ${fansRequired}` : "ไม่มีเงื่อนไขแฟนใน Career"}</span></div>
           <div><Trophy size={18} /><span><b>รางวัลอันดับ 1</b>{firstPlaceFans ? `${firstPlaceFans} เมื่อชนะ` : "ไม่มีข้อมูลรางวัลแฟน"}</span></div>
         </div> : <div className="news-detail-facts">
-          <div><Flag size={18} /><span><b>เกี่ยวกับ Event นี้</b>{item.details || "อ่านประกาศกิจกรรม แล้วเข้าร่วมตามเวลาที่กำหนด"}</span></div>
+          <div><Flag size={18} /><span><b>{kind === "event" ? "เกี่ยวกับ Event นี้" : kindLabel}</b>{item.details || "อ่านรายละเอียดประกาศฉบับเต็มได้ที่นี่"}</span></div>
           <div><Users size={18} /><span><b>จำนวนผู้เข้าร่วม</b>{item.capacity || "ไม่จำกัดจำนวน (หากมีการเปลี่ยนแปลงจะแจ้งในประกาศ)"}</span></div>
         </div>}
         {isRace && userId ? <RaceRegistrationPanel event={item} userId={userId} profileType={profileType} /> : null}
       </div>
+  </>;
+}
+
+export default function NewsDetailsModal({ item, onClose, userId, profileType }) {
+  if (!item) return null;
+  return <Dialog onClose={onClose} className="news-detail-modal" backdropClassName="news-modal-backdrop" closeClassName="news-modal-close" labelledBy="news-detail-title" profileType={profileType}>
+    <NewsDetailsContent item={item} userId={userId} profileType={profileType} />
   </Dialog>;
 }

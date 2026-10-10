@@ -4,7 +4,7 @@ import { BOT_API_BASE } from "../../api/playerApi";
 import { GameCard, Reveal, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import NewsListingCard from "../../components/NewsListingCard";
-import NewsDetailsModal from "../../components/NewsDetailsModal";
+import "../../styles/homePage.css";
 import "../../styles/newsPage.css";
 
 function monthLabel(key) {
@@ -32,16 +32,9 @@ function currentBangkokMonthKey() {
   return `${part("year")}-${part("month")}`;
 }
 
-export default function NewsPage({ userId, profileType }) {
+export default function NewsPage({ onOpenNews }) {
   const [items, setItems] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  useEffect(() => {
-    const closeOverlays = () => setSelectedItem(null);
-    window.addEventListener("uma:close-overlays", closeOverlays);
-    return () => window.removeEventListener("uma:close-overlays", closeOverlays);
-  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -72,11 +65,10 @@ export default function NewsPage({ userId, profileType }) {
 
     <Reveal as="section" className="news-month-section" aria-label={activeMonth ? monthLabel(activeMonth) : "News"}>
       <div className="news-month-title"><CalendarDays size={22} /><h2>{activeMonth ? monthLabel(activeMonth) : "ยังไม่มีรายการ"}</h2><span>{visibleItems.length} รายการ</span></div>
-      <StaggerContainer className="news-page-list">
-        {visibleItems.map((item) => <StaggerItem key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} onDetails={setSelectedItem} /></StaggerItem>)}
+      <StaggerContainer className="home-event-grid news-page-list">
+        {visibleItems.map((item) => <StaggerItem className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} compact onDetails={onOpenNews} /></StaggerItem>)}
         {!visibleItems.length ? <p className="news-empty">ยังไม่มี Event หรือการแข่งขันในเดือนนี้</p> : null}
       </StaggerContainer>
     </Reveal>
-    <NewsDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} userId={userId} profileType={profileType} />
   </main>;
 }

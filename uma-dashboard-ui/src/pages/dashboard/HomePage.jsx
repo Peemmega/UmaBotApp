@@ -5,7 +5,6 @@ import { Reveal } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import { BOT_API_BASE } from "../../api/playerApi";
 import NewsListingCard from "../../components/NewsListingCard";
-import NewsDetailsModal from "../../components/NewsDetailsModal";
 import { getNewsKind } from "../../utils/newsItems";
 import homeHeroImage from "../../assets/bg/Home_Image.webp";
 import "../../styles/homePage.css";
@@ -64,9 +63,8 @@ function getEventEnd(item, start) {
   return end || parseBangkokDate(bangkokDateKey(start), "23:59:59");
 }
 
-export default function HomePage({ username, userId, profileType, onNavigate }) {
+export default function HomePage({ username, onNavigate, onOpenNews }) {
   const [items, setItems] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
   const [activeMonthEvent, setActiveMonthEvent] = useState(0);
   const [carouselDirection, setCarouselDirection] = useState(1);
   const [activeNewsFilter, setActiveNewsFilter] = useState("all");
@@ -80,12 +78,6 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
       .then((data) => setItems(Array.isArray(data) ? data : []))
       .catch((error) => { if (error.name !== "AbortError") console.error(error); });
     return () => controller.abort();
-  }, []);
-
-  useEffect(() => {
-    const closeOverlays = () => setSelectedItem(null);
-    window.addEventListener("uma:close-overlays", closeOverlays);
-    return () => window.removeEventListener("uma:close-overlays", closeOverlays);
   }, []);
 
   const thisMonthEvents = useMemo(() => {
@@ -188,7 +180,7 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
                   transition={{ duration: prefersReducedMotion ? 0 : 0.2, ease: "easeOut" }}
                   aria-live="polite"
                 >
-                  <NewsListingCard item={activeMonthEventItem.item} onDetails={setSelectedItem} />
+                  <NewsListingCard item={activeMonthEventItem.item} onDetails={onOpenNews} />
                 </motion.div>
               </AnimatePresence>
               <div className="home-month-controls" aria-label="เปลี่ยนกิจกรรม">
@@ -199,7 +191,7 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
                 </div>
               </div>
             </div> : <p className="home-month-empty">เดือนนี้ยังไม่มี Event</p>}
-            <button type="button" className="home-month-more" onClick={() => onNavigate("news")}>ดู Event ทั้งเดือน <ChevronRight size={15} /></button>
+            {/* <button type="button" className="home-month-more" onClick={() => onNavigate("news")}>ดู Event ทั้งเดือน <ChevronRight size={15} /></button> */}
           </section>
 
           <section className="home-upcoming-panel" aria-label="กิจกรรมและการแข่งขันที่กำลังมาถึง">
@@ -219,7 +211,7 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
               >{label}</button>)}
             </nav>
             {filteredHomeItems.length ? <StaggerContainer className={`home-event-grid${filteredHomeItems.length > 3 ? " is-filling" : ""}`}>
-              {filteredHomeItems.map(({ item }) => <StaggerItem className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} compact onDetails={setSelectedItem} /></StaggerItem>)}
+              {filteredHomeItems.map(({ item }) => <StaggerItem className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} compact onDetails={onOpenNews} /></StaggerItem>)}
             </StaggerContainer> : <Reveal className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีรายการในหมวดนี้</span></Reveal>}
           </section>
         </div>
@@ -230,8 +222,6 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
         <div><strong>ทุกก้าวคือเรื่องราวบทใหม่</strong><span>แวะเช็กกำหนดการ แล้วชวนเพื่อนในทีมไปสนุกด้วยกัน</span></div>
         <button type="button" onClick={() => onNavigate("chars")}>พบกับเพื่อนร่วมทีม <ChevronRight size={17} /></button>
       </Reveal>
-
-      <NewsDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} userId={userId} profileType={profileType} />
     </main>
   );
 }
