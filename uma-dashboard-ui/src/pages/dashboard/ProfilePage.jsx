@@ -18,6 +18,8 @@ import ProfileImageCropModal from "../../components/ProfileImageCropModal";
 import SkillLoadoutPanel from "../../components/SkillLoadoutPanel";
 import TeamMemberProfileModal from "../../components/TeamMemberProfileModal";
 import RaceHistoryDetailModal from "../../components/RaceHistoryDetailModal";
+import ProfileSkillLibrary from "../../components/ProfileSkillLibrary";
+import ProfileRaceStats from "../../components/ProfileRaceStats";
 import "../../styles/profilePage.css";
 
 const fansIcon = `${BOT_API_BASE}/app/assets/icons/fans.png`;
@@ -38,7 +40,6 @@ export default function ProfilePage({
   setIsRenameOpen,
   skillLoadoutVersion,
 }) {
-  const [equippedSkills, setEquippedSkills] = useState({});
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -60,6 +61,7 @@ export default function ProfilePage({
   const [teamMemberDetailLoading, setTeamMemberDetailLoading] = useState(false);
   const [teamMemberDetailError, setTeamMemberDetailError] = useState("");
   const [selectedTeamRace, setSelectedTeamRace] = useState(null);
+  const [activeProfilePage, setActiveProfilePage] = useState("overview");
   const [activeSection, setActiveSection] = useState("profile-overview");
   const fileInputRef = useRef(null);
   const jumpToSection = (sectionId) => {
@@ -67,7 +69,10 @@ export default function ProfilePage({
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  useEffect(() => setActiveSection("profile-overview"), [profileType]);
+  useEffect(() => {
+    setActiveSection("profile-overview");
+    setActiveProfilePage("overview");
+  }, [profileType, userId]);
 
   useEffect(() => {
     const closeOverlays = () => {
@@ -80,15 +85,6 @@ export default function ProfilePage({
     window.addEventListener("uma:close-overlays", closeOverlays);
     return () => window.removeEventListener("uma:close-overlays", closeOverlays);
   }, []);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    fetch(`${BOT_API_BASE}/player/${userId}/skills`)
-      .then((res) => res.json())
-      .then((data) => setEquippedSkills(data))
-      .catch(console.error);
-  }, [userId]);
 
   const loadTrainerTeam = async () => {
     const [teamRes, availableRes] = await Promise.all([
@@ -550,14 +546,17 @@ export default function ProfilePage({
 
           <StaggerItem>
             <nav className="profile-section-nav" aria-label="ส่วนต่าง ๆ ของโปรไฟล์">
-              <button type="button" className={activeSection === "profile-overview" ? "is-active" : ""} onClick={() => jumpToSection("profile-overview")}>ข้อมูลพื้นฐาน</button>
-              <button type="button" className={activeSection === "profile-stats" ? "is-active" : ""} onClick={() => jumpToSection("profile-stats")}>ค่าสถานะ</button>
-              <button type="button" className={activeSection === "profile-skills" ? "is-active" : ""} onClick={() => jumpToSection("profile-skills")}>สกิล</button>
-              <button type="button" className={activeSection === "profile-zone" ? "is-active" : ""} onClick={() => jumpToSection("profile-zone")}>โซน</button>
+              <button type="button" className={activeProfilePage === "overview" ? "is-active" : ""} aria-current={activeProfilePage === "overview" ? "page" : undefined} onClick={() => setActiveProfilePage("overview")}>ข้อมูลพื้นฐาน</button>
+              <button type="button" className={activeProfilePage === "stats" ? "is-active" : ""} aria-current={activeProfilePage === "stats" ? "page" : undefined} onClick={() => setActiveProfilePage("stats")}>ค่าสถานะ</button>
+              <button type="button" className={activeProfilePage === "skills" ? "is-active" : ""} aria-current={activeProfilePage === "skills" ? "page" : undefined} onClick={() => setActiveProfilePage("skills")}>สกิล</button>
+              <button type="button" className={activeProfilePage === "history" ? "is-active" : ""} aria-current={activeProfilePage === "history" ? "page" : undefined} onClick={() => setActiveProfilePage("history")}>สถิติ</button>
             </nav>
           </StaggerItem>
 
-          <div className="profile-data-panel" id="profile-stats">
+          {activeProfilePage === "overview" ? <div className="profile-empty-page" aria-label="หน้าข้อมูลพื้นฐานยังไม่มีเนื้อหา" /> : null}
+
+          {activeProfilePage === "stats" && <div className="profile-stats-page">
+          <div className="profile-data-panel">
           <StaggerItem>
           <section className="sheet-card main-stats-card padding_container">
             <div className="section-header-row">
@@ -672,6 +671,13 @@ export default function ProfilePage({
             </div>
           </StaggerItem>
           </div>
+          </div>}
+
+          {activeProfilePage === "skills" && (
+            <ProfileSkillLibrary userId={userId} username={player?.username || username} />
+          )}
+
+          {activeProfilePage === "history" && <ProfileRaceStats userId={userId} />}
         </StaggerContainer>
       {cropModal}
     </>
