@@ -3,6 +3,7 @@ import { ArrowDownRight, CalendarDays, ChevronRight, Flag, Sparkles, Trophy } fr
 import { BOT_API_BASE } from "../../api/playerApi";
 import NewsListingCard from "../../components/NewsListingCard";
 import NewsDetailsModal from "../../components/NewsDetailsModal";
+import homeHeroImage from "../../assets/bg/Home_Image.webp";
 import "../../styles/homePage.css";
 
 function bangkokDateKey(date) {
@@ -79,8 +80,7 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
   return (
     <main className="home-page">
       <section className="home-hero" aria-labelledby="home-title">
-        <img className="home-hero-art" src="/home-hero.png" alt="นักเรียนสาวหูม้าวิ่งอยู่บนสนามของโรงเรียน" />
-        <div className="home-hero-shade" aria-hidden="true" />
+        <div className="home-hero-shade" role="img" aria-label="กลุ่มนักเรียนสาวหูม้าวิ่งในสนามโรงเรียน" style={{ "--home-hero-image": `url("${homeHeroImage}")` }} />
         <div className="home-hero-copy">
           <span className="home-eyebrow"><Sparkles size={15} /> TRACEN ACADEMY · COMMUNITY HUB</span>
           <h1 id="home-title">วันใหม่ในรั้ว<br /><span>โรงเรียนเทรนเซ็น</span></h1>
@@ -105,7 +105,7 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
 
         <div className="home-event-summary"><span>UPCOMING EVENTS &amp; RACES</span><span>{upcomingEvents.length} / 6 รายการ</span></div>
         {upcomingEvents.length ? <div className="home-event-grid">
-          {upcomingEvents.map(({ item }, index) => <div className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><span className="home-event-index">{String(index + 1).padStart(2, "0")}</span><NewsListingCard item={item} compact onDetails={setSelectedItem} /></div>)}
+          {upcomingEvents.map(({ item }) => <div className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} compact onDetails={setSelectedItem} /></div>)}
         </div> : <div className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีกิจกรรมหรือการแข่งขันที่กำลังมาถึงหรือกำลังดำเนินอยู่</span></div>}
       </section>
 
