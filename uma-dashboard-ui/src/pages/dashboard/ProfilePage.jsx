@@ -338,16 +338,15 @@ export default function ProfilePage({
                   <p className="profile-identity-kicker">{isTrainer ? "TRAINER PROFILE" : "NPC PROFILE"}</p>
                   <div className="profile-name-row">
                     <div className="profile-name">{profileName}</div>
-                    <button
-                      type="button"
-                      className="rename-btn"
-                      onClick={() => {
-                        onRequestRename?.();
-                      }}
-                    >
-                      <img src={editIcon} alt="Rename trainer" />
-                    </button>
                   </div>
+                  <button
+                    type="button"
+                    className="rename-btn profile-edit-info-btn"
+                    onClick={() => onRequestRename?.()}
+                  >
+                    <img src={editIcon} alt="" />
+                    <span>เปลี่ยนชื่อ</span>
+                  </button>
                   {isTrainer && (
                     <div className="profile-resources trainer-profile-fans">
                       <ResourcePill icon={fansIcon} label="Team Fans" value={teamFans} />
@@ -514,12 +513,6 @@ export default function ProfilePage({
                   <div className="profile-name">{player?.username || username}</div>
                 </div>
 
-                <div className="profile-id">
-                  <Badge className="profile-discord-id">
-                    <img src={discordIcon} alt="" />
-                    <span>Discord ID: {userId}</span>
-                  </Badge>
-                </div>
                 <button
                   type="button"
                   className="rename-btn profile-edit-info-btn"
@@ -529,8 +522,15 @@ export default function ProfilePage({
                   }}
                 >
                   <img src={editIcon} alt="" />
-                  <span>แก้ไขข้อมูล</span>
+                  <span>เปลี่ยนชื่อ</span>
                 </button>
+
+                <div className="profile-id">
+                  <Badge className="profile-discord-id">
+                    <img src={discordIcon} alt="" />
+                    <span>Discord ID: {userId}</span>
+                  </Badge>
+                </div>
               </div>
               <div className="profile-resources">
                 <ResourcePill icon={fansIcon} label="Fans" value={player?.fans ?? 1} />
