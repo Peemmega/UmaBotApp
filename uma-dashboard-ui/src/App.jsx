@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -8,6 +8,9 @@ import { getAccountRole, getPlayer, selectAccountRole } from "./api/playerApi";
 import { APP_BASE_URL } from "./api/appConfig";
 import { getDiscordAvatarUrl, resolveSessionAvatar } from "./utils/avatar";
 import useModalScrollLock from "./hooks/useModalScrollLock";
+import useUiDialogs from "./hooks/useUiDialogs";
+import { Reveal } from "./components/ui";
+import { StaggerContainer, StaggerItem } from "./components/AnimatedStagger";
 import { ArrowRight, GraduationCap, ShieldAlert, Sparkles, Trophy, UsersRound } from "lucide-react";
 import { Capacitor } from "@capacitor/core";
 
@@ -87,7 +90,7 @@ function RoleSelection({ busy, error, onSelect }) {
 
   return (
     <main className="role-selection-page">
-      <section className="role-selection-card" aria-labelledby="role-selection-title">
+      <Reveal as="section" className="role-selection-card" aria-labelledby="role-selection-title">
         <div className="role-selection-heading">
           <span className="role-selection-crest"><Sparkles size={20} /></span>
           <div>
@@ -96,10 +99,10 @@ function RoleSelection({ busy, error, onSelect }) {
           </div>
         </div>
         <p className="role-selection-intro">เลือกบทบาทที่ต้องการเล่น เพื่อเริ่มต้นสร้างข้อมูลโปรไฟล์ของคุณ</p>
-        <div className="role-selection-grid">
+        <StaggerContainer className="role-selection-grid">
           {ROLE_CHOICES.map((role) => {
             return (
-              <button
+              <StaggerItem as="button"
                 key={role.id}
                 type="button"
                 className={`role-choice role-choice-${role.id}`}
@@ -116,19 +119,19 @@ function RoleSelection({ busy, error, onSelect }) {
                   <span>{role.detail}</span>
                 </span>
                 <span className="role-choice-cta">เลือกบทบาทนี้ <ArrowRight size={17} /></span>
-              </button>
+              </StaggerItem>
             );
           })}
-        </div>
+        </StaggerContainer>
         <p className="role-selection-note">บทบาทจะถูกบันทึกถาวรกับบัญชี Discord นี้</p>
         {busy && <p className="role-selection-status">Creating your profile...</p>}
         {error && <p className="role-selection-error">{error}</p>}
-      </section>
+      </Reveal>
 
       {pendingRole && (
         <div className="role-confirm-backdrop" role="presentation">
           <section
-            className={`role-confirm-modal role-confirm-${pendingRole.id}`}
+            className={`role-confirm-modal role-confirm-${pendingRole.id} profile-theme-${pendingRole.id}`}
             role="dialog"
             aria-modal="true"
             aria-labelledby="role-confirm-title"
@@ -173,19 +176,20 @@ function RoleSelection({ busy, error, onSelect }) {
 function RoleUnavailable({ onLogout }) {
   return (
     <main className="role-selection-page">
-      <section className="role-selection-card role-unavailable" aria-labelledby="role-unavailable-title">
+      <Reveal as="section" className="role-selection-card role-unavailable" aria-labelledby="role-unavailable-title">
         <span className="role-selection-crest"><ShieldAlert size={22} /></span>
         <h1 id="role-unavailable-title">ยังไม่มียศ</h1>
         <p className="role-selection-intro">บัญชี Discord นี้ยังไม่มียศ Trainer, Umamusume หรือ NPC ในเซิร์ฟเวอร์</p>
         <p className="role-selection-note">หลังได้รับยศแล้ว ให้เข้าสู่ระบบ Discord ใหม่เพื่ออัปเดตบทบาทในเว็บ</p>
         <button type="button" className="role-unavailable-login" onClick={onLogout}>ออกจากระบบและเข้าสู่ระบบใหม่</button>
-      </section>
+      </Reveal>
     </main>
   );
 }
 
 export default function App() {
   useModalScrollLock();
+  useUiDialogs();
 
   const [showIntro, setShowIntro] = useState(true);
   const [authLoading, setAuthLoading] = useState(!Capacitor.isNativePlatform());

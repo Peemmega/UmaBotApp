@@ -1,4 +1,6 @@
 import { RefreshCw, Plus } from "lucide-react";
+import { Reveal } from "../../components/ui";
+import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 
 export default function TcgLobbyPage({
   rooms,
@@ -13,7 +15,7 @@ export default function TcgLobbyPage({
 }) {
   return (
     <div className="tcg-online-shell">
-      <header className="tcg-online-header">
+      <Reveal as="header" className="tcg-online-header">
         <div>
           <span>Online Multiplayer</span>
           <h2>TCG Lobby</h2>
@@ -29,16 +31,16 @@ export default function TcgLobbyPage({
             {creating ? "Creating..." : "Create Room"}
           </button>
         </div>
-      </header>
+      </Reveal>
 
       {error && <div className="tcg-online-error">{error}</div>}
 
-      <div className="tcg-room-grid">
+      <StaggerContainer className="tcg-room-grid">
         {rooms.length === 0 ? (
           <div className="tcg-online-empty">No rooms yet.</div>
         ) : (
           rooms.map((room) => (
-            <article className="tcg-room-card" key={room.room_id}>
+            <StaggerItem as="article" className="tcg-room-card" key={room.room_id}>
               <div>
                 <span className={`tcg-room-status ${room.phase}`}>{room.phase}</span>
                 <h3>Room {room.room_code}</h3>
@@ -56,10 +58,10 @@ export default function TcgLobbyPage({
               >
                 {joiningRoomId === room.room_id ? "Joining..." : "Join"}
               </button>
-            </article>
+            </StaggerItem>
           ))
         )}
-      </div>
+      </StaggerContainer>
     </div>
   );
 }

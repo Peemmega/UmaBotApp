@@ -1,59 +1,16 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { Children, cloneElement, isValidElement } from "react";
+import Reveal from "./ui/Reveal";
 
-const containerVariants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.04,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: {
-    opacity: 0,
-    y: 18,
-    scale: 0.985,
-  },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.36,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-};
-
-export function StaggerContainer({ children, className = "", as = "div" }) {
-  const prefersReducedMotion = useReducedMotion();
-  const MotionTag = motion[as] || motion.div;
-
-  return (
-    <MotionTag
-      className={className}
-      variants={prefersReducedMotion ? undefined : containerVariants}
-      initial={prefersReducedMotion ? false : "hidden"}
-      animate="show"
-    >
-      {children}
-    </MotionTag>
-  );
+export function StaggerContainer({ children, className = "", as: Tag = "div" }) {
+  return <Tag className={className}>
+    {Children.map(children, (child, index) => (
+      isValidElement(child) && child.type === StaggerItem
+        ? cloneElement(child, { revealDelay: (index % 3) * 0.045 })
+        : child
+    ))}
+  </Tag>;
 }
 
-export function StaggerItem({ children, className = "", as = "div", ...props }) {
-  const prefersReducedMotion = useReducedMotion();
-  const MotionTag = motion[as] || motion.div;
-
-  return (
-    <MotionTag
-      className={className}
-      variants={prefersReducedMotion ? undefined : itemVariants}
-      {...props}
-    >
-      {children}
-    </MotionTag>
-  );
+export function StaggerItem({ children, className = "", as = "div", revealDelay = 0, ...props }) {
+  return <Reveal as={as} className={className} delay={revealDelay} whileHover={props.onClick && !props.disabled ? { y: -3 } : undefined} {...props}>{children}</Reveal>;
 }

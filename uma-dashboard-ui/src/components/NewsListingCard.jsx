@@ -31,7 +31,7 @@ export default function NewsListingCard({ item, onDetails, compact = false }) {
       <h3>{item.name || item.title || item.id}</h3>
       <p>{getNewsDescription(item)}</p>
       <span className="news-listing-details">
-        Details <ChevronsRight size={22} strokeWidth={3} aria-hidden="true" />
+        ดูรายละเอียด <ChevronsRight size={22} strokeWidth={2} aria-hidden="true" />
       </span>
     </div>
   </article>;

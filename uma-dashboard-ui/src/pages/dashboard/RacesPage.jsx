@@ -208,6 +208,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
     <section className="skills-page">
       <GameCard className="page-control-card race-page-card">
         <SectionHeader
+          level={1}
           title="รายการสนามทั้งหมด"
           kicker="Race Selection"
           action={<Badge>{filteredRaces.length} สนาม</Badge>}

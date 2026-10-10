@@ -262,6 +262,7 @@ export default function CharactersPage({ userId, player, profiles }) {
     <section className="characters-page">
       <GameCard className="page-control-card characters-page-card">
         <SectionHeader
+          level={1}
           title="สมาชิก"
           kicker="สมุดรายชื่อ"
           action={<Badge>{filteredCharacters.length} รายชื่อ</Badge>}

@@ -216,6 +216,7 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
     <section className="skills-page">
       <GameCard className="page-control-card skills-page-card">
         <SectionHeader
+          level={1}
           title="รายการ Skills ทั้งหมด"
           kicker="Skill Library"
           action={<Badge>{filteredSkills.length} สกิล</Badge>}
@@ -346,6 +347,16 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
             as="article"
             className="ui-game-card skill-card"
             key={skill.id}
+            role="button"
+            tabIndex={0}
+            aria-label={`ดูรายละเอียดสกิล ${skill.name || skill.id}`}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                playSound("open");
+                setSelectedSkill(skill);
+              }
+            }}
             onClick={() => {
               playSound("open");
               setSelectedSkill(skill);

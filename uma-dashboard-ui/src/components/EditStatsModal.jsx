@@ -1,6 +1,5 @@
-import React, { useMemo, useState } from "react";
-import clickSound from "../assets/sounds/click.mp3";
-import closeSound from "../assets/sounds/close.mp3";
+import { useMemo, useState } from "react";
+import { Dialog } from "./ui";
 import plusIcon from "../assets/icons/add.webp";
 import minusIcon from "../assets/icons/reduce.webp";
 
@@ -124,8 +123,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="stats-modal stats-modal-wide" onClick={(e) => e.stopPropagation()}>
+    <Dialog className="stats-modal stats-modal-wide" backdropClassName="modal-backdrop" title="ปรับค่าสถานะ" description="จัดสรร Stats Points ให้พร้อมสำหรับการฝึกและการแข่งขัน" closeDisabled={saving} onClose={onClose}>
         <div className="edit-stats-grid">
           {STAT_KEYS.map(([key, label]) => {
             const value = draftStats[key] ?? 1;
@@ -192,7 +190,6 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
         </div>
 
         {message ? <div className="save-message">{message}</div> : null}
-      </div>
-    </div>
+    </Dialog>
   );
 }

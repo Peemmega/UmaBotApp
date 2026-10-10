@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Reveal } from "../../components/ui";
 import DeckPreviewCard from "../../components/tcg/DeckPreviewCard";
 import TcgFloatingCardPreview from "../../components/tcg/TcgFloatingCardPreview";
 
@@ -32,7 +33,7 @@ export default function TcgDeckSelectOnline({
 
   return (
     <div className="tcg-online-shell">
-      <header className="tcg-online-header">
+      <Reveal as="header" className="tcg-online-header">
         <div>
           <span>Deck Select</span>
           <h2>Choose Your Deck</h2>
@@ -53,7 +54,7 @@ export default function TcgDeckSelectOnline({
             {confirming ? "Confirming..." : "Confirm Loadout"}
           </button>
         </div>
-      </header>
+      </Reveal>
 
       <div className="tcg-confirm-strip">
         <span>You: {youConfirmed && trainerConfirmed[myPlayerId] ? "Ready" : "Selecting"}</span>

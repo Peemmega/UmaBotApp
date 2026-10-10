@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDownRight, CalendarDays, ChevronRight, Flag, Sparkles, Trophy } from "lucide-react";
+import { ArrowDown, ArrowDownRight, CalendarDays, ChevronRight, Flag, Sparkles, Trophy } from "lucide-react";
+import { Reveal } from "../../components/ui";
+import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import { BOT_API_BASE } from "../../api/playerApi";
 import NewsListingCard from "../../components/NewsListingCard";
 import NewsDetailsModal from "../../components/NewsDetailsModal";
@@ -81,7 +83,7 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
     <main className="home-page">
       <section className="home-hero" aria-labelledby="home-title">
         <div className="home-hero-shade" role="img" aria-label="กลุ่มนักเรียนสาวหูม้าวิ่งในสนามโรงเรียน" style={{ "--home-hero-image": `url("${homeHeroImage}")` }} />
-        <div className="home-hero-copy">
+        <Reveal className="home-hero-copy">
           <span className="home-eyebrow"><Sparkles size={15} /> TRACEN ACADEMY · COMMUNITY HUB</span>
           <h1 id="home-title">วันใหม่ในรั้ว<br /><span>โรงเรียนเทรนเซ็น</span></h1>
           <p>{username ? `สวัสดี ${username} พร้อมออกวิ่งไปกับเพื่อน ๆ แล้วหรือยัง?` : "พร้อมออกวิ่งไปกับเพื่อน ๆ แล้วหรือยัง?"}<br />ติดตามกิจกรรมและเตรียมตัวลงสนามได้ที่นี่</p>
@@ -89,31 +91,31 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
             <button type="button" className="home-primary-action" onClick={() => onNavigate("races")}><Flag size={17} /> เข้าสู่สนามแข่ง <ChevronRight size={17} /></button>
             <button type="button" className="home-secondary-action" onClick={() => onNavigate("profile")}>ดูโปรไฟล์ <ArrowDownRight size={16} /></button>
           </div>
-        </div>
-        <div className="home-hero-note"><span>01</span><span>TRAIN · GROW · RUN</span></div>
+        </Reveal>
+        <div className="home-hero-note" aria-hidden="true"><ArrowDown size={16} /><span>ข่าวสารจากโรงเรียน</span></div>
       </section>
 
       <section className="home-events" aria-labelledby="home-events-title">
-        <header className="home-section-heading">
+        <Reveal as="header" className="home-section-heading">
           <div>
             <span className="home-eyebrow home-eyebrow-dark"><CalendarDays size={15} /> CAMPUS BULLETIN</span>
             <h2 id="home-events-title">ข่าวสาร &amp; กิจกรรม</h2>
             <p>กิจกรรมและการแข่งขันที่กำลังดำเนินอยู่หรือกำลังจะมาถึง</p>
           </div>
           <button type="button" className="home-view-all" onClick={() => onNavigate("news")}>ดูตารางทั้งหมด <ChevronRight size={17} /></button>
-        </header>
+        </Reveal>
 
         <div className="home-event-summary"><span>UPCOMING EVENTS &amp; RACES</span><span>{upcomingEvents.length} / 6 รายการ</span></div>
-        {upcomingEvents.length ? <div className="home-event-grid">
-          {upcomingEvents.map(({ item }) => <div className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} compact onDetails={setSelectedItem} /></div>)}
-        </div> : <div className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีกิจกรรมหรือการแข่งขันที่กำลังมาถึงหรือกำลังดำเนินอยู่</span></div>}
+        {upcomingEvents.length ? <StaggerContainer className="home-event-grid">
+          {upcomingEvents.map(({ item }) => <StaggerItem className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} compact onDetails={setSelectedItem} /></StaggerItem>)}
+        </StaggerContainer> : <Reveal className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีกิจกรรมหรือการแข่งขันที่กำลังมาถึงหรือกำลังดำเนินอยู่</span></Reveal>}
       </section>
 
-      <section className="home-lower-note">
+      <Reveal as="section" className="home-lower-note">
         <span className="home-note-icon"><Sparkles size={19} /></span>
         <div><strong>ทุกก้าวคือเรื่องราวบทใหม่</strong><span>แวะเช็กกำหนดการ แล้วชวนเพื่อนในทีมไปสนุกด้วยกัน</span></div>
         <button type="button" onClick={() => onNavigate("chars")}>พบกับเพื่อนร่วมทีม <ChevronRight size={17} /></button>
-      </section>
+      </Reveal>
 
       <NewsDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} userId={userId} profileType={profileType} />
     </main>

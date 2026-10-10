@@ -1,8 +1,15 @@
+import { useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import "../styles/appShell.css";
 
 export default function PageTransition({ children, className = "" }) {
   const prefersReducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (!document.body.classList.contains("modal-scroll-locked")) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }
+  }, []);
 
   const transition = prefersReducedMotion
     ? { duration: 0 }
@@ -12,14 +19,14 @@ export default function PageTransition({ children, className = "" }) {
       };
 
   return (
-    <motion.main
+    <motion.div
       className={`page-transition ${className}`.trim()}
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 24, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12 }}
+      initial={prefersReducedMotion ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={transition}
     >
       {children}
-    </motion.main>
+    </motion.div>
   );
 }

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { CalendarDays } from "lucide-react";
 import { BOT_API_BASE } from "../../api/playerApi";
-import { GameCard, SectionHeader } from "../../components/ui";
+import { GameCard, Reveal, SectionHeader } from "../../components/ui";
+import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import NewsListingCard from "../../components/NewsListingCard";
 import NewsDetailsModal from "../../components/NewsDetailsModal";
 import "../../styles/newsPage.css";
@@ -55,27 +56,27 @@ export default function NewsPage({ userId, profileType }) {
     `${a.date || ""}T${a.time || ""}`.localeCompare(`${b.date || ""}T${b.time || ""}`)
   )), [items]);
   const months = useMemo(() => [...new Set(ordered.map((item) => String(item.date || "").slice(0, 7)).filter(Boolean))], [ordered]);
-  const currentMonth = useMemo(currentBangkokMonthKey, []);
+  const currentMonth = useMemo(() => currentBangkokMonthKey(), []);
   const activeMonth = selectedMonth || (months.includes(currentMonth) ? currentMonth : months[0]) || "";
   const visibleItems = ordered.filter((item) => String(item.date || "").startsWith(activeMonth));
 
   return <main className="news-page" aria-label="News">
     <GameCard as="header" className="news-page-header-card">
-      <SectionHeader kicker="Community board" title="News" titleClassName="news-page-title" />
+      <SectionHeader level={1} kicker="Campus bulletin" title="ข่าวสาร & กิจกรรม" titleClassName="news-page-title" />
       <p className="news-page-description">กำหนดการ Event และการแข่งขันทั้งหมด เรียงตามวันเวลา GMT+7</p>
     </GameCard>
 
     <nav className="news-month-tabs" aria-label="เลือกเดือน">
-      {months.map((month) => <button type="button" key={month} className={activeMonth === month ? "is-active" : ""} aria-label={monthLabel(month)} onClick={() => setSelectedMonth(month)}>{monthShortLabel(month)}</button>)}
+      {months.map((month) => <button type="button" key={month} className={activeMonth === month ? "is-active" : ""} aria-pressed={activeMonth === month} aria-label={monthLabel(month)} onClick={() => setSelectedMonth(month)}>{monthShortLabel(month)}</button>)}
     </nav>
 
-    <section className="news-month-section" aria-label={activeMonth ? monthLabel(activeMonth) : "News"}>
+    <Reveal as="section" className="news-month-section" aria-label={activeMonth ? monthLabel(activeMonth) : "News"}>
       <div className="news-month-title"><CalendarDays size={22} /><h2>{activeMonth ? monthLabel(activeMonth) : "ยังไม่มีรายการ"}</h2><span>{visibleItems.length} รายการ</span></div>
-      <div className="news-page-list">
-        {visibleItems.map((item) => <NewsListingCard key={`${item.id}-${item.date}-${item.time}`} item={item} onDetails={setSelectedItem} />)}
+      <StaggerContainer className="news-page-list">
+        {visibleItems.map((item) => <StaggerItem key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} onDetails={setSelectedItem} /></StaggerItem>)}
         {!visibleItems.length ? <p className="news-empty">ยังไม่มี Event หรือการแข่งขันในเดือนนี้</p> : null}
-      </div>
-    </section>
+      </StaggerContainer>
+    </Reveal>
     <NewsDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} userId={userId} profileType={profileType} />
   </main>;
 }

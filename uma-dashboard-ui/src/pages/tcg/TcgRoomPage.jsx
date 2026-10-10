@@ -1,4 +1,5 @@
 import { DEFAULT_AVATAR_URL, resolveRaceAvatar } from "../../utils/avatar";
+import { Reveal } from "../../components/ui";
 
 export default function TcgRoomPage({
   room,
@@ -15,7 +16,7 @@ export default function TcgRoomPage({
 
   return (
     <div className="tcg-online-shell">
-      <header className="tcg-online-header">
+      <Reveal as="header" className="tcg-online-header">
         <div>
           <span>Waiting Room</span>
           <h2>Room {room.room_code}</h2>
@@ -28,13 +29,13 @@ export default function TcgRoomPage({
             {starting ? "Starting..." : "Start Game"}
           </button>
         </div>
-      </header>
+      </Reveal>
 
       <div className="tcg-player-slots">
         {["player1", "player2"].map((slot) => {
           const player = players[slot];
           return (
-            <div className="tcg-player-slot" key={slot}>
+            <Reveal className="tcg-player-slot" key={slot}>
               <strong>{slot === "player1" ? "Player 1" : "Player 2"}</strong>
               {player ? (
                 <>
@@ -45,7 +46,7 @@ export default function TcgRoomPage({
               ) : (
                 <span>Waiting for player...</span>
               )}
-            </div>
+            </Reveal>
           );
         })}
       </div>

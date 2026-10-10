@@ -1,5 +1,5 @@
-import { createPortal } from "react-dom";
-import { CalendarDays, Flag, MapPin, Trophy, Users, X } from "lucide-react";
+import { CalendarDays, Flag, MapPin, Trophy, Users } from "lucide-react";
+import { Dialog } from "./ui";
 import { getNewsDescription, getNewsImage, getNewsKind } from "../utils/newsItems";
 import RaceRegistrationPanel from "./RaceRegistrationPanel";
 import "../styles/newsPage.css";
@@ -41,9 +41,7 @@ export default function NewsDetailsModal({ item, onClose, userId, profileType })
   const fansRequired = formatFans(item.requirements?.fans_required ?? item.fans_required);
   const firstPlaceFans = formatFans(item.fans_reward_first);
 
-  const modal = <div className="news-modal-backdrop" role="presentation" onMouseDown={onClose}>
-    <section className="news-detail-modal" role="dialog" aria-modal="true" aria-labelledby="news-detail-title" onMouseDown={(event) => event.stopPropagation()}>
-      <button type="button" className="news-modal-close" onClick={onClose} aria-label="ปิดรายละเอียด"><X size={20} /></button>
+  return <Dialog onClose={onClose} className="news-detail-modal" backdropClassName="news-modal-backdrop" closeClassName="news-modal-close" labelledBy="news-detail-title" profileType={profileType}>
       {image ? <img className={`news-detail-image${isRace ? " is-race" : ""}`} src={image} alt="" /> : null}
       <div className="news-detail-body">
         <p className={`news-type-label ${isRace ? "race" : "event"}`}>{isRace ? "Race" : "Event"}</p>
@@ -60,8 +58,5 @@ export default function NewsDetailsModal({ item, onClose, userId, profileType })
         </div>}
         {isRace && userId ? <RaceRegistrationPanel event={item} userId={userId} profileType={profileType} /> : null}
       </div>
-    </section>
-  </div>;
-
-  return typeof document === "undefined" ? modal : createPortal(modal, document.body);
+  </Dialog>;
 }

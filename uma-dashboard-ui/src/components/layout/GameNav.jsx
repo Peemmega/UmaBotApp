@@ -1,31 +1,5 @@
-import {
-  BookOpen,
-  CalendarDays,
-  PanelsTopLeft,
-  CircleHelp,
-  Calculator,
-  Flag,
-  Sparkles,
-  Trophy,
-  UserRound,
-  UsersRound,
-  House,
-} from "lucide-react";
+import { gameNavItems } from "../../design/navigation";
 import { playSound } from "../../utils/soundManager";
-
-export const gameNavItems = [
-  { key: "home", label: "หน้าแรก", Icon: House },
-  { key: "profile", label: "โปรไฟล์", Icon: UserRound },
-  { key: "chars", label: "ตัวละคร", Icon: UsersRound },
-  { key: "races", label: "รายการแข่ง", Icon: Trophy },
-  { key: "news", label: "ตารางกิจกรรม", Icon: CalendarDays },
-  // { key: "tcg", label: "TCG", Icon: PanelsTopLeft },
-  { key: "skills", label: "สกิล", Icon: Sparkles },
-  { key: "race", label: "ห้องซ้อมวิ่ง", Icon: Flag },
-  { key: "tools", label: "เครื่องมือคำนวณ", Icon: Calculator },
-  { key: "tutorials", label: "เอกสาร", Icon: BookOpen, href: "https://docs.google.com/document/d/1Pi9xiyC6ontJzZ-cISxPAxtUi0LBWfMnmoWNUib8uCo/edit?usp=sharing" },
-  // { key: "qa", label: "Q&A", Icon: CircleHelp },
-];
 
 export default function GameNav({
   activePage,
@@ -41,7 +15,7 @@ export default function GameNav({
     : baseItems.filter((item) => item.key !== "skills");
 
   return (
-    <nav className="sidebar game-nav" aria-label="Game navigation">
+    <nav className="sidebar game-nav" aria-label="เมนูหลัก">
       {visibleItems.map((item) => {
         const isActive = !item.href && activePage === item.key;
         const Icon = item.Icon;

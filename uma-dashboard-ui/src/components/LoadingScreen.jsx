@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import icon from "../assets/icons/uma-icon.webp";
 import "../styles/loading.css";
 
 export default function LoadingScreen({ onFinished }) {
   const [hide, setHide] = useState(false);
+  const finishedCallback = useRef(onFinished);
+  useEffect(() => { finishedCallback.current = onFinished; }, [onFinished]);
 
   useEffect(() => {
     // เริ่ม fade
@@ -13,7 +15,7 @@ export default function LoadingScreen({ onFinished }) {
 
     // รอ fade เสร็จค่อย remove
     const removeTimer = setTimeout(() => {
-      onFinished?.();
+      finishedCallback.current?.();
     }, 2700); // ต้องมากกว่า transition (650ms)
 
     return () => {
@@ -23,9 +25,9 @@ export default function LoadingScreen({ onFinished }) {
   }, []);
 
   return (
-    <div className={`loading-screen ${hide ? "hide" : ""}`}>
+    <div className={`loading-screen ${hide ? "hide" : ""}`} role="status" aria-live="polite" aria-label="กำลังโหลดข้อมูล">
       <div className="loading-card">
-        <img src={icon} className="loading-icon" />
+        <img src={icon} className="loading-icon" alt="" />
         <div className="loading-title">Tracen Academy RP</div>
 
         <div className="loading-bar">

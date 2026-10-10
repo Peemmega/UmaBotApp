@@ -17,6 +17,7 @@ export default function FilterTabs({
           <button
             key={itemValue}
             type="button"
+            aria-pressed={isActive}
             className={`filter-btn ${isActive ? "active" : ""} ${buttonClassName}`.trim()}
             onClick={() => onChange?.(itemValue, item)}
           >

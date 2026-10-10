@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Reveal } from "../../components/ui";
 import {
   Activity,
   Bot,
@@ -1178,7 +1179,7 @@ export default function RaceGamePage({
   if (!room) {
     return (
     <section className={`race-page ${fullscreen ? "race-fullscreen-page" : ""}`} onClickCapture={handleRaceButtonSound}>
-        <header className="race-hero">
+        <Reveal as="header" className="race-hero">
           <div>
             <span className="race-kicker">ห้องซ้อมออนไลน์</span>
             <h2>ห้องล็อบบี้</h2>
@@ -1192,7 +1193,7 @@ export default function RaceGamePage({
               Refresh
             </button>
           </div>
-        </header>
+        </Reveal>
 
         {error && <div className="race-error">{error}</div>}
 

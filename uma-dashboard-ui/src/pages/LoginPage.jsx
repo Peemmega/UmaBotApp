@@ -4,6 +4,7 @@ import { playSound } from "../utils/soundManager";
 import "../styles/login.css";
 import { Capacitor } from "@capacitor/core";
 import { loginWithDiscordApp } from "../services/discordAuth";
+import { Reveal } from "../components/ui";
 
 const loginErrors = {
   not_a_server_member: "คุณต้องเข้าร่วม Discord server ก่อนจึงจะเข้าใช้งานได้",
@@ -25,8 +26,8 @@ function LoginFeedback({ loginError }) {
       style={{ backgroundImage: `url(${bgImage})` }}
     >
       <main className="login-page">
-        <section className="login-card login-feedback-card" role="alert" aria-live="assertive">
-          <div className="login-header">Uma Bot Dashboard</div>
+        <Reveal as="section" className="login-card login-feedback-card" role="alert" aria-live="assertive">
+          <div className="login-header">Tracen Academy</div>
           <div className="login-body login-feedback-body">
             <div className="login-feedback-icon" aria-hidden="true">!</div>
             <div className="login-badge">Tracen Academy RP</div>
@@ -50,7 +51,7 @@ function LoginFeedback({ loginError }) {
               กลับไปหน้าเข้าสู่ระบบ
             </button>
           </div>
-        </section>
+        </Reveal>
       </main>
     </div>
   );
@@ -69,8 +70,8 @@ export default function LoginPage({ appBase, loginError = "" }) {
       }}
     >
       <div className="login-page">
-        <div className="login-card">
-          <div className="login-header">Uma Bot Dashboard</div>
+        <Reveal className="login-card">
+          <div className="login-header">Tracen Academy</div>
 
           <div className="login-body">
             <div className="login-badge">Tracen Academy RP</div>
@@ -103,7 +104,7 @@ export default function LoginPage({ appBase, loginError = "" }) {
               }}
               className="login-button"
             >
-              <img src={discordIcon} className="login-button-icon" />
+              <img src={discordIcon} className="login-button-icon" alt="" />
               Login ด้วย Discord
             </button>
 
@@ -111,7 +112,7 @@ export default function LoginPage({ appBase, loginError = "" }) {
               Login ด้วย Discord เพื่อยืนยันตัวตนของคุณ
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </div>
   );

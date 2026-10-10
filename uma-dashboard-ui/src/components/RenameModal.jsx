@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { Dialog } from "./ui";
 import { playSound } from "../utils/soundManager";
 import { BOT_API_BASE } from "../api/playerApi";
 
@@ -7,6 +8,7 @@ export default function RenameModal({ userId, currentName, onClose, onSave, save
   const [closing, setClosing] = useState(false);
 
   const closeModal = () => {
+    if (closing) return;
     playSound("close");
     setClosing(true);
     setTimeout(onClose, 180);
@@ -49,18 +51,13 @@ export default function RenameModal({ userId, currentName, onClose, onSave, save
   };
 
   return (
-    <div className={`rename-backdrop ${closing ? "closing" : ""}`} onClick={closeModal}>
-      <div className={`rename-modal ${closing ? "closing" : ""}`} onClick={(e) => e.stopPropagation()}>
-        <div className="rename-header">
-          <h2>เปลี่ยนชื่อผู้ใช้</h2>
-          <button className="rename-close-btn" onClick={closeModal}>×</button>
-        </div>
-
+    <Dialog className="rename-modal" backdropClassName="rename-backdrop" closeClassName="rename-close-btn" title="เปลี่ยนชื่อผู้ใช้" closing={closing} closeDisabled={closing} onClose={closeModal}>
         <div className="rename-body">
-          <div className="rename-label">ชื่อที่แสดงบน Profile และการแข่ง</div>
+          <label htmlFor="rename-username" className="rename-label">ชื่อที่แสดงบน Profile และการแข่ง</label>
 
           <input
             className="rename-input"
+            id="rename-username"
             value={name}
             maxLength={24}
             onChange={(e) => setName(e.target.value)}
@@ -79,7 +76,6 @@ export default function RenameModal({ userId, currentName, onClose, onSave, save
             บันทึก
           </button>
         </div>
-      </div>
-    </div>
+    </Dialog>
   );
 }

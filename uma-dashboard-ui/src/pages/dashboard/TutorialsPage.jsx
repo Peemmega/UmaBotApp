@@ -73,7 +73,7 @@ export default function TutorialsPage() {
       <div className="padding-content tutorials-content">
         <GameCard className="tutorial-hero">
           <div>
-            <SectionHeader kicker="UmaDnD Race · ระบบล่าสุด" title="เริ่มแข่งได้ในไม่กี่ขั้นตอน" action={<StatusChip status="live">อัปเดตล่าสุด</StatusChip>} />
+            <SectionHeader level={1} kicker="UmaDnD Race · ระบบล่าสุด" title="เริ่มแข่งได้ในไม่กี่ขั้นตอน" action={<StatusChip status="live">อัปเดตล่าสุด</StatusChip>} />
             <p>คู่มือฉบับย่อสำหรับ Dashboard และ Discord Bot: สร้างโปรไฟล์ เข้าร่วมการแข่งขัน วางแผนสกิลและเลน ทอยเต๋า แล้วสะสมคะแนนเพื่อคว้าชัยชนะ</p>
             <div className="tutorial-chip-row"><Badge>Turn-based Race</Badge><Badge>Discord Login</Badge><Badge>Fans เริ่มต้น 1</Badge><Badge>Skill + Zone</Badge></div>
           </div>

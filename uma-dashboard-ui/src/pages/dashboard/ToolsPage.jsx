@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Calculator, Gauge, MoveHorizontal, Route, Sparkles } from "lucide-react";
-import { GameCard, SectionHeader } from "../../components/ui";
+import { GameCard, Reveal, SectionHeader } from "../../components/ui";
 import "../../styles/toolsPage.css";
 
 const APTITUDES = [
@@ -56,6 +56,8 @@ export default function ToolsPage() {
     <section className="tools-page" aria-labelledby="tools-title">
       <GameCard className="tools-page-header-card">
         <SectionHeader
+          level={1}
+          titleId="tools-title"
           kicker="เครื่องมือคำนวณ"
           title="Wit Calculator"
           titleClassName="tools-title"
@@ -64,7 +66,7 @@ export default function ToolsPage() {
         <p className="tools-page-description">คำนวณค่า Wisdom ตามระดับ Aptitude และ Turn ของสนาม</p>
       </GameCard>
 
-      <section className="wit-calculator" aria-label="Wit calculator">
+      <Reveal as="section" className="wit-calculator" aria-label="Wit calculator">
         <div className="wit-controls">
           <label className="wit-control">
             <span><Sparkles size={16} /> Style Aptitude</span>
@@ -104,7 +106,7 @@ export default function ToolsPage() {
             </tbody>
           </table>
         </div>
-      </section>
+      </Reveal>
     </section>
   );
 }

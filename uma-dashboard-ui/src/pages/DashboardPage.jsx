@@ -169,6 +169,9 @@ export default function DashboardPage({
       case "news":
         return <NewsPage userId={userId} profileType={activeProfileType} />;
 
+      case "race-replay":
+        return <RaceReplayPage raceId={new URLSearchParams(window.location.search).get("race")} onBack={() => changePage("races")} />;
+
       case "profile":
       default:
         return (
@@ -324,23 +327,19 @@ export default function DashboardPage({
     </>
   );
 
-  if (activePage === "race-replay") {
-    const raceId = new URLSearchParams(window.location.search).get("race");
-    return <RaceReplayPage raceId={raceId} onBack={() => changePage("races")} />;
-  }
-
   return (
     <AppShell
       profileType={activeProfileType}
       topBar={
         <TopBar
+          onHomeClick={() => changePage("home")}
           unreadCount={unreadCount}
           onMailClick={() => setIsMailboxOpen(true)}
           onLogout={onLogout}
           profileDesk={PROFILE_TYPES[activeProfileType]?.desk}
           notificationPermission={notificationPermission}
           onEnableNotifications={enableNotifications}
-          nav={<GameNav activePage={activePage} onChangePage={changePage} profileType={activeProfileType} />}
+          nav={<GameNav activePage={activePage === "race-replay" ? "races" : activePage} onChangePage={changePage} profileType={activeProfileType} />}
         />
       }
       modals={modals}

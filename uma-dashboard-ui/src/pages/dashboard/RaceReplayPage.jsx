@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { BOT_API_BASE } from "../../api/playerApi";
 import RacePositionTrack from "../../components/RacePositionTrack";
+import { Reveal } from "../../components/ui";
 import { resolveRaceAvatar } from "../../utils/avatar";
 import "../../styles/raceReplayPage.css";
 
@@ -195,7 +196,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
 
   return (
     <section className="race-replay-page" aria-label="รีเพลย์การแข่งขัน">
-      <header className="race-replay-header">
+      <Reveal as="header" className="race-replay-header">
         <button type="button" className="race-replay-back" onClick={onBack}><ChevronLeft size={18} /> กลับ</button>
         <div>
           <span>RACE REPLAY</span>
@@ -203,10 +204,10 @@ export default function RaceReplayPage({ raceId, onBack }) {
           <p>{race.track || "-"} · {race.distance || "-"} · ผู้เข้าแข่งขัน {participants.length} คน</p>
         </div>
         <div className="race-replay-turn-counter"><Flag size={17} /> เทิร์น {selectedTurn} / {totalTurns}</div>
-      </header>
+      </Reveal>
 
       <div className="race-replay-layout">
-        <aside className="race-replay-log-panel">
+        <Reveal as="aside" className="race-replay-log-panel">
           <h2><ListChecks size={17} /> Race log</h2>
           <p className="race-replay-panel-caption">{selectedTurn === 0 ? "ตำแหน่งก่อนเริ่มการแข่งขัน" : `เหตุการณ์ในเทิร์น ${selectedTurn}`}</p>
           <div className="race-replay-log-list">
@@ -223,9 +224,9 @@ export default function RaceReplayPage({ raceId, onBack }) {
               </article>
             )) : <p className="race-replay-empty">เริ่มต้นที่เส้นสตาร์ต</p>}
           </div>
-        </aside>
+        </Reveal>
 
-        <main className="race-replay-track-panel">
+        <Reveal as="main" className="race-replay-track-panel">
           <div className="race-replay-track-header"><span>START</span><strong>{selectedTurn === totalTurns && totalTurns ? "FINISH" : `TURN ${selectedTurn}`}</strong><span>FINISH</span></div>
           <div className="race-replay-stage">
             {/* <img src={raceBackground(race)} alt="สนามแข่ง" /> */}
@@ -257,9 +258,9 @@ export default function RaceReplayPage({ raceId, onBack }) {
               return <button type="button" key={turn} className={selectedTurn === turn ? "active" : ""} onClick={() => goToTurn(turn)}>T{turn}</button>;
             })}
           </div>
-        </main>
+        </Reveal>
 
-        <aside className="race-replay-score-panel">
+        <Reveal as="aside" className="race-replay-score-panel">
           <h2><Trophy size={17} /> Scoreboard</h2>
           <p className="race-replay-panel-caption">อันดับ ณ เทิร์น {selectedTurn}</p>
           <ol className="race-replay-score-list">
@@ -274,7 +275,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
               </li>
             ))}
           </ol>
-        </aside>
+        </Reveal>
       </div>
     </section>
   );

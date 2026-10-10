@@ -1,18 +1,5 @@
 import { useEffect } from "react";
-
-const MODAL_SELECTOR = [
-  ".mailbox-backdrop",
-  ".rename-backdrop",
-  ".zone-edit-backdrop",
-  ".profile-crop-backdrop",
-  ".team-invite-backdrop",
-  ".skill-equip-backdrop",
-  ".skill-loadout-detail-backdrop",
-  ".skill-preset-backdrop",
-  ".character-profile-backdrop",
-  ".news-modal-backdrop",
-  ".registration-confirm-backdrop",
-].join(", ");
+import { BACKDROP_SELECTOR } from "../design/uiConfig";
 
 export default function useModalScrollLock() {
   useEffect(() => {
@@ -40,7 +27,7 @@ export default function useModalScrollLock() {
     };
 
     const syncLock = () => {
-      const hasOpenModal = Boolean(document.querySelector(MODAL_SELECTOR));
+      const hasOpenModal = Boolean(document.querySelector(BACKDROP_SELECTOR));
       if (!hasOpenModal) {
         unlock();
         return;

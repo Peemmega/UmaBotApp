@@ -1,12 +1,15 @@
+import Reveal from "./Reveal";
+
 export default function GameCard({
   as: Component = "section",
   className = "",
   children,
+  reveal = true,
   ...props
 }) {
   return (
-    <Component className={`ui-game-card ${className}`.trim()} {...props}>
+    <Reveal as={Component} reveal={reveal} className={`ui-game-card ${className}`.trim()} {...props}>
       {children}
-    </Component>
+    </Reveal>
   );
 }
