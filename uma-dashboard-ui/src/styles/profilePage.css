@@ -731,6 +731,98 @@
   .profile-redesign .profile-identity-card .resource-icon { width: 20px; height: 20px; }
 }
 
+@media (min-width: 901px) {
+  .profile-redesign { gap: 14px; }
+  .profile-redesign .profile-hero { min-height: 284px; border-radius: 18px; }
+  .profile-redesign .profile-hero-art { height: 238px; }
+  .profile-redesign .profile-hero .profile-body { grid-template-columns: minmax(150px, 185px) minmax(0, 1fr); gap: 22px; min-height: 284px; padding: 38px 22px 18px; }
+  .profile-redesign .profile-hero .profile-avatar { height: clamp(130px, 12vw, 165px); }
+  .profile-redesign .profile-hero .profile-info { padding: 16px 18px; border-radius: 16px; }
+  .profile-redesign .profile-hero .profile-name { font-size: clamp(24px, 2.2vw, 32px); }
+  .profile-redesign .profile-hero .profile-resources { gap: 7px; margin-top: 12px; }
+  .profile-redesign .profile-hero .profile-resources > div { padding: 7px 9px; }
+  .profile-redesign .profile-hero .resource-label { font-size: 10px; }
+  .profile-redesign .profile-hero .resource-value { font-size: 20px; }
+  .profile-redesign .profile-hero .resource-icon { width: 24px; height: 24px; }
+  .profile-redesign .profile-identity-card .profile-body {
+    grid-template-columns: minmax(205px, 22%) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 76px;
+    min-height: 284px;
+    padding: 14px 16px 12px;
+    gap: 8px 24px;
+  }
+  .profile-redesign .profile-identity-card .profile-avatar-wrap { padding: 7px 7px 9px; }
+  .profile-redesign .profile-identity-card .profile-avatar-actions { gap: 4px; }
+  .profile-redesign .profile-identity-card .profile-image-btn,
+  .profile-redesign .profile-identity-card .profile-image-upload-btn { padding: 6px 10px; font-size: 11px; }
+  .profile-redesign .profile-identity-card .profile-name { font-size: clamp(27px, 2.5vw, 35px); }
+  .profile-redesign .profile-identity-card .profile-id { margin-top: 9px; }
+  .profile-redesign .profile-identity-card .profile-edit-info-btn { margin-top: 8px; padding: 8px 13px; font-size: 12px; }
+  .profile-redesign .profile-identity-card .profile-resources { padding: 7px 10px; }
+  .profile-redesign .profile-identity-card .resource-label { font-size: 11px; }
+  .profile-redesign .profile-identity-card .resource-value { font-size: 19px; }
+  .profile-redesign .profile-identity-card .resource-icon { width: 23px; height: 23px; }
+
+  .profile-redesign .profile-section-nav { gap: 5px; padding: 5px; }
+  .profile-redesign .profile-section-nav button { padding: 9px 11px; font-size: 13px; }
+  .profile-redesign .profile-stats-page { gap: 14px; }
+  .profile-redesign .profile-data-panel { padding: 17px; border-radius: 18px; }
+  .profile-redesign .profile-section-header .ui-section-header-title { font-size: 25px; }
+  .profile-redesign .main-stats-header { margin-bottom: 13px; }
+  .profile-redesign .update-stats-btn { gap: 7px; padding: 9px 15px; font-size: 12px; }
+  .profile-redesign .update-stats-icon { width: 16px; height: 16px; }
+  .profile-redesign .stats-grid { gap: 8px; }
+  .profile-redesign .stat-cell { min-height: 108px; border-radius: 13px; }
+  .profile-redesign .stat-header { min-height: 49px; padding: 8px 10px 4px; font-size: 14px; }
+  .profile-redesign .stat-icon-frame { width: 36px; height: 36px; border-radius: 10px; }
+  .profile-redesign .stat-icon { width: 25px; height: 25px; }
+  .profile-redesign .stat-body { gap: 9px; padding: 4px 7px 9px; }
+  .profile-redesign .grade-image { height: 32px; }
+  .profile-redesign .stat-value { font-size: 26px; }
+  .profile-redesign .profile-data-panel .title-banner { margin-top: 16px; padding: 14px 0 9px; }
+  .profile-redesign .profile-data-panel .title-banner h2 { font-size: 22px; }
+  .profile-redesign .aptitude-table { gap: 7px; }
+  .profile-redesign .aptitude-row { grid-template-columns: 86px 1fr; gap: 8px; }
+  .profile-redesign .aptitude-row-title { font-size: 14px; }
+  .profile-redesign .aptitude-row-items { gap: 6px; }
+  .profile-redesign .aptitude-item { min-height: 42px; padding: 5px 8px; }
+  .profile-redesign .aptitude-icon { width: 23px; height: 23px; font-size: 15px; }
+  .profile-redesign .aptitude-name { font-size: 12px; }
+  .profile-redesign .aptitude-grade-image { height: 22px; }
+
+  .profile-redesign .profile-library-panel,
+  .profile-redesign .profile-race-stats { padding: 20px; border-radius: 18px; }
+  .profile-redesign .profile-library-header h2 { font-size: 25px; }
+  .profile-redesign .profile-skill-search { margin: 14px 0; }
+  .profile-redesign .profile-skill-search input { min-height: 38px; }
+  .profile-redesign .profile-skill-grid { gap: 7px; }
+  .profile-redesign .profile-skill-card { grid-template-columns: 36px minmax(0,1fr) auto; min-height: 60px; gap: 8px; padding: 8px; }
+  .profile-redesign .profile-skill-icon { width: 36px; height: 36px; }
+  .profile-redesign .profile-skill-icon img { width: 29px; height: 29px; }
+  .profile-redesign .profile-race-summary { gap: 8px; }
+  .profile-redesign .profile-race-summary > div { min-height: 72px; padding: 9px 12px; }
+  .profile-redesign .profile-race-summary strong { font-size: 27px; }
+  .profile-redesign .profile-race-list-section { margin-top: 17px; }
+
+  .profile-redesign .profile-lower-grid { gap: 16px; }
+  .profile-redesign .profile-lower-panel > section,
+  .profile-redesign .trainer-team-card { border-radius: 17px; }
+  .profile-redesign .profile-lower-panel .title-banner,
+  .profile-redesign .trainer-team-card .title-banner { padding: 12px 16px; }
+  .profile-redesign .profile-lower-panel .title-banner h2,
+  .profile-redesign .trainer-team-card .title-banner h2 { font-size: 20px; }
+  .profile-redesign .skill-loadout-list { padding: 11px 14px 9px; gap: 6px; }
+  .profile-redesign .skill-loadout-item { min-height: 47px; }
+  .profile-redesign .skill-loadout-slot { width: 27px; height: 27px; }
+  .profile-redesign .skill-loadout-preset-bar { padding: 0 14px 14px; }
+  .profile-redesign .skill-loadout-preset-button { min-height: 43px; padding: 8px 14px; font-size: 13px; }
+  .profile-redesign .profile-lower-panel .padding-content { padding: 14px; }
+  .profile-redesign .zone-image-frame { height: clamp(150px, 15vw, 205px); margin-bottom: 9px; }
+  .profile-redesign .zone-edit-btn { top: 22px; right: 22px; width: 34px; height: 34px; }
+  .profile-redesign .zone-name-row h3 { font-size: 19px; }
+  .profile-redesign .zone-summary { font-size: 13px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .profile-redesign .profile-section-nav button { transition: none; }
 }
