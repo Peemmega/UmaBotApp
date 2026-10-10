@@ -65,7 +65,7 @@
 .home-event-item .news-listing-card.is-compact .news-listing-details { margin-top: auto; padding-top: 4px; font-size: 11px; }
 .home-event-item .news-listing-card.is-compact.is-event .news-listing-kind,
 .home-month-panel .news-listing-card.is-event .news-listing-kind { background: #fff0f4; color: #b64261; }
-.home-event-item .news-listing-card.is-compact.is-race .news-listing-kind { background: #eaf4ff; color: #326995; }
+.home-event-item .news-listing-card.is-compact.is-race .news-listing-kind { background: #2475a9; color: #fff; }
 .home-event-item .news-listing-card.is-compact.is-news .news-listing-kind { background: #f2edff; color: #7053a3; }
 .home-event-item .news-listing-card.is-compact.is-patch .news-listing-kind { background: #e8f7f2; color: #28796d; }
 .home-month-panel .news-listing-card.is-event { display: flex; height: 100%; min-height: 0; flex-direction: column; border-color: #f0dfe5; border-radius: 14px; box-shadow: none; }
@@ -87,7 +87,7 @@
 .home-month-panel .home-month-slide { display: flex; min-height: 0; flex: 1; }
 .home-month-panel .home-month-slide > .news-listing-card { flex: 1; }
 .home-news-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 13px; }
-.home-news-filters button { min-height: 34px; padding: 6px 12px; border: 1px solid #e9e4ea; border-radius: 999px; background: #fff; color: #74717d; font: inherit; font-size: 11px; font-weight: 750; cursor: pointer; transition: background 150ms ease, color 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
+.home-news-filters button { min-height: 34px; padding: 6px 12px; border: 1px solid #e9e4ea; border-radius: 8px 3px 15px 8px; background: #fff; color: #74717d; font: inherit; font-size: 11px; font-weight: 750; cursor: pointer; transition: background 150ms ease, color 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
 .home-page .home-news-filters button { font-size: 13px; }
 .home-news-filters button:hover { border-color: #e6a9b6; color: #a84760; }
 .home-news-filters button.is-active { border-color: var(--uma-primary); background: var(--uma-primary); color: #fff; box-shadow: 0 4px 12px #db6b8130; }
