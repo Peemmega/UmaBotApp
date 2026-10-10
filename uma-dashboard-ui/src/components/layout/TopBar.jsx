@@ -8,7 +8,6 @@ export default function TopBar({
   onMailClick,
   onLogout,
   onHomeClick,
-  profileDesk = "Trainee Desk",
   notificationPermission = "unsupported",
   onEnableNotifications,
   nav,
@@ -27,8 +26,6 @@ export default function TopBar({
         </button>
 
         <div className="dashboard-actions">
-          <span className="topbar-status">{profileDesk}</span>
-
           {notificationPermission !== "granted" && notificationPermission !== "unsupported" && (
             <button type="button" className="notification-btn" onClick={onEnableNotifications} aria-label="เปิดการแจ้งเตือน" title="เปิดการแจ้งเตือน">
               <Bell size={18} /><span className="topbar-action-label">แจ้งเตือน</span>

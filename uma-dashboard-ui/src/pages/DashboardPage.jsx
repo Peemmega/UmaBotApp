@@ -9,7 +9,6 @@ import PageTransition from "../components/PageTransition";
 import { AppShell, GameNav, TopBar } from "../components/layout";
 import { BOT_API_BASE, uploadPresetProfileImage } from "../api/playerApi";
 import {
-  PROFILE_TYPES,
   loadActiveProfileType,
   loadProfilePresets,
   saveProfilePresets,
@@ -336,7 +335,6 @@ export default function DashboardPage({
           unreadCount={unreadCount}
           onMailClick={() => setIsMailboxOpen(true)}
           onLogout={onLogout}
-          profileDesk={PROFILE_TYPES[activeProfileType]?.desk}
           notificationPermission={notificationPermission}
           onEnableNotifications={enableNotifications}
           nav={<GameNav activePage={activePage === "race-replay" ? "races" : activePage} onChangePage={changePage} profileType={activeProfileType} />}

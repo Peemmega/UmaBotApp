@@ -120,7 +120,10 @@ button:disabled { cursor: not-allowed; }
 .topbar-kicker { font-size: 9px; font-weight: 700; letter-spacing: .16em; margin: 0 0 7px; }
 .dashboard-title { font-size: clamp(16px, 1.4vw, 21px); font-weight: 800; line-height: 1.3; }
 .dashboard-actions { flex-wrap: nowrap; gap: 8px; }
-.topbar-status { font-size: 10px; padding: 5px 9px; background: var(--uma-bg-soft); color: var(--uma-primary-dark); box-shadow: none; }
+.topbar .dashboard-actions .topbar-action-label { display: none; }
+.topbar .dashboard-actions .danger-btn .topbar-action-label { display: inline; }
+.topbar .dashboard-actions :is(.discord-btn, .mail-btn, .notification-btn) { width: 40px; min-width: 40px; justify-content: center; gap: 0; padding-inline: 0; }
+.topbar .dashboard-actions .danger-btn { width: auto; min-width: max-content; justify-content: center; gap: 8px; padding-inline: 12px; font-size: 13px; }
 .topbar :is(.discord-btn, .mail-btn, .notification-btn, .danger-btn) {
   min-height: 40px;
   border: 1px solid var(--uma-border);
@@ -458,7 +461,6 @@ button:disabled { cursor: not-allowed; }
 @keyframes ui-dialog-exit { to { opacity: 0; transform: translateY(8px); } }
 
 @media (max-width: 1000px) {
-  .topbar-status { display: none; }
   .topbar .game-nav { gap: 0 16px; }
   .topbar .game-nav-btn { font-size: 14px; }
 }
@@ -479,7 +481,8 @@ button:disabled { cursor: not-allowed; }
   .topbar-kicker { display: none; }
   .topbar .dashboard-title { display: block; font-size: 16px; max-width: 150px; }
   .dashboard-actions { gap: 5px; }
-  .topbar :is(.discord-btn, .mail-btn, .danger-btn, .notification-btn) { width: 36px; min-height: 36px; padding: 6px; }
+  .topbar .dashboard-actions :is(.discord-btn, .mail-btn, .notification-btn) { width: 36px; min-width: 36px; min-height: 36px; padding: 6px; }
+  .topbar .dashboard-actions .danger-btn { width: auto; min-width: max-content; min-height: 36px; padding: 6px 10px; }
   .topbar-action-label { display: none; }
   .topbar .game-nav { gap: 0; justify-content: flex-start; }
   .topbar .game-nav-btn { flex: 0 0 25%; justify-content: center; min-height: 44px; padding: 10px 2px; gap: 4px; font-size: 10px; }

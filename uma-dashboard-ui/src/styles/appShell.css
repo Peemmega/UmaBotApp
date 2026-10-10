@@ -267,18 +267,6 @@
   box-shadow: var(--uma-shadow-soft);
 }
 
-.topbar-status {
-  border: 1px solid var(--uma-border);
-  border-radius: var(--uma-radius-pill);
-  padding: 8px 13px;
-  background: rgba(255, 255, 255, 0.72);
-  color: var(--uma-muted);
-  font-size: 12px;
-  font-weight: 1000;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
 .discord-btn,
 .mail-btn,
 .danger-btn,
@@ -593,10 +581,6 @@
   .topbar-main {
     flex-direction: row;
     align-items: center;
-  }
-
-  .topbar-status {
-    display: none;
   }
 
   .dashboard-title {
