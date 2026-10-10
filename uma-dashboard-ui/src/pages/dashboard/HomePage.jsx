@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowDownRight, CalendarDays, ChevronRight, Flag, Sparkles, Trophy } from "lucide-react";
 import { Reveal } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import { BOT_API_BASE } from "../../api/playerApi";
 import NewsListingCard from "../../components/NewsListingCard";
 import NewsDetailsModal from "../../components/NewsDetailsModal";
+import { getNewsKind, getNewsTimestamp } from "../../utils/newsItems";
 import homeHeroImage from "../../assets/bg/Home_Image.webp";
 import "../../styles/homePage.css";
 
@@ -17,6 +19,33 @@ function bangkokDateKey(date) {
   }).formatToParts(date);
   const part = (type) => parts.find((item) => item.type === type)?.value;
   return `${part("year")}-${part("month")}-${part("day")}`;
+}
+
+function bangkokMonthKey(date) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "2-digit",
+  }).formatToParts(date);
+  const part = (type) => parts.find((item) => item.type === type)?.value;
+  return `${part("year")}-${part("month")}`;
+}
+
+function formatBangkokMonth(monthKey) {
+  const [year, month] = monthKey.split("-").map(Number);
+  return new Intl.DateTimeFormat("th-TH", {
+    timeZone: "Asia/Bangkok",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(Date.UTC(year, month - 1, 1, 12)));
+}
+
+function formatBangkokDay(date) {
+  return new Intl.DateTimeFormat("th-TH", {
+    timeZone: "Asia/Bangkok",
+    weekday: "short",
+    day: "2-digit",
+  }).format(date);
 }
 
 function parseBangkokDate(value, time = "00:00") {
@@ -46,6 +75,10 @@ function getEventEnd(item, start) {
 export default function HomePage({ username, userId, profileType, onNavigate }) {
   const [items, setItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [activeMonthEvent, setActiveMonthEvent] = useState(0);
+  const [carouselDirection, setCarouselDirection] = useState(1);
+  const prefersReducedMotion = useReducedMotion();
+  const currentMonth = bangkokMonthKey(new Date());
 
   useEffect(() => {
     const controller = new AbortController();
@@ -79,6 +112,29 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
       .slice(0, 6);
   }, [items]);
 
+  const thisMonthEvents = useMemo(() => {
+    return items
+      .filter((item) => getNewsKind(item) === "event" && String(item.date || "").startsWith(currentMonth))
+      .map((item) => {
+        const start = getEventStart(item);
+        return { item, start };
+      })
+      .filter(({ start }) => start)
+      .sort((a, b) => a.start - b.start)
+      .slice(0, 6);
+  }, [items, currentMonth]);
+
+  const activeMonthEventIndex = thisMonthEvents.length
+    ? activeMonthEvent % thisMonthEvents.length
+    : 0;
+  const activeMonthEventItem = thisMonthEvents[activeMonthEventIndex];
+
+  const changeMonthEvent = (direction) => {
+    if (thisMonthEvents.length < 2) return;
+    setCarouselDirection(direction);
+    setActiveMonthEvent((index) => (index + direction + thisMonthEvents.length) % thisMonthEvents.length);
+  };
+
   return (
     <main className="home-page">
       <section className="home-hero" aria-labelledby="home-title">
@@ -105,10 +161,56 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
           <button type="button" className="home-view-all" onClick={() => onNavigate("news")}>ดูตารางทั้งหมด <ChevronRight size={17} /></button>
         </Reveal>
 
-        <div className="home-event-summary"><span>UPCOMING EVENTS &amp; RACES</span><span>{upcomingEvents.length} / 6 รายการ</span></div>
-        {upcomingEvents.length ? <StaggerContainer className="home-event-grid">
-          {upcomingEvents.map(({ item }) => <StaggerItem className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} compact onDetails={setSelectedItem} /></StaggerItem>)}
-        </StaggerContainer> : <Reveal className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีกิจกรรมหรือการแข่งขันที่กำลังมาถึงหรือกำลังดำเนินอยู่</span></Reveal>}
+        <div className="home-events-layout">
+          <section className="home-month-panel" aria-labelledby="home-month-title">
+            <header className="home-month-heading">
+              <div>
+                <span className="home-month-kicker"><CalendarDays size={14} /> MONTHLY EVENTS</span>
+                <h3 id="home-month-title">{formatBangkokMonth(currentMonth)}</h3>
+              </div>
+              <span className="home-month-count">{thisMonthEvents.length} รายการ</span>
+            </header>
+            {activeMonthEventItem ? <div className="home-month-carousel" aria-label="กิจกรรมประจำเดือน">
+              <AnimatePresence mode="wait" initial={false} custom={carouselDirection}>
+                <motion.div
+                  className="home-month-slide"
+                  key={`${activeMonthEventItem.item.id}-${activeMonthEventItem.item.date}-${activeMonthEventItem.item.time}`}
+                  custom={carouselDirection}
+                  initial={{ opacity: 0, x: prefersReducedMotion ? 0 : carouselDirection * 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: prefersReducedMotion ? 0 : carouselDirection * -20 }}
+                  transition={{ duration: prefersReducedMotion ? 0 : 0.2, ease: "easeOut" }}
+                  aria-live="polite"
+                >
+                  <button type="button" className="home-month-event" onClick={() => setSelectedItem(activeMonthEventItem.item)}>
+                    <time dateTime={activeMonthEventItem.start.toISOString()}>{formatBangkokDay(activeMonthEventItem.start)}</time>
+                    <span className="home-month-event-copy">
+                      <small className="home-month-event-label">EVENT</small>
+                      <strong>{activeMonthEventItem.item.name || activeMonthEventItem.item.title || activeMonthEventItem.item.id}</strong>
+                      <small>{getNewsTimestamp(activeMonthEventItem.item)}</small>
+                    </span>
+                    <ChevronRight size={17} aria-hidden="true" />
+                  </button>
+                </motion.div>
+              </AnimatePresence>
+              <div className="home-month-controls" aria-label="เปลี่ยนกิจกรรม">
+                <span className="home-month-position">{String(activeMonthEventIndex + 1).padStart(2, "0")} / {String(thisMonthEvents.length).padStart(2, "0")}</span>
+                <div className="home-month-arrows">
+                  <button type="button" aria-label="กิจกรรมก่อนหน้า" onClick={() => changeMonthEvent(-1)} disabled={thisMonthEvents.length < 2}><ChevronRight size={16} aria-hidden="true" /></button>
+                  <button type="button" aria-label="กิจกรรมถัดไป" onClick={() => changeMonthEvent(1)} disabled={thisMonthEvents.length < 2}><ChevronRight size={16} aria-hidden="true" /></button>
+                </div>
+              </div>
+            </div> : <p className="home-month-empty">เดือนนี้ยังไม่มี Event</p>}
+            <button type="button" className="home-month-more" onClick={() => onNavigate("news")}>ดู Event ทั้งเดือน <ChevronRight size={15} /></button>
+          </section>
+
+          <section className="home-upcoming-panel" aria-label="กิจกรรมและการแข่งขันที่กำลังมาถึง">
+            <div className="home-event-summary"><span>UPCOMING EVENTS &amp; RACES</span><span>{upcomingEvents.length} / 6 รายการ</span></div>
+            {upcomingEvents.length ? <StaggerContainer className="home-event-grid">
+              {upcomingEvents.map(({ item }) => <StaggerItem className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><NewsListingCard item={item} compact onDetails={setSelectedItem} /></StaggerItem>)}
+            </StaggerContainer> : <Reveal className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีกิจกรรมหรือการแข่งขันที่กำลังมาถึงหรือกำลังดำเนินอยู่</span></Reveal>}
+          </section>
+        </div>
       </section>
 
       <Reveal as="section" className="home-lower-note">
