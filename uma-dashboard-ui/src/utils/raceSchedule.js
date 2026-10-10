@@ -31,7 +31,7 @@ import TokyoDaishoten from "../assets/race_thumnail/TokyoDaishoten.webp";
 import VictoriaMileTokyo from "../assets/race_thumnail/VictoriaMileTokyo.webp";
 import YasudaKinen from "../assets/race_thumnail/YasudaKinen.webp";
 import ZenNipponJuniorYushun from "../assets/race_thumnail/ZenNipponJuniorYushun.webp";
-import G2Race from "../assets/race_thumnail/G2_race.webp";
+import G2Race from "../assets/race_thumnail/G2_race.png";
 import G3Race from "../assets/race_thumnail/G3_race.webp";
 
 export const fallbackRaceImg = Debut;

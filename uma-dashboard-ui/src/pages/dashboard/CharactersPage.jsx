@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 import "../../styles/charactersPage.css";
 import { Badge, FilterTabs, GameCard, Pagination, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
@@ -74,7 +75,7 @@ function raceScore(record) {
   return Number.isFinite(Number(score)) ? new Intl.NumberFormat().format(Number(score)) : "-";
 }
 
-export default function CharactersPage({ userId, player, profiles }) {
+export default function CharactersPage({ userId, player, profiles, characterRoute, onOpenCharacter, onBack }) {
   const [search, setSearch] = useState("");
   const [characters, setCharacters] = useState([]);
   const [activeFilter, setActiveFilter] = useState("All");
@@ -88,7 +89,6 @@ export default function CharactersPage({ userId, player, profiles }) {
 
   useEffect(() => {
     const closeOverlays = () => {
-      setSelectedCharacter(null);
       setSelectedRaceResult(null);
     };
     window.addEventListener("uma:close-overlays", closeOverlays);
@@ -98,12 +98,12 @@ export default function CharactersPage({ userId, player, profiles }) {
   const openCharacterProfile = (character) => {
     playSound("open");
     setSelectedRaceResult(null);
-    setSelectedCharacter(character);
+    onOpenCharacter?.(character);
   };
   const closeCharacterProfile = () => {
     playSound("close");
     setSelectedRaceResult(null);
-    setSelectedCharacter(null);
+    onBack?.();
   };
 
   useEffect(() => {
@@ -226,6 +226,19 @@ export default function CharactersPage({ userId, player, profiles }) {
     return [...remoteProfiles, ...profileCharacters.filter((character) => !remoteIds.has(String(character.id)))];
   }, [characters, profileCharacters, userId]);
 
+  const routeCharacter = characterRoute?.character || rosterCharacters.find((character) => (
+    String(character.id) === String(characterRoute?.id) && character.type === characterRoute?.type
+  )) || null;
+
+  useEffect(() => {
+    if (!characterRoute) {
+      setSelectedCharacter(null);
+      return;
+    }
+    if (routeCharacter) setSelectedCharacter(routeCharacter);
+    else if (!loading) setSelectedCharacter(null);
+  }, [characterRoute, loading, routeCharacter]);
+
   const filters = useMemo(() => {
     const types = Array.from(
       new Set(
@@ -260,6 +273,18 @@ export default function CharactersPage({ userId, player, profiles }) {
 
   return (
     <section className="characters-page">
+      {characterRoute ? routeCharacter ? <CharacterProfilePage
+        character={routeCharacter}
+        detail={selectedCharacter?.id === routeCharacter.id ? detail : null}
+        loading={selectedCharacter?.id !== routeCharacter.id || detailLoading || (!detail && !detailError)}
+        error={detailError}
+        onClose={closeCharacterProfile}
+        onOpenCharacter={openCharacterProfile}
+        onOpenRace={(record) => setSelectedRaceResult(record)}
+      /> : <GameCard className="page-empty-state character-route-state">
+        <strong>{loading ? "กำลังโหลดตัวละคร..." : "ไม่พบตัวละครนี้"}</strong>
+        <button type="button" onClick={closeCharacterProfile}>กลับไปสมุดรายชื่อ</button>
+      </GameCard> : <>
       <GameCard className="page-control-card characters-page-card">
         <SectionHeader
           level={1}
@@ -353,20 +378,7 @@ export default function CharactersPage({ userId, player, profiles }) {
           ))}
         </StaggerContainer>
       )}
-      {createPortal(
-        <AnimatePresence>
-          {selectedCharacter && <CharacterProfileModal
-            character={selectedCharacter}
-            detail={detail}
-            loading={detailLoading}
-            error={detailError}
-            onClose={closeCharacterProfile}
-            onOpenCharacter={openCharacterProfile}
-            onOpenRace={(record) => setSelectedRaceResult(record)}
-          />}
-        </AnimatePresence>,
-        document.body
-      )}
+      </>}
       {selectedRaceResult && createPortal(
         <RaceHistoryDetailModal
           raceId={selectedRaceResult.race_id}
@@ -379,7 +391,7 @@ export default function CharactersPage({ userId, player, profiles }) {
   );
 }
 
-function CharacterProfileModal({ character, detail, loading, error, onClose, onOpenCharacter, onOpenRace }) {
+function CharacterProfilePage({ character, detail, loading, error, onClose, onOpenCharacter, onOpenRace }) {
   const prefersReducedMotion = useReducedMotion();
   const [historyRecordType, setHistoryRecordType] = useState("all");
   const [historyPage, setHistoryPage] = useState(1);
@@ -421,26 +433,21 @@ function CharacterProfileModal({ character, detail, loading, error, onClose, onO
 
   return (
     <motion.div
-      className={`character-profile-backdrop profile-theme-${profileTheme} profile-theme-portal`}
-      role="presentation"
-      onMouseDown={onClose}
+      className={`character-profile-page profile-theme-${profileTheme} profile-theme-portal`}
       initial={prefersReducedMotion ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
       transition={{ duration: 0.18 }}
     >
+      <button type="button" className="character-profile-page-back" onClick={onClose}>
+        <ArrowLeft size={18} aria-hidden="true" /> กลับไปสมุดรายชื่อ
+      </button>
       <motion.section
         className={`character-profile-modal ${isTrainer ? "character-profile-modal--trainer" : "character-profile-modal--trainee"}`}
-        role="dialog"
-        aria-modal="true"
         aria-labelledby="character-profile-title"
-        onMouseDown={(event) => event.stopPropagation()}
-        initial={prefersReducedMotion ? false : { opacity: 0, y: 26, scale: 0.96 }}
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 18, scale: 0.97 }}
         transition={{ type: "spring", stiffness: 330, damping: 27 }}
       >
-        <button type="button" className="character-profile-close" onClick={onClose} aria-label="Close profile">×</button>
         <header className="character-profile-hero">
           <img src={toAbsoluteBotUrl(imageUrl) || DEFAULT_AVATAR_URL} alt={name} />
           <div>

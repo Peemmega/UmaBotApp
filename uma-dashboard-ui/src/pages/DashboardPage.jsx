@@ -52,8 +52,19 @@ function getNewsRouteFromPath() {
   }
 }
 
+function getCharacterRouteFromPath() {
+  const segments = window.location.pathname.split("/").filter(Boolean);
+  if (segments.length < 4 || segments[0] !== "dashboard" || segments[1] !== "chars") return null;
+  try {
+    return { id: decodeURIComponent(segments[2]), type: decodeURIComponent(segments.slice(3).join("/")) };
+  } catch {
+    return null;
+  }
+}
+
 function getPageFromPath() {
   if (getNewsRouteFromPath()) return "news-detail";
+  if (getCharacterRouteFromPath()) return "chars";
   const normalizedPath = window.location.pathname.replace(/\/+$/, "");
   const page = normalizedPath.split("/").pop();
   return VALID_PAGES.includes(page) ? page : "home";
@@ -81,6 +92,7 @@ export default function DashboardPage({
   const previousUnreadCount = useRef(null);
   const [activePage, setActivePage] = useState(getPageFromPath);
   const [newsRoute, setNewsRoute] = useState(getNewsRouteFromPath);
+  const [characterRoute, setCharacterRoute] = useState(getCharacterRouteFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
   const [profiles, setProfiles] = useState(() => loadProfilePresets(userId, username));
   const [activeProfileType, setActiveProfileType] = useState(() => accountRole || loadActiveProfileType(userId));
@@ -147,6 +159,7 @@ export default function DashboardPage({
     if (!VALID_PAGES.includes(page)) return;
 
     setNewsRoute(null);
+    setCharacterRoute(null);
     setActivePage(page);
     window.history.pushState({}, "", `/dashboard/${page}`);
   };
@@ -158,6 +171,16 @@ export default function DashboardPage({
     setNewsRoute({ name, kind, item, fromPage: activePage === "news-detail" ? "news" : activePage });
     setActivePage("news-detail");
     window.history.pushState({}, "", `/dashboard/news/${encodeURIComponent(name)}/${kind}`);
+  };
+
+  const openCharacterDetail = (character) => {
+    const id = String(character?.id || character?.userId || "").trim();
+    const type = String(character?.type || "").trim();
+    if (!id || !type) return;
+    setCharacterRoute({ id, type, character, fromPage: "chars" });
+    setActivePage("chars");
+    window.history.pushState({}, "", `/dashboard/chars/${encodeURIComponent(id)}/${encodeURIComponent(type)}`);
+    window.scrollTo(0, 0);
   };
 
   const renderMiddlePage = () => {
@@ -180,7 +203,17 @@ export default function DashboardPage({
         );
 
       case "chars":
-        return <CharactersPage userId={userId} player={player} profiles={profiles} />;
+        return <CharactersPage
+          userId={userId}
+          player={player}
+          profiles={profiles}
+          characterRoute={characterRoute}
+          onOpenCharacter={openCharacterDetail}
+          onBack={() => {
+            setCharacterRoute(null);
+            window.history.replaceState({}, "", "/dashboard/chars");
+          }}
+        />;
 
       case "races":
         return <RacesPage userId={userId} profileType={activeProfileType} />;
@@ -274,6 +307,7 @@ export default function DashboardPage({
     const handlePopState = () => {
       setActivePage(getPageFromPath());
       setNewsRoute(getNewsRouteFromPath());
+      setCharacterRoute(getCharacterRouteFromPath());
     };
 
     window.addEventListener("popstate", handlePopState);
