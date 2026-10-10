@@ -161,7 +161,6 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
       <section className="home-events" aria-labelledby="home-events-title">
         <Reveal as="header" className="home-section-heading">
           <div>
-            <span className="home-eyebrow home-eyebrow-dark"><CalendarDays size={15} /> CAMPUS BULLETIN</span>
             <h2 id="home-events-title">ข่าวสาร &amp; กิจกรรม</h2>
             <p>กิจกรรมและการแข่งขันที่กำลังดำเนินอยู่หรือกำลังจะมาถึง</p>
           </div>
