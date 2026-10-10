@@ -361,19 +361,29 @@
 
 .profile-redesign .update-stats-btn {
   position: static;
+  display: inline-flex;
   flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
   grid-column: 3;
   grid-row: 1;
   justify-self: end;
   transform: none;
-  padding: 10px 18px;
-  background: linear-gradient(135deg, #f6d679, #e8b954);
-  color: #563d16;
-  box-shadow: 0 4px 0 #cba145;
-  font-size: 13px;
+  padding: 11px 19px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #67bd4e, #2d8138);
+  color: #fff;
+  box-shadow: 0 4px 0 #276d30, 0 8px 15px rgba(52, 132, 55, .2);
+  font-size: 14px;
+  line-height: 1;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
 }
 
-.profile-redesign .update-stats-btn.active { background: #bd615d; color: white; box-shadow: 0 4px 0 #944542; }
+.profile-redesign .update-stats-icon { width: 18px; height: 18px; flex: none; }
+.profile-redesign .update-stats-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #276d30, 0 11px 18px rgba(52, 132, 55, .24); }
+.profile-redesign .update-stats-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #276d30; }
+.profile-redesign .update-stats-btn.active { background: linear-gradient(135deg, #419a43, #226b30); color: #fff; box-shadow: inset 0 2px 5px rgba(20, 74, 29, .22), 0 3px 0 #1d612b; }
 .profile-redesign .stats-grid { gap: 10px; border: 0; background: transparent; box-shadow: none; }
 .profile-redesign .stat-cell { overflow: hidden; min-height: 128px; border: 1px solid #dcebd9; border-radius: 15px; background: linear-gradient(145deg,#fff,#f8fcf6); box-shadow: 0 5px 13px rgba(52,111,57,.07); }
 .profile-redesign .stat-cell:last-child { border-right: 1px solid #cfe5cb; }
@@ -439,6 +449,160 @@
 .profile-redesign .trainer-team-grid { gap: 14px; }
 .profile-redesign .trainer-team-list { color: var(--profile-ink); }
 
+.profile-redesign .profile-identity-card .profile-body {
+  grid-template-columns: minmax(230px, 25%) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) 92px;
+  align-items: stretch;
+  gap: 12px clamp(18px, 2.4vw, 34px);
+  min-height: 330px;
+  padding: 18px 20px 14px;
+}
+
+.profile-redesign .profile-identity-card .profile-avatar-wrap {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  align-self: stretch;
+  width: 100%;
+  min-height: 0;
+  padding: 9px 9px 12px;
+  border: 1px solid rgba(255,255,255,.9);
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 14px 30px rgba(24,70,44,.2);
+  transform: rotate(-2deg);
+}
+
+.profile-redesign .profile-identity-card .profile-avatar {
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  flex: 1;
+  aspect-ratio: 1 / 1;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: none;
+  transform: rotate(2deg);
+}
+
+.profile-redesign .profile-identity-card .profile-avatar.placeholder {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg,#d4f0cd,#f8f5d9);
+  color: var(--profile-green);
+}
+
+.profile-redesign .profile-identity-card .profile-avatar-actions {
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 5px;
+  transform: rotate(2deg);
+}
+
+.profile-redesign .profile-identity-card .profile-image-btn,
+.profile-redesign .profile-identity-card .profile-image-upload-btn {
+  padding: 7px 12px;
+  font-size: 12px;
+  box-shadow: none;
+}
+
+.profile-redesign .profile-identity-card .profile-info {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.profile-redesign .profile-identity-card .profile-identity-kicker {
+  margin-bottom: 3px;
+  color: #58ae54;
+  font-size: 13px;
+  letter-spacing: .1em;
+}
+
+.profile-redesign .profile-identity-card .profile-name {
+  padding: 0;
+  font-size: clamp(28px, 3vw, 42px);
+}
+
+.profile-redesign .profile-identity-card .profile-id {
+  margin-top: 14px;
+}
+
+.profile-redesign .profile-identity-card .profile-discord-id {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,.78);
+  color: #263f46;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.profile-redesign .profile-identity-card .profile-discord-id img { width: 22px; height: 22px; object-fit: contain; }
+.profile-redesign .profile-identity-card .profile-discord-id span { min-width: 0; overflow-wrap: anywhere; }
+
+.profile-redesign .profile-identity-card .profile-edit-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: auto;
+  height: auto;
+  margin-top: 12px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg,#fff1b8,#f3d77c);
+  color: #6c4b17;
+  box-shadow: 0 4px 10px rgba(128,96,31,.14);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.profile-redesign .profile-identity-card .profile-edit-info-btn img { width: 19px; height: 19px; object-fit: contain; }
+
+.profile-redesign .profile-identity-card .profile-resources {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: stretch;
+  align-items: center;
+  margin: 0;
+  padding: 10px 12px;
+  gap: 0;
+  border: 1px solid rgba(255,255,255,.9);
+  border-radius: 18px;
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 8px 24px rgba(27,82,48,.1);
+  backdrop-filter: blur(10px);
+}
+
+.profile-redesign .profile-identity-card .profile-resources > div {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-width: 0;
+  height: 100%;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.profile-redesign .profile-identity-card .profile-resources > div + div { border-left: 1px solid #e5ece4; }
+.profile-redesign .profile-identity-card .resource-label { color: #364b50; font-size: 12px; font-weight: 800; text-align: center; }
+.profile-redesign .profile-identity-card .resource-pill { justify-content: center; flex-direction: row-reverse; gap: 9px; min-height: 34px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.profile-redesign .profile-identity-card .resource-value { color: #754321; font-size: 22px; font-weight: 950; }
+.profile-redesign .profile-identity-card .resource-icon { width: 26px; height: 26px; }
+
 @media (max-width: 900px) {
   .profile-redesign .profile-hero .profile-body { grid-template-columns: 155px minmax(0,1fr); padding: 45px 20px 20px; gap: 18px; }
   .profile-redesign .profile-hero .profile-avatar { height: 145px; }
@@ -485,7 +649,8 @@
   .profile-redesign .main-stats-header { grid-template-columns: 1fr; justify-items: center; align-items: center; gap: 10px; }
   .profile-redesign .profile-section-header { grid-column: 1; justify-self: center; text-align: center; }
   .profile-redesign .update-stats-btn { grid-column: 1; grid-row: 2; justify-self: center; }
-  .profile-redesign .update-stats-btn { padding: 8px 10px; font-size: 11px; }
+  .profile-redesign .update-stats-btn { gap: 7px; padding: 9px 13px; font-size: 12px; }
+  .profile-redesign .update-stats-icon { width: 16px; height: 16px; }
   .profile-redesign .stats-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
   .profile-redesign .stat-cell { min-height: 107px; }
   .profile-redesign .stat-header { min-height: 35px; }
@@ -496,6 +661,74 @@
   .profile-redesign .grade-image { height: 27px; }
   .profile-redesign .stat-value { font-size: 22px; }
   .profile-redesign .zone-image-frame { height: 180px; }
+}
+
+@media (max-width: 900px) {
+  .profile-redesign .profile-identity-card .profile-body {
+    grid-template-columns: minmax(180px, 26%) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 82px;
+    min-height: 310px;
+    padding: 20px;
+    gap: 10px 18px;
+  }
+}
+
+@media (max-width: 720px) {
+  .profile-redesign .profile-identity-card .profile-body {
+    grid-template-columns: 140px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 80px;
+    min-height: 290px;
+    padding: 16px;
+    gap: 10px 14px;
+  }
+  .profile-redesign .profile-identity-card .profile-resources { padding: 8px; }
+}
+
+@media (max-width: 520px) {
+  .profile-redesign .profile-identity-card .profile-body {
+    grid-template-columns: 96px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    min-height: 0;
+    padding: 16px 12px 12px;
+    gap: 12px 13px;
+  }
+  .profile-redesign .profile-identity-card .profile-avatar-wrap {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    margin: 0;
+    padding: 6px 6px 8px;
+  }
+  .profile-redesign .profile-identity-card .profile-avatar {
+    flex: none;
+    height: 92px;
+  }
+  .profile-redesign .profile-identity-card .profile-avatar-actions { gap: 4px; }
+  .profile-redesign .profile-identity-card .profile-image-btn,
+  .profile-redesign .profile-identity-card .profile-image-upload-btn { padding: 6px 8px; font-size: 10px; }
+  .profile-redesign .profile-identity-card .profile-info {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+  }
+  .profile-redesign .profile-identity-card .profile-identity-kicker { font-size: 10px; }
+  .profile-redesign .profile-identity-card .profile-name { font-size: clamp(20px, 6vw, 27px); overflow-wrap: anywhere; }
+  .profile-redesign .profile-identity-card .profile-id { margin-top: 7px; }
+  .profile-redesign .profile-identity-card .profile-discord-id { gap: 5px; padding: 5px 8px; font-size: 10px; }
+  .profile-redesign .profile-identity-card .profile-discord-id img { width: 17px; height: 17px; }
+  .profile-redesign .profile-identity-card .profile-edit-info-btn { gap: 5px; margin-top: 7px; padding: 7px 10px; font-size: 10px; }
+  .profile-redesign .profile-identity-card .profile-edit-info-btn img { width: 15px; height: 15px; }
+  .profile-redesign .profile-identity-card .profile-resources {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    min-height: 68px;
+    padding: 6px 3px;
+  }
+  .profile-redesign .profile-identity-card .profile-resources > div { padding: 0 3px; }
+  .profile-redesign .profile-identity-card .resource-label { font-size: 9px; }
+  .profile-redesign .profile-identity-card .resource-pill { gap: 5px; min-height: 27px; }
+  .profile-redesign .profile-identity-card .resource-value { font-size: 17px; }
+  .profile-redesign .profile-identity-card .resource-icon { width: 20px; height: 20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

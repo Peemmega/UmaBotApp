@@ -11,6 +11,7 @@ import { toAbsoluteBotUrl } from "../../utils/avatar";
 import statIcon from "../../assets/icons/statsPoint.webp";
 import skillIcon from "../../assets/icons/skillPoint.webp";
 import editIcon from "../../assets/icons/change_icon.webp";
+import discordIcon from "../../assets/icons/discord_icon.webp";
 import { playSound } from "../../utils/soundManager";
 import { Badge, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
@@ -58,9 +59,6 @@ export default function ProfilePage({
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
   const [uploadError, setUploadError] = useState("");
-  const [presetImageMessage, setPresetImageMessage] = useState("");
-  const [presetImageError, setPresetImageError] = useState("");
-  const [uploadingPresetImage, setUploadingPresetImage] = useState(false);
   const [teamMembers, setTeamMembers] = useState([]);
   const [teamFans, setTeamFans] = useState(0);
   const [availableTrainees, setAvailableTrainees] = useState([]);
@@ -68,7 +66,6 @@ export default function ProfilePage({
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [inviteSearch, setInviteSearch] = useState("");
   const [cropImageFile, setCropImageFile] = useState(null);
-  const [cropTarget, setCropTarget] = useState("");
   const [selectedTeamMember, setSelectedTeamMember] = useState(null);
   const [teamMemberDetail, setTeamMemberDetail] = useState(null);
   const [teamMemberDetailLoading, setTeamMemberDetailLoading] = useState(false);
@@ -88,10 +85,20 @@ export default function ProfilePage({
   }, [profileType, userId]);
 
   useEffect(() => {
+    setSelectedImageFile(null);
+    setUploadMessage("");
+    setUploadError("");
+    setCropImageFile(null);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl("");
+  // A staged image belongs to the profile type and account it was selected for.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileType, userId]);
+
+  useEffect(() => {
     const closeOverlays = () => {
       setIsInviteOpen(false);
       setCropImageFile(null);
-      setCropTarget("");
       setSelectedTeamMember(null);
       setSelectedTeamRace(null);
     };
@@ -211,21 +218,16 @@ export default function ProfilePage({
 
   const handleSelectImage = (event) => {
     const file = event.target.files?.[0];
+    event.target.value = "";
     setUploadMessage("");
     setUploadError("");
 
-    if (!file) {
-      setSelectedImageFile(null);
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-      setPreviewUrl("");
-      return;
-    }
+    if (!file) return;
 
     if (!file.type.startsWith("image/")) {
       setUploadError("Please select an image file.");
       return;
     }
-    setCropTarget("trainee");
     setCropImageFile(file);
   };
 
@@ -237,15 +239,22 @@ export default function ProfilePage({
       setUploadError("");
       setUploadMessage("");
 
-      const result = await uploadProfileImage(userId, selectedImageFile);
-      setPlayer((prev) => ({
-        ...(prev || {}),
-        profile_image_url: result.profile_image_url,
-        profile_image_updated_at: result.profile_image_updated_at,
-      }));
+      const isPreset = profileType !== "trainee";
+      const result = isPreset
+        ? await uploadPresetProfileImage(userId, profileType, selectedImageFile)
+        : await uploadProfileImage(userId, selectedImageFile);
+      const imageUrl = isPreset ? result.image_url : result.profile_image_url;
+
+      if (!isPreset) {
+        setPlayer((prev) => ({
+          ...(prev || {}),
+          profile_image_url: result.profile_image_url,
+          profile_image_updated_at: result.profile_image_updated_at,
+        }));
+      }
       onSaveProfile?.({
-        name: player?.username || username,
-        imageUrl: result.profile_image_url,
+        ...(isPreset ? {} : { name: player?.username || username }),
+        imageUrl,
       });
       setUploadMessage("Profile image updated.");
       setSelectedImageFile(null);
@@ -263,49 +272,20 @@ export default function ProfilePage({
     }
   };
 
-  const handlePresetImageUpload = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      alert("Please select an image file.");
-      event.target.value = "";
-      return;
-    }
-    setCropTarget("preset");
-    setCropImageFile(file);
-    event.target.value = "";
-  };
-
-  const handleCropComplete = async (croppedFile) => {
-    if (cropTarget === "trainee") {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-      setSelectedImageFile(croppedFile);
-      setPreviewUrl(URL.createObjectURL(croppedFile));
-    } else {
-      try {
-        setUploadingPresetImage(true);
-        setPresetImageError("");
-        setPresetImageMessage("");
-        const result = await uploadPresetProfileImage(userId, profileType, croppedFile);
-        onSaveProfile?.({ imageUrl: result.image_url });
-        setPresetImageMessage("Profile image updated.");
-      } catch (err) {
-        setPresetImageError(String(err.message || err));
-      } finally {
-        setUploadingPresetImage(false);
-      }
-    }
+  const handleCropComplete = (croppedFile) => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setSelectedImageFile(croppedFile);
+    setPreviewUrl(URL.createObjectURL(croppedFile));
     setCropImageFile(null);
-    setCropTarget("");
   };
 
-  const cropModal = cropImageFile ? <ProfileImageCropModal file={cropImageFile} onCancel={() => { setCropImageFile(null); setCropTarget(""); }} onConfirm={handleCropComplete} /> : null;
+  const cropModal = cropImageFile ? <ProfileImageCropModal file={cropImageFile} onCancel={() => setCropImageFile(null)} onConfirm={handleCropComplete} /> : null;
 
   if (profileType !== "trainee") {
     const isTrainer = profileType === "trainer";
     const profileName = profile?.name || (isTrainer ? "Trainer" : "NPC");
     const profileImage = profile?.imageUrl || "";
-    const profileImageUrl = toAbsoluteBotUrl(profileImage);
+    const profileImageUrl = previewUrl || toAbsoluteBotUrl(profileImage);
     const filteredInvitees = availableTrainees.filter((trainee) =>
       trainee.username.toLowerCase().includes(inviteSearch.trim().toLowerCase())
     );
@@ -324,20 +304,33 @@ export default function ProfilePage({
                   <div className="profile-avatar placeholder">{isTrainer ? "🎓" : "👤"}</div>
                 )}
                 <div className="profile-avatar-actions">
-                  <label className="profile-image-btn profile-image-upload-label">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                    className="profile-image-input"
+                    onChange={handleSelectImage}
+                  />
+                  <button
+                    type="button"
+                    className="profile-image-btn"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingImage}
+                  >
                     เปลี่ยนรูป
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      className="profile-image-input"
-                      onChange={handlePresetImageUpload}
-                      disabled={uploadingPresetImage}
-                    />
-                  </label>
-                  
-                  {uploadingPresetImage ? <div className="profile-image-success">Uploading...</div> : null}
-                  {presetImageMessage ? <div className="profile-image-success">{presetImageMessage}</div> : null}
-                  {presetImageError ? <div className="profile-image-error">{presetImageError}</div> : null}
+                  </button>
+                  {selectedImageFile && (
+                    <button
+                      type="button"
+                      className="profile-image-upload-btn"
+                      onClick={handleUploadImage}
+                      disabled={uploadingImage}
+                    >
+                      {uploadingImage ? "Uploading..." : "Upload"}
+                    </button>
+                  )}
+                  {uploadMessage ? <div className="profile-image-success">{uploadMessage}</div> : null}
+                  {uploadError ? <div className="profile-image-error">{uploadError}</div> : null}
                 </div>
               </div>
               {isTrainer || profileType === "npc" ? (
@@ -516,42 +509,33 @@ export default function ProfilePage({
               </div>
 
               <div className="profile-info">
-                <p className="profile-identity-kicker">โปรไฟล์</p>
+                <p className="profile-identity-kicker">TRAINEE PROFILE</p>
                 <div className="profile-name-row">
                   <div className="profile-name">{player?.username || username}</div>
-
-                  <button
-                    className="rename-btn"
-                    onClick={() => {
-                      playSound("open");
-                      setIsRenameOpen(true);
-                    }}
-                  >
-                    <img src={editIcon} alt="edit" />
-                  </button>
                 </div>
 
                 <div className="profile-id">
-                  <Badge>Discord ID: {userId}</Badge>
+                  <Badge className="profile-discord-id">
+                    <img src={discordIcon} alt="" />
+                    <span>Discord ID: {userId}</span>
+                  </Badge>
                 </div>
-
-                <div className="profile-resources">
-                  <ResourcePill
-                    icon={fansIcon}
-                    label="Fans"
-                    value={player?.fans ?? 1}
-                  />
-                  <ResourcePill
-                    icon={statIcon}
-                    label="Stats Points"
-                    value={player?.stats_point ?? 0}
-                  />
-                  <ResourcePill
-                    icon={skillIcon}
-                    label="Event Point"
-                    value={player?.skill_point ?? 0}
-                  />
-                </div>
+                <button
+                  type="button"
+                  className="rename-btn profile-edit-info-btn"
+                  onClick={() => {
+                    playSound("open");
+                    setIsRenameOpen(true);
+                  }}
+                >
+                  <img src={editIcon} alt="" />
+                  <span>แก้ไขข้อมูล</span>
+                </button>
+              </div>
+              <div className="profile-resources">
+                <ResourcePill icon={fansIcon} label="Fans" value={player?.fans ?? 1} />
+                <ResourcePill icon={statIcon} label="Stats Points" value={player?.stats_point ?? 0} />
+                <ResourcePill icon={skillIcon} label="Event Point" value={player?.skill_point ?? 0} />
               </div>
             </div>
           </section>
@@ -581,7 +565,9 @@ export default function ProfilePage({
                 />
 
                 <button
+                  type="button"
                   className={`update-stats-btn ${isEditStatsOpen ? "active" : ""}`}
+                  aria-expanded={isEditStatsOpen}
                   onClick={() => {
                     if (isEditStatsOpen) {
                       playSound("close");
@@ -592,6 +578,9 @@ export default function ProfilePage({
                     setIsEditStatsOpen((prev) => !prev);
                   }}
                 >
+                  <svg className="update-stats-icon" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M3 11h3v6H3zm5-7h3v13H8zm5 4h3v9h-3z" fill="currentColor" />
+                  </svg>
                   {isEditStatsOpen ? "ปิดปรับแต่ง Stats" : "ปรับแต่ง Stats"}
                 </button>
               </div>

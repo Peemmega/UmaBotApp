@@ -68,12 +68,19 @@ export default function ProfileSkillLibrary({ userId, username }) {
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [selectedSkill]);
 
+  const ownedSkillIds = useMemo(() => new Set(
+    Object.values(equippedSkills || {})
+      .map((skill) => String(skill?.id || skill || "").trim().toLowerCase())
+      .filter(Boolean)
+  ), [equippedSkills]);
+
   const filteredSkills = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
     return skills
+      .filter((skill) => ownedSkillIds.has(String(skill.id || "").trim().toLowerCase()))
       .filter((skill) => !query || `${skill.name || ""} ${skill.id || ""} ${(skill.tags || []).join(" ")}`.toLocaleLowerCase().includes(query))
       .sort((left, right) => String(left.name || left.id).localeCompare(String(right.name || right.id), undefined, { numeric: true, sensitivity: "base" }));
-  }, [search, skills]);
+  }, [ownedSkillIds, search, skills]);
 
   const equipSkill = async (slot) => {
     if (!selectedSkill || getSkillRarity(selectedSkill) !== "common") return;
