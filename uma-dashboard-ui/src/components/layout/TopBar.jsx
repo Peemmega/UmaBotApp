@@ -9,64 +9,68 @@ export default function TopBar({
   profileDesk = "Trainee Desk",
   notificationPermission = "unsupported",
   onEnableNotifications,
+  nav,
 }) {
   return (
     <header className="topbar">
-      <div className="topbar-brand">
-        <span className="topbar-brand-mark">
-          <span>TA</span>
-        </span>
-        <div>
-          <p className="topbar-kicker">Umamusume New Frontier</p>
-          <h1 className="dashboard-title">Tracen Academy Site</h1>
+      <div className="topbar-main">
+        <div className="topbar-brand">
+          <span className="topbar-brand-mark">
+            <span>TA</span>
+          </span>
+          <div>
+            <p className="topbar-kicker">Umamusume New Frontier</p>
+            <h1 className="dashboard-title">Tracen Academy Site</h1>
+          </div>
+        </div>
+
+        <div className="dashboard-actions">
+          <span className="topbar-status">{profileDesk}</span>
+
+          {notificationPermission !== "granted" && notificationPermission !== "unsupported" && (
+            <button type="button" className="notification-btn" onClick={onEnableNotifications}>
+              Enable alerts
+            </button>
+          )}
+
+          <a
+            className="discord-btn"
+            href="https://discord.gg/cwvNJm6R8A"
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => playSound("click")}
+          >
+            <img src={discordIcon} className="discord-btn-icon" alt="" />
+            Discord
+          </a>
+
+          <button
+            className="mail-btn"
+            type="button"
+            onClick={() => {
+              playSound("open");
+              onMailClick();
+            }}
+          >
+            <img src={mailIcon} className="mail-icon" alt="" />
+            จดหมาย
+
+            {unreadCount > 0 && <span className="mail-badge">{unreadCount}</span>}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              playSound("close");
+              onLogout();
+            }}
+            className="danger-btn"
+          >
+            ออกจากระบบ
+          </button>
         </div>
       </div>
-
-      <div className="dashboard-actions">
-        <span className="topbar-status">{profileDesk}</span>
-
-        {notificationPermission !== "granted" && notificationPermission !== "unsupported" && (
-          <button type="button" className="notification-btn" onClick={onEnableNotifications}>
-            Enable alerts
-          </button>
-        )}
-
-        <a
-          className="discord-btn"
-          href="https://discord.gg/cwvNJm6R8A"
-          target="_blank"
-          rel="noreferrer"
-          onClick={() => playSound("click")}
-        >
-          <img src={discordIcon} className="discord-btn-icon" alt="" />
-          Discord
-        </a>
-
-        <button
-          className="mail-btn"
-          type="button"
-          onClick={() => {
-            playSound("open");
-            onMailClick();
-          }}
-        >
-          <img src={mailIcon} className="mail-icon" alt="" />
-          จดหมาย
-
-          {unreadCount > 0 && <span className="mail-badge">{unreadCount}</span>}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            playSound("close");
-            onLogout();
-          }}
-          className="danger-btn"
-        >
-          ออกจากระบบ
-        </button>
-      </div>
+      {nav}
     </header>
   );
 }

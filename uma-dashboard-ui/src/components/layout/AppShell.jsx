@@ -2,7 +2,6 @@ import "../../styles/appShell.css";
 
 export default function AppShell({
   topBar,
-  nav,
   rightRail,
   children,
   modals,
@@ -13,7 +12,6 @@ export default function AppShell({
       {topBar}
 
       <div className="dashboard-layout app-shell-layout">
-        {nav}
         {rightRail}
 
         <div className="dashboard-shell app-shell-main">{children}</div>

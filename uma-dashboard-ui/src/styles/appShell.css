@@ -6,7 +6,7 @@
   color: var(--uma-on-primary);
   overflow-x: hidden;
   padding:
-    calc(76px + var(--uma-space-5))
+    calc(142px + var(--uma-space-5))
     clamp(10px, 1.2vw, 18px)
     calc(var(--uma-space-8) + var(--uma-space-4));
   background-size: cover;
@@ -143,16 +143,36 @@
   right: 0;
   z-index: 999;
   width: 100%;
-  min-height: 76px;
-  padding: 10px clamp(var(--uma-space-4), 3vw, 42px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--uma-space-5);
+  padding: 10px clamp(var(--uma-space-4), 3vw, 42px) 7px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 7px;
   border-bottom: 1px solid var(--uma-border);
   background: white;
   backdrop-filter: blur(18px);
   box-shadow: var(--uma-shadow-soft);
+}
+
+.topbar-main {
+  width: min(100%, 1600px);
+  min-height: 52px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--uma-space-5);
+}
+
+.topbar .game-nav {
+  width: min(100%, 1600px);
+  margin: 0 auto;
+  padding: 5px 0 0;
+  border: 0;
+  border-top: 1px solid var(--uma-border);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .topbar-brand {
@@ -485,7 +505,7 @@
 
 @media (max-width: 900px) {
   .app-shell {
-    padding-top: 124px;
+    padding-top: 172px;
   }
 
   .app-shell-layout,
@@ -529,9 +549,12 @@
   }
 
   .topbar {
-    height: auto;
-    min-height: 80px;
-    padding: 9px var(--uma-space-3);
+    padding: 9px var(--uma-space-3) 7px;
+    gap: 7px;
+  }
+
+  .topbar-main {
+    min-height: 0;
     flex-direction: column;
     gap: 8px;
   }
@@ -564,10 +587,10 @@
 
 @media (max-width: 760px) {
   .app-shell {
-    padding: 92px var(--uma-space-2) var(--uma-space-8);
+    padding: 132px var(--uma-space-2) var(--uma-space-8);
   }
 
-  .topbar {
+  .topbar-main {
     flex-direction: row;
     align-items: center;
   }
@@ -586,6 +609,10 @@
 }
 
 @media (max-width: 480px) {
+  .app-shell {
+    padding-top: 120px;
+  }
+
   .dashboard-actions {
     width: auto;
     margin-left: auto;

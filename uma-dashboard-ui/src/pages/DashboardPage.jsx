@@ -24,8 +24,10 @@ import RacesPage from "./dashboard/RacesPage";
 import ToolsPage from "./dashboard/ToolsPage";
 import RaceReplayPage from "./dashboard/RaceReplayPage";
 import NewsPage from "./dashboard/NewsPage";
+import HomePage from "./dashboard/HomePage";
 
 const VALID_PAGES = [
+  "home",
   "profile",
   "chars",
   "races",
@@ -40,7 +42,7 @@ const VALID_PAGES = [
 function getPageFromPath() {
   const normalizedPath = window.location.pathname.replace(/\/+$/, "");
   const page = normalizedPath.split("/").pop();
-  return VALID_PAGES.includes(page) ? page : "profile";
+  return VALID_PAGES.includes(page) ? page : "home";
 }
 
 export default function DashboardPage({
@@ -135,6 +137,9 @@ export default function DashboardPage({
 
   const renderMiddlePage = () => {
     switch (activePage) {
+      case "home":
+        return <HomePage username={player?.username || username} userId={userId} profileType={activeProfileType} onNavigate={changePage} />;
+
       case "tutorials":
         return <TutorialsPage />;
 
@@ -335,9 +340,9 @@ export default function DashboardPage({
           profileDesk={PROFILE_TYPES[activeProfileType]?.desk}
           notificationPermission={notificationPermission}
           onEnableNotifications={enableNotifications}
+          nav={<GameNav activePage={activePage} onChangePage={changePage} profileType={activeProfileType} />}
         />
       }
-      nav={<GameNav activePage={activePage} onChangePage={changePage} profileType={activeProfileType} />}
       rightRail={<RightRail onNavigate={changePage} userId={userId} profileType={activeProfileType} />}
       modals={modals}
     >

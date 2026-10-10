@@ -9,10 +9,12 @@ import {
   Trophy,
   UserRound,
   UsersRound,
+  House,
 } from "lucide-react";
 import { playSound } from "../../utils/soundManager";
 
 export const gameNavItems = [
+  { key: "home", label: "หน้าแรก", Icon: House },
   { key: "profile", label: "โปรไฟล์", Icon: UserRound },
   { key: "chars", label: "ตัวละคร", Icon: UsersRound },
   { key: "races", label: "รายการแข่ง", Icon: Trophy },

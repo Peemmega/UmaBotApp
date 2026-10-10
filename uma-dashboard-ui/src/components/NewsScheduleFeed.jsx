@@ -1,17 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
-import { SlidersHorizontal, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { BOT_API_BASE } from "../api/playerApi";
 import NewsListingCard from "./NewsListingCard";
-import { getNewsKind } from "../utils/newsItems";
 import "../styles/newsScheduleFeed.css";
-
-const FILTERS = [
-  { value: "all", label: "ทั้งหมด" },
-  { value: "event", label: "Event" },
-  { value: "race", label: "Race" },
-];
-const LIMITS = [3, 5, 8];
-const SETTINGS_KEY = "uma-news-feed-settings";
 
 function getDate(item) {
   const value = item.date && item.time ? `${item.date}T${item.time}` : item.date;
@@ -19,22 +10,11 @@ function getDate(item) {
   return date && !Number.isNaN(date.getTime()) ? date : null;
 }
 
-function loadSettings() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
-    return {
-      filter: FILTERS.some((item) => item.value === saved.filter) ? saved.filter : "all",
-      limit: LIMITS.includes(saved.limit) ? saved.limit : 3,
-    };
-  } catch {
-    return { filter: "all", limit: 3 };
-  }
-}
-
 export default function NewsScheduleFeed({ onViewAll, onItemSelected }) {
   const [items, setItems] = useState([]);
-  const [settings, setSettings] = useState(loadSettings);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const listRef = useRef(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -45,8 +25,7 @@ export default function NewsScheduleFeed({ onViewAll, onItemSelected }) {
           (getDate(left)?.getTime() || Number.MAX_SAFE_INTEGER)
           - (getDate(right)?.getTime() || Number.MAX_SAFE_INTEGER)
         ));
-        const upcoming = ordered.filter((item) => (getDate(item)?.getTime() || 0) >= Date.now());
-        setItems(upcoming.length ? upcoming : ordered);
+        setItems(ordered);
       })
       .catch((error) => {
         if (error.name !== "AbortError") console.error(error);
@@ -55,47 +34,41 @@ export default function NewsScheduleFeed({ onViewAll, onItemSelected }) {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-  }, [settings]);
+    const list = listRef.current;
+    if (!list) return undefined;
 
-  const visibleItems = useMemo(() => items
-    .filter((item) => settings.filter === "all" || getNewsKind(item) === settings.filter)
-    .slice(0, settings.limit), [items, settings]);
+    const updateScrollButtons = () => {
+      setCanScrollLeft(list.scrollLeft > 2);
+      setCanScrollRight(list.scrollLeft + list.clientWidth < list.scrollWidth - 2);
+    };
+    updateScrollButtons();
+    list.addEventListener("scroll", updateScrollButtons, { passive: true });
+    window.addEventListener("resize", updateScrollButtons);
+    return () => {
+      list.removeEventListener("scroll", updateScrollButtons);
+      window.removeEventListener("resize", updateScrollButtons);
+    };
+  }, [items]);
+
+  const moveEvents = (direction) => {
+    const list = listRef.current;
+    if (!list) return;
+    list.scrollBy({ left: direction * Math.max(list.clientWidth * 0.8, 260), behavior: "smooth" });
+  };
 
   return <section className="news-schedule-feed" aria-labelledby="news-schedule-title">
     <header className="news-schedule-header">
       <div><p>ตารางเวลาอีเว้น</p><h3 id="news-schedule-title">Events</h3></div>
       <button type="button" className="news-view-all" onClick={onViewAll}>ดู Event ทั้งหมด</button>
-      <button
-        type="button"
-        className="news-settings-toggle"
-        aria-label="ตั้งค่าการแสดง News"
-        aria-expanded={isSettingsOpen}
-        onClick={() => setIsSettingsOpen((current) => !current)}
-      >
-        {isSettingsOpen ? <X size={17} /> : <SlidersHorizontal size={17} />}
-      </button>
     </header>
 
-    {isSettingsOpen ? <div className="news-feed-settings">
-      <div className="news-filter-options" role="group" aria-label="ชนิดข่าว">
-        {FILTERS.map((filter) => <button
-          type="button"
-          key={filter.value}
-          className={settings.filter === filter.value ? "is-active" : ""}
-          onClick={() => setSettings((current) => ({ ...current, filter: filter.value }))}
-        >{filter.label}</button>)}
+    <div className="news-events-carousel">
+      {canScrollLeft && <button type="button" className="news-scroll-arrow is-left" aria-label="เลื่อน event ไปทางซ้าย" onClick={() => moveEvents(-1)}><ChevronLeft size={22} /></button>}
+      <div className="news-card-list" ref={listRef}>
+        {items.map((item) => <NewsListingCard key={`${item.id}-${item.date}-${item.time}`} item={item} compact onDetails={onItemSelected} />)}
+        {!items.length ? <p className="news-feed-empty">ยังไม่มีรายการ event</p> : null}
       </div>
-      <label>จำนวนที่แสดง
-        <select value={settings.limit} onChange={(event) => setSettings((current) => ({ ...current, limit: Number(event.target.value) }))}>
-          {LIMITS.map((limit) => <option key={limit} value={limit}>{limit} รายการ</option>)}
-        </select>
-      </label>
-    </div> : null}
-
-    <div className="news-card-list">
-      {visibleItems.map((item) => <NewsListingCard key={`${item.id}-${item.date}-${item.time}`} item={item} compact onDetails={onItemSelected} />)}
-      {!visibleItems.length ? <p className="news-feed-empty">ยังไม่มีรายการตามตัวเลือกนี้</p> : null}
+      {canScrollRight && <button type="button" className="news-scroll-arrow is-right" aria-label="เลื่อน event ไปทางขวา" onClick={() => moveEvents(1)}><ChevronRight size={22} /></button>}
     </div>
   </section>;
 }

@@ -31,6 +31,8 @@
   padding: clamp(12px, 1.5vw, 20px);
 }
 
+.news-events-carousel { position: relative; min-width: 0; }
+
 .right-rail .news-card-list {
   display: grid;
   grid-auto-flow: column;
@@ -38,10 +40,48 @@
   grid-template-columns: none;
   gap: 14px;
   overflow-x: auto;
-  padding: 1px 2px 10px;
+  padding: 1px 45px 10px;
   overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
-  scrollbar-width: thin;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+
+.right-rail .news-card-list::-webkit-scrollbar { display: none; }
+
+.news-scroll-arrow {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 42px;
+  transform: translateY(-50%);
+  border: 1px solid color-mix(in srgb, var(--uma-primary) 30%, white);
+  border-radius: 12px;
+  background: rgba(255,255,255,.96);
+  color: var(--uma-primary-dark);
+  box-shadow: var(--uma-shadow-card);
+  cursor: pointer;
+  transition: background .16s ease, transform .16s ease;
+}
+
+.news-scroll-arrow:hover, .news-scroll-arrow:focus-visible {
+  background: var(--uma-bg-soft);
+  outline: 2px solid color-mix(in srgb, var(--uma-primary) 35%, white);
+  outline-offset: 2px;
+}
+
+.news-scroll-arrow.is-left { left: 4px; }
+.news-scroll-arrow.is-right { right: 4px; }
+.news-scroll-arrow:active { transform: translateY(-50%) scale(.96); }
+.news-scroll-arrow svg { flex: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .right-rail .news-card-list { scroll-behavior: auto; }
+  .news-scroll-arrow { transition: none; }
 }
 
 .right-rail .news-listing-card {
@@ -60,5 +100,6 @@
   .right-rail .news-schedule-header { gap: 6px; }
   .right-rail .news-schedule-header h3 { font-size: 1rem; }
   .right-rail .news-view-all { font-size: .62rem; padding-inline: 7px; }
-  .right-rail .news-card-list { grid-auto-columns: minmax(230px, 84vw); gap: 10px; }
+  .right-rail .news-card-list { grid-auto-columns: minmax(230px, 84vw); gap: 10px; padding-inline: 39px; }
+  .news-scroll-arrow { width: 31px; height: 38px; border-radius: 10px; }
 }

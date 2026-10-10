@@ -224,7 +224,7 @@ export default function App() {
       setDiscordRole(queryDiscordRole || null);
       setIsDiscordRoleChecked(hasQueryDiscordRole);
 
-      window.history.replaceState({}, document.title, "/dashboard/profile");
+      window.history.replaceState({}, document.title, "/dashboard/home");
       return;
     }
 
