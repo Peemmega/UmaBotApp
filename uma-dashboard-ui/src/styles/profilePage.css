@@ -236,6 +236,7 @@
 }
 
 .profile-redesign .profile-section-nav button:hover { transform: translateY(-1px); }
+.role-profile .profile-section-nav { grid-template-columns: repeat(2, minmax(0,1fr)); }
 .profile-redesign .profile-empty-page { min-height: 180px; }
 .profile-redesign .profile-stats-page { display: grid; gap: clamp(16px, 2vw, 24px); }
 
@@ -331,6 +332,7 @@
 .profile-skill-equip-slots button { min-width: 74px; min-height: 36px; border: 1px solid #cce3c8; border-radius: 10px; background: #edf7eb; color: #2b6d3e; font: inherit; font-size: 12px; font-weight: 850; cursor: pointer; }
 .profile-skill-equip-slots button:hover, .profile-skill-equip-slots button:focus-visible { outline: 2px solid #8fc38a; outline-offset: 1px; }
 .profile-skill-equip-slots button:disabled { opacity: .6; cursor: wait; }
+.profile-skill-already-equipped { padding: 8px 11px; border-radius: 9px; background: #fff4d8; color: #805d1d; font-size: 12px; font-weight: 850; }
 .profile-skill-lock-note { margin-top: 18px; padding: 11px 13px; border-radius: 11px; background: #f1eff4; color: #6d6478; font-weight: 850; }
 
 .profile-redesign .profile-data-panel {

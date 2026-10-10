@@ -148,7 +148,9 @@ export default function ProfileSkillLibrary({ userId, username }) {
             {getSkillRarity(selectedSkill) === "common" ? (
               <div className="profile-skill-equip-slots">
                 <strong>ติดตั้งในช่อง</strong>
-                {[1, 2, 3, 4].map((slot) => <button type="button" key={slot} disabled={savingSlot !== null} onClick={() => equipSkill(slot)}>{savingSlot === slot ? "กำลังบันทึก..." : `ช่อง ${slot}`}</button>)}
+                {Object.entries(equippedSkills || {}).some(([, value]) => String(value?.id || "") === String(selectedSkill.id)) ? (
+                  <span className="profile-skill-already-equipped">ติดตั้งอยู่ในช่อง {Object.entries(equippedSkills).find(([, value]) => String(value?.id || "") === String(selectedSkill.id))?.[0]?.replace("slot_", "")}</span>
+                ) : [1, 2, 3, 4].map((slot) => <button type="button" key={slot} disabled={savingSlot !== null} onClick={() => equipSkill(slot)}>{savingSlot === slot ? "กำลังบันทึก..." : `ช่อง ${slot}`}</button>)}
               </div>
             ) : <p className="profile-skill-lock-note">ตอนนี้ติดตั้งได้เฉพาะสกิลสีขาว</p>}
             {equipError ? <p className="profile-page-status is-error">{equipError}</p> : null}
