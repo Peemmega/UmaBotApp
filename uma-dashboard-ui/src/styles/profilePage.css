@@ -293,12 +293,12 @@
 .profile-redesign .profile-race-summary > div:nth-child(4) { border-top: 3px solid #c98f62; }
 .profile-redesign .profile-race-summary span { color: #66806b; font-size: 12px; font-weight: 850; }
 .profile-redesign .profile-race-summary strong { color: var(--profile-green-deep); font-size: clamp(23px, 2.5vw, 32px); line-height: 1; }
-.profile-redesign .profile-race-list-section { margin-top: 23px; }
-.profile-redesign .profile-race-list-heading { margin-bottom: 11px; }
+.profile-redesign .profile-race-list-section { margin-top: 23px; text-align: left; }
+.profile-redesign .profile-race-list-heading { margin-bottom: 11px; text-align: left; }
 .profile-redesign .profile-race-list-heading h3 { margin: 0; color: var(--profile-green-deep); font-size: 19px; }
 .profile-redesign .profile-race-list-heading > span { color: #718877; font-size: 12px; font-weight: 800; }
 .profile-redesign .profile-race-table-wrap { overflow-x: auto; border: 1px solid #dce9d9; border-radius: 13px; }
-.profile-redesign .profile-race-table { width: 100%; border-collapse: collapse; color: #355441; font-size: 13px; }
+.profile-redesign .profile-race-table { width: 100%; border-collapse: collapse; color: #355441; font-size: 13px; text-align: left; }
 .profile-redesign .profile-race-table th { padding: 11px 13px; background: #edf7ea; color: #46764e; font-size: 11px; font-weight: 900; text-align: left; white-space: nowrap; }
 .profile-redesign .profile-race-table td { padding: 11px 13px; border-top: 1px solid #e8f0e5; font-weight: 700; white-space: nowrap; }
 .profile-redesign .profile-race-table tbody tr:nth-child(even) { background: #fbfdf9; }
