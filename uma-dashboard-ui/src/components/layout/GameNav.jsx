@@ -21,7 +21,7 @@ export const gameNavItems = [
   { key: "skills", label: "สกิล", Icon: Sparkles },
   { key: "race", label: "ห้องซ้อมวิ่ง", Icon: Flag },
   { key: "tools", label: "เครื่องมือคำนวณ", Icon: Calculator },
-  { key: "tutorials", label: "คู่มือ", Icon: BookOpen },
+  { key: "tutorials", label: "เอกสาร", Icon: BookOpen, href: "https://docs.google.com/document/d/1Pi9xiyC6ontJzZ-cISxPAxtUi0LBWfMnmoWNUib8uCo/edit?usp=sharing" },
   // { key: "qa", label: "Q&A", Icon: CircleHelp },
 ];
 
@@ -41,8 +41,31 @@ export default function GameNav({
   return (
     <nav className="sidebar game-nav" aria-label="Game navigation">
       {visibleItems.map((item) => {
-        const isActive = activePage === item.key;
+        const isActive = !item.href && activePage === item.key;
         const Icon = item.Icon;
+        const contents = (
+          <>
+            <span className="game-nav-active-bar" aria-hidden="true" />
+            <span className="sidebar-icon game-nav-icon" aria-hidden="true">
+              {Icon ? <Icon size={21} strokeWidth={2.6} /> : item.icon}
+            </span>
+            <span className="sidebar-label game-nav-label">{item.label}</span>
+          </>
+        );
+
+        if (item.href) {
+          return (
+            <a
+              key={item.key}
+              className="sidebar-btn game-nav-btn"
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {contents}
+            </a>
+          );
+        }
 
         return (
           <button
@@ -55,11 +78,7 @@ export default function GameNav({
             }}
             aria-current={isActive ? "page" : undefined}
           >
-            <span className="game-nav-active-bar" aria-hidden="true" />
-            <span className="sidebar-icon game-nav-icon" aria-hidden="true">
-              {Icon ? <Icon size={21} strokeWidth={2.6} /> : item.icon}
-            </span>
-            <span className="sidebar-label game-nav-label">{item.label}</span>
+            {contents}
           </button>
         );
       })}

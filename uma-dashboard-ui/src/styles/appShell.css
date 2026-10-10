@@ -94,14 +94,10 @@
 .dashboard-layout {
   width: min(100%, 1600px);
   margin: 0 auto;
-  display: grid;
-  grid-template-columns:
-    clamp(190px, 14vw, 240px)
-    minmax(0, 850px)
-    clamp(270px, 24vw, 600px);
+  display: flex;
+  flex-direction: column;
   gap: clamp(var(--uma-space-4), 2vw, 24px);
-  align-items: start;
-  justify-content: center;
+  align-items: stretch;
 }
 
 .app-shell-main,
@@ -347,7 +343,7 @@
 
 .game-nav,
 .sidebar {
-  position: sticky;
+  position: relative;
   width: 100%;
   padding: 10px;
   border: 1px solid var(--uma-surface-glass-strong);
@@ -356,9 +352,12 @@
   box-shadow: var(--uma-shadow-soft);
   backdrop-filter: blur(14px);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 6px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
 }
 
 .game-nav-icon,
@@ -379,7 +378,9 @@
 .game-nav-btn,
 .sidebar-btn {
   position: relative;
-  width: 100%;
+  width: auto;
+  flex: 0 0 auto;
+  white-space: nowrap;
   min-height: 42px;
   padding: 7px 12px 7px 12px;
   border: none;
@@ -389,6 +390,7 @@
   font-size: 14px;
   font-weight: 950;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -434,8 +436,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--uma-space-3);
-  position: sticky;
-  padding: 10px;
+  position: relative;
+  padding: 0;
   border-radius: var(--uma-radius-xs);
 }
 
@@ -481,19 +483,6 @@
 .right-news-shortcut:hover strong { color: var(--uma-primary-dark); }
 .right-news-shortcut:focus-visible { outline: none; box-shadow: var(--uma-focus-ring); border-radius: 8px; }
 
-@media (max-width: 1280px) {
-  .app-shell-layout,
-  .dashboard-layout {
-    grid-template-columns: 220px minmax(0, 780px);
-    max-width: 1060px;
-  }
-
-  .right-rail,
-  .dashboard-right-panel {
-    display: none;
-  }
-}
-
 @media (max-width: 900px) {
   .app-shell {
     padding-top: 124px;
@@ -501,43 +490,42 @@
 
   .app-shell-layout,
   .dashboard-layout {
-    grid-template-columns: 1fr;
+    display: flex;
     max-width: 720px;
   }
 
   .game-nav,
   .sidebar {
     position: static;
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 3px;
-    padding: 6px;
+    display: flex;
+    gap: 5px;
+    padding: 7px;
   }
 
   .game-nav-btn,
   .sidebar-btn {
-    text-align: center;
-    font-size: 12px;
-    min-height: 46px;
-    padding: 6px 2px;
+    text-align: left;
+    font-size: 13px;
+    min-height: 40px;
+    padding: 6px 10px;
     justify-content: center;
-    flex-direction: column;
-    gap: 2px;
+    flex-direction: row;
+    gap: 7px;
   }
 
   .game-nav-icon,
   .sidebar-icon {
-    width: 20px;
-    height: 20px;
+    width: 21px;
+    height: 21px;
   }
 
   .game-nav-active-bar {
-    left: 50%;
-    top: auto;
-    bottom: 3px;
-    width: 18px;
-    height: 3px;
-    transform: translateX(-50%);
+    left: 0;
+    top: 7px;
+    bottom: 7px;
+    width: 3px;
+    height: auto;
+    transform: none;
   }
 
   .topbar {
@@ -629,30 +617,7 @@
 
   .game-nav-label,
   .sidebar-label {
-    text-align: center;
-  }
-
-  .game-nav,
-  .sidebar {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .game-nav-btn,
-  .sidebar-btn {
-    min-height: 38px;
-    flex-direction: row;
-    font-size: 12px;
-    padding: 5px 6px;
-    gap: 5px;
-  }
-
-  .game-nav-active-bar {
-    left: 0;
-    top: 8px;
-    bottom: 8px;
-    width: 3px;
-    height: auto;
-    transform: none;
+    text-align: left;
   }
 }
 
