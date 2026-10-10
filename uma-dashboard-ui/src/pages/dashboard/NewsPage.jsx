@@ -4,36 +4,44 @@ import { BOT_API_BASE } from "../../api/playerApi";
 import { GameCard, SectionHeader } from "../../components/ui";
 import NewsListingCard from "../../components/NewsListingCard";
 import NewsDetailsModal from "../../components/NewsDetailsModal";
+import { getNewsKind } from "../../utils/newsItems";
 import "../../styles/newsPage.css";
 
-function monthLabel(key) {
-  const [year, month] = key.split("-");
-  return new Intl.DateTimeFormat("th-TH", { month: "long", year: "numeric" })
-    .format(new Date(Number(year), Number(month) - 1, 1));
-}
-
-const MONTH_SHORT_LABELS = [
-  "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-  "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
-];
-
-function monthShortLabel(key) {
-  return MONTH_SHORT_LABELS[Number(key.slice(-2)) - 1] || key;
-}
-
-function currentBangkokMonthKey() {
+function bangkokDateKey(date) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Bangkok",
     year: "numeric",
     month: "2-digit",
-  }).formatToParts(new Date());
+    day: "2-digit",
+  }).formatToParts(date);
   const part = (type) => parts.find((item) => item.type === type)?.value;
-  return `${part("year")}-${part("month")}`;
+  return `${part("year")}-${part("month")}-${part("day")}`;
+}
+
+function parseBangkokDate(value, time = "00:00") {
+  if (!value) return null;
+  let dateValue = String(value).trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) dateValue = `${dateValue}T${time || "00:00"}`;
+  if (!/(Z|[+-]\d{2}:?\d{2})$/i.test(dateValue)) dateValue += "+07:00";
+  const date = new Date(dateValue);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function getEventStart(item) {
+  const timestamp = item.start_at || item.starts_at || item.datetime;
+  return parseBangkokDate(timestamp || item.date, item.time || "00:00");
+}
+
+function getEventEnd(item, start) {
+  const timestamp = item.end_at || item.ends_at || item.end_datetime;
+  const explicitEnd = parseBangkokDate(timestamp || item.end_date, item.end_time || "23:59:59");
+  if (explicitEnd) return explicitEnd;
+
+  return parseBangkokDate(bangkokDateKey(start), "23:59:59");
 }
 
 export default function NewsPage({ userId, profileType }) {
   const [items, setItems] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
@@ -51,30 +59,39 @@ export default function NewsPage({ userId, profileType }) {
     return () => controller.abort();
   }, []);
 
-  const ordered = useMemo(() => [...items].sort((a, b) => (
-    `${a.date || ""}T${a.time || ""}`.localeCompare(`${b.date || ""}T${b.time || ""}`)
-  )), [items]);
-  const months = useMemo(() => [...new Set(ordered.map((item) => String(item.date || "").slice(0, 7)).filter(Boolean))], [ordered]);
-  const currentMonth = useMemo(currentBangkokMonthKey, []);
-  const activeMonth = selectedMonth || (months.includes(currentMonth) ? currentMonth : months[0]) || "";
-  const visibleItems = ordered.filter((item) => String(item.date || "").startsWith(activeMonth));
+  const upcomingEvents = useMemo(() => {
+    const now = new Date();
+    return items
+      .filter((item) => getNewsKind(item) === "event")
+      .map((item) => {
+        const start = getEventStart(item);
+        return { item, start, end: start ? getEventEnd(item, start) : null };
+      })
+      .filter(({ start, end }) => start && end && end >= now)
+      .sort((a, b) => {
+        const aIsOngoing = a.start <= now;
+        const bIsOngoing = b.start <= now;
+        if (aIsOngoing !== bIsOngoing) return aIsOngoing ? -1 : 1;
+        return aIsOngoing ? a.end - b.end : a.start - b.start;
+      })
+      .slice(0, 6);
+  }, [items]);
 
   return <main className="news-page" aria-label="News">
     <GameCard as="header" className="news-page-header-card">
-      <SectionHeader kicker="Community board" title="News" titleClassName="news-page-title" />
-      <p className="news-page-description">กำหนดการ Event และการแข่งขันทั้งหมด เรียงตามวันเวลา GMT+7</p>
+      <SectionHeader kicker="Community board" title="News & Events" titleClassName="news-page-title" />
+      <p className="news-page-description">รวมกิจกรรมที่กำลังจะมาถึงและกิจกรรมที่กำลังดำเนินอยู่</p>
     </GameCard>
 
-    <nav className="news-month-tabs" aria-label="เลือกเดือน">
-      {months.map((month) => <button type="button" key={month} className={activeMonth === month ? "is-active" : ""} aria-label={monthLabel(month)} onClick={() => setSelectedMonth(month)}>{monthShortLabel(month)}</button>)}
-    </nav>
-
-    <section className="news-month-section" aria-label={activeMonth ? monthLabel(activeMonth) : "News"}>
-      <div className="news-month-title"><CalendarDays size={22} /><h2>{activeMonth ? monthLabel(activeMonth) : "ยังไม่มีรายการ"}</h2><span>{visibleItems.length} รายการ</span></div>
-      <div className="news-page-list">
-        {visibleItems.map((item) => <NewsListingCard key={`${item.id}-${item.date}-${item.time}`} item={item} onDetails={setSelectedItem} />)}
-        {!visibleItems.length ? <p className="news-empty">ยังไม่มี Event หรือการแข่งขันในเดือนนี้</p> : null}
+    <section className="news-upcoming-section" aria-labelledby="news-upcoming-title">
+      <div className="news-month-title">
+        <CalendarDays size={22} />
+        <h2 id="news-upcoming-title">กิจกรรมที่กำลังมาถึง</h2>
+        <span>{upcomingEvents.length} / 6 รายการ</span>
       </div>
+      {upcomingEvents.length ? <div className="news-upcoming-grid">
+        {upcomingEvents.map(({ item }) => <NewsListingCard key={`${item.id}-${item.date}-${item.time}`} item={item} compact onDetails={setSelectedItem} />)}
+      </div> : <p className="news-empty">ยังไม่มีกิจกรรมที่กำลังมาถึงหรือกำลังดำเนินอยู่</p>}
     </section>
     <NewsDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} userId={userId} profileType={profileType} />
   </main>;
