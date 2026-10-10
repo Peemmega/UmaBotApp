@@ -34,6 +34,23 @@ const PATH_ICON = {
 
 const RACE_HISTORY_PAGE_SIZE = 8;
 
+function getRaceGradeOrder(race) {
+  const values = [race.grade, race.rank, race.tier, race.name, race.id]
+    .filter((value) => value !== undefined && value !== null)
+    .map((value) => String(value).toUpperCase().replace(/[ⅠⅡⅢ]/g, (letter) => ({ "Ⅰ": "I", "Ⅱ": "II", "Ⅲ": "III" })[letter]));
+
+  for (const value of values) {
+    if (/^(?:G\s*)?1$/.test(value.trim()) || /\bG\s*(?:1|I)\b|\bGRADE\s*1\b/.test(value)) return 1;
+    if (/^(?:G\s*)?2$/.test(value.trim()) || /\bG\s*(?:2|II)\b|\bGRADE\s*2\b/.test(value)) return 2;
+    if (/^(?:G\s*)?3$/.test(value.trim()) || /\bG\s*(?:3|III)\b|\bGRADE\s*3\b/.test(value)) return 3;
+  }
+  return 4;
+}
+
+function compareNames(left, right) {
+  return String(left || "").localeCompare(String(right || ""), undefined, { numeric: true, sensitivity: "base" });
+}
+
 export default function RacesPage({ userId, profileType = "trainee" }) {
   const [races, setRaces] = useState([]);
   const [activeDistance, setActiveDistance] = useState("all");
@@ -147,7 +164,10 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
         activeVenue === "all" || String(race.venue || "Other") === activeVenue;
 
       return matchSearch && matchDistance && matchTrack && matchVenue;
-    });
+    }).sort((left, right) => (
+      getRaceGradeOrder(left) - getRaceGradeOrder(right) ||
+      compareNames(left.name || left.id, right.name || right.id)
+    ));
   }, [races, search, activeDistance, activeTrack, activeVenue]);
 
   const venueOptions = useMemo(

@@ -204,7 +204,13 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
       );
 
       return matchSearch && matchAptitude && matchDetail && matchRarity && matchIcon;
-    });
+    }).sort((left, right) => (
+      String(left.name || left.id || "").localeCompare(
+        String(right.name || right.id || ""),
+        undefined,
+        { numeric: true, sensitivity: "base" }
+      )
+    ));
   }, [skills, search, activeAptitude, activeDetail, activeRarity, activeIcons]);
 
   const skillDetailsById = useMemo(
