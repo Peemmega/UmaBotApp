@@ -224,7 +224,7 @@ button:disabled { cursor: not-allowed; }
 .news-month-tabs { padding-bottom: 16px; }
 .profile-name { color: var(--uma-ink); }
 .profile-card { background: var(--uma-surface); }
-.profile-stagger { gap: 24px; }
+.profile-stagger { gap: 6px; }
 .character-card, .skill-card, .race-card { border-color: var(--uma-border); box-shadow: var(--uma-shadow-soft); border-radius: var(--uma-radius-md); }
 .news-listing-card { box-shadow: none; border-radius: var(--uma-radius-md); }
 .news-listing-card.is-clickable:hover { transform: translateY(-3px); box-shadow: var(--uma-shadow-card); }
