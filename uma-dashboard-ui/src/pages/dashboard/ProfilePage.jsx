@@ -18,6 +18,7 @@ import ProfileImageCropModal from "../../components/ProfileImageCropModal";
 import SkillLoadoutPanel from "../../components/SkillLoadoutPanel";
 import TeamMemberProfileModal from "../../components/TeamMemberProfileModal";
 import RaceHistoryDetailModal from "../../components/RaceHistoryDetailModal";
+import "../../styles/profilePage.css";
 
 const fansIcon = `${BOT_API_BASE}/app/assets/icons/fans.png`;
 
@@ -59,7 +60,14 @@ export default function ProfilePage({
   const [teamMemberDetailLoading, setTeamMemberDetailLoading] = useState(false);
   const [teamMemberDetailError, setTeamMemberDetailError] = useState("");
   const [selectedTeamRace, setSelectedTeamRace] = useState(null);
+  const [activeSection, setActiveSection] = useState("profile-overview");
   const fileInputRef = useRef(null);
+  const jumpToSection = (sectionId) => {
+    setActiveSection(sectionId);
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  useEffect(() => setActiveSection("profile-overview"), [profileType]);
 
   useEffect(() => {
     const closeOverlays = () => {
@@ -295,12 +303,10 @@ export default function ProfilePage({
 
     return (
       <>
-      <StaggerContainer className={`dashboard-shell profile-stagger role-profile role-profile-${profileType}`}>
+      <StaggerContainer className={`dashboard-shell profile-stagger profile-redesign role-profile role-profile-${profileType}`}>
         <StaggerItem>
-          <section className="profile-card">
-            <div className="title-banner">
-              <h2>{isTrainer ? "Trainer Profile" : "NPC Profile"}</h2>
-            </div>
+          <section className="profile-card profile-hero" id="profile-overview">
+            <div className="profile-hero-art" aria-hidden="true" />
             <div className="profile-body role-profile-body">
               <div className="profile-avatar-wrap">
                 {profileImageUrl ? (
@@ -327,6 +333,7 @@ export default function ProfilePage({
               </div>
               {isTrainer || profileType === "npc" ? (
                 <div className="profile-info">
+                  <p className="profile-identity-kicker">{isTrainer ? "TRAINER PROFILE" : "NPC PROFILE"}</p>
                   <div className="profile-name-row">
                     <div className="profile-name">{profileName}</div>
                     <button
@@ -350,9 +357,16 @@ export default function ProfilePage({
           </section>
         </StaggerItem>
 
+        <StaggerItem>
+          <nav className="profile-section-nav" aria-label="ส่วนต่าง ๆ ของโปรไฟล์">
+            <button type="button" className={activeSection === "profile-overview" ? "is-active" : ""} onClick={() => jumpToSection("profile-overview")}>ข้อมูลพื้นฐาน</button>
+            {isTrainer && <button type="button" className={activeSection === "profile-team" ? "is-active" : ""} onClick={() => jumpToSection("profile-team")}>ทีมของฉัน</button>}
+          </nav>
+        </StaggerItem>
+
         {isTrainer && (
           <StaggerItem>
-            <section className="sheet-card trainer-team-card">
+            <section className="sheet-card trainer-team-card" id="profile-team">
               <div className="title-banner"><h2>My Uma Musume Team</h2></div>
               <div className="trainer-team-list">
                 <div className="trainer-team-grid">
@@ -442,12 +456,10 @@ export default function ProfilePage({
     <>
       {error ? <div className="error-box">{error}</div> : null}
 
-      <StaggerContainer className="dashboard-shell profile-stagger">
-        {/* container-card */}
-          {error ? <div className="error-box">{error}</div> : null}
-
+      <StaggerContainer className="dashboard-shell profile-stagger profile-redesign">
           <StaggerItem>
-          <section className="profile-card profile-identity-card">
+          <section className="profile-card profile-identity-card profile-hero" id="profile-overview">
+            <div className="profile-hero-art" aria-hidden="true" />
             <div className="profile-body">
               <div className="profile-avatar-wrap">
                 {currentAvatarUrl ? (
@@ -537,10 +549,18 @@ export default function ProfilePage({
           </StaggerItem>
 
           <StaggerItem>
+            <nav className="profile-section-nav" aria-label="ส่วนต่าง ๆ ของโปรไฟล์">
+              <button type="button" className={activeSection === "profile-overview" ? "is-active" : ""} onClick={() => jumpToSection("profile-overview")}>ข้อมูลพื้นฐาน</button>
+              <button type="button" className={activeSection === "profile-stats" ? "is-active" : ""} onClick={() => jumpToSection("profile-stats")}>ค่าสถานะ</button>
+              <button type="button" className={activeSection === "profile-skills" ? "is-active" : ""} onClick={() => jumpToSection("profile-skills")}>สกิล</button>
+              <button type="button" className={activeSection === "profile-zone" ? "is-active" : ""} onClick={() => jumpToSection("profile-zone")}>โซน</button>
+            </nav>
+          </StaggerItem>
+
+          <div className="profile-data-panel" id="profile-stats">
+          <StaggerItem>
           <section className="sheet-card main-stats-card padding_container">
             <div className="section-header-row">
-              <div></div>
-
               <div className="main-stats-header">
                 <SectionHeader
                   title="ค่า Stats พื้นฐาน"
@@ -620,16 +640,22 @@ export default function ProfilePage({
           </section>
           </StaggerItem>
 
+          </div>
+
+          <div className="profile-lower-grid">
           <StaggerItem>
+            <div id="profile-skills" className="profile-lower-panel">
             <SkillLoadoutPanel
               userId={userId}
               username={player?.username || username}
               player={player}
               refreshKey={skillLoadoutVersion}
             />
+            </div>
           </StaggerItem>
 
           <StaggerItem>
+            <div id="profile-zone" className="profile-lower-panel">
           <ZonePanel
               userId={userId}
               player={player}
@@ -643,7 +669,9 @@ export default function ProfilePage({
                 }));
               }}
             />
+            </div>
           </StaggerItem>
+          </div>
         </StaggerContainer>
       {cropModal}
     </>

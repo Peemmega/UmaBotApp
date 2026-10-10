@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ZoneEditModal from "./ZoneEditModal";
 import editIcon from "../assets/icons/change_icon.webp";
 import { playSound } from "../utils/soundManager";
+import profileZoneImage from "../assets/bg/Profile_Zone.webp";
 
 export default function ZonePanel({ userId, player, onSaved }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -65,9 +66,9 @@ export default function ZonePanel({ userId, player, onSaved }) {
 
         <div className="zone-image-frame">
           {zone.image_url ? (
-            <img src={zone.image_url} className="zone-main-image" />
+            <img src={zone.image_url} alt={zone.name || "ภาพโซน"} className="zone-main-image" />
           ) : (
-            <div className="zone-image-placeholder">ภาพโซน</div>
+            <img src={profileZoneImage} alt="สนามแข่งประจำสถาบัน" className="zone-main-image" />
           )}
         </div>
 
