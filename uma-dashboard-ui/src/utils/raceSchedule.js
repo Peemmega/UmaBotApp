@@ -1,12 +1,8 @@
-import AoiStakes from "../assets/race_thumnail/AoiStakes.webp";
 import ArimaKinen from "../assets/race_thumnail/ArimaKinen.webp";
 import AsahiHaiFuturityStakes from "../assets/race_thumnail/AsahiHaiFuturityStakes.webp";
 import ChampionsCup from "../assets/race_thumnail/ChampionsCup.webp";
-import ChunichiShimbunHai from "../assets/race_thumnail/ChunichiShimbunHai.webp";
 import Debut from "../assets/race_thumnail/Debut.webp";
-import DiamondStakes from "../assets/race_thumnail/DiamondStakes.webp";
 import FebruaryStakes from "../assets/race_thumnail/FebruaryStakes.webp";
-import HakodateJuniorStakes from "../assets/race_thumnail/HakodateJuniorStakes.webp";
 import HanshinJuvenileFillies from "../assets/race_thumnail/HanshinJuvenileFillies.webp";
 import HopefulStakes from "../assets/race_thumnail/HopefulStakes.webp";
 import JapanCup from "../assets/race_thumnail/JapanCup.webp";
@@ -16,16 +12,13 @@ import JapaneseOaks from "../assets/race_thumnail/JapaneseOaks.webp";
 import KashiwaKinen from "../assets/race_thumnail/KashiwaKinen.webp";
 import KawasakiKinen from "../assets/race_thumnail/KawasakiKinen.webp";
 import KikukaSho from "../assets/race_thumnail/KikukaSho.webp";
-import KyotoJuniorStakes from "../assets/race_thumnail/KyotoJuniorStakes.webp";
 import MCNambuHai from "../assets/race_thumnail/MCNambuHai.webp";
 import MileChampionship from "../assets/race_thumnail/MileChampionship.webp";
 import NHK from "../assets/race_thumnail/NHK.webp";
-import NiigataJuniorStakes from "../assets/race_thumnail/NiigataJuniorStakes.webp";
 import OkaSho from "../assets/race_thumnail/OkaSho.webp";
 import OsakaHai from "../assets/race_thumnail/OsakaHai.webp";
 import QueenElizabethIICup from "../assets/race_thumnail/QueenElizabethIICup.webp";
 import SatsukiSho from "../assets/race_thumnail/SatsukiSho.webp";
-import SaudiArabiaRoyalCup from "../assets/race_thumnail/SaudiArabiaRoyalCup.webp";
 import ShukaSho from "../assets/race_thumnail/ShukaSho.webp";
 import SteelBallRun from "../assets/race_thumnail/SteelBallRun.webp";
 import SprintersStakes from "../assets/race_thumnail/SprintersStakes.webp";
@@ -44,15 +37,11 @@ import G3Race from "../assets/race_thumnail/G3_race.webp";
 export const fallbackRaceImg = Debut;
 
 export const raceImageMap = {
-  "AoiStakes": AoiStakes,
   "ArimaKinen": ArimaKinen,
   "AsahiHaiFuturityStakes": AsahiHaiFuturityStakes,
   "ChampionsCup": ChampionsCup,
-  "ChunichiShimbunHai": ChunichiShimbunHai,
   "Debut": Debut,
-  "DiamondStakes": DiamondStakes,
   "FebruaryStakes": FebruaryStakes,
-  "HakodateJuniorStakes": HakodateJuniorStakes,
   "HanshinJuvenileFillies": HanshinJuvenileFillies,
   "HopefulStakes": HopefulStakes,
   "JapanCup": JapanCup,
@@ -62,16 +51,13 @@ export const raceImageMap = {
   "KashiwaKinen": KashiwaKinen,
   "KawasakiKinen": KawasakiKinen,
   "KikukaSho": KikukaSho,
-  "KyotoJuniorStakes": KyotoJuniorStakes,
   "MCNambuHai": MCNambuHai,
   "MileChampionship": MileChampionship,
   "NHK": NHK,
-  "NiigataJuniorStakes": NiigataJuniorStakes,
   "OkaSho": OkaSho,
   "OsakaHai": OsakaHai,
   "QueenElizabethIICup": QueenElizabethIICup,
   "SatsukiSho": SatsukiSho,
-  "SaudiArabiaRoyalCup": SaudiArabiaRoyalCup,
   "ShukaSho": ShukaSho,
   "SteelBallRun": SteelBallRun,
   "SprintersStakes": SprintersStakes,
