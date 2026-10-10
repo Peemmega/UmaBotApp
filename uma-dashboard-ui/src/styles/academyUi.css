@@ -90,7 +90,7 @@ button:disabled { cursor: not-allowed; }
 .app-shell-main::before { display: none; }
 .page-transition { gap: 28px; will-change: auto; }
 .topbar {
-  padding: 0 clamp(20px,14vw,180px);
+  padding: 0 clamp(20px,18vw,15%);
   gap: 0;
   background: #fffffffa;
   border-bottom: 1px solid var(--uma-border);
