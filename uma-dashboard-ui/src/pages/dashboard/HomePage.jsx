@@ -3,7 +3,6 @@ import { ArrowDownRight, CalendarDays, ChevronRight, Flag, Sparkles, Trophy } fr
 import { BOT_API_BASE } from "../../api/playerApi";
 import NewsListingCard from "../../components/NewsListingCard";
 import NewsDetailsModal from "../../components/NewsDetailsModal";
-import { getNewsKind } from "../../utils/newsItems";
 import "../../styles/homePage.css";
 
 function bangkokDateKey(date) {
@@ -63,7 +62,6 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
   const upcomingEvents = useMemo(() => {
     const now = new Date();
     return items
-      .filter((item) => getNewsKind(item) === "event")
       .map((item) => {
         const start = getEventStart(item);
         return { item, start, end: start ? getEventEnd(item, start) : null };
@@ -100,15 +98,15 @@ export default function HomePage({ username, userId, profileType, onNavigate }) 
           <div>
             <span className="home-eyebrow home-eyebrow-dark"><CalendarDays size={15} /> CAMPUS BULLETIN</span>
             <h2 id="home-events-title">ข่าวสาร &amp; กิจกรรม</h2>
-            <p>กิจกรรมที่กำลังดำเนินอยู่และกำลังจะมาถึง</p>
+            <p>กิจกรรมและการแข่งขันที่กำลังดำเนินอยู่หรือกำลังจะมาถึง</p>
           </div>
           <button type="button" className="home-view-all" onClick={() => onNavigate("news")}>ดูตารางทั้งหมด <ChevronRight size={17} /></button>
         </header>
 
-        <div className="home-event-summary"><span>UPCOMING EVENTS</span><span>{upcomingEvents.length} / 6 รายการ</span></div>
+        <div className="home-event-summary"><span>UPCOMING EVENTS &amp; RACES</span><span>{upcomingEvents.length} / 6 รายการ</span></div>
         {upcomingEvents.length ? <div className="home-event-grid">
           {upcomingEvents.map(({ item }, index) => <div className="home-event-item" key={`${item.id}-${item.date}-${item.time}`}><span className="home-event-index">{String(index + 1).padStart(2, "0")}</span><NewsListingCard item={item} compact onDetails={setSelectedItem} /></div>)}
-        </div> : <div className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีกิจกรรมที่กำลังมาถึงหรือกำลังดำเนินอยู่</span></div>}
+        </div> : <div className="home-empty-events"><Trophy size={22} /><span>ยังไม่มีกิจกรรมหรือการแข่งขันที่กำลังมาถึงหรือกำลังดำเนินอยู่</span></div>}
       </section>
 
       <section className="home-lower-note">
