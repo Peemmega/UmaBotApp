@@ -20,9 +20,9 @@ export default function StatCell({ statKey, label, value }) {
   const gradeImg = getGradeImage(letter);
 
   return (
-    <div className="stat-cell">
+    <div className="stat-cell" data-stat={statKey}>
       <div className="stat-header">
-        <img src={statIcons[statKey]} alt={label} className="stat-icon" />
+        <span className="stat-icon-frame"><img src={statIcons[statKey]} alt="" className="stat-icon" /></span>
         <span>{label}</span>
       </div>
 

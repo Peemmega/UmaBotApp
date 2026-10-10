@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { Settings, Star } from "lucide-react";
 import { BOT_API_BASE as API_BASE } from "../api/playerApi";
 import { getSkillIcon } from "../utils/getSkillIcon";
 import { describeRaceEffect } from "../utils/raceEffects";
@@ -56,7 +57,7 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
   return (
     <section className="skill-loadout-card">
       <div className="title-banner">
-        <h2>✨ Skill Loadout</h2>
+        <h2><Star className="skill-loadout-title-icon" aria-hidden="true" /> Skill Loadout</h2>
       </div>
       <div className="skill-loadout-list">
         {slots.map((slotKey, index) => {
@@ -106,7 +107,8 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
 
       <div className="skill-loadout-preset-bar">
         <button type="button" className="skill-loadout-preset-button" onClick={() => setIsPresetOpen(true)}>
-          Presets
+          <Settings size={18} aria-hidden="true" />
+          <span>จัดการสกิลล่วงหน้า</span>
         </button>
       </div>
 

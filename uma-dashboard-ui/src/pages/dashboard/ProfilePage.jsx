@@ -21,8 +21,21 @@ import RaceHistoryDetailModal from "../../components/RaceHistoryDetailModal";
 import ProfileSkillLibrary from "../../components/ProfileSkillLibrary";
 import ProfileRaceStats from "../../components/ProfileRaceStats";
 import "../../styles/profilePage.css";
+import horseshoeIcon from "../../assets/icons/horseshoe.webp";
 
 const fansIcon = `${BOT_API_BASE}/app/assets/icons/fans.png`;
+const aptitudeIcons = {
+  turf: "🌿",
+  dirt: "🟤",
+  sprint: "🏁",
+  mile: "🛣️",
+  medium: "🛣️",
+  long: "🛣️",
+  front: "»",
+  pace: "»",
+  late: "»",
+  end_style: "»",
+};
 
 export default function ProfilePage({
   username,
@@ -562,7 +575,7 @@ export default function ProfilePage({
             <div className="section-header-row">
               <div className="main-stats-header">
                 <SectionHeader
-                  title="ค่า Stats พื้นฐาน"
+                  title="ค่าสถานะพื้นฐาน"
                   kicker="Trainee Sheet"
                   className="profile-section-header"
                 />
@@ -579,7 +592,7 @@ export default function ProfilePage({
                     setIsEditStatsOpen((prev) => !prev);
                   }}
                 >
-                  {isEditStatsOpen ? "ปิดอัปเดต Stats" : "อัปเดต Stats"}
+                  {isEditStatsOpen ? "ปิดปรับแต่ง Stats" : "ปรับแต่ง Stats"}
                 </button>
               </div>
             </div>
@@ -615,7 +628,7 @@ export default function ProfilePage({
           <StaggerItem>
           <section className="sheet-card">
             <div className="title-banner">
-              <h2>ค่าความถนัด</h2>
+              <h2><img src={horseshoeIcon} alt="" className="aptitude-title-icon" />ค่าความถนัด</h2>
             </div>
 
             <div className="padding-content">
@@ -629,6 +642,7 @@ export default function ProfilePage({
                           key={item.key}
                           label={item.label}
                           value={player?.[item.key]}
+                          icon={aptitudeIcons[item.key]}
                         />
                       ))}
                     </div>
