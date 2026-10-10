@@ -541,8 +541,8 @@
   padding: 8px 12px;
   border: 0;
   border-radius: 999px;
-  background: rgba(255,255,255,.78);
-  color: #263f46;
+  background: #5865f2;
+  color: #ffffff;
   font-size: 14px;
   font-weight: 800;
 }
@@ -573,6 +573,10 @@
 .profile-redesign .profile-identity-card .profile-resources {
   grid-column: 2;
   grid-row: 2;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-self: stretch;
   align-items: center;
   margin: 0;
@@ -580,6 +584,7 @@
   gap: 0;
   border: 1px solid rgba(255,255,255,.9);
   border-radius: 18px;
+  overflow: hidden;
   background: rgba(255,255,255,.92);
   box-shadow: 0 8px 24px rgba(27,82,48,.1);
   backdrop-filter: blur(10px);
@@ -589,6 +594,7 @@
   display: grid;
   align-content: center;
   justify-items: center;
+  width: 100%;
   min-width: 0;
   height: 100%;
   padding: 0 8px;
@@ -598,10 +604,11 @@
 }
 
 .profile-redesign .profile-identity-card .profile-resources > div + div { border-left: 1px solid #e5ece4; }
-.profile-redesign .profile-identity-card .resource-label { color: #364b50; font-size: 12px; font-weight: 800; text-align: center; }
-.profile-redesign .profile-identity-card .resource-pill { justify-content: center; flex-direction: row-reverse; gap: 9px; min-height: 34px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-.profile-redesign .profile-identity-card .resource-value { color: #754321; font-size: 22px; font-weight: 950; }
-.profile-redesign .profile-identity-card .resource-icon { width: 26px; height: 26px; }
+.profile-redesign .profile-identity-card .resource-label { max-width: 100%; color: #364b50; font-size: 12px; font-weight: 800; line-height: 1.2; text-align: center; overflow-wrap: anywhere; }
+.profile-redesign .profile-identity-card .resource-pill { width: 100%; min-width: 0; justify-content: center; flex-direction: row-reverse; flex-wrap: nowrap; gap: 9px; min-height: 34px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.profile-redesign .profile-identity-card .resource-text { min-width: 0; }
+.profile-redesign .profile-identity-card .resource-value { max-width: 100%; overflow: hidden; color: #754321; font-size: 22px; font-weight: 950; text-overflow: ellipsis; white-space: nowrap; }
+.profile-redesign .profile-identity-card .resource-icon { width: 26px; height: 26px; flex: 0 0 auto; }
 
 @media (max-width: 900px) {
   .profile-redesign .profile-hero .profile-body { grid-template-columns: 155px minmax(0,1fr); padding: 45px 20px 20px; gap: 18px; }

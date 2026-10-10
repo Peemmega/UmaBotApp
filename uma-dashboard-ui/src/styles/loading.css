@@ -53,7 +53,11 @@
 }
 
 .loading-bar {
-  width: min(70vw, 500px);
+  width: min(100%, 320px);
+  max-width: 100%;
+  min-width: 0;
+  flex: 0 1 auto;
+  box-sizing: border-box;
   height: 12px;
   margin-top: 16px;
   overflow: hidden;
@@ -65,6 +69,7 @@
 .loading-bar-fill {
   height: 100%;
   width: 35%;
+  max-width: 100%;
   border-radius: 999px;
   background: linear-gradient(90deg, #8dd62c, #68b900);
   animation: loadingMove 1s ease-in-out infinite;
