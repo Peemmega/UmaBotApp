@@ -528,7 +528,7 @@ export default function ProfilePage({
                 <div className="profile-id">
                   <Badge className="profile-discord-id">
                     <img src={discordIcon} alt="" />
-                    <span>Discord ID: {userId}</span>
+                    <span>{userId}</span>
                   </Badge>
                 </div>
               </div>

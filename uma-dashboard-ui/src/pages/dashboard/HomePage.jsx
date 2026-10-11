@@ -140,7 +140,7 @@ export default function HomePage({ username, onNavigate, onOpenNews }) {
         <div className="home-hero-shade" role="img" aria-label="กลุ่มนักเรียนสาวหูม้าวิ่งในสนามโรงเรียน" style={{ "--home-hero-image": `url("${homeHeroImage}")` }} />
         <Reveal className="home-hero-copy">
           <span className="home-eyebrow"><Sparkles size={15} /> TRACEN ACADEMY · COMMUNITY HUB</span>
-          <h1 id="home-title">วันใหม่ในรั้ว<br /><span>โรงเรียนเทรนเซ็น</span></h1>
+          <h1 id="home-title">ยินดีต้อนรับ<br /><span>สู่ Twinkle Series</span></h1>
           <p>{username ? `สวัสดี ${username} พร้อมออกวิ่งไปกับเพื่อน ๆ แล้วหรือยัง?` : "พร้อมออกวิ่งไปกับเพื่อน ๆ แล้วหรือยัง?"}<br />ติดตามกิจกรรมและเตรียมตัวลงสนามได้ที่นี่</p>
           <div className="home-hero-actions">
             <button type="button" className="home-primary-action" onClick={() => onNavigate("races")}><Flag size={17} /> เข้าสู่สนามแข่ง <ChevronRight size={17} /></button>

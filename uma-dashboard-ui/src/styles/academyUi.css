@@ -347,7 +347,7 @@ button:disabled { cursor: not-allowed; }
   animation: ui-dialog-enter 260ms var(--ui-ease) backwards;
 }
 .ui-dialog { position: relative; width: min(100%, 620px); overflow: auto; }
-.ui-dialog-heading { padding: 28px 64px 22px 28px; border-bottom: 1px solid var(--uma-border); background: var(--uma-gradient-panel); }
+.ui-dialog-heading { padding: 28px 64px 22px 28px; border-bottom: 1px solid var(--uma-border); background: var(--uma-gradient-panel); color: var(--uma-ink); }
 .ui-dialog-heading h2 { margin: 0; font-size: 24px; line-height: 1.5; }
 .ui-dialog-heading p { margin: 6px 0 0; font-size: 13px; color: var(--uma-muted); line-height: 1.7; }
 .ui-dialog-close,
@@ -385,7 +385,7 @@ button:disabled { cursor: not-allowed; }
 .news-detail-facts > div { background: var(--uma-bg-soft); border-radius: 12px; font-size: 13px; }
 :is(.mailbox-header, .rename-header, .zone-edit-header, .team-invite-header, .skill-preset-header, .profile-crop-header) { background: var(--uma-gradient-panel); color: var(--uma-ink); border-bottom-color: var(--uma-border); }
 :is(.mailbox-header, .rename-header, .zone-edit-header, .team-invite-header, .skill-preset-header, .profile-crop-header) h2 { color: var(--uma-ink); }
-.registration-confirm-hero { background: var(--uma-gradient-panel); }
+.registration-confirm-hero { background: var(--uma-gradient-panel); color: var(--uma-ink); }
 .registration-confirm-modal { border-color: var(--uma-border-strong); }
 .edit-stat-card, .mailbox-item { border-color: var(--uma-border); box-shadow: none; }
 .role-confirm-modal { color: var(--uma-ink); background: #fff; }
@@ -424,7 +424,7 @@ button:disabled { cursor: not-allowed; }
   border-radius: 16px;
   box-shadow: var(--uma-shadow-soft);
 }
-.race-hero.room { background: var(--uma-gradient-panel); }
+.race-hero.room { background: var(--uma-gradient-panel); color: var(--uma-ink); }
 .race-kicker { color: var(--uma-primary-dark); }
 .race-toolbar button, .race-room-card button, .race-create-panel button, .race-ghost-btn { border-radius: 10px; box-shadow: none; border-color: var(--uma-border-strong); }
 .race-primary-btn { background: var(--uma-gradient-primary); color: white; }
