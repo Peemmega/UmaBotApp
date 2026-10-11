@@ -20,7 +20,12 @@
   left: 50%;
   width: 100vw;
   transform: translateX(-50%);
-  background: url("../assets/bg/Gameplay_BG.webp") center / cover no-repeat;
+  background-image:
+    linear-gradient(90deg, #fffdf5e8 0%, #fffdf5bd 31%, #fffdf54d 57%, #fffdf500 78%),
+    url("../assets/bg/Gameplay_BG.webp");
+  background-size: 100% 100%, cover;
+  background-position: center, center;
+  background-repeat: no-repeat;
   content: "";
   pointer-events: none;
 }
@@ -310,6 +315,11 @@
 
 @media (max-width: 780px) {
   .commu-system { margin-top: 38px; padding: 24px 18px; }
+  .commu-system::after {
+    background-image:
+      linear-gradient(90deg, #fffdf5eb 0%, #fffdf5c9 53%, #fffdf53d 100%),
+      url("../assets/bg/Gameplay_BG.webp");
+  }
   .commu-system-heading { min-height: 0; margin-bottom: 20px; }
   .commu-system-track-mark { width: 24%; }
   .commu-system-heading h2 { font-size: clamp(29px, 7vw, 40px); }
