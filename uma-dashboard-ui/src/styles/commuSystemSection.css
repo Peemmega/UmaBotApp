@@ -5,17 +5,24 @@
   --commu-lime: #c6ee73;
   --commu-pink: #ef7c9e;
   position: relative;
-  overflow: hidden;
+  isolation: isolate;
+  overflow: visible;
   margin-top: 58px;
   padding: clamp(24px, 4vw, 48px);
-  border: 1px solid #dcebdd;
-  border-radius: 25px;
-  background:
-    radial-gradient(ellipse at 96% 0%, #e8f5d6 0, transparent 33%),
-    linear-gradient(140deg, #fafff6d9 0%, #f1f8edc2 57%, #edf7f1d9 100%),
-    url("../assets/bg/Gameplay_BG.webp") center 48% / cover no-repeat;
+  background: transparent;
   color: var(--commu-ink);
-  box-shadow: 0 20px 45px #264c3210;
+}
+
+.commu-system::after {
+  position: absolute;
+  z-index: -1;
+  inset-block: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  background: url("../assets/bg/Gameplay_BG.webp") center / cover no-repeat;
+  content: "";
+  pointer-events: none;
 }
 
 .commu-system::before {
@@ -302,7 +309,7 @@
 .commu-system-footer i { width: 24px; height: 1px; background: #9dbd91; }
 
 @media (max-width: 780px) {
-  .commu-system { margin-top: 38px; padding: 24px 18px; border-radius: 19px; }
+  .commu-system { margin-top: 38px; padding: 24px 18px; }
   .commu-system-heading { min-height: 0; margin-bottom: 20px; }
   .commu-system-track-mark { width: 24%; }
   .commu-system-heading h2 { font-size: clamp(29px, 7vw, 40px); }
