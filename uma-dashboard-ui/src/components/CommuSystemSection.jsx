@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Activity, ArrowRight, Flag, Sparkles, Trophy, Zap } from "lucide-react";
+import StatCell from "./StatCell";
+import AptitudeItem from "./AptitudeItem";
+import { mainStats, aptitudeRows } from "../data/dashboardConfig";
 import { raceImageMap } from "../utils/raceSchedule";
 import "../styles/commuSystemSection.css";
 
@@ -58,13 +61,11 @@ const SYSTEMS = [
   },
 ];
 
-const STATS = [
-  { label: "Speed", value: 82, color: "speed" },
-  { label: "Stamina", value: 67, color: "stamina" },
-  { label: "Power", value: 74, color: "power" },
-  { label: "Guts", value: 54, color: "guts" },
-  { label: "Wit", value: 70, color: "wit" },
-];
+const SAMPLE_PROFILE = {
+  speed: 8, stamina: 6, power: 7, gut: 5, wit: 7,
+  turf: 7, dirt: 5, sprint: 6, mile: 7, medium: 8, long: 5,
+  front: 7, pace: 8, late: 6, end_style: 5,
+};
 
 const STYLES = [
   { id: "Front", detail: "นำตั้งแต่ต้น", position: 12 },
@@ -83,22 +84,38 @@ const RACE_GALLERY_COLUMNS = Array.from({ length: 3 }, (_, column) =>
 
 function StatsGraphic() {
   return (
-    <div className="commu-build-sheet">
-      <div className="commu-build-heading">
-        <span className="commu-build-avatar">U</span>
-        <span><b>Runner build</b><small>ตัวอย่างการกระจาย Stats</small></span>
-        <strong className="commu-build-rank">A</strong>
+    <div className="commu-profile-preview">
+      <div className="commu-profile-preview-heading">
+        <div className="commu-profile-preview-avatar" aria-hidden="true">U</div>
+        <div className="commu-profile-preview-identity">
+          <small>PLAYER PROFILE</small>
+          <b>นักวิ่งตัวอย่าง</b>
+        </div>
+        <span className="commu-profile-preview-tag">PROFILE</span>
       </div>
-      <div className="commu-stat-bars">
-        {STATS.map((stat) => (
-          <div className="commu-stat-row" key={stat.label}>
-            <span>{stat.label}</span>
-            <div className="commu-stat-track"><i className={`is-${stat.color}`} style={{ "--stat-fill": `${stat.value}%` }} /></div>
-            <b>{stat.value}</b>
-          </div>
-        ))}
-      </div>
-      <div className="commu-build-footer"><span>PROFILE</span><span>แต้มฝึกซ้อมปรับได้</span></div>
+      <section className="commu-profile-preview-section" aria-label="Basic stats">
+        <div className="commu-profile-preview-section-title"><b>ค่าค่าสถานะพื้นฐาน</b><span>TRAINING STATS</span></div>
+        <div className="commu-profile-stat-grid">
+          {mainStats.map((stat) => (
+            <StatCell key={stat.key} statKey={stat.key} label={stat.label} value={SAMPLE_PROFILE[stat.key]} />
+          ))}
+        </div>
+      </section>
+      <section className="commu-profile-preview-section commu-profile-aptitude-section" aria-label="Aptitudes">
+        <div className="commu-profile-preview-section-title"><b>ความถนัดของนักวิ่ง</b><span>APTITUDE</span></div>
+        <div className="commu-profile-aptitude-table">
+          {aptitudeRows.map((row, index) => (
+            <div className="commu-profile-aptitude-row" key={row.items[0].key}>
+              <span className="commu-profile-aptitude-category">{["สนาม", "ระยะทาง", "สายการวิ่ง"][index]}</span>
+              <div className="commu-profile-aptitude-items">
+                {row.items.map((item) => (
+                  <AptitudeItem key={item.key} label={item.label} value={SAMPLE_PROFILE[item.key]} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
