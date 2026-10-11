@@ -8,7 +8,7 @@
   isolation: isolate;
   overflow: visible;
   margin-top: 58px;
-  padding: clamp(24px, 4vw, 48px);
+  padding: clamp(24px,4vw,8px) clamp(90px,4vw,8px);
   background: transparent;
   color: var(--commu-ink);
 }
