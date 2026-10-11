@@ -76,7 +76,6 @@ const STYLES = [
 const RACE_GALLERY = Object.entries(raceImageMap).map(([id, image]) => ({
   id,
   image,
-  name: id.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/([A-Z])([A-Z][a-z])/g, "$1 $2"),
 }));
 const RACE_GALLERY_COLUMNS = Array.from({ length: 3 }, (_, column) =>
   RACE_GALLERY.filter((_, index) => index % 3 === column)
@@ -124,8 +123,7 @@ function SkillsGraphic() {
 
 function RaceGraphic() {
   return (
-    <div className="commu-race-gallery" aria-label="ตัวอย่างภาพจากรายการแข่งหลายสนาม">
-      <div className="commu-race-gallery-heading"><span><Trophy size={14} /> RACE CALENDAR</span><b>100+ รายการแข่ง</b></div>
+    <div className="commu-race-gallery" role="img" aria-label="ภาพสนามแข่งหลากหลายแบบที่เลื่อนวนต่อเนื่อง">
       <div className="commu-race-window">
         <div className="commu-race-columns" aria-hidden="true">
           {RACE_GALLERY_COLUMNS.map((races, column) => (
@@ -134,7 +132,6 @@ function RaceGraphic() {
                 {races.map((race) => (
                   <div className="commu-race-thumb" key={`${race.id}-${group}`}>
                     <img src={race.image} alt="" loading="lazy" />
-                    <span>{race.name}</span>
                   </div>
                 ))}
               </div>)}
@@ -142,7 +139,6 @@ function RaceGraphic() {
           ))}
         </div>
       </div>
-      <div className="commu-race-gallery-footer"><Flag size={14} /><span>เลือกสนาม · วางแผน · ออกตัว</span></div>
     </div>
   );
 }
