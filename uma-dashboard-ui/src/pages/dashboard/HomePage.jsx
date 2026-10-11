@@ -5,6 +5,7 @@ import { Reveal } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import { BOT_API_BASE } from "../../api/playerApi";
 import NewsListingCard from "../../components/NewsListingCard";
+import CommuSystemSection from "../../components/CommuSystemSection";
 import { getNewsKind } from "../../utils/newsItems";
 import homeHeroImage from "../../assets/bg/Home_Image.webp";
 import "../../styles/homePage.css";
@@ -216,6 +217,8 @@ export default function HomePage({ username, onNavigate, onOpenNews }) {
           </section>
         </div>
       </section>
+
+      <CommuSystemSection onNavigate={onNavigate} />
 
       <Reveal as="section" className="home-lower-note">
         <span className="home-note-icon"><Sparkles size={19} /></span>
