@@ -221,10 +221,9 @@ export default function CommuSystemSection({ onNavigate }) {
       <header className="commu-system-heading">
         <div>
           <span className="commu-system-kicker"><span /> ระบบคอมมูนิตี้ Tracen</span>
-          <h2 id="commu-system-title">เตรียมทุกอย่าง<br /><em>ก่อนออกตัว</em></h2>
-          <p>ระบบที่เชื่อมการฝึก สกิล และแผนการแข่งขันไว้ด้วยกัน</p>
+          <h2 id="commu-system-title">ระบบการแข่งขัน<br /><em>Race System</em></h2>
+          <p>ระบบแข่งขันที่จะวัดไหวพริบ การว่างแผน การแก้สถานการณ์ และท้าทายเหล่าอาชาสาวทุกคนที่ก้าวเข้าสู่ Twinkle Series</p>
         </div>
-        <div className="commu-system-track-mark" aria-hidden="true"><span>TRACEN</span><i /><b>FINISH</b></div>
       </header>
 
       <div className="commu-system-tabs" role="tablist" aria-label="ระบบของคอมมูนิตี้">
@@ -265,7 +264,6 @@ export default function CommuSystemSection({ onNavigate }) {
           <SystemVisual id={activeSystem.id} />
         </div>
       </div>
-      <div className="commu-system-footer"><span>สร้างนักวิ่ง</span><i /><span>เลือกแผน</span><i /><span>ออกสู่สนาม</span></div>
     </section>
   );
 }

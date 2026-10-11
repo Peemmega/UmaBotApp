@@ -12,7 +12,8 @@
   border-radius: 25px;
   background:
     radial-gradient(ellipse at 96% 0%, #e8f5d6 0, transparent 33%),
-    linear-gradient(140deg, #fafff6 0%, #f1f8ed 57%, #edf7f1 100%);
+    linear-gradient(140deg, #fafff6d9 0%, #f1f8edc2 57%, #edf7f1d9 100%),
+    url("../assets/bg/Gameplay_BG.webp") center 48% / cover no-repeat;
   color: var(--commu-ink);
   box-shadow: 0 20px 45px #264c3210;
 }
