@@ -227,14 +227,26 @@
 .commu-zone-effects { display: grid; gap: 5px; margin-left: auto; }
 .commu-zone-effects i { padding: 4px 6px; border-radius: 6px; background: #eaf4e4; color: #4a7b4b; font-size: 8px; font-style: normal; font-weight: 900; }
 
-.commu-race-card { position: relative; z-index: 1; width: min(100%, 470px); min-height: 280px; overflow: hidden; border: 5px solid #fff; border-radius: 17px; background: #456d50; box-shadow: 0 15px 35px #29483423; transform: rotate(1.5deg); }
-.commu-race-card > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.commu-race-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, #172c25d9 0%, #24433499 46%, transparent 100%), linear-gradient(0deg, #182d2499, transparent 45%); }
-.commu-race-card-copy { position: absolute; top: 26px; left: 26px; display: grid; gap: 12px; color: white; }
-.commu-race-card-copy > span { display: inline-flex; align-items: center; gap: 7px; color: #d6efa9; font-size: 9px; font-weight: 900; letter-spacing: .1em; }
-.commu-race-card-copy strong { font-size: clamp(24px, 3vw, 34px); font-weight: 900; line-height: 1.25; }
-.commu-race-card-copy small { color: #eff8eb; font-size: 11px; }
-.commu-race-stamp { position: absolute; right: 20px; bottom: 20px; display: flex; align-items: center; gap: 8px; padding: 9px 11px; border: 1px solid #ffffff9c; border-radius: 9px; background: #fff2; color: white; font-size: 9px; font-weight: 850; line-height: 1.35; backdrop-filter: blur(5px); }
+.commu-race-gallery { position: relative; z-index: 1; display: grid; width: min(100%, 470px); grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; padding: 14px 15px 12px; border: 1px solid #dce8d9; border-radius: 17px; background: #fff; box-shadow: 0 15px 35px #29483418; }
+.commu-race-gallery-heading, .commu-race-gallery-footer { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.commu-race-gallery-heading { padding: 2px 3px 11px; border-bottom: 1px solid #edf2e9; }
+.commu-race-gallery-heading > span { display: inline-flex; align-items: center; gap: 7px; color: #477f4f; font-size: 9px; font-weight: 900; letter-spacing: .1em; }
+.commu-race-gallery-heading b { padding: 5px 8px; border-radius: 7px; background: #f1f7e9; color: #597b45; font-size: 9px; }
+.commu-race-window { position: relative; height: 267px; overflow: hidden; }
+.commu-race-window::before, .commu-race-window::after { position: absolute; z-index: 1; right: 0; left: 0; height: 25px; content: ""; pointer-events: none; }
+.commu-race-window::before { top: 0; background: linear-gradient(#fff, #fff0); }
+.commu-race-window::after { bottom: 0; background: linear-gradient(#fff0, #fff); }
+.commu-race-columns { display: grid; height: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; overflow: hidden; }
+.commu-race-column { display: flex; flex-direction: column; animation: commu-race-scroll var(--column-duration) linear infinite; animation-delay: var(--column-delay); }
+.commu-race-set { display: grid; flex: 0 0 auto; gap: 9px; padding-bottom: 9px; }
+.commu-race-gallery:hover .commu-race-column { animation-play-state: paused; }
+.commu-race-thumb { position: relative; height: 94px; flex: 0 0 auto; overflow: hidden; border: 1px solid #e0e9dc; border-radius: 10px; background: #edf4e9; }
+.commu-race-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.commu-race-thumb::after { position: absolute; inset: 35% 0 0; background: linear-gradient(transparent, #183729c9); content: ""; }
+.commu-race-thumb > span { position: absolute; right: 7px; bottom: 6px; left: 7px; z-index: 1; overflow: hidden; color: #fff; font-size: 9px; font-weight: 850; text-overflow: ellipsis; white-space: nowrap; }
+.commu-race-gallery-footer { justify-content: center; padding-top: 10px; color: #687e6b; font-size: 10px; font-weight: 750; }
+.commu-race-gallery-footer svg { color: #df6c89; }
+@keyframes commu-race-scroll { to { transform: translateY(-50%); } }
 
 .commu-lane-map { position: relative; z-index: 1; width: min(100%, 485px); padding: 20px; border: 1px solid #dce8d9; border-radius: 17px; background: #fff; box-shadow: 0 15px 35px #29483418; }
 .commu-lane-track-label { display: flex; justify-content: space-between; margin: 0 6px 9px 39px; color: #8a9b8c; font-size: 8px; font-weight: 900; letter-spacing: .1em; }
@@ -294,7 +306,12 @@
   .commu-skill-card p, .commu-zone-card p { font-size: 10px; }
   .commu-skill-ready { padding: 5px 6px; font-size: 9px; }
   .commu-zone-effects { display: none; }
-  .commu-race-card { min-height: 250px; }
+  .commu-race-gallery { padding-right: 11px; padding-left: 11px; }
+  .commu-race-window { height: 245px; }
+  .commu-race-columns { gap: 6px; }
+  .commu-race-set { gap: 7px; padding-bottom: 7px; }
+  .commu-race-thumb { height: 83px; border-radius: 8px; }
+  .commu-race-thumb > span { right: 5px; bottom: 5px; left: 5px; font-size: 8px; }
   .commu-lane-map { padding: 15px 11px; }
   .commu-style-map { padding: 19px 12px 13px; }
   .commu-system-footer { gap: 7px; font-size: 9px; }
@@ -305,4 +322,5 @@
   .commu-system-tabs button,
   .commu-system-action,
   .commu-style-track > b { transition: none; }
+  .commu-race-column { animation: none; }
 }

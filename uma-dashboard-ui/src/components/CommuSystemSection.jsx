@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Activity, ArrowRight, Flag, Sparkles, Trophy, Zap } from "lucide-react";
-import { getRaceImage } from "../utils/raceSchedule";
+import { raceImageMap } from "../utils/raceSchedule";
 import "../styles/commuSystemSection.css";
 
 const SYSTEMS = [
@@ -31,7 +31,7 @@ const SYSTEMS = [
     label: "สนามแข่ง",
     Icon: Trophy,
     title: "เลือกสนาม แล้ววางแผนก่อนออกตัว",
-    description: "ติดตามรายการแข่งที่กำลังเปิดอยู่ เช็กกำหนดการ และเตรียมทีมให้พร้อมกับสนามถัดไป",
+    description: "เลือกจากรายการแข่งกว่า 100 แบบ เช็กกำหนดการ แล้วเตรียมทีมให้พร้อมกับสนามถัดไป",
     note: "ดูตารางรายการแข่งและผลการแข่งขันย้อนหลังได้",
     destination: "races",
     action: "เปิดสนามแข่ง",
@@ -72,6 +72,15 @@ const STYLES = [
   { id: "Late", detail: "รอจังหวะเร่ง", position: 65 },
   { id: "End", detail: "เร่งช่วงท้าย", position: 88 },
 ];
+
+const RACE_GALLERY = Object.entries(raceImageMap).map(([id, image]) => ({
+  id,
+  image,
+  name: id.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/([A-Z])([A-Z][a-z])/g, "$1 $2"),
+}));
+const RACE_GALLERY_COLUMNS = Array.from({ length: 3 }, (_, column) =>
+  RACE_GALLERY.filter((_, index) => index % 3 === column)
+);
 
 function StatsGraphic() {
   return (
@@ -114,17 +123,26 @@ function SkillsGraphic() {
 }
 
 function RaceGraphic() {
-  const raceImage = getRaceImage({ id: "JapanCup", name: "Japan Cup" });
   return (
-    <div className="commu-race-card">
-      <img src={raceImage} alt="ภาพประกอบสนาม Japan Cup" />
-      <div className="commu-race-scrim" />
-      <div className="commu-race-card-copy">
-        <span><Trophy size={14} /> RACE CALENDAR</span>
-        <strong>สนามแข่ง<br />และกำหนดการ</strong>
-        <small>เช็กสนาม · ลงทะเบียน · ดูผล</small>
+    <div className="commu-race-gallery" aria-label="ตัวอย่างภาพจากรายการแข่งหลายสนาม">
+      <div className="commu-race-gallery-heading"><span><Trophy size={14} /> RACE CALENDAR</span><b>100+ รายการแข่ง</b></div>
+      <div className="commu-race-window">
+        <div className="commu-race-columns" aria-hidden="true">
+          {RACE_GALLERY_COLUMNS.map((races, column) => (
+            <div className="commu-race-column" key={column} style={{ "--column-duration": `${52 + column * 7}s`, "--column-delay": `${column * -9}s` }}>
+              {[0, 1].map((group) => <div className="commu-race-set" key={group}>
+                {races.map((race) => (
+                  <div className="commu-race-thumb" key={`${race.id}-${group}`}>
+                    <img src={race.image} alt="" loading="lazy" />
+                    <span>{race.name}</span>
+                  </div>
+                ))}
+              </div>)}
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="commu-race-stamp"><Flag size={17} /><span>ออกตัว<br />พร้อมกัน</span></div>
+      <div className="commu-race-gallery-footer"><Flag size={14} /><span>เลือกสนาม · วางแผน · ออกตัว</span></div>
     </div>
   );
 }
