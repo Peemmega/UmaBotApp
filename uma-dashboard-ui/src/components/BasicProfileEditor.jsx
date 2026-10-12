@@ -69,8 +69,8 @@ export default function BasicProfileEditor({ userId }) {
       setError("กรอกชื่อทั้งสองภาษา ชั้นปี วันเกิด ส่วนสูง และหอก่อนบันทึก");
       return;
     }
-    if (countWords(profile.likes) > 60 || countWords(profile.dislikes) > 60) {
-      setError("Like และ Dislike ต้องไม่เกิน 60 คำ");
+    if (countWords(profile.likes) > 60 || countWords(profile.dislikes) > 60 || countWords(profile.personality) > 200 || countWords(profile.biography) > 200 || countWords(profile.additional) > 200) {
+      setError("Like และ Dislike จำกัด 60 คำ ส่วนบุคลิก ประวัติ และเพิ่มเติมจำกัดอย่างละ 200 คำ");
       return;
     }
     setSaving(true);
@@ -78,7 +78,7 @@ export default function BasicProfileEditor({ userId }) {
       const res = await fetch(`${BOT_API_BASE}/player/${encodeURIComponent(userId)}/basic-profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...profile, birthday_day: Number(profile.birthday_day), birthday_month: Number(profile.birthday_month), height_cm: Number(profile.height_cm) }),
+        body: JSON.stringify({ ...profile, birthday_day: Number(profile.birthday_day), birthday_month: Number(profile.birthday_month), height_cm: Number(profile.height_cm), word_counts: Object.fromEntries(["likes", "dislikes", "personality", "biography", "additional"].map((field) => [field, countWords(profile[field])])) }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.detail || "บันทึกข้อมูลไม่สำเร็จ");
@@ -94,9 +94,9 @@ export default function BasicProfileEditor({ userId }) {
     }
   };
 
-  const input = (label, field, { maxLength, rows = 2, wide = false } = {}) => (
+  const input = (label, field, { maxLength, maxWords, rows = 2, wide = false } = {}) => (
     <label className={`basic-profile-editor-field${wide ? " is-wide" : ""}`} key={field}>
-      <span>{label}{maxLength ? <small>{profile[field].length}/{maxLength} ตัวอักษร</small> : null}</span>
+      <span>{label}{maxLength ? <small>{profile[field].length}/{maxLength} ตัวอักษร</small> : null}{maxWords ? <small>{countWords(profile[field])}/{maxWords} คำ</small> : null}</span>
       {rows > 1 ? <textarea rows={rows} maxLength={maxLength} value={profile[field]} onChange={change(field)} /> : <input maxLength={maxLength} value={profile[field]} onChange={change(field)} />}
     </label>
   );
@@ -118,9 +118,9 @@ export default function BasicProfileEditor({ userId }) {
           <label className="basic-profile-editor-field"><span>Dorm *</span><select required value={profile.dorm} onChange={change("dorm")}><option value="">เลือกหอพัก</option><option>Ritto</option><option>Miho</option></select></label>
           <label className="basic-profile-editor-field"><span>Like <small>{countWords(profile.likes)}/60 คำ</small></span><textarea rows={2} value={profile.likes} onChange={change("likes")} /></label>
           <label className="basic-profile-editor-field"><span>Dislike <small>{countWords(profile.dislikes)}/60 คำ</small></span><textarea rows={2} value={profile.dislikes} onChange={change("dislikes")} /></label>
-          {input("บุคลิก", "personality", { maxLength: 200, rows: 3, wide: true })}
-          {input("ประวัติ", "biography", { maxLength: 500, rows: 5, wide: true })}
-          {input("เพิ่มเติม", "additional", { maxLength: 200, rows: 3, wide: true })}
+          {input("บุคลิก", "personality", { maxWords: 200, rows: 3, wide: true })}
+          {input("ประวัติ", "biography", { maxWords: 200, rows: 5, wide: true })}
+          {input("เพิ่มเติม", "additional", { maxWords: 200, rows: 3, wide: true })}
           {error && <p className="basic-profile-editor-error is-wide">{error}</p>}
           <div className="basic-profile-editor-actions is-wide"><button type="submit" disabled={saving}><Save size={16} /> {saving ? "กำลังบันทึก…" : "บันทึกข้อมูล"}</button>{isComplete(profile) && <button type="button" className="is-secondary" onClick={() => { setEditing(false); setError(""); }}>ยกเลิก</button>}</div>
         </form>

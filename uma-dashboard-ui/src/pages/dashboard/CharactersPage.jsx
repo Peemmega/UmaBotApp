@@ -187,8 +187,8 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
       setError("กรอกชื่อทั้งสองภาษา ชั้นปี วันเกิด ส่วนสูง และหอก่อนบันทึก");
       return;
     }
-    if (countWords(profile.likes) > 60 || countWords(profile.dislikes) > 60) {
-      setError("Like และ Dislike ต้องไม่เกิน 60 คำ");
+    if (countWords(profile.likes) > 60 || countWords(profile.dislikes) > 60 || countWords(profile.personality) > 200 || countWords(profile.biography) > 200 || countWords(profile.additional) > 200) {
+      setError("Like และ Dislike จำกัด 60 คำ ส่วนบุคลิก ประวัติ และเพิ่มเติมจำกัดอย่างละ 200 คำ");
       return;
     }
     setSaving(true);
@@ -201,6 +201,7 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
           birthday_day: Number(profile.birthday_day),
           birthday_month: Number(profile.birthday_month),
           height_cm: Number(profile.height_cm),
+          word_counts: Object.fromEntries(["likes", "dislikes", "personality", "biography", "additional"].map((field) => [field, countWords(profile[field])])),
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -235,9 +236,9 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
           <label className="basic-profile-field"><span>Dorm <b>*</b></span><select required value={profile.dorm} onChange={change("dorm")}><option value="">เลือกหอพัก</option><option>Ritto</option><option>Miho</option></select></label>
           <label className="basic-profile-field"><span>Like <small>{countWords(profile.likes)}/60 คำ</small></span><textarea rows={2} value={profile.likes} onChange={change("likes")} /></label>
           <label className="basic-profile-field"><span>Dislike <small>{countWords(profile.dislikes)}/60 คำ</small></span><textarea rows={2} value={profile.dislikes} onChange={change("dislikes")} /></label>
-          <label className="basic-profile-field basic-profile-field--wide"><span>บุคลิก <small>{profile.personality.length}/200 ตัวอักษร</small></span><textarea maxLength={200} rows={3} value={profile.personality} onChange={change("personality")} /></label>
-          <label className="basic-profile-field basic-profile-field--wide"><span>ประวัติ <small>{profile.biography.length}/500 ตัวอักษร</small></span><textarea maxLength={500} rows={5} value={profile.biography} onChange={change("biography")} /></label>
-          <label className="basic-profile-field basic-profile-field--wide"><span>เพิ่มเติม <small>{profile.additional.length}/200 ตัวอักษร</small></span><textarea maxLength={200} rows={3} value={profile.additional} onChange={change("additional")} /></label>
+          <label className="basic-profile-field basic-profile-field--wide"><span>บุคลิก <small>{countWords(profile.personality)}/200 คำ</small></span><textarea rows={3} value={profile.personality} onChange={change("personality")} /></label>
+          <label className="basic-profile-field basic-profile-field--wide"><span>ประวัติ <small>{countWords(profile.biography)}/200 คำ</small></span><textarea rows={5} value={profile.biography} onChange={change("biography")} /></label>
+          <label className="basic-profile-field basic-profile-field--wide"><span>เพิ่มเติม <small>{countWords(profile.additional)}/200 คำ</small></span><textarea rows={3} value={profile.additional} onChange={change("additional")} /></label>
           {error && <p className="basic-profile-error basic-profile-field--wide">{error}</p>}
           <div className="basic-profile-actions basic-profile-field--wide"><button type="submit" disabled={saving}><Save size={16} /> {saving ? "กำลังบันทึก…" : "บันทึกข้อมูล"}</button>{basicProfileIsComplete(initialProfile) && <button type="button" className="basic-profile-cancel" onClick={() => { setProfile({ ...EMPTY_BASIC_PROFILE, ...initialProfile }); setEditing(false); setError(""); }}><X size={16} /> ยกเลิก</button>}</div>
         </form>
