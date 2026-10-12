@@ -235,3 +235,122 @@
   .system-pack-rule { gap: 10px; padding: 16px; }
   .system-pack-rule strong { font-size: 13px; }
 }
+
+/* Give each guide a clear identity while keeping the article surface quiet. */
+.system-guide.is-stats-skills-zone {
+  --guide-accent: #4969b4;
+  --guide-ink: #26395f;
+  --guide-muted: #687895;
+  --guide-soft: #edf2ff;
+  --guide-pale: #f7f9ff;
+  --guide-line: #d9e2f5;
+  --guide-hero-start: #23365f;
+  --guide-hero-end: #4969b4;
+  --guide-hero-label: #dce7ff;
+}
+.system-guide.is-races {
+  --guide-accent: #b86d2f;
+  --guide-ink: #5b3c28;
+  --guide-muted: #89715c;
+  --guide-soft: #fff1e2;
+  --guide-pale: #fffaf4;
+  --guide-line: #efddc9;
+  --guide-hero-start: #59351e;
+  --guide-hero-end: #ad632e;
+  --guide-hero-label: #ffe8cf;
+}
+.system-guide.is-lanes {
+  --guide-accent: #237d88;
+  --guide-ink: #204850;
+  --guide-muted: #638087;
+  --guide-soft: #e8f5f5;
+  --guide-pale: #f5fbfb;
+  --guide-line: #d2e8e9;
+  --guide-hero-start: #1c4149;
+  --guide-hero-end: #287d87;
+  --guide-hero-label: #d4f4f1;
+}
+.system-guide.is-running-styles {
+  --guide-accent: #8252a0;
+  --guide-ink: #483052;
+  --guide-muted: #806c89;
+  --guide-soft: #f4ebfa;
+  --guide-pale: #fbf7fd;
+  --guide-line: #e7d9ef;
+  --guide-hero-start: #39264a;
+  --guide-hero-end: #80539d;
+  --guide-hero-label: #f0e0fc;
+}
+.system-guide .system-guide-hero {
+  background: linear-gradient(118deg, var(--guide-hero-start), var(--guide-hero-end));
+  box-shadow: 0 5px 0 var(--guide-line);
+}
+.system-guide .system-guide-hero-label { color: var(--guide-hero-label); }
+.system-guide .system-guide-breadcrumb button { color: var(--guide-accent); }
+.system-guide .system-guide-topics { border-color: var(--guide-line); }
+.system-guide .system-guide-topics a { transition: background-color .2s ease, color .2s ease; }
+.system-guide .system-guide-topics a[aria-current="page"] { color: var(--guide-accent); background: var(--guide-soft); }
+.system-guide .system-guide-topics a:hover { color: var(--guide-ink); background: var(--guide-pale); }
+.system-guide .system-guide-toc nav { border-color: var(--guide-line); }
+.system-guide .system-guide-toc a:hover { color: var(--guide-accent); background: var(--guide-soft); }
+.system-guide .system-guide-article { border-color: var(--guide-line); }
+.system-guide .system-guide-section { border-color: var(--guide-line); }
+.system-guide .system-guide-section h2 { padding-left: 13px; border-left: 4px solid var(--guide-accent); color: var(--guide-ink); }
+.system-guide .system-guide-section h3 { color: var(--guide-ink); }
+.system-guide .system-stat-entry { border-color: var(--guide-line); }
+.system-guide .system-stat-entry > div > p { color: var(--guide-ink); }
+.system-guide .system-aptitude-ranks { border-color: var(--guide-line); }
+.system-guide .system-aptitude-ranks > div { border-color: var(--guide-line); background: var(--guide-pale); }
+.system-guide .system-aptitude-ranks span { color: var(--guide-accent); }
+.system-guide .system-guide-note { border-color: var(--guide-accent); background: var(--guide-soft); color: var(--guide-ink); }
+.system-guide .system-guide-note > strong { color: var(--guide-accent); }
+.system-guide .system-guide-example { border-left: 3px solid var(--guide-accent); background: var(--guide-pale); color: var(--guide-ink); }
+.system-guide .system-guide-two-col > div { border-color: var(--guide-accent); }
+.system-guide .system-guide-table-scroll { border-color: var(--guide-line); }
+.system-guide .system-guide-table caption { color: var(--guide-ink); background: var(--guide-pale); }
+.system-guide .system-guide-table th,
+.system-guide .system-guide-table td { border-color: var(--guide-line); }
+.system-guide .system-guide-table thead th { color: var(--guide-ink); background: var(--guide-soft); }
+.system-guide .system-skill-parts > div { border-color: var(--guide-accent); background: var(--guide-soft); }
+.system-guide .system-skill-parts strong,
+.system-guide .system-guide-build strong { color: var(--guide-accent); }
+.system-guide .system-zone-banner { background: var(--guide-soft); color: var(--guide-accent); }
+.system-guide .system-zone-banner strong { color: var(--guide-ink); }
+.system-guide .system-guide-flow li::marker { color: var(--guide-accent); }
+.system-guide .system-course-parts > div { border-color: var(--guide-line); }
+.system-guide .system-course-parts dt,
+.system-guide .system-race-example strong { color: var(--guide-accent); }
+.system-guide .system-phase-strip > div { border-color: var(--guide-accent); background: var(--guide-soft); }
+.system-guide .system-phase-strip strong { color: var(--guide-ink); }
+.system-guide .system-phase-strip span { color: var(--guide-muted); }
+.system-guide .system-guide-field { color: var(--guide-ink); }
+.system-guide .system-guide select { border-color: var(--guide-line); color: var(--guide-ink); }
+.system-guide select:focus-visible { outline-color: var(--guide-accent); }
+.system-guide.is-lanes .system-lane-map { border-color: var(--guide-line); background: var(--guide-pale); }
+.system-guide.is-lanes .system-lane-map button { color: var(--guide-ink); }
+.system-guide.is-lanes .system-lane-map button.is-selected { background: var(--guide-soft); box-shadow: inset 3px 0 var(--guide-accent); }
+.system-guide.is-lanes .system-lane-map-heading { color: var(--guide-muted); }
+.system-guide.is-lanes .system-lane-line { background: var(--guide-line); }
+.system-guide.is-lanes .system-lane-demo-runner { background: var(--guide-accent); }
+.system-guide.is-lanes .system-lane-cost-summary { background: var(--guide-soft); }
+.system-guide.is-lanes .system-lane-cost-summary > span { color: var(--guide-muted); }
+.system-guide.is-lanes .system-lane-cost-summary > strong { color: var(--guide-accent); }
+.system-guide.is-lanes .system-draft-illustration { background: var(--guide-soft); color: var(--guide-accent); }
+.system-guide.is-lanes .system-draft-illustration > span { border-color: var(--guide-line); color: var(--guide-ink); }
+.system-guide.is-lanes .system-draft-illustration i { border-color: var(--guide-accent); }
+.system-guide.is-lanes .system-guide-formula { border-color: var(--guide-line); background: var(--guide-soft); color: var(--guide-ink); }
+.system-guide.is-lanes .system-block-demo { background: var(--guide-pale); }
+.system-guide.is-lanes .system-block-demo label { color: var(--guide-ink); }
+.system-guide.is-lanes .system-block-demo input { accent-color: var(--guide-accent); }
+.system-guide.is-lanes .system-block-demo output { border-color: var(--guide-line); }
+.system-guide.is-lanes .system-block-demo output strong { color: var(--guide-accent); }
+.system-guide.is-running-styles .system-style-story { box-shadow: inset 4px 0 var(--guide-accent); }
+.system-guide.is-running-styles .system-speed-phases > div > div { background: var(--guide-soft); }
+.system-guide.is-running-styles .system-dice-example { border-color: var(--guide-line); background: var(--guide-pale); }
+.system-guide.is-running-styles .system-dice-heading > strong,
+.system-guide.is-running-styles .system-dice-rolls .is-kept { color: var(--guide-accent); }
+.system-guide.is-running-styles .system-dice-rolls .is-kept { border-color: var(--guide-accent); background: var(--guide-soft); }
+.system-guide.is-running-styles .system-pack-rule { background: var(--guide-soft); }
+.system-guide.is-running-styles .system-pack-rule strong { color: var(--guide-ink); }
+.system-guide .system-guide-footer a { border-color: var(--guide-line); color: var(--guide-accent); }
+.system-guide .system-guide-footer a:hover { background: var(--guide-soft); }

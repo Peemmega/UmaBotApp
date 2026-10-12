@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import LoginPage from "./pages/LoginPage";
-import DashboardPage from "./pages/DashboardPage";
+import LazyLoadingFallback from "./components/LazyLoadingFallback";
 import LoadingScreen from "./components/LoadingScreen";
 import HorseshoeBackground from "./components/HorseshoeBackground";
 import { getAccountRole, getPlayer, selectAccountRole } from "./api/playerApi";
@@ -15,6 +15,7 @@ import { ArrowRight, GraduationCap, ShieldAlert, Sparkles, Trophy, UsersRound } 
 import { Capacitor } from "@capacitor/core";
 
 const APP_BASE = APP_BASE_URL;
+const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 
 const ROLE_CHOICES = [
   {
@@ -448,21 +449,23 @@ export default function App() {
   ) : !accountRole ? (
     <RoleSelection busy={isRoleSaving} error={roleError} onSelect={handleRoleSelection} />
   ) : (
-    <DashboardPage
-      key="dashboard"
-      username={username}
-      userId={userId}
-      avatarUrl={avatarUrl}
-      player={player}
-      setPlayer={setPlayer}
-      accountRole={accountRole}
-      statsSummary={statsSummary}
-      showRaw={showRaw}
-      setShowRaw={setShowRaw}
-      error={error}
-      loading={loading}
-      onLogout={handleLogout}
-    />
+    <Suspense fallback={<LazyLoadingFallback fullScreen />}>
+      <DashboardPage
+        key="dashboard"
+        username={username}
+        userId={userId}
+        avatarUrl={avatarUrl}
+        player={player}
+        setPlayer={setPlayer}
+        accountRole={accountRole}
+        statsSummary={statsSummary}
+        showRaw={showRaw}
+        setShowRaw={setShowRaw}
+        error={error}
+        loading={loading}
+        onLogout={handleLogout}
+      />
+    </Suspense>
   );
 
   return (

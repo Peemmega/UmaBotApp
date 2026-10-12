@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import "../styles/dashboard.css";
 import "../styles/mailbox.css";
@@ -7,6 +7,7 @@ import MailboxModal, { RaceRegistrationMailDialog } from "../components/MailboxM
 import RenameModal from "../components/RenameModal";
 import PageTransition from "../components/PageTransition";
 import { AppShell, GameNav, TopBar } from "../components/layout";
+import LazyLoadingFallback from "../components/LazyLoadingFallback";
 import { BOT_API_BASE, uploadPresetProfileImage } from "../api/playerApi";
 import {
   loadActiveProfileType,
@@ -14,18 +15,18 @@ import {
   saveProfilePresets,
 } from "../data/profilePresets";
 
-import ProfilePage from "./dashboard/ProfilePage";
-import TutorialsPage from "./dashboard/TutorialsPage";
-import SkillsPage from "./dashboard/SkillsPage";
-import CharactersPage from "./dashboard/CharactersPage";
-import QAPage from "./dashboard/QAPage";
-import RacesPage from "./dashboard/RacesPage";
-import ToolsPage from "./dashboard/ToolsPage";
-import RaceReplayPage from "./dashboard/RaceReplayPage";
-import NewsPage from "./dashboard/NewsPage";
-import NewsDetailsPage from "./dashboard/NewsDetailsPage";
-import HomePage from "./dashboard/HomePage";
-import SystemGuidePage from "./dashboard/SystemGuidePage";
+const ProfilePage = lazy(() => import("./dashboard/ProfilePage"));
+const TutorialsPage = lazy(() => import("./dashboard/TutorialsPage"));
+const SkillsPage = lazy(() => import("./dashboard/SkillsPage"));
+const CharactersPage = lazy(() => import("./dashboard/CharactersPage"));
+const QAPage = lazy(() => import("./dashboard/QAPage"));
+const RacesPage = lazy(() => import("./dashboard/RacesPage"));
+const ToolsPage = lazy(() => import("./dashboard/ToolsPage"));
+const RaceReplayPage = lazy(() => import("./dashboard/RaceReplayPage"));
+const NewsPage = lazy(() => import("./dashboard/NewsPage"));
+const NewsDetailsPage = lazy(() => import("./dashboard/NewsDetailsPage"));
+const HomePage = lazy(() => import("./dashboard/HomePage"));
+const SystemGuidePage = lazy(() => import("./dashboard/SystemGuidePage"));
 import { getSystemTopic } from "../data/systemGuide";
 import { getNewsKind } from "../utils/newsItems";
 
@@ -446,7 +447,11 @@ export default function DashboardPage({
       modals={modals}
     >
       <AnimatePresence mode="wait">
-        <PageTransition key={activePage === "system-guide" ? `${activePage}/${systemTopic}` : activePage}>{renderMiddlePage()}</PageTransition>
+        <PageTransition key={activePage === "system-guide" ? `${activePage}/${systemTopic}` : activePage}>
+          <Suspense fallback={<LazyLoadingFallback />}>
+            {renderMiddlePage()}
+          </Suspense>
+        </PageTransition>
       </AnimatePresence>
     </AppShell>
   );
