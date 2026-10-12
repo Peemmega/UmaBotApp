@@ -114,6 +114,7 @@ export function LanesGuide() {
   const maxBasePower = rules.maxCoreStats[IS_MAIN_WEB ? "main" : "test"];
   const maxEffectivePower = Math.round(maxBasePower * rules.aptitudeModifier.S);
   const blockPercent = Math.min(rules.blockCap * 100, Math.max(0, blockers * rules.blockStep * 100 - power));
+  const displayedBlockPercent = Math.round(blockPercent);
   return <>
     <GuideSection id="lane-basics" title="เลนคือพื้นที่ของแผนวิ่ง" intro="สนามแบบเทิร์นมี 6 เลน จากวงใน (1) ไปวงนอก (6) เลนส่งผลต่อพลัง การเข้าใกล้กลุ่ม และพื้นที่ที่ใช้แซง">
       <p>เลนเริ่มต้นจัดจากลำดับออกตัว หลังทุกคน Run แล้ว คุณเลือกเลน 1–6 ที่จะใช้ในเทิร์นถัดไป ระบบย้ายให้เมื่อเริ่มเทิร์นใหม่ สกิลย้ายเลนบางชนิดสามารถย้ายไปเลนที่จองไว้ได้ทันที</p>
@@ -130,7 +131,7 @@ export function LanesGuide() {
     </GuideSection>
     <GuideSection id="blocked" title="Blocked: เมื่อจังหวะแซงถูกบัง" intro="เกิดอัตโนมัติเมื่อผล Run ของคุณจะผ่านตำแหน่งคู่แข่งที่อยู่ข้างหน้าในเลนเดียวกัน โดยเทียบตำแหน่งก่อนวิ่ง">
       <div className="system-guide-formula">โทษ = min(20%, max(0, จำนวนคนที่บัง ×10% − Power ที่ใช้แข่ง ×1%))</div>
-      <div className="system-block-demo"><div><label htmlFor="system-block-power">Power หลัง Track aptitude <strong>{power}</strong></label><input id="system-block-power" type="range" min="0" max={maxEffectivePower} value={Math.min(power, maxEffectivePower)} onChange={(event) => setPower(Number(event.target.value))} /><small>สูงสุด {maxEffectivePower} (Power {maxBasePower} × Track S {rules.aptitudeModifier.S} ปัดเป็นจำนวนเต็ม)</small><label htmlFor="system-block-count">คู่แข่งในเลนที่จะแซงผ่าน<select id="system-block-count" value={blockers} onChange={(event) => setBlockers(Number(event.target.value))}>{[0, 1, 2, 3].map((number) => <option value={number} key={number}>{number} คน</option>)}</select></label></div><output aria-live="polite"><small>โทษต่อผล Run</small><strong>−{blockPercent}%</strong><span>ผล Run 100 → {100 - blockPercent} คะแนน</span></output></div>
+      <div className="system-block-demo"><div><label htmlFor="system-block-power">Power หลัง Track aptitude <strong>{power}</strong></label><input id="system-block-power" type="range" min="0" max={maxEffectivePower} value={Math.min(power, maxEffectivePower)} onChange={(event) => setPower(Number(event.target.value))} /><small>สูงสุด {maxEffectivePower} (Power {maxBasePower} × Track S {rules.aptitudeModifier.S} ปัดเป็นจำนวนเต็ม)</small><label htmlFor="system-block-count">คู่แข่งในเลนที่จะแซงผ่าน<select id="system-block-count" value={blockers} onChange={(event) => setBlockers(Number(event.target.value))}>{[0, 1, 2, 3].map((number) => <option value={number} key={number}>{number} คน</option>)}</select></label></div><output aria-live="polite"><small>โทษต่อผล Run</small><strong>−{displayedBlockPercent}%</strong><span>ผล Run 100 → {Math.round(100 - blockPercent)} คะแนน</span></output></div>
       <p>Power ช่วยลดโทษก่อนนำไปจำกัดเพดาน โดยใช้ค่าหลังคูณ Track aptitude เช่น มีคู่แข่ง 3 คนและ Power 6 จะคิด 30% − 6% = 24% แล้วจำกัดเหลือโทษสูงสุด 20% การวางเลนให้โล่งก่อนเร่งแซงช่วยเลี่ยงการถูกบัง</p>
     </GuideSection>
     <GuideSection id="block-action" title="Block และ Rush ในช่วงสรุปเทิร์น">

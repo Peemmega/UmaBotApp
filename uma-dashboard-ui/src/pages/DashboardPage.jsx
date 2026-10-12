@@ -79,6 +79,11 @@ function getPageFromPath() {
   return VALID_PAGES.includes(page) ? page : "home";
 }
 
+function getInitialPageFromPath() {
+  const initialPath = window.location.pathname.replace(/\/+$/, "");
+  return initialPath === "/dashboard/profile" ? "home" : getPageFromPath();
+}
+
 export default function DashboardPage({
   username,
   userId,
@@ -99,7 +104,7 @@ export default function DashboardPage({
     typeof Notification === "undefined" ? "unsupported" : Notification.permission
   );
   const previousUnreadCount = useRef(null);
-  const [activePage, setActivePage] = useState(getPageFromPath);
+  const [activePage, setActivePage] = useState(getInitialPageFromPath);
   const [newsRoute, setNewsRoute] = useState(getNewsRouteFromPath);
   const [characterRoute, setCharacterRoute] = useState(getCharacterRouteFromPath);
   const [systemTopic, setSystemTopic] = useState(getSystemTopicFromPath);
@@ -331,6 +336,15 @@ export default function DashboardPage({
   };
 
   useEffect(() => {
+    const entryPath = window.location.pathname.replace(/\/+$/, "") || "/";
+    if (entryPath === "/" || entryPath === "/dashboard" || entryPath === "/dashboard/profile") {
+      window.history.replaceState(
+        {},
+        "",
+        `/dashboard/home${window.location.search}${window.location.hash}`
+      );
+    }
+
     const handlePopState = () => {
       setActivePage(getPageFromPath());
       setNewsRoute(getNewsRouteFromPath());
