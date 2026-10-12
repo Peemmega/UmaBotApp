@@ -145,13 +145,13 @@ function raceScore(record) {
 }
 
 const EMPTY_BASIC_PROFILE = {
-  self_intro: "", name_th: "", name_en: "", age: "", birthday_day: "",
-  birthday_month: "", height_cm: "", likes: "", dislikes: "",
+  self_intro: "", name_th: "", name_en: "", division: "", age: "", birthday_day: "",
+  birthday_month: "", height_cm: "", dorm: "", likes: "", dislikes: "",
   personality: "", biography: "", additional: "",
 };
 
-function basicProfileIsComplete(profile) {
-  return Boolean(profile?.name_th && profile?.name_en && profile?.birthday_day && profile?.birthday_month && profile?.height_cm);
+function basicProfileIsComplete(profile, profileType) {
+  return Boolean(profile?.name_th && profile?.name_en && profile?.birthday_day && profile?.birthday_month && profile?.height_cm && (profileType !== "trainee" || (profile?.division && profile?.dorm)));
 }
 
 function birthdayLabel(profile) {
@@ -187,7 +187,7 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
       next[field] = next[field] == null ? "" : String(next[field]);
     }
     setProfile(next);
-    setEditing(isOwner && !basicProfileIsComplete(next));
+    setEditing(isOwner && !basicProfileIsComplete(next, profileType));
     setSaved(false);
     setError("");
   }, [character.id, initialProfile, isOwner]);
@@ -199,7 +199,7 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
   const submit = async (event) => {
     event.preventDefault();
     setError("");
-    if (!basicProfileIsComplete(profile)) {
+    if (!basicProfileIsComplete(profile, profileType)) {
       setError("กรอกชื่อทั้งสองภาษา ชั้นปี วันเกิด ส่วนสูง และหอก่อนบันทึก");
       return;
     }
@@ -247,18 +247,20 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
           <label className="basic-profile-field basic-profile-field--wide"><span>Self-Intro <small>{profile.self_intro.length}/100 ตัวอักษร</small></span><textarea maxLength={100} rows={2} value={profile.self_intro} onChange={change("self_intro")} /></label>
           <label className="basic-profile-field"><span>ชื่อภาษาไทย <b>*</b></span><input required maxLength={80} value={profile.name_th} onChange={change("name_th")} /></label>
           <label className="basic-profile-field"><span>ชื่อภาษาอังกฤษ <b>*</b></span><input required maxLength={80} value={profile.name_en} onChange={change("name_en")} /></label>
+          {profileType === "trainee" && <label className="basic-profile-field"><span>Class <b>*</b></span><select required value={profile.division} onChange={change("division")}><option value="">เลือก Division</option><option>Junior Division</option><option>Senior Division</option></select></label>}
           <label className="basic-profile-field"><span>Birthday <b>*</b></span><div className="basic-profile-birthday"><select required aria-label="วันเกิด" value={profile.birthday_day} onChange={change("birthday_day")}><option value="">วัน</option>{Array.from({ length: 31 }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}</select><span>/</span><select required aria-label="เดือนเกิด" value={profile.birthday_month} onChange={change("birthday_month")}><option value="">เดือน</option>{Array.from({ length: 12 }, (_, i) => <option key={i + 1} value={i + 1}>{String(i + 1).padStart(2, "0")}</option>)}</select></div></label>
           <label className="basic-profile-field"><span>Age</span><input type="number" min="1" max="150" value={profile.age} onChange={change("age")} /></label>
           <label className="basic-profile-field"><span>Height (cm.) <b>*</b></span><input required type="number" min="1" max="300" value={profile.height_cm} onChange={change("height_cm")} /></label>
+          {profileType === "trainee" && <label className="basic-profile-field"><span>Dorm <b>*</b></span><select required value={profile.dorm} onChange={change("dorm")}><option value="">เลือกหอพัก</option><option>Ritto</option><option>Miho</option></select></label>}
           <label className="basic-profile-field"><span>Like <small>{countWords(profile.likes)}/60 คำ</small></span><textarea rows={2} value={profile.likes} onChange={change("likes")} /></label>
           <label className="basic-profile-field"><span>Dislike <small>{countWords(profile.dislikes)}/60 คำ</small></span><textarea rows={2} value={profile.dislikes} onChange={change("dislikes")} /></label>
           <label className="basic-profile-field basic-profile-field--wide"><span>บุคลิก <small>{countWords(profile.personality)}/200 คำ</small></span><textarea rows={3} value={profile.personality} onChange={change("personality")} /></label>
           <label className="basic-profile-field basic-profile-field--wide"><span>ประวัติ <small>{countWords(profile.biography)}/200 คำ</small></span><textarea rows={5} value={profile.biography} onChange={change("biography")} /></label>
           <label className="basic-profile-field basic-profile-field--wide"><span>เพิ่มเติม <small>{countWords(profile.additional)}/200 คำ</small></span><textarea rows={3} value={profile.additional} onChange={change("additional")} /></label>
           {error && <p className="basic-profile-error basic-profile-field--wide">{error}</p>}
-          <div className="basic-profile-actions basic-profile-field--wide"><button type="submit" disabled={saving}><Save size={16} /> {saving ? "กำลังบันทึก…" : "บันทึกข้อมูล"}</button>{basicProfileIsComplete(initialProfile) && <button type="button" className="basic-profile-cancel" onClick={() => { setProfile({ ...EMPTY_BASIC_PROFILE, ...initialProfile }); setEditing(false); setError(""); }}><X size={16} /> ยกเลิก</button>}</div>
+          <div className="basic-profile-actions basic-profile-field--wide"><button type="submit" disabled={saving}><Save size={16} /> {saving ? "กำลังบันทึก…" : "บันทึกข้อมูล"}</button>{basicProfileIsComplete(initialProfile, profileType) && <button type="button" className="basic-profile-cancel" onClick={() => { setProfile({ ...EMPTY_BASIC_PROFILE, ...initialProfile }); setEditing(false); setError(""); }}><X size={16} /> ยกเลิก</button>}</div>
         </form>
-      ) : basicProfileIsComplete(profile) ? <>
+      ) : basicProfileIsComplete(profile, profileType) ? <>
         {profile.self_intro && <p className="basic-profile-intro">“{profile.self_intro}”</p>}
         <div className="basic-profile-overview">
           <div className="basic-profile-main-column">
@@ -271,6 +273,8 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
               <div><dt>Name</dt><dd>{profile.name_en}</dd></div>
               <div><dt>Birthday</dt><dd className="basic-profile-birthday-value"><span>{birthdayLabel(profile)}</span>{profile.age && <small>{profile.age} years old</small>}</dd></div>
               <div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div>
+              {profileType === "trainee" && <div><dt>Class</dt><dd>{profile.division}</dd></div>}
+              {profileType === "trainee" && <div><dt>Dorm</dt><dd>{profile.dorm}</dd></div>}
               <div><dt>Like</dt><dd>{profile.likes || "—"}</dd></div>
               <div><dt>Dislike</dt><dd>{profile.dislikes || "—"}</dd></div>
             </dl>

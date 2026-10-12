@@ -81,7 +81,7 @@ export default function ProfilePage({
   };
 
   useEffect(() => {
-    setActiveSection("profile-overview");
+    setActiveSection(profileType === "trainee" ? "profile-overview" : "profile-basic");
     setActiveProfilePage("overview");
   }, [profileType, userId]);
 
@@ -323,9 +323,9 @@ export default function ProfilePage({
       <>
       <StaggerContainer className={`dashboard-shell profile-stagger profile-redesign role-profile role-profile-${profileType}`}>
         <StaggerItem>
-          <section className="profile-card profile-hero" id="profile-overview">
+          <section className="profile-card profile-identity-card profile-hero" id="profile-overview">
             <div className="profile-hero-art" aria-hidden="true" />
-            <div className="profile-body role-profile-body">
+            <div className="profile-body">
               <div className="profile-avatar-wrap">
                 {profileImageUrl ? (
                   <img src={profileImageUrl} alt={profileName} className="profile-avatar" />
@@ -362,36 +362,43 @@ export default function ProfilePage({
                   {uploadError ? <div className="profile-image-error">{uploadError}</div> : null}
                 </div>
               </div>
-              {isTrainer || profileType === "npc" ? (
-                <div className="profile-info">
-                  <p className="profile-identity-kicker">{isTrainer ? "TRAINER PROFILE" : "NPC PROFILE"}</p>
-                  <div className="profile-name-row">
-                    <div className="profile-name">{profileName}</div>
-                  </div>
-                  <button
-                    type="button"
-                    className="rename-btn profile-edit-info-btn"
-                    onClick={() => onRequestRename?.()}
-                  >
-                    <img src={editIcon} alt="" />
-                    <span>เปลี่ยนชื่อ</span>
-                  </button>
-                  {isTrainer && (
-                    <div className="profile-resources trainer-profile-fans">
-                      <ResourcePill icon={fansIcon} label="Team Fans" value={teamFans} />
-                    </div>
-                  )}
+              <div className="profile-info">
+                <p className="profile-identity-kicker">{isTrainer ? "TRAINER PROFILE" : "NPC PROFILE"}</p>
+                <div className="profile-name-row">
+                  <div className="profile-name">{profileName}</div>
                 </div>
-              ) : null}
+                <button
+                  type="button"
+                  className="rename-btn profile-edit-info-btn"
+                  onClick={() => onRequestRename?.()}
+                >
+                  <img src={editIcon} alt="" />
+                  <span>เปลี่ยนชื่อ</span>
+                </button>
+                <div className="profile-id">
+                  <Badge className="profile-discord-id"><img src={discordIcon} alt="" /><span>{userId}</span></Badge>
+                </div>
+              </div>
+              {isTrainer && (
+                <div className="profile-resources trainer-profile-fans">
+                  <ResourcePill icon={fansIcon} label="Team Fans" value={teamFans} />
+                </div>
+              )}
             </div>
           </section>
         </StaggerItem>
 
         <StaggerItem>
           <nav className="profile-section-nav" aria-label="ส่วนต่าง ๆ ของโปรไฟล์">
-            <button type="button" className={activeSection === "profile-overview" ? "is-active" : ""} onClick={() => jumpToSection("profile-overview")}>ข้อมูลพื้นฐาน</button>
+            <button type="button" className={activeSection === "profile-basic" ? "is-active" : ""} onClick={() => jumpToSection("profile-basic")}>ข้อมูลพื้นฐาน</button>
             {isTrainer && <button type="button" className={activeSection === "profile-team" ? "is-active" : ""} onClick={() => jumpToSection("profile-team")}>ทีมของฉัน</button>}
           </nav>
+        </StaggerItem>
+
+        <StaggerItem>
+          <div id="profile-basic" className="role-basic-profile-section">
+            <BasicProfileEditor userId={userId} profileType={profileType} />
+          </div>
         </StaggerItem>
 
         {isTrainer && (

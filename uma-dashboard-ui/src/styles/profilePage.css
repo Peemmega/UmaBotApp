@@ -614,6 +614,12 @@
 .profile-redesign .profile-identity-card .resource-value { max-width: 100%; overflow: hidden; color: #754321; font-size: 22px; font-weight: 950; text-overflow: ellipsis; white-space: nowrap; }
 .profile-redesign .profile-identity-card .resource-icon { width: 26px; height: 26px; flex: 0 0 auto; }
 
+.role-profile .profile-identity-card .profile-resources { grid-template-columns: minmax(0, 1fr); }
+.role-profile-npc .profile-section-nav { grid-template-columns: 1fr; }
+.role-profile-npc .profile-identity-card .profile-body { grid-template-rows: minmax(0, 1fr); }
+.role-profile-npc .profile-identity-card .profile-avatar-wrap { grid-row: 1; }
+.role-basic-profile-section { scroll-margin-top: 150px; }
+
 @media (max-width: 900px) {
   .profile-redesign .profile-hero .profile-body { grid-template-columns: 155px minmax(0,1fr); padding: 45px 20px 20px; gap: 18px; }
   .profile-redesign .profile-hero .profile-avatar { height: 145px; }
@@ -837,3 +843,6 @@
 @media (prefers-reduced-motion: reduce) {
   .profile-redesign .profile-section-nav button { transition: none; }
 }
+
+.role-profile-npc .profile-identity-card .profile-body { grid-template-rows: minmax(0, 1fr); }
+.role-profile-npc .profile-identity-card .profile-avatar-wrap { grid-row: 1; }

@@ -4,12 +4,12 @@ import { BOT_API_BASE } from "../api/playerApi";
 import "../styles/basicProfileEditor.css";
 
 const emptyProfile = {
-  self_intro: "", name_th: "", name_en: "", division: "", birthday_day: "",
+  self_intro: "", name_th: "", name_en: "", division: "", age: "", birthday_day: "",
   birthday_month: "", height_cm: "", dorm: "", likes: "", dislikes: "",
   personality: "", biography: "", additional: "",
 };
 
-const isComplete = (profile) => Boolean(profile?.name_th && profile?.name_en && profile?.division && profile?.birthday_day && profile?.birthday_month && profile?.height_cm && profile?.dorm);
+const isComplete = (profile, profileType) => Boolean(profile?.name_th && profile?.name_en && profile?.birthday_day && profile?.birthday_month && profile?.height_cm && (profileType !== "trainee" || (profile?.division && profile?.dorm)));
 
 function countWords(value) {
   const text = String(value || "").trim();
@@ -23,7 +23,7 @@ function dateLabel(profile) {
   return `${String(profile.birthday_day).padStart(2, "0")}/${String(profile.birthday_month).padStart(2, "0")}`;
 }
 
-export default function BasicProfileEditor({ userId }) {
+export default function BasicProfileEditor({ userId, profileType = "trainee" }) {
   const [profile, setProfile] = useState(emptyProfile);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -33,7 +33,9 @@ export default function BasicProfileEditor({ userId }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`${BOT_API_BASE}/player/${encodeURIComponent(userId)}/basic-profile`)
+    setLoading(true);
+    setError("");
+    fetch(`${BOT_API_BASE}/player/${encodeURIComponent(userId)}/basic-profile?profile_type=${profileType}`)
       .then(async (res) => {
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data?.detail || "โหลดข้อมูลพื้นฐานไม่สำเร็จ");
@@ -42,9 +44,9 @@ export default function BasicProfileEditor({ userId }) {
       .then((data) => {
         if (cancelled) return;
         const next = { ...emptyProfile, ...(data || {}) };
-        for (const field of ["birthday_day", "birthday_month", "height_cm"]) next[field] = next[field] == null ? "" : String(next[field]);
+        for (const field of ["age", "birthday_day", "birthday_month", "height_cm"]) next[field] = next[field] == null ? "" : String(next[field]);
         setProfile(next);
-        setEditing(!isComplete(next));
+        setEditing(!isComplete(next, profileType));
         setLoading(false);
       })
       .catch((fetchError) => {
@@ -54,7 +56,7 @@ export default function BasicProfileEditor({ userId }) {
         }
       });
     return () => { cancelled = true; };
-  }, [userId]);
+  }, [profileType, userId]);
 
   const change = (field) => (event) => {
     setProfile((current) => ({ ...current, [field]: event.target.value }));
@@ -65,7 +67,7 @@ export default function BasicProfileEditor({ userId }) {
     event.preventDefault();
     setError("");
     setNotice("");
-    if (!isComplete(profile)) {
+    if (!isComplete(profile, profileType)) {
       setError("กรอกชื่อทั้งสองภาษา ชั้นปี วันเกิด ส่วนสูง และหอก่อนบันทึก");
       return;
     }
@@ -75,15 +77,15 @@ export default function BasicProfileEditor({ userId }) {
     }
     setSaving(true);
     try {
-      const res = await fetch(`${BOT_API_BASE}/player/${encodeURIComponent(userId)}/basic-profile`, {
+      const res = await fetch(`${BOT_API_BASE}/player/${encodeURIComponent(userId)}/basic-profile?profile_type=${profileType}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...profile, birthday_day: Number(profile.birthday_day), birthday_month: Number(profile.birthday_month), height_cm: Number(profile.height_cm), word_counts: Object.fromEntries(["likes", "dislikes", "personality", "biography", "additional"].map((field) => [field, countWords(profile[field])])) }),
+        body: JSON.stringify({ ...profile, age: profile.age ? Number(profile.age) : null, birthday_day: Number(profile.birthday_day), birthday_month: Number(profile.birthday_month), height_cm: Number(profile.height_cm), word_counts: Object.fromEntries(["likes", "dislikes", "personality", "biography", "additional"].map((field) => [field, countWords(profile[field])])) }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.detail || "บันทึกข้อมูลไม่สำเร็จ");
       const next = { ...emptyProfile, ...(data.profile || profile) };
-      for (const field of ["birthday_day", "birthday_month", "height_cm"]) next[field] = String(next[field] ?? "");
+      for (const field of ["age", "birthday_day", "birthday_month", "height_cm"]) next[field] = String(next[field] ?? "");
       setProfile(next);
       setEditing(false);
       setNotice("บันทึกข้อมูลแล้ว");
@@ -112,17 +114,18 @@ export default function BasicProfileEditor({ userId }) {
           {input("Self-Intro", "self_intro", { maxLength: 100, wide: true })}
           {input("ชื่อภาษาไทย *", "name_th", { rows: 1 })}
           {input("ชื่อภาษาอังกฤษ *", "name_en", { rows: 1 })}
-          <label className="basic-profile-editor-field"><span>Class *</span><select required value={profile.division} onChange={change("division")}><option value="">เลือก Division</option><option>Junior Division</option><option>Senior Division</option></select></label>
+          {profileType === "trainee" && <label className="basic-profile-editor-field"><span>Class *</span><select required value={profile.division} onChange={change("division")}><option value="">เลือก Division</option><option>Junior Division</option><option>Senior Division</option></select></label>}
           <label className="basic-profile-editor-field"><span>Birthday *</span><div className="basic-profile-editor-date"><select required value={profile.birthday_day} onChange={change("birthday_day")} aria-label="วันเกิด"><option value="">วัน</option>{Array.from({ length: 31 }, (_, index) => <option key={index + 1} value={index + 1}>{index + 1}</option>)}</select><b>/</b><select required value={profile.birthday_month} onChange={change("birthday_month")} aria-label="เดือนเกิด"><option value="">เดือน</option>{Array.from({ length: 12 }, (_, index) => <option key={index + 1} value={index + 1}>{String(index + 1).padStart(2, "0")}</option>)}</select></div></label>
+          <label className="basic-profile-editor-field"><span>Age</span><input type="number" min="1" max="150" value={profile.age} onChange={change("age")} /></label>
           <label className="basic-profile-editor-field"><span>Height (cm.) *</span><input type="number" min="1" max="300" required value={profile.height_cm} onChange={change("height_cm")} /></label>
-          <label className="basic-profile-editor-field"><span>Dorm *</span><select required value={profile.dorm} onChange={change("dorm")}><option value="">เลือกหอพัก</option><option>Ritto</option><option>Miho</option></select></label>
+          {profileType === "trainee" && <label className="basic-profile-editor-field"><span>Dorm *</span><select required value={profile.dorm} onChange={change("dorm")}><option value="">เลือกหอพัก</option><option>Ritto</option><option>Miho</option></select></label>}
           <label className="basic-profile-editor-field"><span>Like <small>{countWords(profile.likes)}/60 คำ</small></span><textarea rows={2} value={profile.likes} onChange={change("likes")} /></label>
           <label className="basic-profile-editor-field"><span>Dislike <small>{countWords(profile.dislikes)}/60 คำ</small></span><textarea rows={2} value={profile.dislikes} onChange={change("dislikes")} /></label>
           {input("บุคลิก", "personality", { maxWords: 200, rows: 3, wide: true })}
           {input("ประวัติ", "biography", { maxWords: 200, rows: 5, wide: true })}
           {input("เพิ่มเติม", "additional", { maxWords: 200, rows: 3, wide: true })}
           {error && <p className="basic-profile-editor-error is-wide">{error}</p>}
-          <div className="basic-profile-editor-actions is-wide"><button type="submit" disabled={saving}><Save size={16} /> {saving ? "กำลังบันทึก…" : "บันทึกข้อมูล"}</button>{isComplete(profile) && <button type="button" className="is-secondary" onClick={() => { setEditing(false); setError(""); }}>ยกเลิก</button>}</div>
+          <div className="basic-profile-editor-actions is-wide"><button type="submit" disabled={saving}><Save size={16} /> {saving ? "กำลังบันทึก…" : "บันทึกข้อมูล"}</button>{isComplete(profile, profileType) && <button type="button" className="is-secondary" onClick={() => { setEditing(false); setError(""); }}>ยกเลิก</button>}</div>
         </form>
       ) : <>
         {profile.self_intro && <p className="basic-profile-editor-intro">“{profile.self_intro}”</p>}
@@ -135,10 +138,10 @@ export default function BasicProfileEditor({ userId }) {
             <dl className="basic-profile-editor-details">
               <div><dt>ชื่อ</dt><dd>{profile.name_th}</dd></div>
               <div><dt>Name</dt><dd>{profile.name_en}</dd></div>
-              <div><dt>Birthday</dt><dd>{dateLabel(profile)}</dd></div>
+              <div><dt>Birthday</dt><dd className="basic-profile-editor-birthday-value"><span>{dateLabel(profile)}</span>{profile.age && <small>{profile.age} years old</small>}</dd></div>
               <div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div>
-              <div><dt>Class</dt><dd>{profile.division}</dd></div>
-              <div><dt>Dorm</dt><dd>{profile.dorm}</dd></div>
+              {profileType === "trainee" && <div><dt>Class</dt><dd>{profile.division}</dd></div>}
+              {profileType === "trainee" && <div><dt>Dorm</dt><dd>{profile.dorm}</dd></div>}
               <div><dt>Like</dt><dd>{profile.likes || "—"}</dd></div>
               <div><dt>Dislike</dt><dd>{profile.dislikes || "—"}</dd></div>
             </dl>

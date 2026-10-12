@@ -92,6 +92,8 @@
 .basic-profile-editor-details > div:last-child { border-bottom: 0; }
 .basic-profile-editor-details dt { margin: 0; color: #687571; font-size: 14px; font-weight: 800; }
 .basic-profile-editor-details dd { min-width: 0; margin: 0; color: #26372f; font-size: 14px; font-weight: 700; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.basic-profile-editor-details .basic-profile-editor-birthday-value { display: grid; justify-items: start; gap: 1px; }
+.basic-profile-editor-birthday-value small { color: #687571; font-size: 13px; font-weight: 700; }
 @media (max-width: 700px) {
   .basic-profile-editor-overview { grid-template-columns: 1fr; }
 }
