@@ -1048,13 +1048,13 @@
 .race-detail-section-heading h2, .race-detail-history .race-history-section-heading h2 { margin: 4px 0 0; color: var(--uma-ink); font-size: clamp(21px, 2.4vw, 29px); font-weight: 950; line-height: 1.3; }
 .race-detail-section-heading > p { margin: 0; color: var(--uma-muted); font-size: 14px; font-weight: 800; }
 .race-detail-phase-list { display: grid; gap: 10px; }
-.race-detail-phase { --phase-color: #36804a; --phase-wash: #edf6e8; display: grid; grid-template-columns: 142px minmax(0, 1fr); gap: 10px; align-items: stretch; }
-.race-detail-phase.phase-2 { --phase-color: #417da4; --phase-wash: #edf4f9; }
-.race-detail-phase.phase-3 { --phase-color: #bd842b; --phase-wash: #fbf4e7; }
-.race-detail-phase.phase-4 { --phase-color: #a65d88; --phase-wash: #f8eef4; }
-.race-detail-phase-label { display: flex; flex-direction: column; justify-content: center; min-height: 102px; padding: 14px; border-left: 4px solid var(--phase-color); border-radius: 10px; background: var(--phase-wash); }
-.race-detail-phase-label span { color: var(--phase-color); font-size: 12px; font-weight: 950; letter-spacing: .07em; }
-.race-detail-phase-label strong { margin-top: 5px; color: var(--uma-ink); font-size: 18px; }
+.race-detail-phase { --phase-color: #28623d; display: grid; grid-template-columns: 142px minmax(0, 1fr); gap: 10px; align-items: stretch; }
+.race-detail-phase.phase-2 { --phase-color: #285f83; }
+.race-detail-phase.phase-3 { --phase-color: #80570f; }
+.race-detail-phase.phase-4 { --phase-color: #7d3f63; }
+.race-detail-phase-label { display: flex; flex-direction: column; justify-content: center; min-height: 102px; padding: 14px; border-left: 4px solid color-mix(in srgb, var(--phase-color) 72%, black); border-radius: 10px; background: var(--phase-color); color: #fff; }
+.race-detail-phase-label span { color: #ffffffd9; font-size: 12px; font-weight: 950; letter-spacing: .07em; }
+.race-detail-phase-label strong { margin-top: 5px; color: #fff; font-size: 18px; }
 .race-detail-turn-grid { display: grid; grid-template-columns: repeat(var(--turn-count, 1), minmax(0, 1fr)); gap: 8px; min-width: 0; }
 .race-detail-turn { --path-color: #338451; --path-wash: #f0f7ee; display: grid; grid-template-rows: auto 1fr auto; justify-items: center; align-items: center; gap: 4px; min-width: 0; min-height: 102px; padding: 10px 6px; border: 1px solid color-mix(in srgb, var(--path-color) 20%, white); border-top: 3px solid var(--path-color); border-radius: 10px; background: var(--path-wash); text-align: center; }
 .race-detail-turn.is-curve { --path-color: #477fad; --path-wash: #eff5fa; }
