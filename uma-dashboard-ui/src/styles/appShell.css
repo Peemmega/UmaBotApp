@@ -647,3 +647,192 @@
     transform: none;
   }
 }
+
+.mobile-menu-toggle,
+.mobile-nav-backdrop {
+  display: none;
+}
+
+.topbar-nav-drawer {
+  display: contents;
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    padding-top: calc(var(--ui-topbar-height, 66px) + 20px);
+  }
+
+  .topbar-main {
+    position: relative;
+    gap: 8px;
+  }
+
+  .topbar-brand {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .topbar .dashboard-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 130px;
+  }
+
+  .mobile-menu-toggle {
+    display: grid;
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    order: 2;
+    padding: 0;
+    border: 1px solid var(--uma-border);
+    border-radius: 12px;
+    background: var(--uma-surface);
+    color: var(--uma-primary-dark);
+    box-shadow: 0 5px 14px color-mix(in srgb, var(--uma-primary-dark) 10%, transparent);
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease, transform .2s ease;
+  }
+
+  .mobile-menu-toggle:hover,
+  .mobile-menu-toggle:focus-visible {
+    border-color: var(--uma-border-strong);
+    background: var(--uma-bg-soft);
+  }
+
+  .mobile-menu-toggle:active {
+    transform: scale(.95);
+  }
+
+  .topbar .dashboard-actions {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    order: 3;
+  }
+
+  .topbar .dashboard-actions .danger-btn .topbar-action-label {
+    display: none;
+  }
+
+  .mobile-nav-backdrop {
+    display: block;
+    position: fixed;
+    z-index: 1;
+    inset: var(--ui-topbar-height, 66px) 0 0;
+    width: 100%;
+    border: 0;
+    background: color-mix(in srgb, var(--uma-ink) 34%, transparent);
+    animation: mobile-nav-backdrop-enter .2s ease both;
+  }
+
+  .topbar .topbar-nav-drawer {
+    display: block;
+    position: fixed;
+    z-index: 2;
+    top: var(--ui-topbar-height, 66px);
+    bottom: 0;
+    left: 0;
+    width: min(84vw, 340px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-top: 1px solid var(--uma-border);
+    border-right: 1px solid var(--uma-border);
+    border-radius: 0 20px 0 0;
+    background: var(--uma-surface);
+    box-shadow: 16px 16px 36px color-mix(in srgb, var(--uma-primary-dark) 18%, transparent);
+    transform: translateX(-105%);
+    visibility: hidden;
+    transition: transform .28s cubic-bezier(.2,.8,.2,1), visibility .28s;
+  }
+
+  .topbar .topbar-nav-drawer.is-open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .topbar .topbar-nav-drawer .game-nav {
+    display: flex;
+    width: 100%;
+    max-width: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 7px;
+    margin: 0;
+    padding: 18px 14px 26px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .topbar .topbar-nav-drawer .game-nav::before {
+    content: "เมนูหลัก";
+    padding: 4px 12px 13px;
+    color: var(--uma-muted);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .08em;
+  }
+
+  .topbar .topbar-nav-drawer .game-nav-btn {
+    position: relative;
+    display: flex;
+    flex: 0 0 auto;
+    width: 100%;
+    min-height: 52px;
+    justify-content: flex-start;
+    gap: 13px;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 13px;
+    background: transparent;
+    color: var(--uma-ink);
+    font-size: 15px;
+    text-align: left;
+  }
+
+  .topbar .topbar-nav-drawer .game-nav-btn:is(:hover, .active) {
+    border-color: var(--uma-border);
+    background: var(--uma-bg-soft);
+    color: var(--uma-primary-dark);
+  }
+
+  .topbar .topbar-nav-drawer .game-nav-btn.active {
+    box-shadow: inset 3px 0 var(--uma-primary);
+  }
+
+  .topbar .topbar-nav-drawer .game-nav-active-bar {
+    display: none !important;
+  }
+
+  .topbar .topbar-nav-drawer .game-nav-icon,
+  .topbar .topbar-nav-drawer .game-nav-icon svg {
+    flex: 0 0 auto;
+    width: 21px;
+    height: 21px;
+  }
+
+  .topbar .topbar-nav-drawer .game-nav-label {
+    display: block;
+    flex: 1 1 auto;
+    text-align: left;
+  }
+}
+
+@keyframes mobile-nav-backdrop-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 400px) {
+  .topbar .dashboard-title {
+    max-width: 84px;
+  }
+
+  .mobile-menu-toggle {
+    width: 36px;
+    height: 36px;
+  }
+}
