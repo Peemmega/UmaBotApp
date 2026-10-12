@@ -386,3 +386,37 @@
   .character-race-row--header { display: none; }
   .character-race-row > [data-label]::before { content: attr(data-label); display: block; margin-bottom: 2px; color: var(--character-modal-primary); font-size: 10px; font-weight: 1000; text-transform: uppercase; }
 }
+
+/* Compact, neutral treatment for character basic information. */
+.basic-profile-card { margin: 12px 18px 4px; padding: 16px 18px; border: 1px solid #dfe4e1; border-radius: 14px; background: var(--character-modal-surface); box-shadow: none; }
+.basic-profile-heading { padding-bottom: 11px; border-bottom-color: #e5e9e6; }
+.basic-profile-heading h3 { margin: 0; font-size: 21px; }
+.basic-profile-kicker { color: #687875; letter-spacing: .08em; }
+.basic-profile-edit, .basic-profile-actions button { min-height: 38px; padding: 7px 12px; border-radius: 9px; background: #465e58; }
+.basic-profile-edit:hover, .basic-profile-actions button:hover { filter: none; background: #354b45; transform: none; }
+.basic-profile-identity { gap: 8px; padding: 12px 0; }
+.basic-profile-identity > div { gap: 2px; padding: 9px 12px; border: 1px solid #e6eae7; border-radius: 9px; background: #f8f9f8; }
+.basic-profile-identity span, .basic-profile-facts dt { color: #697571; }
+.basic-profile-identity strong { font-size: 18px; }
+.basic-profile-intro { margin-bottom: 12px; padding: 9px 12px; border-left-width: 3px; border-left-color: #8b9d97; border-radius: 0 8px 8px 0; background: #f7f8f7; font-size: 15px; line-height: 1.55; }
+.basic-profile-facts { gap: 8px; margin-bottom: 12px; }
+.basic-profile-facts > div { padding: 9px 12px; border: 1px solid #e6eae7; border-radius: 9px; background: #f8f9f8; }
+.basic-profile-facts dt { margin-bottom: 2px; }
+.basic-profile-facts dd { font-size: 15px; }
+.basic-profile-copy-grid { gap: 8px 12px; }
+.basic-profile-copy-grid article { padding: 10px 12px; border: 1px solid #e6eae7; border-radius: 9px; background: #fafbfa; }
+.basic-profile-copy-grid h4 { margin-bottom: 4px; color: #526861; }
+.basic-profile-copy-grid p { line-height: 1.55; }
+.basic-profile-note, .basic-profile-empty p, .basic-profile-saved, .basic-profile-error { margin-top: 10px; }
+.basic-profile-empty { gap: 2px; padding: 13px 0 0; }
+.basic-profile-empty strong { font-size: 16px; }
+.basic-profile-form { gap: 10px 12px; padding-top: 13px; }
+.basic-profile-field { gap: 5px; }
+.basic-profile-field input, .basic-profile-field textarea, .basic-profile-field select { min-height: 39px; padding: 8px 10px; border-color: #d7dfda; border-radius: 8px; }
+.basic-profile-field textarea { min-height: 62px; }
+.basic-profile-field input:focus, .basic-profile-field textarea:focus, .basic-profile-field select:focus { outline-color: #839b91; }
+.basic-profile-actions .basic-profile-cancel { background: #fff; }
+@media (max-width: 560px) {
+  .basic-profile-card { margin: 10px 12px 3px; padding: 14px; }
+  .basic-profile-heading h3 { font-size: 19px; }
+}

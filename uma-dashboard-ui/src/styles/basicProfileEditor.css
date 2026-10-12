@@ -42,3 +42,30 @@
   .basic-profile-editor-heading { align-items: flex-start; }
   .basic-profile-editor-heading h2 { font-size: 22px; }
 }
+
+.basic-profile-editor { padding: 17px 19px; border-color: #dfe4e1; border-radius: 14px; background: #fff; box-shadow: none; }
+.basic-profile-editor-heading { padding-bottom: 12px; border-bottom-color: #e5e9e6; }
+.basic-profile-editor-heading > div > span { color: #687875; letter-spacing: .08em; }
+.basic-profile-editor-heading h2 { margin: 0; font-size: 21px; }
+.basic-profile-editor-heading button, .basic-profile-editor-actions button { min-height: 38px; padding: 7px 12px; border-radius: 9px; background: #465e58; }
+.basic-profile-editor-heading button:hover, .basic-profile-editor-actions button:hover { background: #354b45; filter: none; }
+.basic-profile-editor-form { gap: 10px 12px; padding-top: 13px; }
+.basic-profile-editor-field { gap: 5px; }
+.basic-profile-editor-field input, .basic-profile-editor-field textarea, .basic-profile-editor-field select { min-height: 39px; padding: 8px 10px; border-color: #d7dfda; border-radius: 8px; }
+.basic-profile-editor-field textarea { min-height: 62px; }
+.basic-profile-editor-names { gap: 8px; padding: 12px 0; }
+.basic-profile-editor-names > div { gap: 2px; padding: 9px 12px; border: 1px solid #e6eae7; border-radius: 9px; background: #f8f9f8; }
+.basic-profile-editor-names strong { font-size: 18px; }
+.basic-profile-editor-intro { margin-bottom: 12px; padding: 9px 12px; border-left-color: #8b9d97; border-radius: 0 8px 8px 0; background: #f7f8f7; font-size: 15px; line-height: 1.55; }
+.basic-profile-editor-facts { gap: 8px; margin-bottom: 12px; }
+.basic-profile-editor-facts > div { padding: 9px 12px; border-color: #e6eae7; border-radius: 9px; background: #f8f9f8; }
+.basic-profile-editor-facts dt { margin-bottom: 2px; }
+.basic-profile-editor-facts dd { font-size: 15px; }
+.basic-profile-editor-copy { gap: 8px 12px; }
+.basic-profile-editor-copy article { padding: 10px 12px; border: 1px solid #e6eae7; border-radius: 9px; background: #fafbfa; }
+.basic-profile-editor-copy h3 { margin-bottom: 4px; color: #526861; }
+.basic-profile-editor-copy p { line-height: 1.55; }
+@media (max-width: 700px) {
+  .basic-profile-editor { padding: 14px; }
+  .basic-profile-editor-heading h2 { font-size: 19px; }
+}
