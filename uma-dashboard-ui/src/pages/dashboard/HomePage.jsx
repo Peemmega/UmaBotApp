@@ -153,7 +153,6 @@ export default function HomePage({ username, onNavigate, onOpenNews }) {
             <button type="button" className="home-secondary-action" onClick={() => onNavigate("profile")}>ดูโปรไฟล์ <ArrowDownRight size={16} /></button>
           </div>
         </Reveal>
-        <div className="home-hero-note" aria-hidden="true"><ArrowDown size={16} /><span>ข่าวสารจากโรงเรียน</span></div>
       </section>
 
       <section className="home-events" aria-labelledby="home-events-title">
@@ -200,7 +199,6 @@ export default function HomePage({ username, onNavigate, onOpenNews }) {
           </section>
 
           <section className="home-upcoming-panel" aria-label="กิจกรรมและการแข่งขันที่กำลังมาถึง">
-            <div className="home-event-summary"><span>NEWS &amp; EVENTS</span><span>{filteredHomeItems.length} / 6 รายการ</span></div>
             <nav className="home-news-filters" aria-label="กรองข่าวสาร">
               {[
                 ["all", "ข่าวทั้งหมด"],
@@ -223,12 +221,6 @@ export default function HomePage({ username, onNavigate, onOpenNews }) {
       </section>
 
       <CommuSystemSection onNavigate={onNavigate} />
-
-      <Reveal as="section" className="home-lower-note">
-        <span className="home-note-icon"><Sparkles size={19} /></span>
-        <div><strong>ทุกก้าวคือเรื่องราวบทใหม่</strong><span>แวะเช็กกำหนดการ แล้วชวนเพื่อนในทีมไปสนุกด้วยกัน</span></div>
-        <button type="button" onClick={() => onNavigate("chars")}>พบกับเพื่อนร่วมทีม <ChevronRight size={17} /></button>
-      </Reveal>
     </main>
   );
 }
