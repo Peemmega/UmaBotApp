@@ -22,11 +22,21 @@ export default function AppShell({
     const shell = shellRef.current;
     const header = shell?.querySelector(".topbar");
     if (!header) return;
-    const measure = () => shell.style.setProperty("--ui-topbar-height", `${header.getBoundingClientRect().height}px`);
+    const root = document.documentElement;
+    const previousRootHeight = root.style.getPropertyValue("--ui-topbar-height");
+    const measure = () => {
+      const height = `${header.getBoundingClientRect().height}px`;
+      shell.style.setProperty("--ui-topbar-height", height);
+      root.style.setProperty("--ui-topbar-height", height);
+    };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(header);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (previousRootHeight) root.style.setProperty("--ui-topbar-height", previousRootHeight);
+      else root.style.removeProperty("--ui-topbar-height");
+    };
   }, []);
 
   return (

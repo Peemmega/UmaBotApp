@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Bell, LogOut, Menu, X } from "lucide-react";
 import discordIcon from "../../assets/icons/discord_icon.webp";
 import mailIcon from "../../assets/icons/mail_icon.webp";
@@ -22,16 +23,22 @@ export default function TopBar({
     const closeOnEscape = (event) => {
       if (event.key === "Escape") setMobileNavOpen(false);
     };
+    const closeOnDesktop = () => {
+      if (window.matchMedia("(min-width: 761px)").matches) setMobileNavOpen(false);
+    };
     window.addEventListener("keydown", closeOnEscape);
+    window.addEventListener("resize", closeOnDesktop);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", closeOnEscape);
+      window.removeEventListener("resize", closeOnDesktop);
     };
   }, [mobileNavOpen]);
 
   return (
-    <header className={`topbar${mobileNavOpen ? " mobile-nav-open" : ""}`}>
-      <div className="topbar-main">
+    <>
+      <header className={`topbar${mobileNavOpen ? " mobile-nav-open" : ""}`}>
+        <div className="topbar-main">
         <button type="button" className="topbar-brand" onClick={onHomeClick} aria-label="Tracen Academy — หน้าแรก">
           <span className="topbar-brand-mark">
             <span>TA</span>
@@ -102,25 +109,34 @@ export default function TopBar({
             <LogOut size={17} /><span className="topbar-action-label">ออกจากระบบ</span>
           </button>
         </div>
-      </div>
+        </div>
 
-      {mobileNavOpen && (
-        <button
-          type="button"
-          className="mobile-nav-backdrop"
-          aria-label="ปิดเมนูหลัก"
-          onClick={() => setMobileNavOpen(false)}
-        />
+        <div className="topbar-nav-desktop">{nav}</div>
+      </header>
+      {createPortal(
+        <>
+          {mobileNavOpen && (
+            <button
+              type="button"
+              className="mobile-nav-backdrop"
+              aria-label="ปิดเมนูหลัก"
+              onClick={() => setMobileNavOpen(false)}
+            />
+          )}
+          <div
+            id="mobile-primary-navigation"
+            className={`topbar-nav-drawer${mobileNavOpen ? " is-open" : ""}`}
+            aria-hidden={!mobileNavOpen}
+            inert={!mobileNavOpen}
+            onClick={(event) => {
+              if (event.target.closest("a, button")) setMobileNavOpen(false);
+            }}
+          >
+            {nav}
+          </div>
+        </>,
+        document.body
       )}
-      <div
-        id="mobile-primary-navigation"
-        className={`topbar-nav-drawer${mobileNavOpen ? " is-open" : ""}`}
-        onClick={(event) => {
-          if (event.target.closest("a, button")) setMobileNavOpen(false);
-        }}
-      >
-        {nav}
-      </div>
-    </header>
+    </>
   );
 }
