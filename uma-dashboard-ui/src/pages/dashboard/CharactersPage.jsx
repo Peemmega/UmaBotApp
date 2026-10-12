@@ -145,13 +145,13 @@ function raceScore(record) {
 }
 
 const EMPTY_BASIC_PROFILE = {
-  self_intro: "", name_th: "", name_en: "", division: "", birthday_day: "",
-  birthday_month: "", height_cm: "", dorm: "", likes: "", dislikes: "",
+  self_intro: "", name_th: "", name_en: "", age: "", birthday_day: "",
+  birthday_month: "", height_cm: "", likes: "", dislikes: "",
   personality: "", biography: "", additional: "",
 };
 
 function basicProfileIsComplete(profile) {
-  return Boolean(profile?.name_th && profile?.name_en && profile?.division && profile?.birthday_day && profile?.birthday_month && profile?.height_cm && profile?.dorm);
+  return Boolean(profile?.name_th && profile?.name_en && profile?.birthday_day && profile?.birthday_month && profile?.height_cm);
 }
 
 function birthdayLabel(profile) {
@@ -171,7 +171,10 @@ function countWords(value) {
 
 function BasicProfileSection({ userId, character, initialProfile, loading, onUpdated }) {
   const characterOwnerId = String(character.userId || character.id || "").split(":")[0];
-  const isOwner = character.type === "Umamusume" && characterOwnerId === String(userId || "");
+  const profileType = String(character.type || "").toLowerCase() === "trainer"
+    ? "trainer"
+    : String(character.type || "").toLowerCase() === "npc" ? "npc" : "trainee";
+  const isOwner = characterOwnerId === String(userId || "");
   const [profile, setProfile] = useState({ ...EMPTY_BASIC_PROFILE });
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -180,7 +183,7 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
 
   useEffect(() => {
     const next = { ...EMPTY_BASIC_PROFILE, ...(initialProfile || {}) };
-    for (const field of ["birthday_day", "birthday_month", "height_cm"]) {
+    for (const field of ["age", "birthday_day", "birthday_month", "height_cm"]) {
       next[field] = next[field] == null ? "" : String(next[field]);
     }
     setProfile(next);
@@ -206,11 +209,12 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
     }
     setSaving(true);
     try {
-      const res = await fetch(`${BOT_API_BASE}/player/${encodeURIComponent(characterOwnerId)}/basic-profile`, {
+      const res = await fetch(`${BOT_API_BASE}/player/${encodeURIComponent(characterOwnerId)}/basic-profile?profile_type=${profileType}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...profile,
+          age: profile.age ? Number(profile.age) : null,
           birthday_day: Number(profile.birthday_day),
           birthday_month: Number(profile.birthday_month),
           height_cm: Number(profile.height_cm),
@@ -220,7 +224,7 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.detail || "บันทึกข้อมูลไม่สำเร็จ");
       const next = { ...EMPTY_BASIC_PROFILE, ...(data.profile || profile) };
-      for (const field of ["birthday_day", "birthday_month", "height_cm"]) next[field] = String(next[field] ?? "");
+      for (const field of ["age", "birthday_day", "birthday_month", "height_cm"]) next[field] = String(next[field] ?? "");
       setProfile(next);
       setEditing(false);
       setSaved(true);
@@ -243,10 +247,9 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
           <label className="basic-profile-field basic-profile-field--wide"><span>Self-Intro <small>{profile.self_intro.length}/100 ตัวอักษร</small></span><textarea maxLength={100} rows={2} value={profile.self_intro} onChange={change("self_intro")} /></label>
           <label className="basic-profile-field"><span>ชื่อภาษาไทย <b>*</b></span><input required maxLength={80} value={profile.name_th} onChange={change("name_th")} /></label>
           <label className="basic-profile-field"><span>ชื่อภาษาอังกฤษ <b>*</b></span><input required maxLength={80} value={profile.name_en} onChange={change("name_en")} /></label>
-          <label className="basic-profile-field"><span>Class <b>*</b></span><select required value={profile.division} onChange={change("division")}><option value="">เลือก Division</option><option>Junior Division</option><option>Senior Division</option></select></label>
           <label className="basic-profile-field"><span>Birthday <b>*</b></span><div className="basic-profile-birthday"><select required aria-label="วันเกิด" value={profile.birthday_day} onChange={change("birthday_day")}><option value="">วัน</option>{Array.from({ length: 31 }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}</select><span>/</span><select required aria-label="เดือนเกิด" value={profile.birthday_month} onChange={change("birthday_month")}><option value="">เดือน</option>{Array.from({ length: 12 }, (_, i) => <option key={i + 1} value={i + 1}>{String(i + 1).padStart(2, "0")}</option>)}</select></div></label>
+          <label className="basic-profile-field"><span>Age</span><input type="number" min="1" max="150" value={profile.age} onChange={change("age")} /></label>
           <label className="basic-profile-field"><span>Height (cm.) <b>*</b></span><input required type="number" min="1" max="300" value={profile.height_cm} onChange={change("height_cm")} /></label>
-          <label className="basic-profile-field"><span>Dorm <b>*</b></span><select required value={profile.dorm} onChange={change("dorm")}><option value="">เลือกหอพัก</option><option>Ritto</option><option>Miho</option></select></label>
           <label className="basic-profile-field"><span>Like <small>{countWords(profile.likes)}/60 คำ</small></span><textarea rows={2} value={profile.likes} onChange={change("likes")} /></label>
           <label className="basic-profile-field"><span>Dislike <small>{countWords(profile.dislikes)}/60 คำ</small></span><textarea rows={2} value={profile.dislikes} onChange={change("dislikes")} /></label>
           <label className="basic-profile-field basic-profile-field--wide"><span>บุคลิก <small>{countWords(profile.personality)}/200 คำ</small></span><textarea rows={3} value={profile.personality} onChange={change("personality")} /></label>
@@ -266,10 +269,8 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
             <dl className="basic-profile-details">
               <div><dt>ชื่อ</dt><dd>{profile.name_th}</dd></div>
               <div><dt>Name</dt><dd>{profile.name_en}</dd></div>
-              <div><dt>Birthday</dt><dd>{birthdayLabel(profile)}</dd></div>
+              <div><dt>Birthday</dt><dd className="basic-profile-birthday-value"><span>{birthdayLabel(profile)}</span>{profile.age && <small>{profile.age} years old</small>}</dd></div>
               <div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div>
-              <div><dt>Class</dt><dd>{profile.division}</dd></div>
-              <div><dt>Dorm</dt><dd>{profile.dorm}</dd></div>
               <div><dt>Like</dt><dd>{profile.likes || "—"}</dd></div>
               <div><dt>Dislike</dt><dd>{profile.dislikes || "—"}</dd></div>
             </dl>
@@ -371,6 +372,9 @@ export default function CharactersPage({ userId, player, profiles, activeProfile
     let cancelled = false;
     const characterId = String(selectedCharacter.userId || selectedCharacter.id || "").split(":")[0];
     const isTrainer = selectedCharacter.type === "Trainer";
+    const basicProfileType = selectedCharacter.type === "Trainer"
+      ? "trainer"
+      : selectedCharacter.type === "NPC" ? "npc" : "trainee";
 
     async function loadDetail() {
       setDetailLoading(true);
@@ -386,8 +390,8 @@ export default function CharactersPage({ userId, player, profiles, activeProfile
         } else {
           requests.push(fetch(`${BOT_API_BASE}/trainee/${encodeURIComponent(characterId)}/trainer`).then((res) => res.ok ? res.json() : null));
           requests.push(fetch(`${BOT_API_BASE}/player/${encodeURIComponent(characterId)}/race-history`).then((res) => res.ok ? res.json() : null));
-          requests.push(fetch(`${BOT_API_BASE}/player/${encodeURIComponent(characterId)}/basic-profile`).then((res) => res.ok ? res.json() : null));
         }
+        requests.push(fetch(`${BOT_API_BASE}/player/${encodeURIComponent(characterId)}/basic-profile?profile_type=${basicProfileType}`).then((res) => res.ok ? res.json() : null));
 
         const [profile, related, history, basicProfile] = await Promise.all(requests);
         if (!cancelled) {
@@ -617,9 +621,9 @@ function CharacterProfilePage({ character, userId, detail, loading, error, onClo
   const imageUrl = usesPresetIdentity
     ? character.image_url || profile.image_url || profile.profile_image_url
     : profile.profile_image_url || profile.image_url || character.image_url;
-  const name = usesPresetIdentity
+  const name = detail?.basicProfile?.name_th || (usesPresetIdentity
     ? character.name || profile.name || profile.username
-    : detail?.basicProfile?.name_th || profile.username || profile.name || character.name;
+    : profile.username || profile.name || character.name);
   const traineeTrainer = detail?.related?.trainer;
   const filteredRaceHistory = useMemo(
     () => (detail?.history || []).filter((record) => (
@@ -676,7 +680,7 @@ function CharacterProfilePage({ character, userId, detail, loading, error, onClo
           <div className="character-profile-fans"><span>{isTrainer ? "Total Fans" : "Fans Point"}</span><strong>{formatFans(fans)}</strong></div>
         </header>
 
-        {!isTrainer && <BasicProfileSection userId={userId} character={character} initialProfile={detail?.basicProfile} loading={loading} onUpdated={onBasicProfileUpdated} />}
+        <BasicProfileSection userId={userId} character={character} initialProfile={detail?.basicProfile} loading={loading} onUpdated={onBasicProfileUpdated} />
 
         {loading ? <p className="character-profile-status">กำลังโหลดโปรไฟล์...</p> : error ? <p className="character-profile-status is-error">{error}</p> : isTrainer ? (
           <section className="character-profile-section">
