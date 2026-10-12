@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil, Save, X } from "lucide-react";
 import "../../styles/charactersPage.css";
 import { Badge, FilterTabs, GameCard, Pagination, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
@@ -131,6 +131,127 @@ function raceScore(record) {
   return Number.isFinite(Number(score)) ? new Intl.NumberFormat().format(Number(score)) : "-";
 }
 
+const EMPTY_BASIC_PROFILE = {
+  self_intro: "", name_th: "", name_en: "", division: "", birthday_day: "",
+  birthday_month: "", height_cm: "", dorm: "", likes: "", dislikes: "",
+  personality: "", biography: "", additional: "",
+};
+
+function basicProfileIsComplete(profile) {
+  return Boolean(profile?.name_th && profile?.name_en && profile?.division && profile?.birthday_day && profile?.birthday_month && profile?.height_cm && profile?.dorm);
+}
+
+function birthdayLabel(profile) {
+  if (!profile?.birthday_day || !profile?.birthday_month) return "—";
+  return `${String(profile.birthday_day).padStart(2, "0")}/${String(profile.birthday_month).padStart(2, "0")}`;
+}
+
+function countWords(value) {
+  const text = String(value || "").trim();
+  if (!text) return 0;
+  if (typeof Intl.Segmenter === "function") {
+    return Array.from(new Intl.Segmenter("th", { granularity: "word" }).segment(text))
+      .filter((part) => part.isWordLike).length;
+  }
+  return text.split(/\s+/).length;
+}
+
+function BasicProfileSection({ userId, character, initialProfile, loading, onUpdated }) {
+  const characterOwnerId = String(character.userId || character.id || "").split(":")[0];
+  const isOwner = character.type === "Umamusume" && characterOwnerId === String(userId || "");
+  const [profile, setProfile] = useState({ ...EMPTY_BASIC_PROFILE });
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    const next = { ...EMPTY_BASIC_PROFILE, ...(initialProfile || {}) };
+    for (const field of ["birthday_day", "birthday_month", "height_cm"]) {
+      next[field] = next[field] == null ? "" : String(next[field]);
+    }
+    setProfile(next);
+    setEditing(isOwner && !basicProfileIsComplete(next));
+    setSaved(false);
+    setError("");
+  }, [character.id, initialProfile, isOwner]);
+
+  const change = (field) => (event) => {
+    setProfile((current) => ({ ...current, [field]: event.target.value }));
+    setSaved(false);
+  };
+  const submit = async (event) => {
+    event.preventDefault();
+    setError("");
+    if (!basicProfileIsComplete(profile)) {
+      setError("กรอกชื่อทั้งสองภาษา ชั้นปี วันเกิด ส่วนสูง และหอก่อนบันทึก");
+      return;
+    }
+    if (countWords(profile.likes) > 60 || countWords(profile.dislikes) > 60) {
+      setError("Like และ Dislike ต้องไม่เกิน 60 คำ");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch(`${BOT_API_BASE}/player/${encodeURIComponent(characterOwnerId)}/basic-profile`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...profile,
+          birthday_day: Number(profile.birthday_day),
+          birthday_month: Number(profile.birthday_month),
+          height_cm: Number(profile.height_cm),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.detail || "บันทึกข้อมูลไม่สำเร็จ");
+      const next = { ...EMPTY_BASIC_PROFILE, ...(data.profile || profile) };
+      for (const field of ["birthday_day", "birthday_month", "height_cm"]) next[field] = String(next[field] ?? "");
+      setProfile(next);
+      setEditing(false);
+      setSaved(true);
+      onUpdated?.(data.profile || profile);
+    } catch (requestError) {
+      setError(String(requestError.message || requestError));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <section className="basic-profile-card" aria-labelledby="basic-profile-title">
+      <div className="basic-profile-heading">
+        <div><span className="basic-profile-kicker">CHARACTER FILE</span><h3 id="basic-profile-title">ข้อมูลพื้นฐาน</h3></div>
+        {isOwner && !editing && <button type="button" className="basic-profile-edit" onClick={() => { setEditing(true); setSaved(false); }}><Pencil size={15} /> แก้ไขข้อมูล</button>}
+      </div>
+      {loading ? <p className="basic-profile-note">กำลังโหลดข้อมูลพื้นฐาน…</p> : editing ? (
+        <form className="basic-profile-form" onSubmit={submit}>
+          <label className="basic-profile-field basic-profile-field--wide"><span>Self-Intro <small>{profile.self_intro.length}/100 ตัวอักษร</small></span><textarea maxLength={100} rows={2} value={profile.self_intro} onChange={change("self_intro")} /></label>
+          <label className="basic-profile-field"><span>ชื่อภาษาไทย <b>*</b></span><input required maxLength={80} value={profile.name_th} onChange={change("name_th")} /></label>
+          <label className="basic-profile-field"><span>ชื่อภาษาอังกฤษ <b>*</b></span><input required maxLength={80} value={profile.name_en} onChange={change("name_en")} /></label>
+          <label className="basic-profile-field"><span>Class <b>*</b></span><select required value={profile.division} onChange={change("division")}><option value="">เลือก Division</option><option>Junior Division</option><option>Senior Division</option></select></label>
+          <label className="basic-profile-field"><span>Birthday <b>*</b></span><div className="basic-profile-birthday"><select required aria-label="วันเกิด" value={profile.birthday_day} onChange={change("birthday_day")}><option value="">วัน</option>{Array.from({ length: 31 }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}</select><span>/</span><select required aria-label="เดือนเกิด" value={profile.birthday_month} onChange={change("birthday_month")}><option value="">เดือน</option>{Array.from({ length: 12 }, (_, i) => <option key={i + 1} value={i + 1}>{String(i + 1).padStart(2, "0")}</option>)}</select></div></label>
+          <label className="basic-profile-field"><span>Height (cm.) <b>*</b></span><input required type="number" min="1" max="300" value={profile.height_cm} onChange={change("height_cm")} /></label>
+          <label className="basic-profile-field"><span>Dorm <b>*</b></span><select required value={profile.dorm} onChange={change("dorm")}><option value="">เลือกหอพัก</option><option>Ritto</option><option>Miho</option></select></label>
+          <label className="basic-profile-field"><span>Like <small>{countWords(profile.likes)}/60 คำ</small></span><textarea rows={2} value={profile.likes} onChange={change("likes")} /></label>
+          <label className="basic-profile-field"><span>Dislike <small>{countWords(profile.dislikes)}/60 คำ</small></span><textarea rows={2} value={profile.dislikes} onChange={change("dislikes")} /></label>
+          <label className="basic-profile-field basic-profile-field--wide"><span>บุคลิก <small>{profile.personality.length}/200 ตัวอักษร</small></span><textarea maxLength={200} rows={3} value={profile.personality} onChange={change("personality")} /></label>
+          <label className="basic-profile-field basic-profile-field--wide"><span>ประวัติ <small>{profile.biography.length}/500 ตัวอักษร</small></span><textarea maxLength={500} rows={5} value={profile.biography} onChange={change("biography")} /></label>
+          <label className="basic-profile-field basic-profile-field--wide"><span>เพิ่มเติม <small>{profile.additional.length}/200 ตัวอักษร</small></span><textarea maxLength={200} rows={3} value={profile.additional} onChange={change("additional")} /></label>
+          {error && <p className="basic-profile-error basic-profile-field--wide">{error}</p>}
+          <div className="basic-profile-actions basic-profile-field--wide"><button type="submit" disabled={saving}><Save size={16} /> {saving ? "กำลังบันทึก…" : "บันทึกข้อมูล"}</button>{basicProfileIsComplete(initialProfile) && <button type="button" className="basic-profile-cancel" onClick={() => { setProfile({ ...EMPTY_BASIC_PROFILE, ...initialProfile }); setEditing(false); setError(""); }}><X size={16} /> ยกเลิก</button>}</div>
+        </form>
+      ) : basicProfileIsComplete(profile) ? <>
+        <div className="basic-profile-identity"><div><span>ชื่อภาษาไทย</span><strong>{profile.name_th}</strong></div><div><span>English name</span><strong>{profile.name_en}</strong></div></div>
+        {profile.self_intro && <p className="basic-profile-intro">“{profile.self_intro}”</p>}
+        <dl className="basic-profile-facts"><div><dt>Class</dt><dd>{profile.division}</dd></div><div><dt>Birthday</dt><dd>{birthdayLabel(profile)}</dd></div><div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div><div><dt>Dorm</dt><dd>{profile.dorm}</dd></div></dl>
+        <div className="basic-profile-copy-grid">{profile.likes && <article><h4>Like</h4><p>{profile.likes}</p></article>}{profile.dislikes && <article><h4>Dislike</h4><p>{profile.dislikes}</p></article>}{profile.personality && <article><h4>บุคลิก</h4><p>{profile.personality}</p></article>}{profile.biography && <article className="basic-profile-copy-wide"><h4>ประวัติ</h4><p>{profile.biography}</p></article>}{profile.additional && <article className="basic-profile-copy-wide"><h4>เพิ่มเติม</h4><p>{profile.additional}</p></article>}</div>
+        {saved && <p className="basic-profile-saved">บันทึกข้อมูลแล้ว</p>}
+      </> : <div className="basic-profile-empty"><strong>{isOwner ? "เริ่มสร้าง Character File ของคุณ" : "เจ้าของยังไม่ได้ตั้งข้อมูลพื้นฐาน"}</strong><p>{isOwner ? "กรอกข้อมูลหลักเพื่อให้ผู้เข้าชมเห็นโปรไฟล์ตัวละครนี้" : "ข้อมูลจะแสดงที่นี่เมื่อเจ้าของโปรไฟล์ตั้งค่าเรียบร้อย"}</p>{isOwner && <button type="button" className="basic-profile-edit" onClick={() => setEditing(true)}><Pencil size={15} /> ตั้งค่าข้อมูลพื้นฐาน</button>}</div>}
+    </section>
+  );
+}
+
 export default function CharactersPage({ userId, player, profiles, activeProfileType = "trainee", characterRoute, onOpenCharacter, onBack }) {
   const [search, setSearch] = useState("");
   const [characters, setCharacters] = useState([]);
@@ -235,11 +356,12 @@ export default function CharactersPage({ userId, player, profiles, activeProfile
         } else {
           requests.push(fetch(`${BOT_API_BASE}/trainee/${encodeURIComponent(characterId)}/trainer`).then((res) => res.ok ? res.json() : null));
           requests.push(fetch(`${BOT_API_BASE}/player/${encodeURIComponent(characterId)}/race-history`).then((res) => res.ok ? res.json() : null));
+          requests.push(fetch(`${BOT_API_BASE}/player/${encodeURIComponent(characterId)}/basic-profile`).then((res) => res.ok ? res.json() : null));
         }
 
-        const [profile, related, history] = await Promise.all(requests);
+        const [profile, related, history, basicProfile] = await Promise.all(requests);
         if (!cancelled) {
-          setDetail({ profile: profile || selectedCharacter.profileData || {}, related, history: normalizeRaceHistory(history) });
+          setDetail({ profile: profile || selectedCharacter.profileData || {}, related, history: normalizeRaceHistory(history), basicProfile: basicProfile?.profile || null });
         }
       } catch (error) {
         if (!cancelled) setDetailError("Could not load all profile details.");
@@ -261,8 +383,6 @@ export default function CharactersPage({ userId, player, profiles, activeProfile
         const profile = profiles[profileType.id];
         const imageUrl = profile?.imageUrl ||
           (profileType.id === "trainee" ? player?.profile_image_url : "");
-        if (!imageUrl) return null;
-
         return {
           id: `${userId}:${profileType.id}`,
           userId,
@@ -334,6 +454,8 @@ export default function CharactersPage({ userId, player, profiles, activeProfile
     <section className="characters-page">
       {characterRoute ? routeCharacter ? <CharacterProfilePage
         character={routeCharacter}
+        userId={userId}
+        onBasicProfileUpdated={(basicProfile) => setDetail((current) => current ? { ...current, basicProfile } : current)}
         detail={selectedCharacter?.id === routeCharacter.id ? detail : null}
         loading={selectedCharacter?.id !== routeCharacter.id || detailLoading || (!detail && !detailError)}
         error={detailError}
@@ -450,7 +572,7 @@ export default function CharactersPage({ userId, player, profiles, activeProfile
   );
 }
 
-function CharacterProfilePage({ character, detail, loading, error, onClose, onOpenCharacter, onOpenRace }) {
+function CharacterProfilePage({ character, userId, detail, loading, error, onClose, onOpenCharacter, onOpenRace, onBasicProfileUpdated }) {
   const prefersReducedMotion = useReducedMotion();
   const [historyRecordType, setHistoryRecordType] = useState("all");
   const [historyPage, setHistoryPage] = useState(1);
@@ -460,7 +582,7 @@ function CharacterProfilePage({ character, detail, loading, error, onClose, onOp
     : character.type === "NPC" ? "npc" : "trainee";
   const profile = detail?.profile || character.profileData || {};
   const imageUrl = profile.profile_image_url || profile.image_url || character.image_url;
-  const name = profile.username || profile.name || character.name;
+  const name = detail?.basicProfile?.name_th || profile.username || profile.name || character.name;
   const traineeTrainer = detail?.related?.trainer;
   const filteredRaceHistory = useMemo(
     () => (detail?.history || []).filter((record) => (
@@ -512,10 +634,12 @@ function CharacterProfilePage({ character, detail, loading, error, onClose, onOp
           <div>
             <Badge className={getCharacterBadgeClass(character.type)}>{character.type}</Badge>
             <h2 id="character-profile-title">{name}</h2>
-            <p>{isTrainer ? "Trainer profile" : "Umamusume trainee profile"}</p>
+            <p>{isTrainer ? "Trainer profile" : detail?.basicProfile?.name_en || "Umamusume trainee profile"}</p>
           </div>
           <div className="character-profile-fans"><span>{isTrainer ? "Total Fans" : "Fans Point"}</span><strong>{formatFans(fans)}</strong></div>
         </header>
+
+        {!isTrainer && <BasicProfileSection userId={userId} character={character} initialProfile={detail?.basicProfile} loading={loading} onUpdated={onBasicProfileUpdated} />}
 
         {loading ? <p className="character-profile-status">กำลังโหลดโปรไฟล์...</p> : error ? <p className="character-profile-status is-error">{error}</p> : isTrainer ? (
           <section className="character-profile-section">
