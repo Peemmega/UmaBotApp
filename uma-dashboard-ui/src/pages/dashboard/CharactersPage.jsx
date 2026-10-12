@@ -245,7 +245,10 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
       ) : basicProfileIsComplete(profile) ? <>
         {profile.self_intro && <p className="basic-profile-intro">“{profile.self_intro}”</p>}
         <div className="basic-profile-overview">
-          <article className="basic-profile-personality"><h4>บุคลิก</h4><p>{profile.personality || "ยังไม่ได้ระบุ"}</p></article>
+          <div className="basic-profile-main-column">
+            <article className="basic-profile-personality"><h4>บุคลิก</h4><p>{profile.personality || "ยังไม่ได้ระบุ"}</p></article>
+            <article className="basic-profile-narrative"><h4>ประวัติ</h4><p>{profile.biography || "ยังไม่ได้ระบุ"}</p></article>
+          </div>
           <div className="basic-profile-sidebar">
             <dl className="basic-profile-details">
               <div><dt>ชื่อ</dt><dd>{profile.name_th}</dd></div>
@@ -257,10 +260,9 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
               <div><dt>Like</dt><dd>{profile.likes || "—"}</dd></div>
               <div><dt>Dislike</dt><dd>{profile.dislikes || "—"}</dd></div>
             </dl>
+            <article className="basic-profile-narrative basic-profile-additional"><h4>เพิ่มเติม</h4><p>{profile.additional || "ยังไม่ได้ระบุ"}</p></article>
           </div>
         </div>
-        <article className="basic-profile-narrative"><h4>ประวัติ</h4><p>{profile.biography || "ยังไม่ได้ระบุ"}</p></article>
-        <article className="basic-profile-narrative basic-profile-additional"><h4>เพิ่มเติม</h4><p>{profile.additional || "ยังไม่ได้ระบุ"}</p></article>
         {saved && <p className="basic-profile-saved">บันทึกข้อมูลแล้ว</p>}
       </> : <div className="basic-profile-empty"><strong>{isOwner ? "เริ่มสร้าง Character File ของคุณ" : "เจ้าของยังไม่ได้ตั้งข้อมูลพื้นฐาน"}</strong><p>{isOwner ? "กรอกข้อมูลหลักเพื่อให้ผู้เข้าชมเห็นโปรไฟล์ตัวละครนี้" : "ข้อมูลจะแสดงที่นี่เมื่อเจ้าของโปรไฟล์ตั้งค่าเรียบร้อย"}</p>{isOwner && <button type="button" className="basic-profile-edit" onClick={() => setEditing(true)}><Pencil size={15} /> ตั้งค่าข้อมูลพื้นฐาน</button>}</div>}
     </section>

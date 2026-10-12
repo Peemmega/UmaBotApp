@@ -127,7 +127,10 @@ export default function BasicProfileEditor({ userId }) {
       ) : <>
         {profile.self_intro && <p className="basic-profile-editor-intro">“{profile.self_intro}”</p>}
         <div className="basic-profile-editor-overview">
-          <article className="basic-profile-editor-personality"><h3>บุคลิก</h3><p>{profile.personality || "ยังไม่ได้ระบุ"}</p></article>
+          <div className="basic-profile-editor-main-column">
+            <article className="basic-profile-editor-personality"><h3>บุคลิก</h3><p>{profile.personality || "ยังไม่ได้ระบุ"}</p></article>
+            <article className="basic-profile-editor-narrative"><h3>ประวัติ</h3><p>{profile.biography || "ยังไม่ได้ระบุ"}</p></article>
+          </div>
           <div className="basic-profile-editor-sidebar">
             <dl className="basic-profile-editor-details">
               <div><dt>ชื่อ</dt><dd>{profile.name_th}</dd></div>
@@ -139,10 +142,9 @@ export default function BasicProfileEditor({ userId }) {
               <div><dt>Like</dt><dd>{profile.likes || "—"}</dd></div>
               <div><dt>Dislike</dt><dd>{profile.dislikes || "—"}</dd></div>
             </dl>
+            <article className="basic-profile-editor-narrative basic-profile-editor-additional"><h3>เพิ่มเติม</h3><p>{profile.additional || "ยังไม่ได้ระบุ"}</p></article>
           </div>
         </div>
-        <article className="basic-profile-editor-narrative"><h3>ประวัติ</h3><p>{profile.biography || "ยังไม่ได้ระบุ"}</p></article>
-        <article className="basic-profile-editor-narrative basic-profile-editor-additional"><h3>เพิ่มเติม</h3><p>{profile.additional || "ยังไม่ได้ระบุ"}</p></article>
         {notice && <p className="basic-profile-editor-notice">{notice}</p>}
       </>}
     </section>
