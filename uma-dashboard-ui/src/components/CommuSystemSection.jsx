@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Activity, ArrowUpRight, ChevronLeft, ChevronRight, Flag, Trophy, Zap } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { SYSTEM_TOPICS, followSystemLink } from "../data/systemGuide";
 import { raceImageMap } from "../utils/raceSchedule";
 import "../styles/commuSystemSection.css";
 
-const ICONS = [Activity, Trophy, Flag, Zap];
 const RACE_COLUMNS = Array.from({ length: 3 }, (_, column) => Object.entries(raceImageMap).filter((_, index) => index % 3 === column));
 
 export function RaceGallery() {
@@ -30,26 +29,8 @@ export default function CommuSystemSection({ onNavigate }) {
     setSlideDirection(forwardDistance <= SYSTEM_TOPICS.length / 2 ? "forward" : "backward");
     setActiveIndex(nextIndex);
   };
-  const onTabKeyDown = (event, index) => {
-    let next;
-    if (event.key === "ArrowRight") next = (index + 1) % SYSTEM_TOPICS.length;
-    if (event.key === "ArrowLeft") next = (index + SYSTEM_TOPICS.length - 1) % SYSTEM_TOPICS.length;
-    if (event.key === "Home") next = 0;
-    if (event.key === "End") next = SYSTEM_TOPICS.length - 1;
-    if (next === undefined) return;
-    event.preventDefault();
-    select(next);
-    document.getElementById(`commu-tab-${SYSTEM_TOPICS[next].id}`)?.focus();
-  };
-
   return <section className="commu-system" id="race-system" aria-labelledby="commu-system-title">
     <header className="commu-system-heading"><h2 id="commu-system-title">Race System</h2></header>
-    <div className="commu-system-tabs" role="tablist" aria-label="หัวข้อระบบการแข่งขัน">
-      {SYSTEM_TOPICS.map((item, index) => {
-        const Icon = ICONS[index];
-        return <button type="button" role="tab" key={item.id} id={`commu-tab-${item.id}`} aria-selected={activeIndex === index} aria-controls="commu-system-panel" tabIndex={activeIndex === index ? 0 : -1} className={activeIndex === index ? "is-active" : ""} onClick={() => select(index)} onKeyDown={(event) => onTabKeyDown(event, index)}><Icon size={18} /><span>{item.label}</span></button>;
-      })}
-    </div>
     <div className="commu-system-stage">
       {[-1, 1].map((offset) => {
         const preview = SYSTEM_TOPICS[(activeIndex + offset + SYSTEM_TOPICS.length) % SYSTEM_TOPICS.length];
@@ -60,7 +41,7 @@ export default function CommuSystemSection({ onNavigate }) {
           </span>
         </button>;
       })}
-      <div className="commu-system-panel" id="commu-system-panel" role="tabpanel" aria-labelledby={`commu-tab-${topic.id}`}>
+      <div className="commu-system-panel">
         <a className={`commu-system-feature from-${slideDirection}`} key={topic.id} href={`/dashboard/system/${topic.id}`} onClick={(event) => followSystemLink(event, onNavigate, topic.id)}>
           <div className={`commu-system-art is-${topic.id}`}>
             {topic.id === "races" ? <RaceGallery /> : <img src={topic.image} alt={topic.imageAlt} loading="lazy" />}

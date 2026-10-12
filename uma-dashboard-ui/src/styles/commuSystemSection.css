@@ -3,10 +3,6 @@
 .commu-system-heading { text-align: center; margin: 0 auto 16px; max-width: 660px; }
 .commu-system-heading h2 { margin: 0 0 9px; font-size: clamp(32px, 4vw, 48px); font-weight: 900; line-height: 1.2; letter-spacing: -.035em; }
 .commu-system-heading p { margin: 0; color: #59785f; font-size: 14px; line-height: 1.8; }
-.commu-system-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
-.commu-system-tabs button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 12px 18px; border: 1px solid #ccdfc1; border-radius: 8px; background: #ffffffc9; color: #477051; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; transition: background-color .24s ease, border-color .24s ease, color .24s ease, transform .24s ease, box-shadow .24s ease; }
-.commu-system-tabs button.is-active { background: #2b854b; border-color: #2b854b; color: white; box-shadow: 0 4px 0 #1f6135; transform: translateY(-2px); }
-.commu-system-tabs button:hover { border-color: #2b854b; transform: translateY(-2px); }
 .commu-system-stage { position: relative; max-width: 1180px; margin: auto; padding: 0 40px; }
 .commu-system-panel { position: relative; z-index: 2; width: min(60%,740px); margin: auto; padding: 16px; border: 1px solid #fff; border-radius: 12px; background: #fcfffa; box-shadow: 0 16px 40px #214d3826, 0 3px 0 #abc992; }
 .commu-system-feature { display: block; color: inherit; text-decoration: none; border-radius: 4px; animation: commu-system-feature-enter .52s cubic-bezier(.2,.75,.25,1) both; }
@@ -50,8 +46,6 @@
 @keyframes commu-race-scroll { to { transform: translateY(-50%); } }
 @media (max-width: 850px) {
   .commu-system { padding: 32px 12px; margin-top: 38px; }
-  .commu-system-tabs { gap: 6px; }
-  .commu-system-tabs button { padding: 11px 12px; font-size: 12px; }
   .commu-system-panel { width: 84%; }
   .commu-system-arrow.is-previous { left: 1%; }
   .commu-system-arrow.is-next { right: 1%; }
@@ -59,8 +53,6 @@
 @media (max-width: 600px) {
   .commu-system { padding: 28px 0; }
   .commu-system-heading { padding-inline: 15px; }
-  .commu-system-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 22px 10px; }
-  .commu-system-tabs button { min-height: 43px; padding: 10px 8px; }
   .commu-system-stage { padding: 0 8px; }
   .commu-system-panel { width: 100%; padding: 10px; }
   .commu-system-preview { display: none; }
@@ -77,5 +69,5 @@
 @media (prefers-reduced-motion: reduce) {
   .commu-race-column { animation: none; }
   .commu-system-feature, .commu-system-preview-content { animation: none; }
-  .commu-system-tabs button, .commu-system-dots span, .commu-system-preview { transition: none; }
+  .commu-system-dots span, .commu-system-preview { transition: none; }
 }
