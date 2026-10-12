@@ -611,8 +611,15 @@ function CharacterProfilePage({ character, userId, detail, loading, error, onClo
     ? "trainer"
     : character.type === "NPC" ? "npc" : "trainee";
   const profile = detail?.profile || character.profileData || {};
-  const imageUrl = profile.profile_image_url || profile.image_url || character.image_url;
-  const name = detail?.basicProfile?.name_th || profile.username || profile.name || character.name;
+  // /player/{id} always returns the account's trainee record. For Trainer/NPC
+  // cards that would replace the role-specific identity shown in the roster.
+  const usesPresetIdentity = character.type === "Trainer" || character.type === "NPC";
+  const imageUrl = usesPresetIdentity
+    ? character.image_url || profile.image_url || profile.profile_image_url
+    : profile.profile_image_url || profile.image_url || character.image_url;
+  const name = usesPresetIdentity
+    ? character.name || profile.name || profile.username
+    : detail?.basicProfile?.name_th || profile.username || profile.name || character.name;
   const traineeTrainer = detail?.related?.trainer;
   const filteredRaceHistory = useMemo(
     () => (detail?.history || []).filter((record) => (
