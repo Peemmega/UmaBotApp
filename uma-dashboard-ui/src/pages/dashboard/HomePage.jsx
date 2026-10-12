@@ -65,6 +65,11 @@ function getEventEnd(item, start) {
 }
 
 export default function HomePage({ username, onNavigate, onOpenNews }) {
+  useEffect(() => {
+    if (window.location.hash !== "#race-system") return;
+    const frame = requestAnimationFrame(() => document.getElementById("race-system")?.scrollIntoView({ block: "start" }));
+    return () => cancelAnimationFrame(frame);
+  }, []);
   const [items, setItems] = useState([]);
   const [activeMonthEvent, setActiveMonthEvent] = useState(0);
   const [carouselDirection, setCarouselDirection] = useState(1);

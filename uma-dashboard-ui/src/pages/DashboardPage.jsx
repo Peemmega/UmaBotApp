@@ -25,6 +25,8 @@ import RaceReplayPage from "./dashboard/RaceReplayPage";
 import NewsPage from "./dashboard/NewsPage";
 import NewsDetailsPage from "./dashboard/NewsDetailsPage";
 import HomePage from "./dashboard/HomePage";
+import SystemGuidePage from "./dashboard/SystemGuidePage";
+import { getSystemTopic } from "../data/systemGuide";
 import { getNewsKind } from "../utils/newsItems";
 
 const VALID_PAGES = [
@@ -62,7 +64,13 @@ function getCharacterRouteFromPath() {
   }
 }
 
+function getSystemTopicFromPath() {
+  const match = window.location.pathname.match(/^\/dashboard\/system\/([^/]+)\/?$/);
+  return match && getSystemTopic(match[1]) ? match[1] : null;
+}
+
 function getPageFromPath() {
+  if (getSystemTopicFromPath()) return "system-guide";
   if (getNewsRouteFromPath()) return "news-detail";
   if (getCharacterRouteFromPath()) return "chars";
   const normalizedPath = window.location.pathname.replace(/\/+$/, "");
@@ -93,6 +101,7 @@ export default function DashboardPage({
   const [activePage, setActivePage] = useState(getPageFromPath);
   const [newsRoute, setNewsRoute] = useState(getNewsRouteFromPath);
   const [characterRoute, setCharacterRoute] = useState(getCharacterRouteFromPath);
+  const [systemTopic, setSystemTopic] = useState(getSystemTopicFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
   const [profiles, setProfiles] = useState(() => loadProfilePresets(userId, username));
   const [activeProfileType, setActiveProfileType] = useState(() => accountRole || loadActiveProfileType(userId));
@@ -156,8 +165,20 @@ export default function DashboardPage({
   const activeProfile = profiles[activeProfileType] || profiles.trainee;
 
   const changePage = (page) => {
+    if (page.startsWith("system/")) {
+      const topicId = page.slice("system/".length);
+      if (!getSystemTopic(topicId)) return;
+      setNewsRoute(null);
+      setCharacterRoute(null);
+      setSystemTopic(topicId);
+      setActivePage("system-guide");
+      window.history.pushState({}, "", `/dashboard/system/${topicId}`);
+      window.scrollTo(0, 0);
+      return;
+    }
     if (!VALID_PAGES.includes(page)) return;
 
+    setSystemTopic(null);
     setNewsRoute(null);
     setCharacterRoute(null);
     setActivePage(page);
@@ -185,6 +206,11 @@ export default function DashboardPage({
 
   const renderMiddlePage = () => {
     switch (activePage) {
+      case "system-guide":
+        return <SystemGuidePage topicId={systemTopic} onNavigate={changePage} onBack={() => {
+          changePage("home");
+          window.history.replaceState({}, "", "/dashboard/home#race-system");
+        }} />;
       case "home":
         return <HomePage username={player?.username || username} onNavigate={changePage} onOpenNews={openNewsDetail} />;
 
@@ -308,6 +334,7 @@ export default function DashboardPage({
       setActivePage(getPageFromPath());
       setNewsRoute(getNewsRouteFromPath());
       setCharacterRoute(getCharacterRouteFromPath());
+      setSystemTopic(getSystemTopicFromPath());
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -413,13 +440,13 @@ export default function DashboardPage({
           onLogout={onLogout}
           notificationPermission={notificationPermission}
           onEnableNotifications={enableNotifications}
-          nav={<GameNav activePage={activePage === "race-replay" ? "races" : activePage === "news-detail" ? "news" : activePage} onChangePage={changePage} profileType={activeProfileType} />}
+          nav={<GameNav activePage={activePage === "system-guide" ? "home" : activePage === "race-replay" ? "races" : activePage === "news-detail" ? "news" : activePage} onChangePage={changePage} profileType={activeProfileType} />}
         />
       }
       modals={modals}
     >
       <AnimatePresence mode="wait">
-        <PageTransition key={activePage}>{renderMiddlePage()}</PageTransition>
+        <PageTransition key={activePage === "system-guide" ? `${activePage}/${systemTopic}` : activePage}>{renderMiddlePage()}</PageTransition>
       </AnimatePresence>
     </AppShell>
   );
