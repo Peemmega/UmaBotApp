@@ -222,45 +222,52 @@
 }
 
 .race-directory-grid {
-  gap: var(--uma-space-2);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+  gap: var(--uma-space-3);
 }
 
 .race-directory-grid .race-card {
-  display: grid;
-  grid-template-columns: 150px minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   align-items: stretch;
-  min-height: 128px;
+  min-height: 218px;
   padding: 8px;
-  text-align: left;
+  text-align: center;
 }
 
 .race-directory-image {
-  height: 100%;
-  min-height: 110px;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  flex: 0 0 auto;
 }
 
 .race-directory-grid .race-card-body {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: var(--uma-space-3) var(--uma-space-4);
+  align-items: center;
+  flex: 1 1 auto;
+  padding: 9px 5px 4px;
 }
 
 .race-directory-grid .race-id {
-  margin-bottom: var(--uma-space-2);
+  margin-bottom: 7px;
+  text-align: center;
 }
 
 .race-directory-grid .race-meta-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 8px;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 7px;
 }
 
 .race-directory-grid .race-meta-row span {
   flex: 0 0 auto;
-  min-height: 26px;
-  padding-inline: 9px;
+  min-height: 25px;
+  padding: 4px 8px;
+  font-size: 11px;
 }
 
 .race-card-action {
@@ -270,6 +277,13 @@
   color: var(--uma-primary-dark);
   font-size: 13px;
   font-weight: 900;
+}
+
+.race-directory-grid .race-card-action {
+  justify-content: center;
+  align-self: center;
+  margin-top: auto;
+  padding-top: 2px;
 }
 
 .race-surface-tag.is-dirt {
@@ -1229,7 +1243,7 @@
 
 .race-id {
   color: var(--uma-ink);
-  font-size: clamp(16px, 1.8vw, 18px);
+  font-size: 14px;
   font-weight: 1000;
   line-height: 1.15;
   margin: 0 0 var(--uma-space-4);
@@ -1263,21 +1277,31 @@
     width: 100%;
   }
 
+  .race-directory-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .race-directory-grid .race-card {
-    grid-template-columns: 106px minmax(0, 1fr);
-    min-height: 102px;
+    min-height: 196px;
   }
 
   .race-directory-image {
-    min-height: 86px;
+    min-height: 0;
+    aspect-ratio: 16 / 9;
   }
 
   .race-directory-grid .race-card-body {
-    padding: 7px 8px;
+    padding: 8px 4px 3px;
   }
 
   .race-directory-grid .race-meta-row {
     gap: 4px;
+  }
+
+  .race-directory-grid .race-meta-row span {
+    min-height: 23px;
+    padding: 3px 6px;
+    font-size: 10px;
   }
 
   .skills-page {

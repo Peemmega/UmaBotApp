@@ -373,19 +373,12 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
 
               <div className="race-card-body">
                 <div className="race-id">{race.name}</div>
-
-
-                <div className="skill-main-row">
-                  <div className="skill-content">
-                  <div className="content-meta-row race-meta-row">
-                      <span>{race.venue || "Other"}</span>
-                      <span className={`race-surface-tag is-${race.track}`}>{race.track}</span>
-                      <span className="race-distance-label">{race.distance}</span>
-                    <span>{race.turn} Turns</span>
-                  </div>
-                  <span className="race-card-action">ดูรายละเอียด</span>
-                  </div>
+                <div className="content-meta-row race-meta-row">
+                  <span>{race.venue || "Other"}</span>
+                  <span className={`race-surface-tag is-${race.track}`}>{race.track}</span>
+                  <span className="race-distance-label">{race.distance}</span>
                 </div>
+                <span className="race-card-action">ดูรายละเอียด</span>
               </div>
             </StaggerItem>
           );
