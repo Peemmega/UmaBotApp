@@ -86,6 +86,11 @@
 .basic-profile-editor-narrative { margin-top: 10px; padding: 10px 12px; border: 1px solid #e6eae7; border-radius: 8px; background: #fafbfa; }
 .basic-profile-editor-narrative h3 { margin-bottom: 4px; }
 .basic-profile-editor-additional { background: #fff; }
+.basic-profile-editor-details { display: grid; gap: 0; margin: 0; padding: 2px 8px; border: 1px solid #e5e9e6; border-radius: 8px; background: #fff; }
+.basic-profile-editor-details > div { display: grid; grid-template-columns: 88px minmax(0, 1fr); align-items: baseline; gap: 8px; padding: 6px 2px; border-bottom: 1px solid #edf0ee; }
+.basic-profile-editor-details > div:last-child { border-bottom: 0; }
+.basic-profile-editor-details dt { margin: 0; color: #687571; font-size: 14px; font-weight: 800; }
+.basic-profile-editor-details dd { min-width: 0; margin: 0; color: #26372f; font-size: 14px; font-weight: 700; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 700px) {
   .basic-profile-editor-overview { grid-template-columns: 1fr; }
 }

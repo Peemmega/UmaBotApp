@@ -129,9 +129,16 @@ export default function BasicProfileEditor({ userId }) {
         <div className="basic-profile-editor-overview">
           <article className="basic-profile-editor-personality"><h3>บุคลิก</h3><p>{profile.personality || "ยังไม่ได้ระบุ"}</p></article>
           <div className="basic-profile-editor-sidebar">
-            <div className="basic-profile-editor-names"><div><span>ชื่อภาษาไทย</span><strong>{profile.name_th}</strong></div><div><span>English name</span><strong>{profile.name_en}</strong></div></div>
-            <dl className="basic-profile-editor-facts"><div><dt>Class</dt><dd>{profile.division}</dd></div><div><dt>Birthday</dt><dd>{dateLabel(profile)}</dd></div><div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div><div><dt>Dorm</dt><dd>{profile.dorm}</dd></div></dl>
-            <div className="basic-profile-editor-preferences"><article><h3>Like</h3><p>{profile.likes || "—"}</p></article><article><h3>Dislike</h3><p>{profile.dislikes || "—"}</p></article></div>
+            <dl className="basic-profile-editor-details">
+              <div><dt>ชื่อ</dt><dd>{profile.name_th}</dd></div>
+              <div><dt>Name</dt><dd>{profile.name_en}</dd></div>
+              <div><dt>Birthday</dt><dd>{dateLabel(profile)}</dd></div>
+              <div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div>
+              <div><dt>Class</dt><dd>{profile.division}</dd></div>
+              <div><dt>Dorm</dt><dd>{profile.dorm}</dd></div>
+              <div><dt>Like</dt><dd>{profile.likes || "—"}</dd></div>
+              <div><dt>Dislike</dt><dd>{profile.dislikes || "—"}</dd></div>
+            </dl>
           </div>
         </div>
         <article className="basic-profile-editor-narrative"><h3>ประวัติ</h3><p>{profile.biography || "ยังไม่ได้ระบุ"}</p></article>

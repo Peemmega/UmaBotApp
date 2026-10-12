@@ -247,9 +247,16 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
         <div className="basic-profile-overview">
           <article className="basic-profile-personality"><h4>บุคลิก</h4><p>{profile.personality || "ยังไม่ได้ระบุ"}</p></article>
           <div className="basic-profile-sidebar">
-            <div className="basic-profile-identity"><div><span>ชื่อภาษาไทย</span><strong>{profile.name_th}</strong></div><div><span>English name</span><strong>{profile.name_en}</strong></div></div>
-            <dl className="basic-profile-facts"><div><dt>Class</dt><dd>{profile.division}</dd></div><div><dt>Birthday</dt><dd>{birthdayLabel(profile)}</dd></div><div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div><div><dt>Dorm</dt><dd>{profile.dorm}</dd></div></dl>
-            <div className="basic-profile-preferences"><article><h4>Like</h4><p>{profile.likes || "—"}</p></article><article><h4>Dislike</h4><p>{profile.dislikes || "—"}</p></article></div>
+            <dl className="basic-profile-details">
+              <div><dt>ชื่อ</dt><dd>{profile.name_th}</dd></div>
+              <div><dt>Name</dt><dd>{profile.name_en}</dd></div>
+              <div><dt>Birthday</dt><dd>{birthdayLabel(profile)}</dd></div>
+              <div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div>
+              <div><dt>Class</dt><dd>{profile.division}</dd></div>
+              <div><dt>Dorm</dt><dd>{profile.dorm}</dd></div>
+              <div><dt>Like</dt><dd>{profile.likes || "—"}</dd></div>
+              <div><dt>Dislike</dt><dd>{profile.dislikes || "—"}</dd></div>
+            </dl>
           </div>
         </div>
         <article className="basic-profile-narrative"><h4>ประวัติ</h4><p>{profile.biography || "ยังไม่ได้ระบุ"}</p></article>
