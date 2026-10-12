@@ -80,8 +80,7 @@ function getPageFromPath() {
 }
 
 function getInitialPageFromPath() {
-  const initialPath = window.location.pathname.replace(/\/+$/, "");
-  return initialPath === "/dashboard/profile" ? "home" : getPageFromPath();
+  return getPageFromPath();
 }
 
 export default function DashboardPage({
@@ -338,7 +337,7 @@ export default function DashboardPage({
 
   useEffect(() => {
     const entryPath = window.location.pathname.replace(/\/+$/, "") || "/";
-    if (entryPath === "/" || entryPath === "/dashboard" || entryPath === "/dashboard/profile") {
+    if (entryPath === "/" || entryPath === "/dashboard") {
       window.history.replaceState(
         {},
         "",
