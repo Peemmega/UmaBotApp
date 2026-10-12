@@ -125,10 +125,17 @@ export default function BasicProfileEditor({ userId }) {
           <div className="basic-profile-editor-actions is-wide"><button type="submit" disabled={saving}><Save size={16} /> {saving ? "กำลังบันทึก…" : "บันทึกข้อมูล"}</button>{isComplete(profile) && <button type="button" className="is-secondary" onClick={() => { setEditing(false); setError(""); }}>ยกเลิก</button>}</div>
         </form>
       ) : <>
-        <div className="basic-profile-editor-names"><div><span>ชื่อภาษาไทย</span><strong>{profile.name_th}</strong></div><div><span>English name</span><strong>{profile.name_en}</strong></div></div>
         {profile.self_intro && <p className="basic-profile-editor-intro">“{profile.self_intro}”</p>}
-        <dl className="basic-profile-editor-facts"><div><dt>Class</dt><dd>{profile.division}</dd></div><div><dt>Birthday</dt><dd>{dateLabel(profile)}</dd></div><div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div><div><dt>Dorm</dt><dd>{profile.dorm}</dd></div></dl>
-        <div className="basic-profile-editor-copy">{profile.likes && <article><h3>Like</h3><p>{profile.likes}</p></article>}{profile.dislikes && <article><h3>Dislike</h3><p>{profile.dislikes}</p></article>}{profile.personality && <article><h3>บุคลิก</h3><p>{profile.personality}</p></article>}{profile.biography && <article className="is-wide"><h3>ประวัติ</h3><p>{profile.biography}</p></article>}{profile.additional && <article className="is-wide"><h3>เพิ่มเติม</h3><p>{profile.additional}</p></article>}</div>
+        <div className="basic-profile-editor-overview">
+          <article className="basic-profile-editor-personality"><h3>บุคลิก</h3><p>{profile.personality || "ยังไม่ได้ระบุ"}</p></article>
+          <div className="basic-profile-editor-sidebar">
+            <div className="basic-profile-editor-names"><div><span>ชื่อภาษาไทย</span><strong>{profile.name_th}</strong></div><div><span>English name</span><strong>{profile.name_en}</strong></div></div>
+            <dl className="basic-profile-editor-facts"><div><dt>Class</dt><dd>{profile.division}</dd></div><div><dt>Birthday</dt><dd>{dateLabel(profile)}</dd></div><div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div><div><dt>Dorm</dt><dd>{profile.dorm}</dd></div></dl>
+            <div className="basic-profile-editor-preferences"><article><h3>Like</h3><p>{profile.likes || "—"}</p></article><article><h3>Dislike</h3><p>{profile.dislikes || "—"}</p></article></div>
+          </div>
+        </div>
+        <article className="basic-profile-editor-narrative"><h3>ประวัติ</h3><p>{profile.biography || "ยังไม่ได้ระบุ"}</p></article>
+        <article className="basic-profile-editor-narrative basic-profile-editor-additional"><h3>เพิ่มเติม</h3><p>{profile.additional || "ยังไม่ได้ระบุ"}</p></article>
         {notice && <p className="basic-profile-editor-notice">{notice}</p>}
       </>}
     </section>

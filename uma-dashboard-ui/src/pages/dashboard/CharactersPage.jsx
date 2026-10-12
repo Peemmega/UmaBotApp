@@ -243,10 +243,17 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
           <div className="basic-profile-actions basic-profile-field--wide"><button type="submit" disabled={saving}><Save size={16} /> {saving ? "กำลังบันทึก…" : "บันทึกข้อมูล"}</button>{basicProfileIsComplete(initialProfile) && <button type="button" className="basic-profile-cancel" onClick={() => { setProfile({ ...EMPTY_BASIC_PROFILE, ...initialProfile }); setEditing(false); setError(""); }}><X size={16} /> ยกเลิก</button>}</div>
         </form>
       ) : basicProfileIsComplete(profile) ? <>
-        <div className="basic-profile-identity"><div><span>ชื่อภาษาไทย</span><strong>{profile.name_th}</strong></div><div><span>English name</span><strong>{profile.name_en}</strong></div></div>
         {profile.self_intro && <p className="basic-profile-intro">“{profile.self_intro}”</p>}
-        <dl className="basic-profile-facts"><div><dt>Class</dt><dd>{profile.division}</dd></div><div><dt>Birthday</dt><dd>{birthdayLabel(profile)}</dd></div><div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div><div><dt>Dorm</dt><dd>{profile.dorm}</dd></div></dl>
-        <div className="basic-profile-copy-grid">{profile.likes && <article><h4>Like</h4><p>{profile.likes}</p></article>}{profile.dislikes && <article><h4>Dislike</h4><p>{profile.dislikes}</p></article>}{profile.personality && <article><h4>บุคลิก</h4><p>{profile.personality}</p></article>}{profile.biography && <article className="basic-profile-copy-wide"><h4>ประวัติ</h4><p>{profile.biography}</p></article>}{profile.additional && <article className="basic-profile-copy-wide"><h4>เพิ่มเติม</h4><p>{profile.additional}</p></article>}</div>
+        <div className="basic-profile-overview">
+          <article className="basic-profile-personality"><h4>บุคลิก</h4><p>{profile.personality || "ยังไม่ได้ระบุ"}</p></article>
+          <div className="basic-profile-sidebar">
+            <div className="basic-profile-identity"><div><span>ชื่อภาษาไทย</span><strong>{profile.name_th}</strong></div><div><span>English name</span><strong>{profile.name_en}</strong></div></div>
+            <dl className="basic-profile-facts"><div><dt>Class</dt><dd>{profile.division}</dd></div><div><dt>Birthday</dt><dd>{birthdayLabel(profile)}</dd></div><div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div><div><dt>Dorm</dt><dd>{profile.dorm}</dd></div></dl>
+            <div className="basic-profile-preferences"><article><h4>Like</h4><p>{profile.likes || "—"}</p></article><article><h4>Dislike</h4><p>{profile.dislikes || "—"}</p></article></div>
+          </div>
+        </div>
+        <article className="basic-profile-narrative"><h4>ประวัติ</h4><p>{profile.biography || "ยังไม่ได้ระบุ"}</p></article>
+        <article className="basic-profile-narrative basic-profile-additional"><h4>เพิ่มเติม</h4><p>{profile.additional || "ยังไม่ได้ระบุ"}</p></article>
         {saved && <p className="basic-profile-saved">บันทึกข้อมูลแล้ว</p>}
       </> : <div className="basic-profile-empty"><strong>{isOwner ? "เริ่มสร้าง Character File ของคุณ" : "เจ้าของยังไม่ได้ตั้งข้อมูลพื้นฐาน"}</strong><p>{isOwner ? "กรอกข้อมูลหลักเพื่อให้ผู้เข้าชมเห็นโปรไฟล์ตัวละครนี้" : "ข้อมูลจะแสดงที่นี่เมื่อเจ้าของโปรไฟล์ตั้งค่าเรียบร้อย"}</p>{isOwner && <button type="button" className="basic-profile-edit" onClick={() => setEditing(true)}><Pencil size={15} /> ตั้งค่าข้อมูลพื้นฐาน</button>}</div>}
     </section>

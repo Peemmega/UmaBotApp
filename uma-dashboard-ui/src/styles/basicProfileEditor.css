@@ -69,3 +69,23 @@
   .basic-profile-editor { padding: 14px; }
   .basic-profile-editor-heading h2 { font-size: 19px; }
 }
+.basic-profile-editor-intro { margin: 10px 0; padding: 7px 10px; border: 0; border-left: 3px solid #9ba9a4; border-radius: 0 6px 6px 0; background: #f7f8f7; font-size: 14px; font-weight: 650; line-height: 1.45; }
+.basic-profile-editor-overview { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 10px; align-items: stretch; }
+.basic-profile-editor-personality { min-width: 0; padding: 12px 14px; border: 1px solid #e4e9e6; border-radius: 9px; background: #fafbfa; }
+.basic-profile-editor-personality h3, .basic-profile-editor-narrative h3, .basic-profile-editor-preferences h3 { margin: 0 0 6px; color: #53645d; font-size: 15px; }
+.basic-profile-editor-personality p, .basic-profile-editor-narrative p, .basic-profile-editor-preferences p { margin: 0; font-size: 14px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+.basic-profile-editor-sidebar { display: grid; align-content: start; gap: 8px; min-width: 0; }
+.basic-profile-editor-sidebar .basic-profile-editor-names { gap: 8px; padding: 0; }
+.basic-profile-editor-sidebar .basic-profile-editor-names > div { min-width: 0; padding: 8px 10px; }
+.basic-profile-editor-sidebar .basic-profile-editor-names strong { overflow-wrap: anywhere; font-size: 16px; }
+.basic-profile-editor-facts { gap: 6px; margin: 0; }
+.basic-profile-editor-facts > div { padding: 7px 10px; border-radius: 7px; }
+.basic-profile-editor-preferences { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.basic-profile-editor-preferences article { min-width: 0; padding: 8px 10px; border: 1px solid #e6eae7; border-radius: 7px; background: #fafbfa; }
+.basic-profile-editor-preferences h3 { margin-bottom: 3px; }
+.basic-profile-editor-narrative { margin-top: 10px; padding: 10px 12px; border: 1px solid #e6eae7; border-radius: 8px; background: #fafbfa; }
+.basic-profile-editor-narrative h3 { margin-bottom: 4px; }
+.basic-profile-editor-additional { background: #fff; }
+@media (max-width: 700px) {
+  .basic-profile-editor-overview { grid-template-columns: 1fr; }
+}
