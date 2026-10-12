@@ -21,6 +21,7 @@ import TeamMemberProfileModal from "../../components/TeamMemberProfileModal";
 import RaceHistoryDetailModal from "../../components/RaceHistoryDetailModal";
 import ProfileSkillLibrary from "../../components/ProfileSkillLibrary";
 import ProfileRaceStats from "../../components/ProfileRaceStats";
+import BasicProfileEditor from "../../components/BasicProfileEditor";
 import "../../styles/profilePage.css";
 import horseshoeIcon from "../../assets/icons/horseshoe.webp";
 
@@ -550,7 +551,7 @@ export default function ProfilePage({
             </nav>
           </StaggerItem>
 
-          {activeProfilePage === "overview" ? <div className="profile-empty-page" aria-label="หน้าข้อมูลพื้นฐานยังไม่มีเนื้อหา" /> : null}
+          {activeProfilePage === "overview" ? <BasicProfileEditor userId={userId} /> : null}
 
           {activeProfilePage === "stats" && <div className="profile-stats-page">
           <div className="profile-data-panel">
