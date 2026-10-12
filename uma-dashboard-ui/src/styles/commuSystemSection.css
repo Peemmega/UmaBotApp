@@ -1,14 +1,14 @@
 .commu-system { position: relative; isolation: isolate; margin-top: 60px; padding: 48px 22px 36px; color: #214b36; scroll-margin-top: calc(var(--ui-topbar-height, 90px) + 20px); }
 .commu-system::before { content: ""; position: absolute; z-index: -1; inset: 0 calc((100% - 100vw) / 2); background: linear-gradient(180deg, #f2fae9ed, #eff7e6b8 65%, #f7fcf0ec), url("../assets/bg/Gameplay_BG.webp") center / cover; }
-.commu-system-heading { text-align: center; margin: 0 auto 24px; max-width: 660px; }
+.commu-system-heading { text-align: center; margin: 0 auto 16px; max-width: 660px; }
 .commu-system-heading h2 { margin: 0 0 9px; font-size: clamp(32px, 4vw, 48px); font-weight: 900; line-height: 1.2; letter-spacing: -.035em; }
 .commu-system-heading p { margin: 0; color: #59785f; font-size: 14px; line-height: 1.8; }
-.commu-system-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 32px; }
+.commu-system-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
 .commu-system-tabs button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 12px 18px; border: 1px solid #ccdfc1; border-radius: 8px; background: #ffffffc9; color: #477051; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; transition: background-color .24s ease, border-color .24s ease, color .24s ease, transform .24s ease, box-shadow .24s ease; }
 .commu-system-tabs button.is-active { background: #2b854b; border-color: #2b854b; color: white; box-shadow: 0 4px 0 #1f6135; transform: translateY(-2px); }
 .commu-system-tabs button:hover { border-color: #2b854b; transform: translateY(-2px); }
 .commu-system-stage { position: relative; max-width: 1180px; margin: auto; padding: 0 40px; }
-.commu-system-panel { position: relative; z-index: 2; width: min(68%, 740px); margin: auto; padding: 16px; border: 1px solid #fff; border-radius: 12px; background: #fcfffa; box-shadow: 0 16px 40px #214d3826, 0 3px 0 #abc992; }
+.commu-system-panel { position: relative; z-index: 2; width: min(60%,740px); margin: auto; padding: 16px; border: 1px solid #fff; border-radius: 12px; background: #fcfffa; box-shadow: 0 16px 40px #214d3826, 0 3px 0 #abc992; }
 .commu-system-feature { display: block; color: inherit; text-decoration: none; border-radius: 4px; animation: commu-system-feature-enter .52s cubic-bezier(.2,.75,.25,1) both; }
 .commu-system-feature.from-forward { --slide-x: 34px; }
 .commu-system-feature.from-backward { --slide-x: -34px; }

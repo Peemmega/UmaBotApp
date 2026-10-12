@@ -43,7 +43,7 @@ export default function CommuSystemSection({ onNavigate }) {
   };
 
   return <section className="commu-system" id="race-system" aria-labelledby="commu-system-title">
-    <header className="commu-system-heading"><h2 id="commu-system-title">Race System</h2><p>รู้จักสนาม วางแผนวิ่ง แล้วสร้างจังหวะของคุณใน Twinkle Series</p></header>
+    <header className="commu-system-heading"><h2 id="commu-system-title">Race System</h2></header>
     <div className="commu-system-tabs" role="tablist" aria-label="หัวข้อระบบการแข่งขัน">
       {SYSTEM_TOPICS.map((item, index) => {
         const Icon = ICONS[index];

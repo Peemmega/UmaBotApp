@@ -160,7 +160,6 @@ export default function HomePage({ username, onNavigate, onOpenNews }) {
         <Reveal as="header" className="home-section-heading">
           <div>
             <h2 id="home-events-title">ข่าวสาร &amp; กิจกรรม</h2>
-            <p>กิจกรรมและการแข่งขันที่กำลังดำเนินอยู่หรือกำลังจะมาถึง</p>
           </div>
           <button type="button" className="home-view-all" onClick={() => onNavigate("news")}>ดูตารางทั้งหมด <ChevronRight size={17} /></button>
         </Reveal>
