@@ -95,7 +95,7 @@ function RoleSelection({ busy, error, onSelect }) {
         <div className="role-selection-heading">
           <span className="role-selection-crest"><Sparkles size={20} /></span>
           <div>
-            <span className="role-selection-kicker">Tracen Academy RP</span>
+            {/* <span className="role-selection-kicker">Tracen Academy RP</span> */}
             <h1 id="role-selection-title">เลือกบทบาทของคุณ</h1>
           </div>
         </div>

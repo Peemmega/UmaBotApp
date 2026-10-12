@@ -30,7 +30,7 @@ function LoginFeedback({ loginError }) {
           <div className="login-header">Tracen Academy</div>
           <div className="login-body login-feedback-body">
             <div className="login-feedback-icon" aria-hidden="true">!</div>
-            <div className="login-badge">Tracen Academy RP</div>
+            {/* <div className="login-badge">Tracen Academy RP</div> */}
             <h1 className="login-title">
               {isNotMember ? "ยังเข้าใช้งานไม่ได้" : "เข้าสู่ระบบไม่สำเร็จ"}
             </h1>
