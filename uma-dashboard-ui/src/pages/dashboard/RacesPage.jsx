@@ -280,7 +280,6 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
           />
 
             <label className="race-directory-select">
-              <span>Venue</span>
               <select value={activeVenue} onChange={(event) => setActiveVenue(event.target.value)}>
                 <option value="all">All racetracks</option>
                 {venueOptions.map((venue) => <option key={venue} value={venue}>{venue}</option>)}
