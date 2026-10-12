@@ -86,6 +86,34 @@ export default function ProfilePage({
   }, [profileType, userId]);
 
   useEffect(() => {
+    if (profileType !== "trainee" || !userId) return undefined;
+    const controller = new AbortController();
+
+    async function refreshCurrentPlayer() {
+      try {
+        const response = await fetch(
+          `${BOT_API_BASE}/player/${encodeURIComponent(userId)}?username=${encodeURIComponent(username || "Unknown")}`,
+          { signal: controller.signal }
+        );
+        if (!response.ok) return;
+        const freshPlayer = await response.json();
+        if (controller.signal.aborted) return;
+        setPlayer(freshPlayer);
+        try {
+          sessionStorage.setItem(`player:${userId}`, JSON.stringify(freshPlayer));
+        } catch {
+          // The profile still updates when session storage is unavailable.
+        }
+      } catch (refreshError) {
+        if (refreshError.name !== "AbortError") console.warn("Could not refresh the profile data.", refreshError);
+      }
+    }
+
+    refreshCurrentPlayer();
+    return () => controller.abort();
+  }, [profileType, setPlayer, userId, username]);
+
+  useEffect(() => {
     setSelectedImageFile(null);
     setUploadMessage("");
     setUploadError("");
