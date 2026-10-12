@@ -37,6 +37,12 @@
 .system-guide-note { display: grid; gap: 7px; margin-top: 21px; padding: 18px 20px; border-left: 3px solid #79a954; border-radius: 0 6px 6px 0; background: #f1f7e9; font-size: 13px; line-height: 1.95; color: #527143; }
 .system-guide-note > strong { color: #335c34; }
 .system-guide-example { padding: 10px 14px; margin-top: 14px; background: #f5f8f1; border-radius: 5px; color: #4f7153; font-size: 12px; line-height: 1.8; }
+.system-guide-image-example { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(190px, .85fr); align-items: center; gap: 20px; margin: 22px 0; padding: 12px; border: 1px solid #dce8d3; border-radius: 9px; background: #f8fbf5; }
+.system-guide-image-example img { display: block; width: 100%; height: auto; border-radius: 6px; background: #fff; }
+.system-guide-image-example figcaption { padding: 12px; }
+.system-guide-image-example figcaption strong { color: #315e3d; font-size: 16px; }
+.system-guide-image-example figcaption p { margin: 8px 0 0; font-size: 14px; }
+.system-guide-image-example.is-zone { grid-template-columns: minmax(0, 1.2fr) minmax(190px, .8fr); }
 .system-guide-two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin: 23px 0; }
 .system-guide-two-col > div { padding-top: 16px; border-top: 2px solid #c7dda9; }
 .system-guide-two-col p { margin-top: 5px; }
@@ -190,6 +196,8 @@
   .system-guide-article { padding-inline: 16px; }
   .system-guide-section { padding-block: 27px; }
   .system-guide-section p { font-size: 13px; }
+  .system-guide-image-example, .system-guide-image-example.is-zone { grid-template-columns: 1fr; gap: 4px; padding: 9px; }
+  .system-guide-image-example figcaption { padding: 10px 5px 4px; }
   .system-stat-entry { grid-template-columns: 65px minmax(0, 1fr); gap: 13px; }
   .system-stat-name > span { width: 40px; height: 40px; }
   .system-stat-name > span img { width: 30px; height: 30px; }

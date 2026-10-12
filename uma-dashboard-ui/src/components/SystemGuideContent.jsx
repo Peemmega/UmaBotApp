@@ -10,6 +10,8 @@ import staminaIcon from "../assets/icons/Stamina.webp";
 import powerIcon from "../assets/icons/Power.webp";
 import gutIcon from "../assets/icons/Gut.webp";
 import witIcon from "../assets/icons/Wit.webp";
+import skillGuideImage from "../assets/image/Skill.webp";
+import zoneGuideImage from "../assets/image/Zone.webp";
 
 const PHASES = ["Start", "Mid", "Late", "Last Spurt"];
 const PATHS = [
@@ -61,10 +63,12 @@ export function StatsSkillsZoneGuide() {
       <div className="system-skill-parts">{[["Cooldown", "รอกี่เทิร์นก่อนใช้ซ้ำ"], ["Mana", "Wit Mana ที่ต้องจ่าย"], ["Target", "ส่งผลกับใคร"], ["Trigger", "ใช้ได้เมื่อไร"], ["Effect", "เกิดผลอะไร"]].map(([name, detail]) => <div key={name}><strong>{name}</strong><span>{detail}</span></div>)}</div>
       <p>ระบบตรวจคูลดาวน์ ตามด้วยเงื่อนไข และ Mana ก่อนใช้ผลสกิล สกิลที่กดสำเร็จจ่าย Mana ทันที กดหลายสกิลในเทิร์นเดียวได้เมื่อมีทรัพยากรพอและผ่านทุกเงื่อนไข โดยใช้ก่อน Run ของตัวเอง</p>
       <div className="system-guide-two-col"><div><h3>ผลที่รอการวิ่ง</h3><p>เพิ่มคะแนน จำนวนเต๋า จำนวนที่เก็บ ค่าต่ำสุด หรือแคปเต๋า ระบบเก็บเป็นบัฟไว้ใช้ในการทอย แล้วล้างผลสำหรับรอบนั้นหลังใช้</p></div><div><h3>ผลที่เกิดทันที</h3><p>ฟื้นหรือลด Stamina เพิ่มความเร็ว ย้ายไปเลนที่จอง ขยายระยะ In Pack บังคับ Rush หรือปรับ Stat ระหว่างแข่ง ตามเอฟเฟกต์ของสกิล</p></div></div>
+      <figure className="system-guide-image-example"><img src={skillGuideImage} alt="ตัวอย่างหน้ารายละเอียดสกิล Masterful Gambit พร้อมเงื่อนไขและผลของสกิล" loading="lazy" /><figcaption><strong>ตัวอย่างรายละเอียดสกิล</strong><p>การ์ดสกิลแสดงเงื่อนไขการทำงานและผลที่เกิดขึ้น เพื่อใช้ประกอบการวางแผนก่อนแข่ง</p></figcaption></figure>
       <p>Trigger อาจกำหนดสายวิ่ง Phase พื้นสนาม ระยะ หรือชนิดเส้นทาง สกิล Debuff ที่ติดแท็กจะเลือกคู่แข่งในเลนเดียวกัน ส่วน Passive ทำงานอัตโนมัติครั้งแรกที่ผ่านเงื่อนไขในช่วงเริ่มเทิร์น โดยยังตรวจ Mana และกติกาห้อง อ่านรายละเอียดสกิลที่เลือกก่อนจัด Loadout เสมอ</p>
     </GuideSection>
     <GuideSection id="zone" title="Zone ที่คุณประกอบเอง" intro={`Zone เป็นความสามารถพิเศษอีกชุด แยกจากสกิล 4 ช่อง มีแต้มเริ่มต้น ${rules.zonePoints} แต้ม ทุกทางใช้ 1 แต้มต่อระดับ`}>
       <div className="system-zone-banner"><Sparkles size={30} /><div><strong>หนึ่งครั้งที่เปลี่ยนจังหวะของการแข่งขัน</strong><p>จัด Build ก่อนลงสนาม ใช้ก่อน Run และใช้ได้ 1 ครั้งต่อการแข่งขัน</p></div></div>
+      <figure className="system-guide-image-example is-zone"><img src={zoneGuideImage} alt="ตัวอย่างหน้า Zone ในโปรไฟล์ แสดงสนามที่เลือกและโบนัสจาก Zone" loading="lazy" /><figcaption><strong>Zone ที่เลือกใช้ในโปรไฟล์</strong><p>Zone มีทั้งเอฟเฟกต์จากสนามที่เลือกและทางเลือกเสริมสำหรับปรับแผนการวิ่ง</p></figcaption></figure>
       <Table title="เอฟเฟกต์ Zone ทั้ง 6 ทาง" headings={["ทางเลือก", "ผลต่อระดับ", "เวลาที่เกิดผล"]} rows={zoneRows} />
       <div className="system-guide-two-col"><div className="system-guide-build"><h3>เน้นผลวิ่ง</h3><p>เพิ่มผล Run 3 ระดับ + d / kh 2 ระดับ</p><strong>ผล Run +60, d +2, kh +2</strong></div><div className="system-guide-build"><h3>เน้นยืนระยะ</h3><p>ฟื้น Stamina 3 ระดับ + ความเร่ง 2 ระดับ</p><strong>ฟื้นพลัง +300, เร่ง 2 ระดับ</strong></div></div>
       <p>ผลคะแนนและเต๋ามีผลกับ Run ถัดไป ส่วนการฟื้นพลังและเร่งความเร็วเกิดทันที เลือกเทิร์นที่สายวิ่งได้เปรียบ หรือใช้ฟื้นพลังให้ทันก่อนเกิด Fatigue</p>

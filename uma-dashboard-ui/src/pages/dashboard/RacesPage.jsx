@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { ArrowDownRight, ArrowLeft, ArrowUpRight, CornerDownRight, MoveRight } from "lucide-react";
 import "../../styles/skillsPage.css";
 import { playSound } from "../../utils/soundManager";
 import { getRaceImage } from "../../utils/raceSchedule.js";
@@ -25,12 +26,13 @@ const TRACK_FILTERS = [
   { value: "dirt", label: "Dirt" },
 ];
 
-const PATH_ICON = {
-  1: "➡️",
-  2: "⤵️",
-  3: "↗️",
-  4: "↘️",
+const RACE_PATHS = {
+  1: { label: "ทางตรง", Icon: MoveRight, color: "straight" },
+  2: { label: "ทางโค้ง", Icon: CornerDownRight, color: "curve" },
+  3: { label: "เนินขึ้น", Icon: ArrowUpRight, color: "uphill" },
+  4: { label: "เนินลง", Icon: ArrowDownRight, color: "downhill" },
 };
+const RACE_PHASES = ["Start", "Mid", "Late", "Last Spurt"];
 
 const RACE_HISTORY_PAGE_SIZE = 8;
 
@@ -49,6 +51,31 @@ function getRaceGradeOrder(race) {
 
 function compareNames(left, right) {
   return String(left || "").localeCompare(String(right || ""), undefined, { numeric: true, sensitivity: "base" });
+}
+
+function getRacePhaseRows(race) {
+  const path = Array.isArray(race?.path) ? race.path : [];
+  const totalTurns = Number(race?.turn) || path.length;
+  if (!totalTurns || path.length === 0) return [];
+
+  return RACE_PHASES.map((label, phaseIndex) => {
+    const turns = path.flatMap((pathId, index) => {
+      const phase = Math.min(3, Math.ceil((index + 1) / (totalTurns / 4)) - 1);
+      return phase === phaseIndex ? [{ pathId, turn: index + 1 }] : [];
+    });
+    return { label, phase: phaseIndex + 1, turns };
+  });
+}
+
+function formatRaceDate(value) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return new Intl.DateTimeFormat("th-TH-u-nu-latn", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
 }
 
 export default function RacesPage({ userId, profileType = "trainee" }) {
@@ -108,15 +135,6 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
 
     return () => controller.abort();
   }, [selectedRace?.id]);
-
-  useEffect(() => {
-    if (!selectedRace) return undefined;
-    const closeOnEscape = (event) => {
-      if (event.key === "Escape") setSelectedRace(null);
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [selectedRace]);
 
   const [toast, setToast] = useState(null);
 
@@ -207,22 +225,41 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
     showToast(data.message || "สร้างห้องสำเร็จ", "success");
   };
 
-  const formatPath = (path = []) => {
-    return path
-      .map((p) => PATH_ICON[p] || p)
-      .join(" ");
-  };
-
-  const formatRaceDate = (value) => {
-    if (!value) return "-";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "-";
-    return new Intl.DateTimeFormat("th-TH-u-nu-latn", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(date);
-  };
+  if (selectedRace) {
+    return <RaceDetailsPage
+      race={selectedRace}
+      profileType={profileType}
+      history={paginatedRaceHistory}
+      historyCount={filteredRaceHistory.length}
+      historyLoading={historyLoading}
+      historyError={historyError}
+      historyRecordType={historyRecordType}
+      historyPage={historyPage}
+      historyPageCount={historyPageCount}
+      onHistoryRecordTypeChange={(value) => {
+        playSound("click");
+        setHistoryRecordType(value);
+        setHistoryPage(1);
+      }}
+      onHistoryPageChange={setHistoryPage}
+      onSelectHistory={setSelectedRaceResult}
+      onBack={() => {
+        setSelectedRace(null);
+        setSelectedRaceResult(null);
+      }}
+      onCreateRaceRoom={createRaceRoom}
+      onOpenReplay={(raceId) => {
+        setSelectedRaceResult(null);
+        setSelectedRace(null);
+        window.history.pushState({}, "", `/dashboard/race-replay?race=${encodeURIComponent(raceId)}`);
+        window.dispatchEvent(new PopStateEvent("popstate"));
+      }}
+      selectedRaceResult={selectedRaceResult}
+      onCloseHistoryDetail={() => setSelectedRaceResult(null)}
+      toast={toast}
+      onCloseToast={() => setToast(null)}
+    />;
+  }
 
   return (
     <section className="skills-page">
@@ -313,6 +350,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
                 playSound("open");
                 setSelectedRace(race);
                 setHistoryPage(1);
+                window.scrollTo(0, 0);
               }}
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
@@ -320,6 +358,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
                   playSound("open");
                   setSelectedRace(race);
                   setHistoryPage(1);
+                  window.scrollTo(0, 0);
                 }
               }}
             >
@@ -352,136 +391,6 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
           );
           })}
         </StaggerContainer>
-      )}
-
-      {selectedRace && createPortal(
-        <div className={`profile-theme-${profileType} profile-theme-portal`}>
-          <div
-            className="zone-edit-backdrop"
-            onClick={() => setSelectedRace(null)}
-          >
-          <div
-            className="zone-edit-modal race-room-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="race-room-title"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              className="race-room-close"
-              aria-label="Close race lobby"
-              onClick={() => setSelectedRace(null)}
-            >
-              ×
-            </button>
-            <div className="title-banner">
-              <h2>Race Lobby</h2>
-            </div>
-
-            <div className="zone-edit-body">
-              <div className="race-room-header">
-                <div>
-                  <h2 id="race-room-title">{selectedRace.name}</h2>
-                  <p>ข้อมูลสนามแข่ง</p>
-                </div>
-
-                <img
-                  src={getRaceImage(selectedRace)}
-                  alt={selectedRace.name}
-                />
-              </div>
-
-              <div className="zone-divider" />
-
-              <div className="race-room-info-grid">
-                <div className="race-room-info-card">
-                  <span>จำนวนเทิร์น</span>
-                  <strong>{selectedRace.turn}</strong>
-                </div>
-
-                <div className="race-room-info-card">
-                  <span>ประเภท</span>
-                  <strong>
-                    {selectedRace.track} / {selectedRace.distance}
-                  </strong>
-                </div>
-              </div>
-
-              <div className="race-room-path-card">
-                <span>เส้นทาง</span>
-                <p>{formatPath(selectedRace.path)}</p>
-              </div>
-
-              <section className="race-history-section">
-                <div className="race-history-section-heading">
-                  <div>
-                    <span>ประวัติสนาม</span>
-                    <h3>ประวัติการแข่ง ({filteredRaceHistory.length})</h3>
-                  </div>
-                  <label className="race-history-record-filter">
-                    <span>ประเภท</span>
-                    <select
-                      value={historyRecordType}
-                      onChange={(event) => {
-                        playSound("click");
-                        setHistoryRecordType(event.target.value);
-                        setHistoryPage(1);
-                      }}
-                    >
-                      <option value="all">All</option>
-                      <option value="official">Official</option>
-                      <option value="practice">Practice</option>
-                    </select>
-                  </label>
-                </div>
-                {historyLoading ? <p className="race-history-status">กำลังโหลดรายการแข่งขัน...</p> : historyError ? <p className="race-history-status is-error">{historyError}</p> : filteredRaceHistory.length ? (
-                  <div className="race-history-summary-list">
-                    {paginatedRaceHistory.map((record) => <button
-                      type="button"
-                      className="race-history-summary-row"
-                      key={record.race_id}
-                      onClick={() => setSelectedRaceResult(record)}
-                    >
-                      <time>{formatRaceDate(record.finished_at)}</time>
-                      <span><small>ผู้ชนะ</small><strong>{record.winner_name || "-"}</strong></span>
-                      <span><small>คะแนน</small><strong>{Number(record.winner_score || 0).toLocaleString()}</strong></span>
-                      <em>{record.record_type === "practice" ? "Practice" : "Official"}</em>
-                    </button>)}
-                  <Pagination
-                    page={historyPage}
-                    pageCount={historyPageCount}
-                    onPageChange={setHistoryPage}
-                    label="ประวัติการแข่งขัน"
-                  />
-                  </div>
-                ) : <p className="race-history-status">{historyRecordType === "all" ? "ยังไม่มีการแข่งขันที่จบแล้วในสนามนี้" : "ไม่พบประวัติการแข่งประเภทที่เลือก"}</p>}
-              </section>
-
-              <div className="race-room-actions">
-                <Button
-                  variant="ghost"
-                  className="zone-cancel-btn"
-                  onClick={() => setSelectedRace(null)}
-                >
-                  ยกเลิก
-                </Button>
-
-                {!IS_MAIN_WEB && (
-                  <Button
-                    variant="primary"
-                    className="zone-save-btn"
-                    onClick={createRaceRoom}
-                  >
-                    สร้างห้อง
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-          </div>
-        </div>,
-        document.body
       )}
 
       {selectedRaceResult && createPortal(
@@ -524,6 +433,121 @@ function formatHistoryDate(value) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
+}
+
+function RaceDetailsPage({
+  race,
+  profileType,
+  history,
+  historyCount,
+  historyLoading,
+  historyError,
+  historyRecordType,
+  historyPage,
+  historyPageCount,
+  onHistoryRecordTypeChange,
+  onHistoryPageChange,
+  onSelectHistory,
+  onBack,
+  onCreateRaceRoom,
+  onOpenReplay,
+  selectedRaceResult,
+  onCloseHistoryDetail,
+  toast,
+  onCloseToast,
+}) {
+  const phaseRows = getRacePhaseRows(race);
+  const turnCount = Number(race.turn) || race.path?.length || 0;
+  const raceImage = getRaceImage(race);
+
+  return (
+    <main className={`race-detail-page profile-theme-${profileType}`}>
+      <div className="race-detail-nav">
+        <button type="button" onClick={onBack}><ArrowLeft size={17} /> กลับรายการสนาม</button>
+        <span>Races <i>/</i> {race.name}</span>
+      </div>
+
+      <header className="race-detail-hero">
+        <div className="race-detail-hero-copy">
+          <div className="race-detail-tags">
+            <span className={`race-surface-tag is-${String(race.track || "turf").toLowerCase()}`}>{race.track || "Turf"}</span>
+            <span>{race.distance || "Race"}</span>
+          </div>
+          <h1>{race.name}</h1>
+          <p>{race.venue || "สนามแข่งขัน"}</p>
+          <div className="race-detail-stats" aria-label="ข้อมูลสนาม">
+            <div><span>ระยะสนาม</span><strong>{race.distance || "-"}</strong></div>
+            <div><span>พื้นสนาม</span><strong>{race.track || "-"}</strong></div>
+            <div><span>จำนวนเทิร์น</span><strong>{turnCount}</strong></div>
+          </div>
+          {!IS_MAIN_WEB && <Button variant="primary" onClick={onCreateRaceRoom}>สร้างห้องแข่ง</Button>}
+        </div>
+        <div className="race-detail-cover"><img src={raceImage} alt={`สนามแข่ง ${race.name}`} /></div>
+      </header>
+
+      <section className="race-detail-route" aria-labelledby="race-route-title">
+        <div className="race-detail-section-heading">
+          <div><span>COURSE MAP</span><h2 id="race-route-title">เส้นทางการแข่งขัน</h2></div>
+          <p>{turnCount} เทิร์น · แบ่งตาม 4 Phase</p>
+        </div>
+        {phaseRows.length ? <div className="race-detail-phase-list">
+          {phaseRows.map(({ phase, label, turns }) => <div className={`race-detail-phase phase-${phase}`} key={phase}>
+            <div className="race-detail-phase-label"><span>PHASE {phase}</span><strong>{label}</strong></div>
+            <div className="race-detail-turn-grid" style={{ "--turn-count": turns.length }}>
+              {turns.map(({ pathId, turn }) => {
+                const path = RACE_PATHS[pathId] || { label: `เส้นทาง ${pathId}`, Icon: MoveRight, color: "straight" };
+                const Icon = path.Icon;
+                return <div className={`race-detail-turn is-${path.color}`} key={`${phase}-${turn}`}>
+                  <span>TURN {String(turn).padStart(2, "0")}</span>
+                  <Icon size={23} strokeWidth={2.4} aria-hidden="true" />
+                  <strong>{path.label}</strong>
+                </div>;
+              })}
+              {!turns.length && <p className="race-detail-turn-empty">ไม่มีเทิร์นใน Phase นี้</p>}
+            </div>
+          </div>)}
+        </div> : <p className="race-detail-empty-route">สนามนี้ยังไม่มีข้อมูลเส้นทาง</p>}
+      </section>
+
+      <section className="race-detail-history race-history-section" aria-labelledby="race-history-title">
+        <div className="race-history-section-heading">
+          <div><span>RACE RECORDS</span><h2 id="race-history-title">ประวัติการแข่งขัน <small>({historyCount})</small></h2></div>
+          <label className="race-history-record-filter">
+            <span>ประเภท</span>
+            <select value={historyRecordType} onChange={(event) => onHistoryRecordTypeChange(event.target.value)}>
+              <option value="all">ทั้งหมด</option>
+              <option value="official">Official</option>
+              <option value="practice">Practice</option>
+            </select>
+          </label>
+        </div>
+        {historyLoading ? <p className="race-history-status">กำลังโหลดประวัติการแข่งขัน...</p> : historyError ? <p className="race-history-status is-error">{historyError}</p> : history.length ? (
+          <div className="race-history-summary-list">
+            {history.map((record) => <button type="button" className="race-history-summary-row" key={record.race_id} onClick={() => onSelectHistory(record)}>
+              <time>{formatRaceDate(record.finished_at)}</time>
+              <span><small>ผู้ชนะ</small><strong>{record.winner_name || "-"}</strong></span>
+              <span><small>คะแนน</small><strong>{Number(record.winner_score || 0).toLocaleString()}</strong></span>
+              <em>{record.record_type === "practice" ? "Practice" : "Official"}</em>
+            </button>)}
+            <Pagination page={historyPage} pageCount={historyPageCount} onPageChange={onHistoryPageChange} label="ประวัติการแข่งขัน" />
+          </div>
+        ) : <p className="race-history-status">ยังไม่มีการแข่งขันที่จบแล้วในสนามนี้</p>}
+      </section>
+
+      {selectedRaceResult && createPortal(
+        <div className={`profile-theme-${profileType} profile-theme-portal`}>
+          <SharedRaceHistoryDetailModal
+            raceId={selectedRaceResult.race_id}
+            fallback={selectedRaceResult}
+            onClose={onCloseHistoryDetail}
+            onOpenReplay={onOpenReplay}
+          />
+        </div>,
+        document.body
+      )}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={onCloseToast} />}
+    </main>
+  );
 }
 
 function formatSnapshotValues(values) {
