@@ -239,6 +239,7 @@ export default function DashboardPage({
           userId={userId}
           player={player}
           profiles={profiles}
+          activeProfileType={activeProfileType}
           characterRoute={characterRoute}
           onOpenCharacter={openCharacterDetail}
           onBack={() => {

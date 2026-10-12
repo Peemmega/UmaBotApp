@@ -75,7 +75,7 @@ function raceScore(record) {
   return Number.isFinite(Number(score)) ? new Intl.NumberFormat().format(Number(score)) : "-";
 }
 
-export default function CharactersPage({ userId, player, profiles, characterRoute, onOpenCharacter, onBack }) {
+export default function CharactersPage({ userId, player, profiles, activeProfileType = "trainee", characterRoute, onOpenCharacter, onBack }) {
   const [search, setSearch] = useState("");
   const [characters, setCharacters] = useState([]);
   const [activeFilter, setActiveFilter] = useState("All");
@@ -198,6 +198,7 @@ export default function CharactersPage({ userId, player, profiles, characterRout
     if (!profiles) return [];
 
     return Object.values(PROFILE_TYPES)
+      .filter((profileType) => profileType.id === activeProfileType)
       .map((profileType) => {
         const profile = profiles[profileType.id];
         const imageUrl = profile?.imageUrl ||
@@ -214,11 +215,11 @@ export default function CharactersPage({ userId, player, profiles, characterRout
         };
       })
       .filter(Boolean);
-  }, [player?.profile_image_url, player?.username, profiles, userId]);
+  }, [activeProfileType, player?.profile_image_url, player?.username, profiles, userId]);
 
   const rosterCharacters = useMemo(() => {
     const remoteProfiles = characters
-      .filter((character) => String(character?.id || "") !== String(userId || ""))
+      .filter((character) => String(character?.id || "").split(":")[0] !== String(userId || ""))
       .filter((character) => Boolean(String(character?.image_url || "").trim()))
       .map((character) => ({ ...character, type: getCharacterType(character.type) }));
 
