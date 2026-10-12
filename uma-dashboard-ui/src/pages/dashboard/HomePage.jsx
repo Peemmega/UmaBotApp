@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDown, ArrowDownRight, CalendarDays, ChevronRight, Flag, Sparkles, Trophy } from "lucide-react";
+import { ArrowDown, ArrowDownRight, CalendarDays, ChevronRight, Sparkles, Trophy } from "lucide-react";
 import { Reveal } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import { BOT_API_BASE } from "../../api/playerApi";
@@ -8,6 +8,7 @@ import NewsListingCard from "../../components/NewsListingCard";
 import CommuSystemSection from "../../components/CommuSystemSection";
 import { getNewsKind } from "../../utils/newsItems";
 import homeHeroImage from "../../assets/bg/Home_Image.webp";
+import discordIcon from "../../assets/icons/discord_icon.webp";
 import "../../styles/homePage.css";
 
 function bangkokDateKey(date) {
@@ -149,7 +150,9 @@ export default function HomePage({ username, onNavigate, onOpenNews }) {
           <h1 id="home-title">ยินดีต้อนรับ<br /><span>สู่ Twinkle Series</span></h1>
           <p>{username ? `สวัสดี ${username} พร้อมออกวิ่งไปกับเพื่อน ๆ แล้วหรือยัง?` : "พร้อมออกวิ่งไปกับเพื่อน ๆ แล้วหรือยัง?"}<br />ติดตามกิจกรรมและเตรียมตัวลงสนามได้ที่นี่</p>
           <div className="home-hero-actions">
-            <button type="button" className="home-primary-action" onClick={() => onNavigate("races")}><Flag size={17} /> เข้าสู่สนามแข่ง <ChevronRight size={17} /></button>
+            <a className="home-primary-action" href="https://discord.gg/bntJhC9EPk" target="_blank" rel="noreferrer">
+              <img src={discordIcon} width="17" height="17" alt="" /> เริ่มต้น <ChevronRight size={17} />
+            </a>
             <button type="button" className="home-secondary-action" onClick={() => onNavigate("profile")}>ดูโปรไฟล์ <ArrowDownRight size={16} /></button>
           </div>
         </Reveal>
