@@ -44,6 +44,62 @@ function normalizeRaceHistory(data) {
   return Array.isArray(records) ? records : [];
 }
 
+function getSummaryAccountId(character) {
+  return String(character?.id || "").split(":")[0];
+}
+
+function getSummaryProfileRole(character) {
+  const idRole = String(character?.id || "").split(":")[1]?.toLowerCase();
+  if (idRole === "trainer" || idRole === "npc" || idRole === "trainee") return idRole;
+  const type = String(character?.type || "").trim().toLowerCase();
+  if (type === "trainer" || type === "npc") return type;
+  return "trainee";
+}
+
+async function keepCurrentRoleSummaries(profiles, ownUserId) {
+  const grouped = new Map();
+  for (const profile of profiles) {
+    const accountId = getSummaryAccountId(profile);
+    if (!accountId) continue;
+    const group = grouped.get(accountId) || [];
+    group.push(profile);
+    grouped.set(accountId, group);
+  }
+
+  const duplicateIds = [...grouped.entries()]
+    .filter(([accountId, group]) => group.length > 1 && accountId !== String(ownUserId || ""))
+    .map(([accountId]) => accountId);
+  const currentRoles = new Map(await Promise.all(duplicateIds.map(async (accountId) => {
+    try {
+      const response = await fetch(`${BOT_API_BASE}/account/${encodeURIComponent(accountId)}/role`);
+      if (!response.ok) return [accountId, ""];
+      const data = await response.json();
+      const role = String(data?.role || "").toLowerCase();
+      return [accountId, ["trainee", "trainer", "npc"].includes(role) ? role : ""];
+    } catch {
+      return [accountId, ""];
+    }
+  })));
+
+  const keptIds = new Set();
+  return profiles.filter((profile) => {
+    const accountId = getSummaryAccountId(profile);
+    const group = grouped.get(accountId) || [];
+    let keep = true;
+    if (group.length > 1 && accountId !== String(ownUserId || "")) {
+      const role = currentRoles.get(accountId);
+      const matchingProfile = role
+        ? group.find((candidate) => getSummaryProfileRole(candidate) === role)
+        : group.find((candidate) => getSummaryProfileRole(candidate) === "trainee") || group[0];
+      keep = profile === matchingProfile;
+    }
+    const uniqueId = String(profile?.id || `${accountId}:${getSummaryProfileRole(profile)}`);
+    if (!keep || keptIds.has(uniqueId)) return false;
+    keptIds.add(uniqueId);
+    return true;
+  });
+}
+
 function raceName(record) {
   return record?.race_name || record?.stage_name || record?.race?.name || record?.name || record?.track_name || "Unknown race";
 }
@@ -127,8 +183,10 @@ export default function CharactersPage({ userId, player, profiles, activeProfile
               throw new Error(data?.detail || `การโหลดข้อมูลล้มเหลว: ${res.status}`);
             }
 
+            const summaries = Array.isArray(data?.players) ? data.players : [];
+            const currentRoleSummaries = await keepCurrentRoleSummaries(summaries, userId);
             if (!cancelled) {
-              setCharacters(Array.isArray(data?.players) ? data.players : []);
+              setCharacters(currentRoleSummaries);
             }
             return;
           } catch (error) {
