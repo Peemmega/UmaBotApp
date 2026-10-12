@@ -21,8 +21,15 @@ export function RaceGallery() {
 
 export default function CommuSystemSection({ onNavigate }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState("forward");
   const topic = SYSTEM_TOPICS[activeIndex];
-  const select = (index) => setActiveIndex((index + SYSTEM_TOPICS.length) % SYSTEM_TOPICS.length);
+  const select = (index) => {
+    const nextIndex = (index + SYSTEM_TOPICS.length) % SYSTEM_TOPICS.length;
+    if (nextIndex === activeIndex) return;
+    const forwardDistance = (nextIndex - activeIndex + SYSTEM_TOPICS.length) % SYSTEM_TOPICS.length;
+    setSlideDirection(forwardDistance <= SYSTEM_TOPICS.length / 2 ? "forward" : "backward");
+    setActiveIndex(nextIndex);
+  };
   const onTabKeyDown = (event, index) => {
     let next;
     if (event.key === "ArrowRight") next = (index + 1) % SYSTEM_TOPICS.length;
@@ -47,12 +54,14 @@ export default function CommuSystemSection({ onNavigate }) {
       {[-1, 1].map((offset) => {
         const preview = SYSTEM_TOPICS[(activeIndex + offset + SYSTEM_TOPICS.length) % SYSTEM_TOPICS.length];
         return <button type="button" className={`commu-system-preview is-${offset < 0 ? "previous" : "next"}`} key={offset} onClick={() => select(activeIndex + offset)} aria-label={`ดูหัวข้อ ${preview.label}`}>
-          <span className={`commu-system-art is-${preview.id}`}><img src={preview.image} alt="" loading="lazy" /></span>
-          <span className="commu-system-preview-copy"><strong>{preview.label}</strong><span>{preview.title}</span></span>
+          <span className={`commu-system-preview-content from-${slideDirection}`} key={preview.id}>
+            <span className={`commu-system-art is-${preview.id}`}><img src={preview.image} alt="" loading="lazy" /></span>
+            <span className="commu-system-preview-copy"><strong>{preview.label}</strong><span>{preview.title}</span></span>
+          </span>
         </button>;
       })}
       <div className="commu-system-panel" id="commu-system-panel" role="tabpanel" aria-labelledby={`commu-tab-${topic.id}`}>
-        <a className="commu-system-feature" href={`/dashboard/system/${topic.id}`} onClick={(event) => followSystemLink(event, onNavigate, topic.id)}>
+        <a className={`commu-system-feature from-${slideDirection}`} key={topic.id} href={`/dashboard/system/${topic.id}`} onClick={(event) => followSystemLink(event, onNavigate, topic.id)}>
           <div className={`commu-system-art is-${topic.id}`}>
             {topic.id === "races" ? <RaceGallery /> : <img src={topic.image} alt={topic.imageAlt} loading="lazy" />}
             <span className="commu-system-image-label">{topic.label}</span>

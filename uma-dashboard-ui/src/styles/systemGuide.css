@@ -50,12 +50,13 @@
 .system-guide-table tbody tr:nth-child(even) { background: #fbfcf8; }
 .system-stat-entry { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 24px; padding: 23px 0; border-top: 1px solid #e4ecdf; }
 .system-stat-name > span { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; background: color-mix(in srgb, var(--stat-color), white 90%); color: var(--stat-color); }
+.system-stat-name > span img { display: block; width: 34px; height: 34px; object-fit: contain; }
 .system-stat-name h3 { margin-top: 10px; color: var(--stat-color); font-size: 16px; }
 .system-stat-entry > div > p { margin-top: 0; color: #3c5c45; font-weight: 700; }
 .system-aptitude-ranks { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); overflow: hidden; border: 1px solid #e1e9d7; border-radius: 8px; }
 .system-aptitude-ranks > div { display: grid; gap: 5px; padding: 14px 4px; text-align: center; border-right: 1px solid #e1e9d7; background: #f8fbf4; }
 .system-aptitude-ranks > div:last-child { border: 0; }
-.system-aptitude-ranks strong { color: #427945; font-size: 23px; }
+.system-aptitude-ranks img { display: block; width: 44px; height: 40px; margin: 0 auto; object-fit: contain; }
 .system-aptitude-ranks span { color: #6e855c; font-size: 11px; }
 .system-skill-parts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 20px 0; }
 .system-skill-parts > div { display: grid; gap: 5px; padding: 13px 10px; border-bottom: 3px solid #bcda9b; background: #f2f7eb; }
@@ -136,9 +137,6 @@
 .system-style-story dl > div { padding: 12px 0; border-top: 1px solid color-mix(in srgb, var(--style-color), white 85%); }
 .system-style-story dt { margin-bottom: 5px; font-size: 11px; font-weight: 800; color: var(--style-color); }
 .system-style-story dd { margin: 0; font-size: 12px; line-height: 1.9; color: #617466; }
-.system-mode-switch { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: #edf2e5; border-radius: 7px; margin-bottom: 18px; }
-.system-mode-switch button { padding: 10px 14px; border: 0; border-radius: 5px; background: transparent; color: #6b7f59; font-size: 12px; cursor: pointer; }
-.system-mode-switch .is-selected { background: #fff; color: #3c7b43; box-shadow: 0 2px 4px #49693117; font-weight: 800; }
 .system-speed-phases { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 20px 0; }
 .system-speed-phases > div { display: grid; gap: 9px; }
 .system-speed-phases span, .system-speed-phases small { font-size: 11px; color: #8a9a7a; }
@@ -194,6 +192,7 @@
   .system-guide-section p { font-size: 13px; }
   .system-stat-entry { grid-template-columns: 65px minmax(0, 1fr); gap: 13px; }
   .system-stat-name > span { width: 40px; height: 40px; }
+  .system-stat-name > span img { width: 30px; height: 30px; }
   .system-stat-name h3 { font-size: 12px; }
   .system-stat-entry li { font-size: 12px; }
   .system-guide-example { padding: 10px; font-size: 11px; }

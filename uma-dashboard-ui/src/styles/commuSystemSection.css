@@ -4,12 +4,17 @@
 .commu-system-heading h2 { margin: 0 0 9px; font-size: clamp(32px, 4vw, 48px); font-weight: 900; line-height: 1.2; letter-spacing: -.035em; }
 .commu-system-heading p { margin: 0; color: #59785f; font-size: 14px; line-height: 1.8; }
 .commu-system-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 32px; }
-.commu-system-tabs button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 12px 18px; border: 1px solid #ccdfc1; border-radius: 8px; background: #ffffffc9; color: #477051; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
-.commu-system-tabs button.is-active { background: #2b854b; border-color: #2b854b; color: white; box-shadow: 0 4px 0 #1f6135; }
-.commu-system-tabs button:hover { border-color: #2b854b; }
+.commu-system-tabs button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 12px 18px; border: 1px solid #ccdfc1; border-radius: 8px; background: #ffffffc9; color: #477051; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; transition: background-color .24s ease, border-color .24s ease, color .24s ease, transform .24s ease, box-shadow .24s ease; }
+.commu-system-tabs button.is-active { background: #2b854b; border-color: #2b854b; color: white; box-shadow: 0 4px 0 #1f6135; transform: translateY(-2px); }
+.commu-system-tabs button:hover { border-color: #2b854b; transform: translateY(-2px); }
 .commu-system-stage { position: relative; max-width: 1180px; margin: auto; padding: 0 40px; }
 .commu-system-panel { position: relative; z-index: 2; width: min(68%, 740px); margin: auto; padding: 16px; border: 1px solid #fff; border-radius: 12px; background: #fcfffa; box-shadow: 0 16px 40px #214d3826, 0 3px 0 #abc992; }
-.commu-system-feature { display: block; color: inherit; text-decoration: none; border-radius: 4px; }
+.commu-system-feature { display: block; color: inherit; text-decoration: none; border-radius: 4px; animation: commu-system-feature-enter .52s cubic-bezier(.2,.75,.25,1) both; }
+.commu-system-feature.from-forward { --slide-x: 34px; }
+.commu-system-feature.from-backward { --slide-x: -34px; }
+.commu-system-preview-content { display: block; animation: commu-system-preview-enter .42s cubic-bezier(.2,.75,.25,1) both; }
+.commu-system-preview-content.from-forward { --slide-x: 20px; }
+.commu-system-preview-content.from-backward { --slide-x: -20px; }
 .commu-system-art { display: block; position: relative; overflow: hidden; aspect-ratio: 16 / 9; border-radius: 5px; background: #eaf4e6; }
 .commu-system-art > img { display: block; width: 100%; height: 100%; object-fit: cover; }
 /* Crop the right half containing a caption from an older ruleset. */
@@ -20,7 +25,8 @@
 .commu-system-caption p { margin: 0; color: #60786a; font-size: 13px; line-height: 1.8; }
 .commu-system-read { display: inline-flex; align-items: center; gap: 6px; margin-top: 15px; color: #2b854b; font-size: 12px; font-weight: 850; }
 .commu-system-feature:hover .commu-system-read { text-decoration: underline; text-underline-offset: 4px; }
-.commu-system-preview { position: absolute; top: 10%; width: 40%; padding: 12px; border: 0; border-radius: 8px; background: #e3eed8; color: #54725b; opacity: .62; cursor: pointer; text-align: left; font: inherit; }
+.commu-system-preview { position: absolute; top: 10%; width: 40%; padding: 12px; border: 0; border-radius: 8px; background: #e3eed8; color: #54725b; opacity: .62; cursor: pointer; text-align: left; font: inherit; transition: opacity .24s ease, box-shadow .24s ease; }
+.commu-system-preview:hover { opacity: .88; box-shadow: 0 8px 20px #214d381c; }
 .commu-system-preview.is-previous { left: 0; }
 .commu-system-preview.is-next { right: 0; }
 .commu-system-preview-copy { display: grid; gap: 5px; padding: 15px 6px 9px; font-size: 12px; }
@@ -30,9 +36,11 @@
 .commu-system-arrow.is-next { right: 10%; }
 .commu-system-dots { display: flex; justify-content: center; gap: 10px; margin-top: 25px; }
 .commu-system-dots button { display: grid; width: 30px; height: 30px; place-items: center; padding: 0; border: 0; background: transparent; cursor: pointer; }
-.commu-system-dots span { width: 12px; height: 12px; border-radius: 2px; background: #a9c397; transform: rotate(45deg); }
-.commu-system-dots .is-active span { background: #2b854b; box-shadow: 0 0 0 4px #2b854b15; }
+.commu-system-dots span { width: 12px; height: 12px; border-radius: 2px; background: #a9c397; transform: rotate(45deg); transition: transform .3s ease, background-color .3s ease, box-shadow .3s ease; }
+.commu-system-dots .is-active span { background: #2b854b; box-shadow: 0 0 0 4px #2b854b15; transform: rotate(45deg) scale(1.15); }
 .commu-system :is(a, button):focus-visible { outline: 3px solid #d75d8a; outline-offset: 5px; }
+@keyframes commu-system-feature-enter { from { opacity: 0; transform: translate3d(var(--slide-x), 14px, 0) scale(.975); filter: blur(4px); } 72% { opacity: 1; transform: translate3d(0, -2px, 0) scale(1.005); filter: blur(0); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); } }
+@keyframes commu-system-preview-enter { from { opacity: .15; transform: translate3d(var(--slide-x), 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
 .commu-race-gallery { position: absolute; inset: 0; overflow: hidden; background: #e7f0df; }
 .commu-race-columns { display: grid; position: absolute; inset: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 8px; overflow: hidden; }
 .commu-race-column { display: flex; align-self: start; flex-direction: column; animation: commu-race-scroll var(--column-duration) linear infinite; animation-delay: var(--column-delay); }
@@ -66,4 +74,8 @@
   .commu-race-columns { padding: 5px; }
   .commu-race-set { padding-bottom: 5px; }
 }
-@media (prefers-reduced-motion: reduce) { .commu-race-column { animation: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .commu-race-column { animation: none; }
+  .commu-system-feature, .commu-system-preview-content { animation: none; }
+  .commu-system-tabs button, .commu-system-dots span, .commu-system-preview { transition: none; }
+}

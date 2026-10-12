@@ -52,6 +52,14 @@ for style in caps:
         accelerate({'turn': phase, 'max_turn': 4}, player, 1)
         scales[style].append(round((player['current_max_speed'] - 0.3) / 15, 2))
 
+max_core_stat = assignment('utils/storage/database.py', 'MAX_CORE_STAT')
+if not isinstance(max_core_stat, ast.IfExp):
+    raise ValueError('MAX_CORE_STAT must retain its main/test conditional')
+max_core_stats = {
+    'main': ast.literal_eval(max_core_stat.body),
+    'test': ast.literal_eval(max_core_stat.orelse),
+}
+
 
 def race_example(module, race_id):
     relative = f'utils/race/presets/{module}.py'
@@ -73,6 +81,7 @@ data = {
     'dicePreset': literal('utils/dice/dice_presets.py', 'DICE_PRESET'),
     'accelerationScale': scales,
     'aptitudeModifier': literal('utils/race/race_aptitude.py', 'APTITUDE_MODIFIER'),
+    'maxCoreStats': max_core_stats,
     'laneCosts': literal('utils/race/race_lane.py', 'LANE_STAMINA_BASE_COSTS'),
     'zoneValue': literal('utils/zone/zone_preset.py', 'ZONE_VALUE'),
     'zonePointCost': literal('utils/zone/zone_preset.py', 'ZONE_POINT_COST'),
@@ -83,11 +92,6 @@ data = {
     'blockCap': literal('utils/race/race_lane.py', 'LANE_BLOCK_PENALTY_CAP'),
     'draftFactor': literal('utils/race/stamina_rules.py', 'DRAFTING_STAMINA_FACTOR'),
     'sunnyCost': literal('utils/race/stamina_rules.py', 'SUNNY_STAMINA_COST'),
-    'timingTempo': literal('utils/race/web_timing_config.py', 'WEB_TIMING_TEMPO_TABLE'),
-    'timingTempoConfig': literal('utils/race/web_timing_config.py', 'WEB_TIMING_TEMPO_CONFIG'),
-    'timingZone': literal('utils/race/web_timing_config.py', 'WEB_TIMING_ZONE_EFFECT'),
-    'timingSpeedCap': literal('utils/race/web_timing_config.py', 'MAX_WEB_TIMING_SPEED'),
-    'timingResult': literal('utils/race/web_timing_config.py', 'TIMING_RESULT_MULTIPLIERS'),
     'raceExamples': [race_example(module, key) for module, key in [('nakayama', 'SprintersStakes'), ('tokyo', 'YasudaKinen'), ('hanshin', 'TakarazukaKinen'), ('kyoto', 'TennoShoSpring')]],
 }
 target = APP / 'uma-dashboard-ui/src/data/systemGuideRules.json'
