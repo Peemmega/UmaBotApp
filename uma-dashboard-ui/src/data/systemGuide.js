@@ -5,7 +5,7 @@ import { raceImageMap } from "../utils/raceSchedule";
 
 export const SYSTEM_TOPICS = [
   {
-    id: "stats-skills-zone", label: "Stats / Skills / Zone", title: "สร้างนักวิ่งในแบบของคุณ",
+    id: "stats-skills-zone", label: "Stats / Skills / Zone", title: "ออกวิ่งในแบบของตัวเอง",
     caption: "ค่าสถานะทั้ง 5 ความถนัด สกิล และ Zone ที่คุณจัดเอง ทุกส่วนต่อยอดเป็นแผนลงสนาม",
     intro: "รู้จักพื้นฐานของนักวิ่ง แล้วเลือกสกิลและ Zone ให้ทำงานร่วมกับแผนของคุณ",
     image: statsImage, imageAlt: "ค่าสถานะ ความถนัด Skill Loadout และ Zone ในหน้าโปรไฟล์",
