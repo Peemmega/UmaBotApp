@@ -1,8 +1,7 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import LoginPage from "./pages/LoginPage";
 import LazyLoadingFallback from "./components/LazyLoadingFallback";
-import LoadingScreen from "./components/LoadingScreen";
 import HorseshoeBackground from "./components/HorseshoeBackground";
 import { getAccountRole, getPlayer, selectAccountRole } from "./api/playerApi";
 import { APP_BASE_URL } from "./api/appConfig";
@@ -193,6 +192,7 @@ export default function App() {
   useUiDialogs();
 
   const [showIntro, setShowIntro] = useState(true);
+  const finishIntro = useCallback(() => setShowIntro(false), []);
   const [authLoading, setAuthLoading] = useState(!Capacitor.isNativePlatform());
   const [loginError, setLoginError] = useState("");
 
@@ -439,11 +439,11 @@ export default function App() {
   };
 
   const pageContent = authLoading ? (
-    <LoadingScreen key="auth-loading" onFinished={() => {}} />
+    <LazyLoadingFallback key="auth-loading" fullScreen />
   ) : !username ? (
     <LoginPage key="login" appBase={APP_BASE} loginError={loginError} />
   ) : isRoleLoading ? (
-    <LoadingScreen key="role-loading" onFinished={() => {}} />
+    <LazyLoadingFallback key="role-loading" fullScreen />
   ) : isDiscordRoleChecked && !discordRole ? (
     <RoleUnavailable onLogout={handleLogout} />
   ) : !accountRole ? (
@@ -475,7 +475,7 @@ export default function App() {
       <AnimatePresence mode="wait">{pageContent}</AnimatePresence>
 
       {showIntro && (
-        <LoadingScreen onFinished={() => setShowIntro(false)} />
+        <LazyLoadingFallback fullScreen onFinished={finishIntro} />
       )}
     </>
   );

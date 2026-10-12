@@ -17,6 +17,15 @@
   background:
     radial-gradient(ellipse at 50% 44%, rgba(255, 255, 255, 0.94), rgba(244, 252, 237, 0.98) 62%),
     #f4fcef;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 650ms ease, visibility 0s linear 650ms;
+}
+
+.lazy-loading-fullscreen.is-exiting {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .lazy-loading-spinner {
@@ -38,6 +47,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .lazy-loading-fullscreen {
+    transition: none;
+  }
+
   .lazy-loading-spinner {
     animation: none;
   }

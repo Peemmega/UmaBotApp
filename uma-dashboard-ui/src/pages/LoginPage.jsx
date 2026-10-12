@@ -74,8 +74,6 @@ export default function LoginPage({ appBase, loginError = "" }) {
           <div className="login-header">Tracen Academy</div>
 
           <div className="login-body">
-            <div className="login-badge">Tracen Academy RP</div>
-
             <h1 className="login-title">
               เชื่อมต่อกับ <span>Discord Account</span> ของคุณ
             </h1>
