@@ -296,11 +296,18 @@
 .basic-profile-actions button:disabled { cursor: progress; opacity: .7; transform: none; }
 .basic-profile-actions .basic-profile-cancel { border: 1px solid var(--uma-border); background: transparent; color: var(--character-modal-ink); }
 
-.character-aptitude-grid { display: grid; gap: 6px; }
-.character-aptitude-group { display: grid; grid-template-columns: 78px 1fr; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; background: white; box-shadow: var(--uma-shadow-soft); }
-.character-aptitude-group > span { color: var(--character-modal-primary); font-size: 14px; font-weight: 1000; text-transform: uppercase; }
-.character-aptitude-group > div { display: flex; flex-wrap: wrap; gap: 8px; }
-.character-aptitude-group .aptitude-item { min-width: 72px; padding: 4px 6px; gap: 15px;}
+.character-aptitude-title { display: flex; align-items: center; gap: 9px; }
+.character-aptitude-title img { width: 24px; height: 24px; object-fit: contain; }
+.character-aptitude-table { display: grid; gap: 9px; }
+.character-aptitude-table .aptitude-row { grid-template-columns: 96px minmax(0, 1fr); gap: 10px; }
+.character-aptitude-table .aptitude-row-title { color: var(--character-modal-primary); font-size: 14px; text-align: left; }
+.character-aptitude-table .aptitude-row-items { gap: 8px; }
+.character-aptitude-table .aptitude-row:first-child .aptitude-row-items { max-width: none; }
+.character-aptitude-table .aptitude-item { min-height: 46px; padding: 6px 10px; border-color: color-mix(in srgb, var(--character-modal-primary) 18%, white); background: linear-gradient(145deg, #fff, var(--character-modal-surface)); box-shadow: none; }
+.character-aptitude-table .aptitude-label-group { display: flex; align-items: center; min-width: 0; gap: 7px; }
+.character-aptitude-table .aptitude-icon { display: grid; flex: none; place-items: center; width: 25px; height: 25px; border-radius: 8px; background: var(--character-modal-soft); color: var(--character-modal-primary); font-size: 15px; font-weight: 900; line-height: 1; }
+.character-aptitude-table .aptitude-name { color: var(--character-modal-ink); font-size: 14px; }
+.character-aptitude-table .aptitude-grade-image { height: 25px; }
 
 .character-race-list { border: 1px solid color-mix(in srgb, var(--character-modal-primary) 20%, white); border-radius: 12px; overflow: hidden; }
 .character-race-row { display: grid; grid-template-columns: 1.25fr 1.3fr 1fr .7fr .45fr .6fr; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid color-mix(in srgb, var(--character-modal-primary) 16%, white); }
@@ -371,7 +378,8 @@
   .character-profile-fans { grid-column: 1 / -1; text-align: left; }
   .character-profile-section { padding: 18px 18px 0; }
   .character-profile-status, .character-profile-empty { margin: 20px 18px; }
-  .character-aptitude-group { grid-template-columns: 1fr; gap: 6px; }
+  .character-aptitude-table .aptitude-row { grid-template-columns: 1fr; gap: 5px; }
+  .character-aptitude-table .aptitude-row-items { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
   .character-team-grid { grid-template-columns: 1fr; }
   .character-profile-trainer { width: calc(100% - 36px); margin: 18px 18px 0; }
   .basic-profile-card { margin: 18px 18px 6px; padding: 18px; }

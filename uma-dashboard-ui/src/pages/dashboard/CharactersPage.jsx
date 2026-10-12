@@ -11,11 +11,24 @@ import { APP_BASE_URL } from "../../api/appConfig";
 import { PROFILE_TYPES } from "../../data/profilePresets";
 import { aptitudeRows } from "../../data/dashboardConfig";
 import AptitudeItem from "../../components/AptitudeItem";
+import horseshoeIcon from "../../assets/icons/horseshoe.webp";
 import RaceHistoryDetailModal from "../../components/RaceHistoryDetailModal";
 import { playSound } from "../../utils/soundManager";
 
 const APP_API_BASE = APP_BASE_URL;
 const RACE_HISTORY_PAGE_SIZE = 6;
+const aptitudeIcons = {
+  turf: "🌿",
+  dirt: "🟤",
+  sprint: "🏁",
+  mile: "🏇",
+  medium: "🏇",
+  long: "🏇",
+  front: "»",
+  pace: "»",
+  late: "»",
+  end_style: "»",
+};
 
 const CHARACTER_SUMMARY_SOURCES = [
   BOT_API_BASE,
@@ -694,9 +707,18 @@ function CharacterProfilePage({ character, userId, detail, loading, error, onClo
               type: "Trainer",
             })}><img src={toAbsoluteBotUrl(traineeTrainer.image_url) || DEFAULT_AVATAR_URL} alt={traineeTrainer.username} /><span>เทรนเนอร์</span><strong>{traineeTrainer.username || traineeTrainer.name}</strong></button>}
             <section className="character-profile-section">
-              <h3>ค่าความถนัด</h3>
-              <div className="character-aptitude-grid">
-                {aptitudeRows.map((row) => <div className="character-aptitude-group" key={row.title}><span>{row.title}</span><div>{row.items.map((item) => <AptitudeItem key={item.key} label={item.label} value={profile[item.key]} />)}</div></div>)}
+              <h3 className="character-aptitude-title"><img src={horseshoeIcon} alt="" />ค่าความถนัด</h3>
+              <div className="aptitude-table character-aptitude-table">
+                {aptitudeRows.map((row) => (
+                  <div className="aptitude-row" key={row.title}>
+                    <div className="aptitude-row-title">{row.title}</div>
+                    <div className="aptitude-row-items">
+                      {row.items.map((item) => (
+                        <AptitudeItem key={item.key} label={item.label} value={profile[item.key]} icon={aptitudeIcons[item.key]} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </section>
             <section className="character-profile-section">
