@@ -1034,17 +1034,14 @@
 .race-detail-nav > span { overflow: hidden; color: var(--uma-muted); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
 .race-detail-nav i { margin: 0 7px; color: var(--uma-primary); font-style: normal; }
 .race-detail-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(300px, .95fr); min-height: 280px; overflow: hidden; border: 1px solid var(--uma-border); border-radius: 18px; background: linear-gradient(130deg, color-mix(in srgb, var(--uma-primary) 13%, var(--uma-surface)), var(--uma-surface) 62%); box-shadow: var(--uma-shadow-soft); }
-.race-detail-hero-copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(22px, 4vw, 42px); }
-.race-detail-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--uma-muted); font-size: 13px; font-weight: 850; text-transform: capitalize; }
-.race-detail-hero h1 { margin: 13px 0 2px; color: var(--uma-ink); font-size: clamp(27px, 3vw, 40px); font-weight: 1000; line-height: 1.2; }
-.race-detail-hero-copy > p { margin: 4px 0 17px; color: var(--uma-muted); font-size: 16px; font-weight: 750; }
-.race-detail-stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
-.race-detail-stats > div { display: grid; gap: 3px; min-width: 98px; padding: 8px 11px; border: 1px solid color-mix(in srgb, var(--uma-primary) 16%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--uma-surface) 84%, transparent); }
+.race-detail-hero-copy { display: flex; flex-direction: column; align-items: stretch; justify-content: center; padding: clamp(22px, 3.5vw, 42px); }
+.race-detail-hero h1 { width: 100%; margin: 0 0 20px; color: var(--uma-ink); font-size: clamp(27px, 3vw, 40px); font-weight: 1000; line-height: 1.2; text-align: center; }
+.race-detail-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; width: 100%; margin: 0 0 18px; }
+.race-detail-stats > div { display: grid; align-content: center; justify-items: center; gap: 5px; min-width: 0; min-height: 78px; padding: 9px 6px; border: 1px solid color-mix(in srgb, var(--uma-primary) 16%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--uma-surface) 84%, transparent); text-align: center; }
 .race-detail-stats span { color: var(--uma-muted); font-size: 12px; }
-.race-detail-stats strong { color: var(--uma-primary-dark); font-size: 15px; text-transform: capitalize; }
-.race-detail-cover { position: relative; min-height: 280px; overflow: hidden; background: var(--uma-bg-soft); }
-.race-detail-cover::after { position: absolute; inset: 0; content: ""; background: linear-gradient(90deg, color-mix(in srgb, var(--uma-surface) 28%, transparent), transparent 40%), linear-gradient(0deg, rgba(20, 39, 25, .16), transparent 58%); pointer-events: none; }
-.race-detail-cover img { display: block; width: 100%; height: 100%; min-height: 280px; object-fit: cover; object-position: center; }
+.race-detail-stats strong { max-width: 100%; overflow-wrap: anywhere; color: var(--uma-primary-dark); font-size: 15px; text-transform: capitalize; }
+.race-detail-cover { display: grid; place-items: center; min-height: 280px; overflow: hidden; padding: 18px; background: var(--uma-bg-soft); }
+.race-detail-cover img { display: block; width: 100%; height: 100%; min-height: 0; border-radius: 11px; object-fit: contain; object-position: center; }
 .race-detail-route, .race-detail-history { padding: clamp(17px, 3vw, 28px); border: 1px solid var(--uma-border); border-radius: 16px; background: var(--uma-surface); box-shadow: var(--uma-shadow-soft); }
 .race-detail-section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
 .race-detail-section-heading > div > span { color: var(--uma-primary-dark); font-size: 12px; font-weight: 950; letter-spacing: .09em; }
@@ -1077,7 +1074,11 @@
   .race-detail-nav { align-items: flex-start; flex-direction: column; gap: 5px; }
   .race-detail-hero { grid-template-columns: 1fr; }
   .race-detail-hero-copy { padding: 22px; }
-  .race-detail-cover, .race-detail-cover img { height: 190px; min-height: 190px; }
+  .race-detail-hero h1 { margin-bottom: 15px; font-size: clamp(24px, 7vw, 32px); }
+  .race-detail-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .race-detail-stats > div { min-height: 66px; }
+  .race-detail-cover { height: 210px; min-height: 210px; padding: 14px; }
+  .race-detail-cover img { height: 100%; min-height: 0; }
   .race-detail-section-heading { align-items: flex-start; flex-direction: column; gap: 5px; margin-bottom: 15px; }
   .race-detail-phase { grid-template-columns: 1fr; gap: 6px; }
   .race-detail-phase-label { min-height: 0; padding: 9px 12px; }

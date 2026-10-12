@@ -312,7 +312,7 @@ code {
 
 .ui-badge,
 .ui-status-chip {
-  border-radius: var(--uma-radius-pill);
+  border-radius: 8px 3px 15px 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -601,14 +601,14 @@ code {
 /* Character cards keep their own profile color even when another preset is active. */
 .ui-badge.profile-badge-trainee {
   border-color: rgba(35, 150, 78, 0.28);
-  background: rgba(69, 201, 111, 0.14);
-  color: #167542;
+  background: linear-gradient(135deg, #75c832, #9ddd4cba);
+  color: #ffffff;
 }
 
 .ui-badge.profile-badge-trainer {
   border-color: rgba(163, 79, 192, 0.34);
-  background: linear-gradient(135deg, rgba(163, 79, 192, 0.16), rgba(243, 139, 192, 0.2));
-  color: #7d318e;
+  background: linear-gradient(135deg, #a73dcbcf, #f38bc0ba);
+  color: #ffffff;
 }
 
 .ui-badge.profile-badge-npc {

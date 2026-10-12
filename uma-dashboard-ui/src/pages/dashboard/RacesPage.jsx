@@ -469,13 +469,9 @@ function RaceDetailsPage({
 
       <header className="race-detail-hero">
         <div className="race-detail-hero-copy">
-          <div className="race-detail-tags">
-            <span className={`race-surface-tag is-${String(race.track || "turf").toLowerCase()}`}>{race.track || "Turf"}</span>
-            <span>{race.distance || "Race"}</span>
-          </div>
           <h1>{race.name}</h1>
-          <p>{race.venue || "สนามแข่งขัน"}</p>
           <div className="race-detail-stats" aria-label="ข้อมูลสนาม">
+            <div><span>สนามแข่ง</span><strong>{race.venue || "-"}</strong></div>
             <div><span>ระยะสนาม</span><strong>{race.distance || "-"}</strong></div>
             <div><span>พื้นสนาม</span><strong>{race.track || "-"}</strong></div>
             <div><span>จำนวนเทิร์น</span><strong>{turnCount}</strong></div>

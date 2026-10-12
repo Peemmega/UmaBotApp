@@ -26,7 +26,7 @@ function getCharacterType(type) {
   const normalized = String(type || "").trim().toLowerCase();
   if (normalized === "trainer") return PROFILE_TYPES.trainer.label;
   if (normalized === "npc") return PROFILE_TYPES.npc.label;
-  return "Umamusume (Trainee)";
+  return "Umamusume";
 }
 
 function getCharacterBadgeClass(type) {
@@ -210,7 +210,7 @@ export default function CharactersPage({ userId, player, profiles, characterRout
           profileData: player || {},
           name: profile?.name || player?.username || profileType.label,
           image_url: imageUrl,
-          type: profileType.id === "trainee" ? "Umamusume (Trainee)" : profileType.label,
+          type: profileType.id === "trainee" ? "Umamusume" : profileType.label,
         };
       })
       .filter(Boolean);
@@ -471,12 +471,12 @@ function CharacterProfilePage({ character, detail, loading, error, onClose, onOp
                   id: member.user_id || member.id,
                   name: member.username || member.name,
                   image_url: member.image_url,
-                  type: "Umamusume (Trainee)",
+                  type: "Umamusume",
                 })}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
-                    onOpenCharacter({ id: member.user_id || member.id, name: member.username || member.name, image_url: member.image_url, type: "Umamusume (Trainee)" });
+                    onOpenCharacter({ id: member.user_id || member.id, name: member.username || member.name, image_url: member.image_url, type: "Umamusume" });
                   }
                 }}
               >

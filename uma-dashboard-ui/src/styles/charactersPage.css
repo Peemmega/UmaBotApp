@@ -123,8 +123,8 @@
 
 .character-info h3 {
   margin: 0 0 var(--uma-space-2);
-  font-size: 19px;
-  font-weight: 1000;
+  font-size: 16px;
+  font-weight: 700;
   color: var(--uma-ink);
   line-height: 1.1;
 }
