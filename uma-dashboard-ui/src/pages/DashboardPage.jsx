@@ -10,7 +10,6 @@ import { AppShell, GameNav, TopBar } from "../components/layout";
 import LazyLoadingFallback from "../components/LazyLoadingFallback";
 import { BOT_API_BASE, uploadPresetProfileImage } from "../api/playerApi";
 import {
-  loadActiveProfileType,
   loadProfilePresets,
   saveProfilePresets,
 } from "../data/profilePresets";
@@ -109,12 +108,13 @@ export default function DashboardPage({
   const [systemTopic, setSystemTopic] = useState(getSystemTopicFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
   const [profiles, setProfiles] = useState(() => loadProfilePresets(userId, username));
-  const [activeProfileType, setActiveProfileType] = useState(() => accountRole || loadActiveProfileType(userId));
+  // App resolves and persists the account's role before mounting the dashboard.
+  // Use that role as the single source for the web theme and profile data.
+  const activeProfileType = accountRole;
 
   useEffect(() => {
     const nextProfiles = loadProfilePresets(userId, player?.username || username);
     setProfiles(nextProfiles);
-    setActiveProfileType(accountRole || loadActiveProfileType(userId));
   }, [accountRole, userId, username]);
 
   useEffect(() => {
