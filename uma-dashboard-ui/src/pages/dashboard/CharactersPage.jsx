@@ -69,7 +69,7 @@ function getSummaryProfileRole(character) {
   return "trainee";
 }
 
-async function keepCurrentRoleSummaries(profiles, ownUserId) {
+async function keepCurrentRoleSummaries(profiles) {
   const grouped = new Map();
   for (const profile of profiles) {
     const accountId = getSummaryAccountId(profile);
@@ -79,10 +79,9 @@ async function keepCurrentRoleSummaries(profiles, ownUserId) {
     grouped.set(accountId, group);
   }
 
-  const duplicateIds = [...grouped.entries()]
-    .filter(([accountId, group]) => group.length > 1 && accountId !== String(ownUserId || ""))
-    .map(([accountId]) => accountId);
-  const currentRoles = new Map(await Promise.all(duplicateIds.map(async (accountId) => {
+  // Resolve every account's current role. A single stale summary can still be
+  // from a previous role, so checking only duplicate accounts is not enough.
+  const currentRoles = new Map(await Promise.all([...grouped.keys()].map(async (accountId) => {
     try {
       const response = await fetch(`${BOT_API_BASE}/account/${encodeURIComponent(accountId)}/role`);
       if (!response.ok) return [accountId, ""];
@@ -98,14 +97,11 @@ async function keepCurrentRoleSummaries(profiles, ownUserId) {
   return profiles.filter((profile) => {
     const accountId = getSummaryAccountId(profile);
     const group = grouped.get(accountId) || [];
-    let keep = true;
-    if (group.length > 1 && accountId !== String(ownUserId || "")) {
-      const role = currentRoles.get(accountId);
-      const matchingProfile = role
-        ? group.find((candidate) => getSummaryProfileRole(candidate) === role)
-        : group.find((candidate) => getSummaryProfileRole(candidate) === "trainee") || group[0];
-      keep = profile === matchingProfile;
-    }
+    const role = currentRoles.get(accountId);
+    const matchingProfile = role
+      ? group.find((candidate) => getSummaryProfileRole(candidate) === role)
+      : null;
+    const keep = Boolean(role && profile === matchingProfile);
     const uniqueId = String(profile?.id || `${accountId}:${getSummaryProfileRole(profile)}`);
     if (!keep || keptIds.has(uniqueId)) return false;
     keptIds.add(uniqueId);
@@ -340,7 +336,7 @@ export default function CharactersPage({ userId, player, profiles, activeProfile
             }
 
             const summaries = Array.isArray(data?.players) ? data.players : [];
-            const currentRoleSummaries = await keepCurrentRoleSummaries(summaries, userId);
+            const currentRoleSummaries = await keepCurrentRoleSummaries(summaries);
             if (!cancelled) {
               setCharacters(currentRoleSummaries);
             }
