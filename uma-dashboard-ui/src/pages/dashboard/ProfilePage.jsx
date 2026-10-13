@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { mainStats, aptitudeRows } from "../../data/dashboardConfig";
 import StatCell from "../../components/StatCell";
@@ -62,6 +62,8 @@ export default function ProfilePage({
   const [uploadError, setUploadError] = useState("");
   const [teamMembers, setTeamMembers] = useState([]);
   const [teamFans, setTeamFans] = useState(0);
+  const [teamSearch, setTeamSearch] = useState("");
+  const [teamSort, setTeamSort] = useState("joined");
   const [availableTrainees, setAvailableTrainees] = useState([]);
   const [trainerProfile, setTrainerProfile] = useState(null);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
@@ -225,6 +227,17 @@ export default function ProfilePage({
     await loadTrainerTeam();
   };
 
+  const visibleTeamMembers = useMemo(() => {
+    const search = teamSearch.trim().toLocaleLowerCase();
+    return [...teamMembers]
+      .filter((member) => (member.username || "").toLocaleLowerCase().includes(search))
+      .sort((a, b) => {
+        if (teamSort === "name") return (a.username || "").localeCompare(b.username || "", undefined, { sensitivity: "base" });
+        if (teamSort === "fans") return Number(b.fans || 0) - Number(a.fans || 0);
+        return 0;
+      });
+  }, [teamMembers, teamSearch, teamSort]);
+
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -316,7 +329,7 @@ export default function ProfilePage({
     const profileImage = profile?.imageUrl || "";
     const profileImageUrl = previewUrl || toAbsoluteBotUrl(profileImage);
     const filteredInvitees = availableTrainees.filter((trainee) =>
-      trainee.username.toLowerCase().includes(inviteSearch.trim().toLowerCase())
+      (trainee.username || "").toLowerCase().includes(inviteSearch.trim().toLowerCase())
     );
 
     return (
@@ -406,27 +419,33 @@ export default function ProfilePage({
             <section className="sheet-card trainer-team-card" id="profile-team">
               <div className="title-banner"><h2>My Uma Musume Team</h2></div>
               <div className="trainer-team-list">
+                <div className="trainer-team-toolbar">
+                  <SearchInput value={teamSearch} onChange={(event) => setTeamSearch(event.target.value)} placeholder="Search team members..." />
+                  <label className="trainer-team-sort">
+                    <span>Sort by</span>
+                    <select value={teamSort} onChange={(event) => setTeamSort(event.target.value)}>
+                      <option value="joined">Date joined</option>
+                      <option value="name">Name</option>
+                      <option value="fans">Fans</option>
+                    </select>
+                  </label>
+                  <span className="trainer-team-count">{teamMembers.length} {teamMembers.length === 1 ? "member" : "members"}</span>
+                </div>
                 <div className="trainer-team-grid">
-                  {teamMembers.length ? teamMembers.map((member) => (
-                    <article
-                      className="trainer-team-member"
-                      key={member.user_id}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`Open ${member.username}'s profile`}
-                      onClick={() => openTeamMemberProfile(member)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault();
-                          openTeamMemberProfile(member);
-                        }
-                      }}
-                    >
-                      <img src={member.image_url} alt={member.username} />
-                      <h3>{member.username}</h3>
-                      <Badge>{member.fans} Fans</Badge>
+                  {visibleTeamMembers.length ? visibleTeamMembers.map((member) => (
+                    <article className="trainer-team-member" key={member.user_id}>
+                      <button
+                        type="button"
+                        className="trainer-team-member-open"
+                        aria-label={`Open ${member.username}'s profile`}
+                        onClick={() => openTeamMemberProfile(member)}
+                      >
+                        <img src={member.image_url} alt="" />
+                        <h3>{member.username}</h3>
+                        <Badge>{Number(member.fans || 0).toLocaleString()} Fans</Badge>
+                      </button>
                     </article>
-                  )) : <p className="trainer-team-empty">No team members yet.</p>}
+                  )) : <p className="trainer-team-empty">{teamMembers.length ? "No members match your search." : "No team members yet."}</p>}
                 </div>
                 <div className="trainer-team-invite-action">
                   <button className="profile-image-upload-btn" onClick={() => setIsInviteOpen(true)}>Invite to team</button>

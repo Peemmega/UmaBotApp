@@ -753,23 +753,38 @@ body {
 
 .trainer-team-member {
   display: grid;
-  justify-items: center;
-  gap: 9px;
+  align-content: start;
+  gap: 10px;
   overflow: hidden;
   padding: 10px;
   border: 1px solid var(--uma-border);
   border-radius: var(--uma-radius-sm);
   background: rgba(255, 255, 255, 0.86);
-  cursor: pointer;
-  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  transition: border-color .18s ease, box-shadow .18s ease;
 }
 
-.trainer-team-member:hover,
-.trainer-team-member:focus-visible {
-  transform: translateY(-3px);
+.trainer-team-member:hover {
   border-color: color-mix(in srgb, var(--uma-primary) 52%, white);
   box-shadow: var(--uma-shadow-card);
-  outline: none;
+}
+
+.trainer-team-member-open {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.trainer-team-member-open:focus-visible,
+.trainer-team-sort select:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--uma-primary) 65%, white);
+  outline-offset: 2px;
 }
 
 .trainer-team-member img {
@@ -785,6 +800,18 @@ body {
   color: var(--uma-ink);
   font-size: 17px;
 }
+
+.trainer-team-toolbar {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto auto;
+  align-items: end;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.trainer-team-sort { display: grid; gap: 5px; color: var(--uma-muted); font-size: 12px; font-weight: 800; }
+.trainer-team-sort select { min-height: 40px; padding: 7px 32px 7px 10px; border: 1px solid var(--uma-border); border-radius: var(--uma-radius-sm); background: var(--uma-surface); color: var(--uma-ink); font: inherit; }
+.trainer-team-count { padding: 10px 0; color: var(--uma-muted); font-size: 13px; font-weight: 800; white-space: nowrap; }
 
 .team-member-profile-backdrop {
   position: fixed;
@@ -976,6 +1003,9 @@ body {
   .team-invite-card img { height: 120px; }
   .trainer-team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .trainer-team-member img { height: 120px; }
+  .trainer-team-toolbar { grid-template-columns: 1fr 1fr; align-items: end; }
+  .trainer-team-toolbar > :first-child { grid-column: 1 / -1; }
+  .trainer-team-count { justify-self: end; }
   .team-member-profile-backdrop { padding: 12px; }
   .team-member-profile-modal { max-height: calc(100vh - 24px); }
   .team-member-profile-hero { grid-template-columns: 74px 1fr; gap: 12px; padding: 20px 48px 20px 20px; }
