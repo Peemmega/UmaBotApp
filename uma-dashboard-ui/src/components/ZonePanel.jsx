@@ -4,7 +4,7 @@ import editIcon from "../assets/icons/change_icon.webp";
 import { playSound } from "../utils/soundManager";
 import profileZoneImage from "../assets/bg/Profile_Zone.webp";
 
-export default function ZonePanel({ userId, player, onSaved }) {
+export default function ZonePanel({ userId, player, onSaved, readOnly = false }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const zone = player?.zone || {};
 
@@ -54,7 +54,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
       </div>
 
       <div className="padding-content">
-        <button
+        {!readOnly && <button
           className="zone-edit-btn"
           onClick={() => {
             playSound("open");
@@ -62,7 +62,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
           }}
         >
           <img src={editIcon} alt="edit zone" />
-        </button>
+        </button>}
 
         <div className="zone-image-frame">
           {zone.image_url ? (
@@ -85,7 +85,7 @@ export default function ZonePanel({ userId, player, onSaved }) {
         </div>
       </div>
 
-      {isEditOpen && (
+      {!readOnly && isEditOpen && (
         <ZoneEditModal
           userId={userId}
           player={player}

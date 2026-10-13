@@ -41,6 +41,7 @@ const VALID_PAGES = [
   "race-replay",
   "news",
 ];
+const ignoreProfileUpdate = () => {};
 
 function getNewsRouteFromPath() {
   const segments = window.location.pathname.split("/").filter(Boolean);
@@ -64,6 +65,16 @@ function getCharacterRouteFromPath() {
   }
 }
 
+function getTraineeProfileRouteFromPath() {
+  const segments = window.location.pathname.split("/").filter(Boolean);
+  if (segments.length !== 4 || segments[0] !== "dashboard" || segments[1] !== "profile" || segments[2] !== "trainee") return null;
+  try {
+    return { id: decodeURIComponent(segments[3]) };
+  } catch {
+    return null;
+  }
+}
+
 function getSystemTopicFromPath() {
   const match = window.location.pathname.match(/^\/dashboard\/system\/([^/]+)\/?$/);
   return match && getSystemTopic(match[1]) ? match[1] : null;
@@ -73,6 +84,7 @@ function getPageFromPath() {
   if (getSystemTopicFromPath()) return "system-guide";
   if (getNewsRouteFromPath()) return "news-detail";
   if (getCharacterRouteFromPath()) return "chars";
+  if (getTraineeProfileRouteFromPath()) return "profile";
   const normalizedPath = window.location.pathname.replace(/\/+$/, "");
   const page = normalizedPath.split("/").pop();
   return VALID_PAGES.includes(page) ? page : "home";
@@ -105,6 +117,7 @@ export default function DashboardPage({
   const [activePage, setActivePage] = useState(getInitialPageFromPath);
   const [newsRoute, setNewsRoute] = useState(getNewsRouteFromPath);
   const [characterRoute, setCharacterRoute] = useState(getCharacterRouteFromPath);
+  const [traineeProfileRoute, setTraineeProfileRoute] = useState(getTraineeProfileRouteFromPath);
   const [systemTopic, setSystemTopic] = useState(getSystemTopicFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
   const [profiles, setProfiles] = useState(() => loadProfilePresets(userId, username));
@@ -175,6 +188,7 @@ export default function DashboardPage({
       if (!getSystemTopic(topicId)) return;
       setNewsRoute(null);
       setCharacterRoute(null);
+      setTraineeProfileRoute(null);
       setSystemTopic(topicId);
       setActivePage("system-guide");
       window.history.pushState({}, "", `/dashboard/system/${topicId}`);
@@ -186,6 +200,7 @@ export default function DashboardPage({
     setSystemTopic(null);
     setNewsRoute(null);
     setCharacterRoute(null);
+    setTraineeProfileRoute(null);
     setActivePage(page);
     window.history.pushState({}, "", `/dashboard/${page}`);
   };
@@ -195,6 +210,7 @@ export default function DashboardPage({
     if (!name) return;
     const kind = getNewsKind(item);
     setNewsRoute({ name, kind, item, fromPage: activePage === "news-detail" ? "news" : activePage });
+    setTraineeProfileRoute(null);
     setActivePage("news-detail");
     window.history.pushState({}, "", `/dashboard/news/${encodeURIComponent(name)}/${kind}`);
   };
@@ -204,8 +220,20 @@ export default function DashboardPage({
     const type = String(character?.type || "").trim();
     if (!id || !type) return;
     setCharacterRoute({ id, type, character, fromPage: "chars" });
+    setTraineeProfileRoute(null);
     setActivePage("chars");
     window.history.pushState({}, "", `/dashboard/chars/${encodeURIComponent(id)}/${encodeURIComponent(type)}`);
+    window.scrollTo(0, 0);
+  };
+
+  const openTraineeProfile = (member) => {
+    const id = String(member?.user_id || member?.id || "").trim();
+    if (!id) return;
+    setNewsRoute(null);
+    setCharacterRoute(null);
+    setTraineeProfileRoute({ id, username: member.username || member.name || "" });
+    setActivePage("profile");
+    window.history.pushState({}, "", `/dashboard/profile/trainee/${encodeURIComponent(id)}`);
     window.scrollTo(0, 0);
   };
 
@@ -279,6 +307,30 @@ export default function DashboardPage({
 
       case "profile":
       default:
+        if (traineeProfileRoute) {
+          return (
+            <ProfilePage
+              key={`trainee-${traineeProfileRoute.id}`}
+              username={traineeProfileRoute.username || "Trainee"}
+              userId={traineeProfileRoute.id}
+              viewerUserId={userId}
+              avatarUrl=""
+              player={null}
+              setPlayer={ignoreProfileUpdate}
+              profileType={activeProfileType}
+              readOnly
+              onBack={() => {
+                setTraineeProfileRoute(null);
+                window.history.replaceState({}, "", "/dashboard/profile");
+                window.scrollTo(0, 0);
+              }}
+              error={null}
+              isEditStatsOpen={false}
+              setIsEditStatsOpen={() => {}}
+              setIsRenameOpen={() => {}}
+            />
+          );
+        }
         return (
           <ProfilePage
             username={username}
@@ -288,6 +340,7 @@ export default function DashboardPage({
             setPlayer={setPlayer}
             profile={activeProfile}
             profileType={activeProfileType}
+            onOpenTraineeProfile={openTraineeProfile}
             onSaveProfile={(changes) => {
               setProfiles((current) => ({
                 ...current,
@@ -349,6 +402,7 @@ export default function DashboardPage({
       setActivePage(getPageFromPath());
       setNewsRoute(getNewsRouteFromPath());
       setCharacterRoute(getCharacterRouteFromPath());
+      setTraineeProfileRoute(getTraineeProfileRouteFromPath());
       setSystemTopic(getSystemTopicFromPath());
     };
 

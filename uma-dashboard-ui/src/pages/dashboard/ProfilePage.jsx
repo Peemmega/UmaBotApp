@@ -17,8 +17,6 @@ import { Badge, SearchInput, SectionHeader } from "../../components/ui";
 import { StaggerContainer, StaggerItem } from "../../components/AnimatedStagger";
 import ProfileImageCropModal from "../../components/ProfileImageCropModal";
 import SkillLoadoutPanel from "../../components/SkillLoadoutPanel";
-import TeamMemberProfileModal from "../../components/TeamMemberProfileModal";
-import RaceHistoryDetailModal from "../../components/RaceHistoryDetailModal";
 import ProfileSkillLibrary from "../../components/ProfileSkillLibrary";
 import ProfileRaceStats from "../../components/ProfileRaceStats";
 import BasicProfileEditor from "../../components/BasicProfileEditor";
@@ -42,11 +40,15 @@ const aptitudeIcons = {
 export default function ProfilePage({
   username,
   userId,
+  viewerUserId = userId,
   avatarUrl,
   player,
   setPlayer,
   profile,
   profileType = "trainee",
+  readOnly = false,
+  onBack,
+  onOpenTraineeProfile,
   onSaveProfile,
   onRequestRename,
   error,
@@ -69,11 +71,8 @@ export default function ProfilePage({
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [inviteSearch, setInviteSearch] = useState("");
   const [cropImageFile, setCropImageFile] = useState(null);
-  const [selectedTeamMember, setSelectedTeamMember] = useState(null);
-  const [teamMemberDetail, setTeamMemberDetail] = useState(null);
-  const [teamMemberDetailLoading, setTeamMemberDetailLoading] = useState(false);
-  const [teamMemberDetailError, setTeamMemberDetailError] = useState("");
-  const [selectedTeamRace, setSelectedTeamRace] = useState(null);
+  const [viewedPlayer, setViewedPlayer] = useState(null);
+  const [viewedPlayerStatus, setViewedPlayerStatus] = useState(readOnly ? "loading" : "ready");
   const [activeProfilePage, setActiveProfilePage] = useState("overview");
   const [activeSection, setActiveSection] = useState("profile-overview");
   const fileInputRef = useRef(null);
@@ -83,15 +82,46 @@ export default function ProfilePage({
   };
 
   useEffect(() => {
-    setActiveSection(profileType === "trainee" ? "profile-overview" : "profile-basic");
+    setActiveSection(profileType === "trainee" || readOnly ? "profile-overview" : "profile-basic");
     setActiveProfilePage("overview");
-  }, [profileType, userId]);
+  }, [profileType, readOnly, userId]);
 
   useEffect(() => {
-    if (profileType !== "trainee" || !userId) return undefined;
+    if ((!readOnly && profileType !== "trainee") || !userId) return undefined;
     const controller = new AbortController();
 
     async function refreshCurrentPlayer() {
+      if (readOnly) {
+        setViewedPlayerStatus("loading");
+        setViewedPlayer(null);
+        if (profileType !== "trainer" || !viewerUserId) {
+          setViewedPlayerStatus("unavailable");
+          return;
+        }
+        try {
+          const teamResponse = await fetch(`${BOT_API_BASE}/trainer/${encodeURIComponent(viewerUserId)}/team`, { signal: controller.signal });
+          if (!teamResponse.ok) throw new Error("Could not verify team access.");
+          const teamData = await teamResponse.json();
+          const isCurrentMember = (teamData.members || []).some((member) => String(member.user_id) === String(userId));
+          if (!isCurrentMember) {
+            if (!controller.signal.aborted) setViewedPlayerStatus("unavailable");
+            return;
+          }
+          const response = await fetch(
+            `${BOT_API_BASE}/player/${encodeURIComponent(userId)}?username=${encodeURIComponent(username || "Unknown")}`,
+            { signal: controller.signal }
+          );
+          if (!response.ok) throw new Error("Could not load trainee profile.");
+          const profilePlayer = await response.json();
+          if (!controller.signal.aborted) {
+            setViewedPlayer(profilePlayer);
+            setViewedPlayerStatus("ready");
+          }
+        } catch (loadError) {
+          if (loadError.name !== "AbortError" && !controller.signal.aborted) setViewedPlayerStatus("error");
+        }
+        return;
+      }
       try {
         const response = await fetch(
           `${BOT_API_BASE}/player/${encodeURIComponent(userId)}?username=${encodeURIComponent(username || "Unknown")}`,
@@ -113,7 +143,7 @@ export default function ProfilePage({
 
     refreshCurrentPlayer();
     return () => controller.abort();
-  }, [profileType, setPlayer, userId, username]);
+  }, [profileType, readOnly, setPlayer, userId, username, viewerUserId]);
 
   useEffect(() => {
     setSelectedImageFile(null);
@@ -130,8 +160,6 @@ export default function ProfilePage({
     const closeOverlays = () => {
       setIsInviteOpen(false);
       setCropImageFile(null);
-      setSelectedTeamMember(null);
-      setSelectedTeamRace(null);
     };
     window.addEventListener("uma:close-overlays", closeOverlays);
     return () => window.removeEventListener("uma:close-overlays", closeOverlays);
@@ -151,8 +179,8 @@ export default function ProfilePage({
   };
 
   useEffect(() => {
-    if (profileType === "trainer" && userId) loadTrainerTeam().catch(console.error);
-  }, [profileType, userId]);
+    if (!readOnly && profileType === "trainer" && userId) loadTrainerTeam().catch(console.error);
+  }, [profileType, readOnly, userId]);
 
   useEffect(() => {
     if (profileType !== "trainee" || !userId) return;
@@ -162,56 +190,9 @@ export default function ProfilePage({
       .catch(() => setTrainerProfile(null));
   }, [profileType, userId]);
 
-  useEffect(() => {
-    if (!selectedTeamMember) return undefined;
-
-    const controller = new AbortController();
-    const memberId = selectedTeamMember.user_id || selectedTeamMember.id;
-
-    async function loadTeamMemberDetail() {
-      setTeamMemberDetailLoading(true);
-      setTeamMemberDetailError("");
-      setTeamMemberDetail(null);
-
-      try {
-        const [profileRes, skillsRes, historyRes] = await Promise.all([
-          fetch(`${BOT_API_BASE}/player/${encodeURIComponent(memberId)}?username=${encodeURIComponent(selectedTeamMember.username || selectedTeamMember.name || "Unknown")}`, { signal: controller.signal }),
-          fetch(`${BOT_API_BASE}/player/${encodeURIComponent(memberId)}/skills`, { signal: controller.signal }),
-          fetch(`${BOT_API_BASE}/player/${encodeURIComponent(memberId)}/race-history`, { signal: controller.signal }),
-        ]);
-        if (!profileRes.ok) throw new Error("Could not load team member profile.");
-
-        const [profile, skills, history] = await Promise.all([
-          profileRes.json(),
-          skillsRes.ok ? skillsRes.json() : {},
-          historyRes.ok ? historyRes.json() : {},
-        ]);
-        if (!controller.signal.aborted) {
-          setTeamMemberDetail({ profile, skills, history: history?.races || history?.history || [] });
-        }
-      } catch (err) {
-        if (err.name !== "AbortError" && !controller.signal.aborted) {
-          setTeamMemberDetailError("Could not load this team member's profile.");
-        }
-      } finally {
-        if (!controller.signal.aborted) setTeamMemberDetailLoading(false);
-      }
-    }
-
-    loadTeamMemberDetail();
-    return () => controller.abort();
-  }, [selectedTeamMember]);
-
   const openTeamMemberProfile = (member) => {
     playSound("open");
-    setSelectedTeamRace(null);
-    setSelectedTeamMember(member);
-  };
-
-  const closeTeamMemberProfile = () => {
-    playSound("close");
-    setSelectedTeamRace(null);
-    setSelectedTeamMember(null);
+    onOpenTraineeProfile?.(member);
   };
 
   const inviteTrainee = async (traineeUserId) => {
@@ -246,7 +227,9 @@ export default function ProfilePage({
     };
   }, [previewUrl]);
 
-  const currentAvatarUrl = previewUrl || avatarUrl;
+  const profilePlayer = readOnly ? viewedPlayer : player;
+  const updateProfilePlayer = readOnly ? setViewedPlayer : setPlayer;
+  const currentAvatarUrl = previewUrl || (readOnly ? toAbsoluteBotUrl(profilePlayer?.profile_image_url) : avatarUrl);
 
   useEffect(() => {
     if (!userId) return;
@@ -254,9 +237,9 @@ export default function ProfilePage({
       userId,
       preview_src: previewUrl || "",
       final_img_src: currentAvatarUrl || "",
-      profile_image_url: player?.profile_image_url || "",
+      profile_image_url: profilePlayer?.profile_image_url || "",
     });
-  }, [currentAvatarUrl, player?.profile_image_url, previewUrl, userId]);
+  }, [currentAvatarUrl, profilePlayer?.profile_image_url, previewUrl, userId]);
 
   const handleSelectImage = (event) => {
     const file = event.target.files?.[0];
@@ -321,9 +304,23 @@ export default function ProfilePage({
     setCropImageFile(null);
   };
 
-  const cropModal = cropImageFile ? <ProfileImageCropModal file={cropImageFile} onCancel={() => setCropImageFile(null)} onConfirm={handleCropComplete} /> : null;
+  const cropModal = !readOnly && cropImageFile ? <ProfileImageCropModal file={cropImageFile} onCancel={() => setCropImageFile(null)} onConfirm={handleCropComplete} /> : null;
 
-  if (profileType !== "trainee") {
+  if (readOnly && viewedPlayerStatus !== "ready") {
+    const statusMessage = viewedPlayerStatus === "loading"
+      ? "กำลังตรวจสอบสิทธิ์และโหลดโปรไฟล์…"
+      : viewedPlayerStatus === "unavailable"
+        ? "ไม่พบสมาชิกคนนี้ในทีมปัจจุบัน หรือบทบาทของบัญชีเปลี่ยนไปแล้ว"
+        : "โหลดโปรไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง";
+    return (
+      <main className="dashboard-shell profile-stagger profile-redesign">
+        <button type="button" className="team-member-profile-back-button" onClick={onBack}>← กลับทีมของฉัน</button>
+        <section className="sheet-card team-member-page-status" role="status">{statusMessage}</section>
+      </main>
+    );
+  }
+
+  if (profileType !== "trainee" && !readOnly) {
     const isTrainer = profileType === "trainer";
     const profileName = profile?.name || (isTrainer ? "Trainer" : "NPC");
     const profileImage = profile?.imageUrl || "";
@@ -443,6 +440,7 @@ export default function ProfilePage({
                         <img src={member.image_url} alt="" />
                         <h3>{member.username}</h3>
                         <Badge>{Number(member.fans || 0).toLocaleString()} Fans</Badge>
+                        <span className="trainer-team-profile-link">ดูโปรไฟล์เต็ม</span>
                       </button>
                     </article>
                   )) : <p className="trainer-team-empty">{teamMembers.length ? "No members match your search." : "No team members yet."}</p>}
@@ -484,25 +482,6 @@ export default function ProfilePage({
           document.body
         )}
       </StaggerContainer>
-      {selectedTeamMember && createPortal(
-        <TeamMemberProfileModal
-          member={selectedTeamMember}
-          detail={teamMemberDetail}
-          loading={teamMemberDetailLoading}
-          error={teamMemberDetailError}
-          onClose={closeTeamMemberProfile}
-          onOpenRace={setSelectedTeamRace}
-        />,
-        document.body
-      )}
-      {selectedTeamRace && createPortal(
-        <RaceHistoryDetailModal
-          raceId={selectedTeamRace.race_id}
-          fallback={selectedTeamRace}
-          onClose={() => setSelectedTeamRace(null)}
-        />,
-        document.body
-      )}
       {cropModal}
       </>
     );
@@ -513,6 +492,7 @@ export default function ProfilePage({
       {error ? <div className="error-box">{error}</div> : null}
 
       <StaggerContainer className="dashboard-shell profile-stagger profile-redesign">
+          {readOnly && <StaggerItem><button type="button" className="team-member-profile-back-button" onClick={onBack}>← กลับทีมของฉัน</button></StaggerItem>}
           <StaggerItem>
           <section className="profile-card profile-identity-card profile-hero" id="profile-overview">
             <div className="profile-hero-art" aria-hidden="true" />
@@ -523,7 +503,7 @@ export default function ProfilePage({
                 ) : (
                   <div className="profile-avatar placeholder">{"\u{1F464}"}</div>
                 )}
-                {trainerProfile?.image_url && (
+                {!readOnly && trainerProfile?.image_url && (
                   <img
                     src={toAbsoluteBotUrl(trainerProfile.image_url)}
                     alt={`Trainer ${trainerProfile.username}`}
@@ -531,7 +511,7 @@ export default function ProfilePage({
                     className="profile-trainer-avatar"
                   />
                 )}
-                <div className="profile-avatar-actions">
+                {!readOnly && <div className="profile-avatar-actions">
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -559,16 +539,16 @@ export default function ProfilePage({
                   )}
                   {uploadMessage ? <div className="profile-image-success">{uploadMessage}</div> : null}
                   {uploadError ? <div className="profile-image-error">{uploadError}</div> : null}
-                </div>
+                </div>}
               </div>
 
               <div className="profile-info">
                 <p className="profile-identity-kicker">TRAINEE PROFILE</p>
                 <div className="profile-name-row">
-                  <div className="profile-name">{player?.username || username}</div>
+                  <div className="profile-name">{profilePlayer?.username || username}</div>
                 </div>
 
-                <button
+                {!readOnly && <button
                   type="button"
                   className="rename-btn profile-edit-info-btn"
                   onClick={() => {
@@ -578,7 +558,7 @@ export default function ProfilePage({
                 >
                   <img src={editIcon} alt="" />
                   <span>เปลี่ยนชื่อ</span>
-                </button>
+                </button>}
 
                 <div className="profile-id">
                   <Badge className="profile-discord-id">
@@ -588,9 +568,9 @@ export default function ProfilePage({
                 </div>
               </div>
               <div className="profile-resources">
-                <ResourcePill icon={fansIcon} label="Fans" value={player?.fans ?? 1} />
-                <ResourcePill icon={statIcon} label="Stats Points" value={player?.stats_point ?? 0} />
-                <ResourcePill icon={skillIcon} label="Event Point" value={player?.skill_point ?? 0} />
+                <ResourcePill icon={fansIcon} label="Fans" value={profilePlayer?.fans ?? 1} />
+                <ResourcePill icon={statIcon} label="Stats Points" value={profilePlayer?.stats_point ?? 0} />
+                <ResourcePill icon={skillIcon} label="Event Point" value={profilePlayer?.skill_point ?? 0} />
               </div>
             </div>
           </section>
@@ -605,7 +585,7 @@ export default function ProfilePage({
             </nav>
           </StaggerItem>
 
-          {activeProfilePage === "overview" ? <BasicProfileEditor userId={userId} /> : null}
+          {activeProfilePage === "overview" ? <BasicProfileEditor userId={userId} readOnly={readOnly} /> : null}
 
           {activeProfilePage === "stats" && <div className="profile-stats-page">
           <div className="profile-data-panel">
@@ -619,7 +599,7 @@ export default function ProfilePage({
                   className="profile-section-header"
                 />
 
-                <button
+                {!readOnly && <button
                   type="button"
                   className={`update-stats-btn ${isEditStatsOpen ? "active" : ""}`}
                   aria-expanded={isEditStatsOpen}
@@ -637,7 +617,7 @@ export default function ProfilePage({
                     <path d="M3 11h3v6H3zm5-7h3v13H8zm5 4h3v9h-3z" fill="currentColor" />
                   </svg>
                   {isEditStatsOpen ? "ปิดปรับแต่ง Stats" : "ปรับแต่ง Stats"}
-                </button>
+                </button>}
               </div>
             </div>
 
@@ -647,18 +627,18 @@ export default function ProfilePage({
                   key={item.key}
                   statKey={item.key}
                   label={item.label}
-                  value={player?.[item.key]}
+                  value={profilePlayer?.[item.key]}
                 />
               ))}
             </div>
 
-            {isEditStatsOpen && (
+            {!readOnly && isEditStatsOpen && (
               <EditStatsModal
                 userId={userId}
                 player={player}
                 onClose={() => setIsEditStatsOpen(false)}
                 onSaved={(updated) => {
-                  setPlayer((prev) => ({
+                  updateProfilePlayer((prev) => ({
                     ...prev,
                     ...updated,
                   }));
@@ -685,7 +665,7 @@ export default function ProfilePage({
                         <AptitudeItem
                           key={item.key}
                           label={item.label}
-                          value={player?.[item.key]}
+                          value={profilePlayer?.[item.key]}
                           icon={aptitudeIcons[item.key]}
                         />
                       ))}
@@ -704,9 +684,10 @@ export default function ProfilePage({
             <div id="profile-skills" className="profile-lower-panel">
             <SkillLoadoutPanel
               userId={userId}
-              username={player?.username || username}
-              player={player}
+              username={profilePlayer?.username || username}
+              player={profilePlayer}
               refreshKey={skillLoadoutVersion}
+              readOnly={readOnly}
             />
             </div>
           </StaggerItem>
@@ -715,9 +696,10 @@ export default function ProfilePage({
             <div id="profile-zone" className="profile-lower-panel">
           <ZonePanel
               userId={userId}
-              player={player}
+              player={profilePlayer}
+              readOnly={readOnly}
               onSaved={(updatedZone) => {
-                setPlayer((prev) => ({
+                updateProfilePlayer((prev) => ({
                   ...prev,
                   zone: {
                     ...(prev?.zone || {}),
@@ -732,7 +714,7 @@ export default function ProfilePage({
           </div>}
 
           {activeProfilePage === "skills" && (
-            <ProfileSkillLibrary userId={userId} username={player?.username || username} />
+            <ProfileSkillLibrary userId={userId} username={profilePlayer?.username || username} readOnly={readOnly} />
           )}
 
           {activeProfilePage === "history" && <ProfileRaceStats userId={userId} />}

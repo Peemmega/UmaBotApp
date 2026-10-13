@@ -15,7 +15,7 @@ function getSkillEffects(skill) {
   return Array.isArray(skill?.effects) ? skill.effects : [];
 }
 
-export default function ProfileSkillLibrary({ userId, username }) {
+export default function ProfileSkillLibrary({ userId, username, readOnly = false }) {
   const [skills, setSkills] = useState([]);
   const [equippedSkills, setEquippedSkills] = useState({});
   const [acquiredSkillIds, setAcquiredSkillIds] = useState([]);
@@ -137,7 +137,7 @@ export default function ProfileSkillLibrary({ userId, username }) {
                   <small>{skill.id}</small>
                 </span>
                 <span className={`profile-skill-state${equippedSlot ? " is-equipped" : canEquip ? " is-available" : " is-locked"}`}>
-                  {equippedSlot ? `ช่อง ${equippedSlot.replace("slot_", "")}` : canEquip ? "สีขาว" : "ยังใช้ไม่ได้"}
+                  {equippedSlot ? `ช่อง ${equippedSlot.replace("slot_", "")}` : readOnly && canEquip ? "ยังไม่ติดตั้ง" : canEquip ? "สีขาว" : "ยังใช้ไม่ได้"}
                 </span>
               </button>
             );
@@ -159,10 +159,10 @@ export default function ProfileSkillLibrary({ userId, username }) {
             {getSkillEffects(selectedSkill).length ? <div className="profile-skill-effects"><strong>ผลของสกิล</strong><ul>{getSkillEffects(selectedSkill).map((effect, index) => <li key={`${selectedSkill.id}-${index}`}>{describeRaceEffect(effect)}</li>)}</ul></div> : null}
             {getSkillRarity(selectedSkill) === "common" || ownedSkillIds.has(String(selectedSkill.id || "").trim().toLowerCase()) ? (
               <div className="profile-skill-equip-slots">
-                <strong>ติดตั้งในช่อง</strong>
+                <strong>{readOnly ? "สถานะการติดตั้ง" : "ติดตั้งในช่อง"}</strong>
                 {Object.entries(equippedSkills || {}).some(([, value]) => String(value?.id || "") === String(selectedSkill.id)) ? (
                   <span className="profile-skill-already-equipped">ติดตั้งอยู่ในช่อง {Object.entries(equippedSkills).find(([, value]) => String(value?.id || "") === String(selectedSkill.id))?.[0]?.replace("slot_", "")}</span>
-                ) : [1, 2, 3, 4].map((slot) => <button type="button" key={slot} disabled={savingSlot !== null} onClick={() => equipSkill(slot)}>{savingSlot === slot ? "กำลังบันทึก..." : `ช่อง ${slot}`}</button>)}
+                ) : readOnly ? <span className="profile-skill-already-equipped">ยังไม่ได้ติดตั้ง</span> : [1, 2, 3, 4].map((slot) => <button type="button" key={slot} disabled={savingSlot !== null} onClick={() => equipSkill(slot)}>{savingSlot === slot ? "กำลังบันทึก..." : `ช่อง ${slot}`}</button>)}
               </div>
             ) : <p className="profile-skill-lock-note">ต้องได้รับสกิลนี้ก่อนจึงจะติดตั้งได้</p>}
             {equipError ? <p className="profile-page-status is-error">{equipError}</p> : null}

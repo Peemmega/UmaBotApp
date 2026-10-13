@@ -801,6 +801,8 @@ body {
   font-size: 17px;
 }
 
+.trainer-team-profile-link { color: var(--uma-primary); font-size: 12px; font-weight: 900; }
+
 .trainer-team-toolbar {
   display: grid;
   grid-template-columns: minmax(180px, 1fr) auto auto;
@@ -812,6 +814,11 @@ body {
 .trainer-team-sort { display: grid; gap: 5px; color: var(--uma-muted); font-size: 12px; font-weight: 800; }
 .trainer-team-sort select { min-height: 40px; padding: 7px 32px 7px 10px; border: 1px solid var(--uma-border); border-radius: var(--uma-radius-sm); background: var(--uma-surface); color: var(--uma-ink); font: inherit; }
 .trainer-team-count { padding: 10px 0; color: var(--uma-muted); font-size: 13px; font-weight: 800; white-space: nowrap; }
+
+.team-member-profile-back-button { display: inline-flex; align-items: center; min-height: 42px; margin: 0 0 16px; padding: 9px 14px; border: 1px solid var(--uma-border); border-radius: var(--uma-radius-sm); background: var(--uma-surface); color: var(--uma-ink); cursor: pointer; font: inherit; font-weight: 800; }
+.team-member-profile-back-button:hover { border-color: color-mix(in srgb, var(--uma-primary) 52%, white); }
+.team-member-profile-back-button:focus-visible { outline: 3px solid color-mix(in srgb, var(--uma-primary) 65%, white); outline-offset: 2px; }
+.team-member-page-status { margin-top: 24px; padding: 28px; color: var(--uma-muted); text-align: center; font-weight: 800; }
 
 .team-member-profile-backdrop {
   position: fixed;

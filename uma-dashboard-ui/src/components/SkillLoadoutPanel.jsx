@@ -19,7 +19,7 @@ function renderTextWithIcons(text) {
   );
 }
 
-export default function SkillLoadoutPanel({ userId, username, player, refreshKey }) {
+export default function SkillLoadoutPanel({ userId, username, player, refreshKey, readOnly = false }) {
   const [skills, setSkills] = useState({});
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [isPresetOpen, setIsPresetOpen] = useState(false);
@@ -105,12 +105,12 @@ export default function SkillLoadoutPanel({ userId, username, player, refreshKey
         })}
       </div>
 
-      <div className="skill-loadout-preset-bar">
+      {!readOnly && <div className="skill-loadout-preset-bar">
         <button type="button" className="skill-loadout-preset-button" onClick={() => setIsPresetOpen(true)}>
           <Settings size={18} aria-hidden="true" />
           <span>จัดการสกิลล่วงหน้า</span>
         </button>
-      </div>
+      </div>}
 
       {selectedSkill && createPortal(
         <div className="skill-loadout-detail-backdrop" onMouseDown={() => setSelectedSkill(null)}>

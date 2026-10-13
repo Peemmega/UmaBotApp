@@ -23,7 +23,7 @@ function dateLabel(profile) {
   return `${String(profile.birthday_day).padStart(2, "0")}/${String(profile.birthday_month).padStart(2, "0")}`;
 }
 
-export default function BasicProfileEditor({ userId, profileType = "trainee" }) {
+export default function BasicProfileEditor({ userId, profileType = "trainee", readOnly = false }) {
   const [profile, setProfile] = useState(emptyProfile);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -46,7 +46,7 @@ export default function BasicProfileEditor({ userId, profileType = "trainee" }) 
         const next = { ...emptyProfile, ...(data || {}) };
         for (const field of ["age", "birthday_day", "birthday_month", "height_cm"]) next[field] = next[field] == null ? "" : String(next[field]);
         setProfile(next);
-        setEditing(!isComplete(next, profileType));
+        setEditing(!readOnly && !isComplete(next, profileType));
         setLoading(false);
       })
       .catch((fetchError) => {
@@ -56,7 +56,7 @@ export default function BasicProfileEditor({ userId, profileType = "trainee" }) 
         }
       });
     return () => { cancelled = true; };
-  }, [profileType, userId]);
+  }, [profileType, readOnly, userId]);
 
   const change = (field) => (event) => {
     setProfile((current) => ({ ...current, [field]: event.target.value }));
@@ -107,7 +107,7 @@ export default function BasicProfileEditor({ userId, profileType = "trainee" }) 
     <section className="basic-profile-editor" aria-labelledby="basic-profile-editor-title">
       <header className="basic-profile-editor-heading">
         <div><span>CHARACTER FILE</span><h2 id="basic-profile-editor-title">ข้อมูลพื้นฐาน</h2></div>
-        {!loading && !editing && <button type="button" onClick={() => { setEditing(true); setNotice(""); }}><Pencil size={16} /> แก้ไขข้อมูล</button>}
+        {!readOnly && !loading && !editing && <button type="button" onClick={() => { setEditing(true); setNotice(""); }}><Pencil size={16} /> แก้ไขข้อมูล</button>}
       </header>
       {loading ? <p className="basic-profile-editor-message">กำลังโหลดข้อมูลพื้นฐาน…</p> : error ? <p className="basic-profile-editor-error">{error}</p> : editing ? (
         <form className="basic-profile-editor-form" onSubmit={submit}>
