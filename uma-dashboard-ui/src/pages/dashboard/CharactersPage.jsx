@@ -371,7 +371,6 @@ export default function CharactersPage({ userId, player, profiles, activeProfile
 
     let cancelled = false;
     const characterId = String(selectedCharacter.userId || selectedCharacter.id || "").split(":")[0];
-    const isTrainer = selectedCharacter.type === "Trainer";
     const basicProfileType = selectedCharacter.type === "Trainer"
       ? "trainer"
       : selectedCharacter.type === "NPC" ? "npc" : "trainee";
@@ -382,20 +381,32 @@ export default function CharactersPage({ userId, player, profiles, activeProfile
       setDetail(null);
 
       try {
+        const readOptionalDetail = (url) => fetch(url).then((res) => res.ok ? res.json() : null);
         const profileUrl = `${BOT_API_BASE}/player/${encodeURIComponent(characterId)}?username=${encodeURIComponent(selectedCharacter.name || "Unknown")}`;
-        const requests = [fetch(profileUrl).then((res) => res.ok ? res.json() : null)];
-
-        if (isTrainer) {
-          requests.push(fetch(`${BOT_API_BASE}/trainer/${encodeURIComponent(characterId)}/team`).then((res) => res.ok ? res.json() : null));
-        } else {
-          requests.push(fetch(`${BOT_API_BASE}/trainee/${encodeURIComponent(characterId)}/trainer`).then((res) => res.ok ? res.json() : null));
-          requests.push(fetch(`${BOT_API_BASE}/player/${encodeURIComponent(characterId)}/race-history`).then((res) => res.ok ? res.json() : null));
-        }
-        requests.push(fetch(`${BOT_API_BASE}/player/${encodeURIComponent(characterId)}/basic-profile?profile_type=${basicProfileType}`).then((res) => res.ok ? res.json() : null));
-
-        const [profile, related, history, basicProfile] = await Promise.all(requests);
+        // Keep each result in a fixed slot, regardless of the role. Trainer's
+        // basic profile previously occupied the history slot and was discarded.
+        const [basicProfile, profile, related, history] = await Promise.all([
+          fetch(`${BOT_API_BASE}/player/${encodeURIComponent(characterId)}/basic-profile?profile_type=${basicProfileType}`).then(async (res) => {
+            if (!res.ok) throw new Error("Could not load the character's basic profile.");
+            return res.json();
+          }),
+          basicProfileType === "trainee" ? readOptionalDetail(profileUrl) : null,
+          basicProfileType === "trainer"
+            ? readOptionalDetail(`${BOT_API_BASE}/trainer/${encodeURIComponent(characterId)}/team`)
+            : basicProfileType === "trainee"
+              ? readOptionalDetail(`${BOT_API_BASE}/trainee/${encodeURIComponent(characterId)}/trainer`)
+              : null,
+          basicProfileType === "trainee"
+            ? readOptionalDetail(`${BOT_API_BASE}/player/${encodeURIComponent(characterId)}/race-history`)
+            : null,
+        ]);
         if (!cancelled) {
-          setDetail({ profile: profile || selectedCharacter.profileData || {}, related, history: normalizeRaceHistory(history), basicProfile: basicProfile?.profile || null });
+          setDetail({
+            profile: basicProfileType === "trainee" ? profile || selectedCharacter.profileData || {} : {},
+            related,
+            history: normalizeRaceHistory(history),
+            basicProfile: basicProfile?.profile || null,
+          });
         }
       } catch (error) {
         if (!cancelled) setDetailError("Could not load all profile details.");
@@ -420,8 +431,8 @@ export default function CharactersPage({ userId, player, profiles, activeProfile
         return {
           id: `${userId}:${profileType.id}`,
           userId,
-          profileData: player || {},
-          name: profile?.name || player?.username || profileType.label,
+          profileData: profileType.id === "trainee" ? player || {} : {},
+          name: profile?.name || (profileType.id === "trainee" ? player?.username : "") || profileType.label,
           image_url: imageUrl,
           type: profileType.id === "trainee" ? "Umamusume" : profileType.label,
         };
@@ -614,7 +625,7 @@ function CharacterProfilePage({ character, userId, detail, loading, error, onClo
   const profileTheme = character.type === "Trainer"
     ? "trainer"
     : character.type === "NPC" ? "npc" : "trainee";
-  const profile = detail?.profile || character.profileData || {};
+  const profile = profileTheme === "trainee" ? detail?.profile || character.profileData || {} : {};
   // /player/{id} always returns the account's trainee record. For Trainer/NPC
   // cards that would replace the role-specific identity shown in the roster.
   const usesPresetIdentity = character.type === "Trainer" || character.type === "NPC";
@@ -645,7 +656,7 @@ function CharacterProfilePage({ character, userId, detail, loading, error, onClo
     setHistoryPage(1);
   }, [character.id]);
   const members = detail?.related?.members || [];
-  const fans = isTrainer ? (detail?.related?.fans ?? profile.fans) : profile.fans;
+  const fans = isTrainer ? (detail?.related?.fans ?? 0) : profile.fans;
 
   useEffect(() => {
     const handleEscape = (event) => event.key === "Escape" && onClose();
@@ -677,10 +688,10 @@ function CharacterProfilePage({ character, userId, detail, loading, error, onClo
             <h2 id="character-profile-title">{name}</h2>
             <p>{isTrainer ? "Trainer profile" : detail?.basicProfile?.name_en || "Umamusume trainee profile"}</p>
           </div>
-          <div className="character-profile-fans"><span>{isTrainer ? "Total Fans" : "Fans Point"}</span><strong>{formatFans(fans)}</strong></div>
+          {profileTheme !== "npc" && <div className="character-profile-fans"><span>{isTrainer ? "Total Fans" : "Fans Point"}</span><strong>{formatFans(fans)}</strong></div>}
         </header>
 
-        <BasicProfileSection userId={userId} character={character} initialProfile={detail?.basicProfile} loading={loading} onUpdated={onBasicProfileUpdated} />
+        {!error && <BasicProfileSection userId={userId} character={character} initialProfile={detail?.basicProfile} loading={loading} onUpdated={onBasicProfileUpdated} />}
 
         {loading ? <p className="character-profile-status">กำลังโหลดโปรไฟล์...</p> : error ? <p className="character-profile-status is-error">{error}</p> : isTrainer ? (
           <section className="character-profile-section">
@@ -709,7 +720,7 @@ function CharacterProfilePage({ character, userId, detail, loading, error, onClo
               </article>
             ))}</div> : <p className="character-profile-empty">ยังไม่มีสาวม้าในทีม</p>}
           </section>
-        ) : (
+        ) : profileTheme === "trainee" ? (
           <>
             {traineeTrainer && <button type="button" className="character-profile-trainer" onClick={() => onOpenCharacter({
               id: traineeTrainer.user_id || traineeTrainer.id,
@@ -772,7 +783,7 @@ function CharacterProfilePage({ character, userId, detail, loading, error, onClo
               </div> : <p className="character-profile-empty">ไม่พบประวัติการแข่งขันตามประเภทที่เลือก</p>) : <p className="character-profile-empty">ยังไม่มีประวัติการแข่งขัน</p>}
             </section>
           </>
-        )}
+        ) : null}
       </motion.section>
     </motion.div>
   );
