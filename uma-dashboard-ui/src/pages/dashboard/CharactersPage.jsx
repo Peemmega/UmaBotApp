@@ -245,7 +245,7 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
           <label className="basic-profile-field"><span>ชื่อภาษาอังกฤษ <b>*</b></span><input required maxLength={80} value={profile.name_en} onChange={change("name_en")} /></label>
           {profileType === "trainee" && <label className="basic-profile-field"><span>Class <b>*</b></span><select required value={profile.division} onChange={change("division")}><option value="">เลือก Division</option><option>Junior Division</option><option>Senior Division</option></select></label>}
           <label className="basic-profile-field"><span>Birthday <b>*</b></span><div className="basic-profile-birthday"><select required aria-label="วันเกิด" value={profile.birthday_day} onChange={change("birthday_day")}><option value="">วัน</option>{Array.from({ length: 31 }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}</select><span>/</span><select required aria-label="เดือนเกิด" value={profile.birthday_month} onChange={change("birthday_month")}><option value="">เดือน</option>{Array.from({ length: 12 }, (_, i) => <option key={i + 1} value={i + 1}>{String(i + 1).padStart(2, "0")}</option>)}</select></div></label>
-          <label className="basic-profile-field"><span>Age</span><input type="number" min="1" max="150" value={profile.age} onChange={change("age")} /></label>
+          {profileType !== "trainee" && <label className="basic-profile-field"><span>Age</span><input type="number" min="1" max="150" value={profile.age} onChange={change("age")} /></label>}
           <label className="basic-profile-field"><span>Height (cm.) <b>*</b></span><input required type="number" min="1" max="300" value={profile.height_cm} onChange={change("height_cm")} /></label>
           {profileType === "trainee" && <label className="basic-profile-field"><span>Dorm <b>*</b></span><select required value={profile.dorm} onChange={change("dorm")}><option value="">เลือกหอพัก</option><option>Ritto</option><option>Miho</option></select></label>}
           <label className="basic-profile-field"><span>Like <small>{countWords(profile.likes)}/60 คำ</small></span><textarea rows={2} value={profile.likes} onChange={change("likes")} /></label>
@@ -267,7 +267,7 @@ function BasicProfileSection({ userId, character, initialProfile, loading, onUpd
             <dl className="basic-profile-details">
               <div><dt>ชื่อ</dt><dd>{profile.name_th}</dd></div>
               <div><dt>Name</dt><dd>{profile.name_en}</dd></div>
-              <div><dt>Birthday</dt><dd className="basic-profile-birthday-value"><span>{birthdayLabel(profile)}</span>{profile.age && <small>{profile.age} years old</small>}</dd></div>
+              <div><dt>Birthday</dt><dd className="basic-profile-birthday-value"><span>{birthdayLabel(profile)}</span>{profileType !== "trainee" && profile.age && <small>{profile.age} years old</small>}</dd></div>
               <div><dt>Height</dt><dd>{profile.height_cm} cm.</dd></div>
               {profileType === "trainee" && <div><dt>Class</dt><dd>{profile.division}</dd></div>}
               {profileType === "trainee" && <div><dt>Dorm</dt><dd>{profile.dorm}</dd></div>}
