@@ -21,7 +21,7 @@
 .race-replay-page button { cursor: pointer; }
 .race-replay-page button:disabled { opacity: .4; cursor: not-allowed; }
 .race-replay-page :is(button, select, input, summary):focus-visible, .replay-empty button:focus-visible { outline: 3px solid #306743; outline-offset: 4px; }
-.replay-heading { display: flex; align-items: flex-start; gap: 24px; margin-bottom: 24px; }
+.replay-heading { display: flex; align-items: flex-start; gap: 24px; margin-top: 24px; }
 .replay-back, .replay-empty button { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 40px; padding: 8px 10px; border: 1px solid var(--replay-line, #dfe8df); border-radius: 8px; background: #fff; color: var(--replay-green, #306743); font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; }
 .replay-race-title { min-width: 0; }
 .replay-race-title h1 { margin: 0 0 6px; font-size: clamp(21px, 2.5vw, 30px); font-weight: 800; line-height: 1.35; overflow-wrap: anywhere; }
