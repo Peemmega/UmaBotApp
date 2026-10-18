@@ -30,7 +30,7 @@ export function formatReplayAction(action) {
     case "zone": return `ใช้ Zone${data.zone_name ? ` ${data.zone_name}` : ""}`;
     case "rush": return `ใช้ Rush เพิ่ม ${data.move_forward ?? 0} คะแนน`;
     case "block": return `ใช้ Block ถอย ${data.move_back ?? 0} คะแนน`;
-    case "blocked": return `ถูกบล็อก${data.blocked_count ? ` ${data.blocked_count} คน` : ""}`;
+    case "blocked": return `Blocked ระหว่างวิ่ง${data.blocked_count ? ` · ผ่านคู่แข่งในเลนเดียวกัน ${data.blocked_count} คน` : ""}`;
     case "draft": return "ได้รับโบนัส Draft";
     case "reroll": return `ทอยใหม่${data.rerolls_left != null ? ` · เหลือ ${data.rerolls_left} ครั้ง` : ""}`;
     case "timing": return `Timing ${data.timing_tier || ""} · เคลื่อนที่ +${data.distance_gain ?? 0}`;
@@ -135,12 +135,14 @@ export function buildReplayTransition(participants, turns, selectedTurn, avatars
 
 export function groupReplayEvents(players, actions, selectedTurn) {
   const names = new Map(players.map((player) => [player.id, player.name]));
+  const playersById = new Map(players.map((player) => [player.id, player]));
   const events = new Map(players.map((player) => [player.id, []]));
   const currentActions = actions.filter((action) => Number(action.turn_number) === selectedTurn);
   currentActions.forEach((action, index) => {
     const actor = String(action.participant_id);
     const target = action.target_participant_id == null ? null : String(action.target_participant_id);
     const data = objectData(action.action_data ?? action.action_data_json);
+    const actorPlayer = playersById.get(actor);
     const event = {
       id: `action-${action.action_id ?? index}`,
       label: formatReplayAction(action),
@@ -148,6 +150,15 @@ export function groupReplayEvents(players, actions, selectedTurn) {
       skillId: data.skill_id,
       skillName: data.skill_name,
       target: target ? names.get(target) || target : "",
+      runLane: actorPlayer?.lane_before ?? actorPlayer?.current_lane,
+      nextLane: actorPlayer?.lane_after ?? actorPlayer?.current_lane,
+      laneChanged: Boolean(actorPlayer?.lane_changed),
+      blockedRunnerIds: Array.isArray(data.blocked_runner_ids)
+        ? data.blocked_runner_ids.map((value) => String(value))
+        : [],
+      blockedRunnerNames: Array.isArray(data.blocked_runner_ids)
+        ? data.blocked_runner_ids.map((value) => names.get(String(value)) || String(value))
+        : [],
     };
     events.get(actor)?.push(event);
     if (target && target !== actor) events.get(target)?.push({
