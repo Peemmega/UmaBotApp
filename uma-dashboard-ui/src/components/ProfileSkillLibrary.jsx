@@ -19,6 +19,7 @@ export default function ProfileSkillLibrary({ userId, username, readOnly = false
   const [skills, setSkills] = useState([]);
   const [equippedSkills, setEquippedSkills] = useState({});
   const [acquiredSkillIds, setAcquiredSkillIds] = useState([]);
+  const [canUseAllSkills, setCanUseAllSkills] = useState(false);
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -40,19 +41,21 @@ export default function ProfileSkillLibrary({ userId, username, readOnly = false
       setLoading(true);
       setError("");
       try {
-        const [catalogResponse, playerSkillsResponse, inventoryResponse] = await Promise.all([
+        const [catalogResponse, playerSkillsResponse, inventoryResponse, accessResponse] = await Promise.all([
           fetch(`${BOT_API_BASE}/skills?tag=all`, { signal: controller.signal }),
           fetch(`${BOT_API_BASE}/player/${encodeURIComponent(userId)}/skills`, { signal: controller.signal }),
           fetch(`${BOT_API_BASE}/player/${encodeURIComponent(userId)}/skill-inventory`, { signal: controller.signal }),
+          fetch(`${BOT_API_BASE}/player/${encodeURIComponent(userId)}/skill-access`, { signal: controller.signal }),
         ]);
         if (!catalogResponse.ok || !playerSkillsResponse.ok || !inventoryResponse.ok) throw new Error("ไม่สามารถโหลดรายการสกิลได้");
-        const [catalog, playerSkills, inventory] = await Promise.all([
-          catalogResponse.json(), playerSkillsResponse.json(), inventoryResponse.json(),
+        const [catalog, playerSkills, inventory, access] = await Promise.all([
+          catalogResponse.json(), playerSkillsResponse.json(), inventoryResponse.json(), accessResponse.json(),
         ]);
         if (controller.signal.aborted) return;
         setSkills(Array.isArray(catalog) ? catalog : []);
         setEquippedSkills(playerSkills || {});
         setAcquiredSkillIds((inventory?.skills || []).map((skill) => String(skill.id || "").toLowerCase()));
+        setCanUseAllSkills(access?.can_use_all === true);
       } catch (loadError) {
         if (!controller.signal.aborted) setError(loadError.message || "เกิดข้อผิดพลาดระหว่างโหลดสกิล");
       } finally {
@@ -82,10 +85,10 @@ export default function ProfileSkillLibrary({ userId, username, readOnly = false
   const filteredSkills = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
     return skills
-      .filter((skill) => getSkillRarity(skill) === "common" || ownedSkillIds.has(String(skill.id || "").trim().toLowerCase()))
+      .filter((skill) => canUseAllSkills || getSkillRarity(skill) === "common" || ownedSkillIds.has(String(skill.id || "").trim().toLowerCase()))
       .filter((skill) => !query || `${skill.name || ""} ${skill.id || ""} ${(skill.tags || []).join(" ")}`.toLocaleLowerCase().includes(query))
       .sort((left, right) => String(left.name || left.id).localeCompare(String(right.name || right.id), undefined, { numeric: true, sensitivity: "base" }));
-  }, [ownedSkillIds, search, skills]);
+  }, [canUseAllSkills, ownedSkillIds, search, skills]);
 
   const equipSkill = async (slot) => {
     if (!selectedSkill) return;
@@ -127,7 +130,7 @@ export default function ProfileSkillLibrary({ userId, username, readOnly = false
         <div className="profile-skill-grid">
           {filteredSkills.map((skill) => {
             const rarity = getSkillRarity(skill);
-            const canEquip = rarity === "common" || ownedSkillIds.has(String(skill.id || "").trim().toLowerCase());
+            const canEquip = canUseAllSkills || rarity === "common" || ownedSkillIds.has(String(skill.id || "").trim().toLowerCase());
             const equippedSlot = Object.entries(equippedSkills || {}).find(([, value]) => String(value?.id || "") === String(skill.id))?.[0];
             return (
               <button type="button" className={`profile-skill-card rarity-${rarity}`} key={skill.id} onClick={() => { setEquipError(""); setSelectedSkill(skill); }}>
@@ -157,7 +160,7 @@ export default function ProfileSkillLibrary({ userId, username, readOnly = false
             {selectedSkill.target ? <p><strong>เป้าหมาย:</strong> {selectedSkill.target}</p> : null}
             {selectedSkill.trigger ? <p><strong>เงื่อนไข:</strong> {selectedSkill.trigger}</p> : null}
             {getSkillEffects(selectedSkill).length ? <div className="profile-skill-effects"><strong>ผลของสกิล</strong><ul>{getSkillEffects(selectedSkill).map((effect, index) => <li key={`${selectedSkill.id}-${index}`}>{describeRaceEffect(effect)}</li>)}</ul></div> : null}
-            {getSkillRarity(selectedSkill) === "common" || ownedSkillIds.has(String(selectedSkill.id || "").trim().toLowerCase()) ? (
+            {canUseAllSkills || getSkillRarity(selectedSkill) === "common" || ownedSkillIds.has(String(selectedSkill.id || "").trim().toLowerCase()) ? (
               <div className="profile-skill-equip-slots">
                 <strong>{readOnly ? "สถานะการติดตั้ง" : "ติดตั้งในช่อง"}</strong>
                 {Object.entries(equippedSkills || {}).some(([, value]) => String(value?.id || "") === String(selectedSkill.id)) ? (
