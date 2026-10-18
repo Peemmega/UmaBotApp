@@ -12,7 +12,8 @@ function objectData(value) {
 function laneFromTurn(turn, fallback = 1) {
   const data = getReplayTurnData(turn);
   const laneChange = data.lane_change ?? data.roll?.lane_change;
-  return laneOf(laneChange?.to ?? data.roll?.current_lane ?? turn?.lane ?? fallback);
+  const recordedLane = laneChange?.to ?? data.roll?.current_lane ?? turn?.lane;
+  return recordedLane == null ? fallback : laneOf(recordedLane);
 }
 
 export function getReplayTurnData(turn) {
@@ -55,16 +56,20 @@ export function buildReplayState(participants, turns, selectedTurn, avatars = {}
     const color = String(roll.distance_color || "").toLowerCase();
     const firstTurnData = getReplayTurnData(history[0]);
     const firstLaneChange = firstTurnData.lane_change ?? firstTurnData.roll?.lane_change;
-    const initialLane = laneOf(
+    let currentLane = laneOf(
       firstLaneChange?.from
         ?? participant.initial_lane
         ?? defaultLaneFromEntry(participant.entry_number),
     );
+    for (const historyTurn of history) {
+      if (Number(historyTurn.turn_number) > selectedTurn) break;
+      currentLane = laneFromTurn(historyTurn, currentLane);
+    }
     return {
       id,
       name: participant.uma_name || id,
       display_number: Number(participant.entry_number) || index + 1,
-      current_lane: latest ? laneFromTurn(latest, initialLane) : initialLane,
+      current_lane: currentLane,
       score: Number(latest?.score_after) || 0,
       recordedRank: Number(latest?.position) || Infinity,
       running_style: participant.running_style,
