@@ -241,7 +241,6 @@ export default function RaceReplayPage({ raceId, onBack }) {
           <div className="replay-playback-toolbar">
             <div className="replay-transport">
               <button type="button" onClick={() => goToTurn(1)} disabled={selectedTurn <= 1 || !totalTurns} aria-label="กลับไปเทิร์นแรก"><RotateCcw size={17} /></button>
-              <button type="button" className="replay-key-control" onClick={() => goToTurn(selectedTurn - 1)} disabled={selectedTurn <= 1 || !totalTurns} aria-label="ย้อนกลับเทิร์นด้วย A"><kbd>A</kbd></button>
               <button type="button" onClick={() => goToTurn(selectedTurn - 1)} disabled={selectedTurn <= 1 || !totalTurns} aria-label="เทิร์นก่อนหน้า"><ChevronLeft size={20} /></button>
               <button type="button" className="replay-play" onClick={() => {
                 if (isPlaying) setIsPlaying(false);
@@ -250,7 +249,6 @@ export default function RaceReplayPage({ raceId, onBack }) {
                 {isPlaying ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" />}{isPlaying ? "พัก" : "เล่นรีเพลย์"}
               </button>
               <button type="button" onClick={() => goToTurn(selectedTurn + 1)} disabled={selectedTurn >= totalTurns || !totalTurns} aria-label="เทิร์นถัดไป"><ChevronRight size={20} /></button>
-              <button type="button" className="replay-key-control" onClick={() => goToTurn(selectedTurn + 1)} disabled={selectedTurn >= totalTurns || !totalTurns} aria-label="ไปเทิร์นถัดไปด้วย D"><kbd>D</kbd></button>
             </div>
             <div className="replay-playback-actions"><button type="button" className="replay-turn-play" onClick={() => (isPlaying ? setIsPlaying(false) : startPlayback("turn"))} disabled={totalTurns === 0}>{isPlaying && playMode === "turn" ? "พักเทิร์น" : "เล่นเทิร์นนี้"}</button><label className="replay-speed">ความเร็ว<select aria-label="ความเร็วรีเพลย์" value={playbackSpeed} onChange={(event) => setPlaybackSpeed(Number(event.target.value))}><option value={0.5}>0.5×</option><option value={1}>1×</option><option value={1.5}>1.5×</option><option value={2}>2×</option></select></label></div>
           </div>
