@@ -119,7 +119,13 @@ export default function RaceReplayPage({ raceId, onBack }) {
   const turnPlayerById = useMemo(() => new Map(replayTransition.run.map((player) => [player.id, player])), [replayTransition.run]);
   const actionCountByTurn = useMemo(() => {
     const counts = new Map();
-    actions.forEach((action) => counts.set(Number(action.turn_number), (counts.get(Number(action.turn_number)) || 0) + 1));
+    actions.forEach((action) => {
+      const turnNumber = Number(action.turn_number);
+      const displayTurn = String(action.action_type || "").toLowerCase() === "lane_change"
+        ? turnNumber + 1
+        : turnNumber;
+      counts.set(displayTurn, (counts.get(displayTurn) || 0) + 1);
+    });
     turns.forEach((turn) => {
       if (getReplayTurnData(turn).skills?.length && !counts.has(Number(turn.turn_number))) counts.set(Number(turn.turn_number), 1);
     });

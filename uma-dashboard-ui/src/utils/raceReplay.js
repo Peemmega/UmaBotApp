@@ -100,36 +100,36 @@ export function buildReplayState(participants, turns, selectedTurn, avatars = {}
 }
 
 export function buildReplayTransition(participants, turns, selectedTurn, avatars = {}) {
+  const beforeBefore = buildReplayState(participants, turns, Math.max(0, selectedTurn - 2), avatars);
   const before = buildReplayState(participants, turns, Math.max(0, selectedTurn - 1), avatars);
   const after = buildReplayState(participants, turns, selectedTurn, avatars);
+  const beforeBeforeById = new Map(beforeBefore.map((player) => [player.id, player]));
   const beforeById = new Map(before.map((player) => [player.id, player]));
-  const lane = after.map((player) => {
-    const previous = beforeById.get(player.id) || player;
+  const lane = before.map((player) => {
+    const previous = beforeBeforeById.get(player.id) || player;
     return {
       ...player,
-      score: previous.score,
-      distance: previous.distance,
-      progress_ratio: previous.progress_ratio,
-      gap_to_leader: previous.gap_to_leader,
-      rank: previous.rank,
       lane_before: previous.current_lane,
       lane_after: player.current_lane,
+      lane_changed: previous.current_lane !== player.current_lane,
     };
   });
-  const addLaneContext = (players) => players.map((player) => {
-    const previous = beforeById.get(player.id) || player;
-    const next = after.find((candidate) => candidate.id === player.id) || player;
+  const run = after.map((player) => {
+    const runStart = beforeById.get(player.id) || player;
     return {
       ...player,
-      lane_before: previous.current_lane,
-      lane_after: next.current_lane,
-      lane_changed: previous.current_lane !== next.current_lane,
+      // A lane change logged in turn N is resolved after turn N and is used
+      // for turn N+1. Keep turn N's movement on its actual starting lane.
+      current_lane: runStart.current_lane,
+      lane_before: runStart.current_lane,
+      lane_after: player.current_lane,
+      lane_changed: runStart.current_lane !== player.current_lane,
     };
   });
   return {
-    start: addLaneContext(before),
-    lane: addLaneContext(lane),
-    run: addLaneContext(after),
+    start: lane,
+    lane,
+    run,
   };
 }
 
@@ -137,7 +137,14 @@ export function groupReplayEvents(players, actions, selectedTurn) {
   const names = new Map(players.map((player) => [player.id, player.name]));
   const playersById = new Map(players.map((player) => [player.id, player]));
   const events = new Map(players.map((player) => [player.id, []]));
-  const currentActions = actions.filter((action) => Number(action.turn_number) === selectedTurn);
+  const currentActions = actions.filter((action) => {
+    const turnNumber = Number(action.turn_number);
+    const type = String(action.action_type || "").toLowerCase();
+    // Lane changes are resolved at the transition into the next turn, so
+    // show the recorded change at the start of the turn where it takes effect.
+    if (type === "lane_change") return turnNumber === selectedTurn - 1;
+    return turnNumber === selectedTurn;
+  });
   currentActions.forEach((action, index) => {
     const actor = String(action.participant_id);
     const target = action.target_participant_id == null ? null : String(action.target_participant_id);
