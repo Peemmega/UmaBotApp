@@ -106,14 +106,14 @@ function buildTrackPlayers(players) {
   });
 }
 
-export default function RacePositionTrack({ players, currentUserId }) {
+export default function RacePositionTrack({ players, currentUserId, selectedPlayerId, onSelectPlayer, label = "Live player positions" }) {
   const trackPlayers = useMemo(
     () => buildTrackPlayers(players),
     [players]
   );
 
   return (
-    <section className="race-position-track" aria-label="Live player positions">
+    <section className="race-position-track" aria-label={label}>
       <div className="race-position-lanes" aria-hidden="true">
         {Array.from({ length: LANE_COUNT }, (_, index) => (
           <div
@@ -127,6 +127,9 @@ export default function RacePositionTrack({ players, currentUserId }) {
       {trackPlayers.map((player) => {
         const isSelf =
           String(player.id ?? player.user_id ?? "") === String(currentUserId);
+        const isSelected = selectedPlayerId != null && player.playerKey === String(selectedPlayerId);
+        const Marker = onSelectPlayer ? "button" : "div";
+        const markerLabel = `${player.name || "Racer"} | Score ${player.numericScore} | Rank ${Number(player.rank) || "-"}${player.pack_state ? ` | ${player.pack_state === "in" ? "อยู่ในกลุ่ม" : "ออกนอกกลุ่ม"}` : ""}`;
 
         return (
           <div
@@ -134,6 +137,7 @@ export default function RacePositionTrack({ players, currentUserId }) {
             className={[
               "race-track-marker-wrap",
               isSelf ? "is-self" : "",
+              isSelected ? "is-selected" : "",
             ].filter(Boolean).join(" ")}
             style={{
               "--progress": player.markerProgress,
@@ -142,11 +146,16 @@ export default function RacePositionTrack({ players, currentUserId }) {
               "--lane-y": `${player.markerLaneY}%`,
             }}
           >
-            <div
+            <Marker
               className="race-player-marker"
-              title={
-                `${player.name || "Racer"} | Score ${player.numericScore} | Rank ${Number(player.rank) || "-"}`
-              }
+              data-pack={player.pack_state}
+              title={markerLabel}
+              {...(onSelectPlayer ? {
+                type: "button",
+                "aria-label": markerLabel,
+                "aria-pressed": isSelected,
+                onClick: () => onSelectPlayer(player.playerKey),
+              } : {})}
             >
               {player.track_avatar ? (
                 <img src={player.track_avatar} alt="" />
@@ -156,7 +165,8 @@ export default function RacePositionTrack({ players, currentUserId }) {
                 </span>
               )}
               <span className="race-player-marker__number">{player.display_number}</span>
-            </div>
+            </Marker>
+            {onSelectPlayer && <span className="replay-marker-name">{player.name}</span>}
           </div>
         );
       })}

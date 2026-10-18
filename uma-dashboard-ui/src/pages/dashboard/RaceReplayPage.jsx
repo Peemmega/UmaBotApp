@@ -1,125 +1,66 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Flag,
-  ListChecks,
-  Pause,
-  Play,
-  RotateCcw,
-  Trophy,
-} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowRight, ChevronLeft, ChevronRight, Flag, Focus, ListChecks, Pause, Play, RotateCcw, Users, X } from "lucide-react";
 import { BOT_API_BASE } from "../../api/playerApi";
 import RacePositionTrack from "../../components/RacePositionTrack";
-import { Reveal } from "../../components/ui";
 import { resolveRaceAvatar } from "../../utils/avatar";
+import { buildReplayState, getReplayTurnData, groupReplayEvents } from "../../utils/raceReplay";
 import "../../styles/raceReplayPage.css";
 
-const LANE_COUNT = 6;
 const EMPTY_LIST = [];
-
-function laneCenterY(lane) {
-  return 12 + (Math.min(LANE_COUNT, Math.max(1, Number(lane) || 1)) - 1) * 15;
-}
-
-function formatAction(action) {
-  const data = action?.action_data || action?.action_data_json || {};
-  const type = String(action?.action_type || "").toLowerCase();
-  if (type === "skill") return `ใช้สกิล ${data.skill_name || data.skill_id || "-"}`;
-  if (type === "lane_change" || type === "lane_change_queued") {
-    return `เปลี่ยนเลน ${data.from_lane ?? "-"} → ${data.to_lane ?? "-"}`;
-  }
-  if (type === "zone") return `ใช้ Zone ${data.zone_name || "-"}`;
-  if (type === "rush") return `ใช้ Rush +${data.move_forward ?? "-"}`;
-  if (type === "block") return `ใช้ Block ${data.move_back ?? "-"}`;
-  return data.summary || action?.action_type || "การกระทำ";
-}
+const number = (value) => Number(value || 0).toLocaleString("th-TH", { maximumFractionDigits: 1 });
+const signed = (value) => `${Number(value) >= 0 ? "+" : ""}${number(value)}`;
+const laneCenterY = (lane) => 12 + (lane - 1) * 15;
 
 function participantAvatar(participant, currentProfileImage = "") {
   const snapshot = participant?.snapshot || participant?.snapshot_json || {};
-  const savedAvatar = resolveRaceAvatar({
+  const avatar = resolveRaceAvatar({
     profile_image_url: currentProfileImage || snapshot.profile_image_url || participant?.profile_image_url,
     avatar: snapshot.avatar_url || snapshot.avatar || participant?.avatar,
     thumbnail: snapshot.thumbnail || participant?.thumbnail,
   }, "");
-  if (savedAvatar) return savedAvatar;
-
+  if (avatar) return avatar;
   const mobId = String(participant?.mob_id || "");
   return /^[a-z0-9_-]+$/i.test(mobId) ? `/mobs/${mobId}.webp` : "";
 }
 
-function buildReplayState(participants, turns, selectedTurn, playerAvatars) {
-  const finalDistance = Math.max(
-    1,
-    ...participants.map((participant) => Number(participant.final_score) || 0),
-    ...turns.map((turn) => Number(turn.score_after) || 0),
-  );
-
-  const turnsByParticipant = new Map();
-  for (const turn of turns) {
-    const id = String(turn.participant_id);
-    const history = turnsByParticipant.get(id) || [];
-    history.push(turn);
-    turnsByParticipant.set(id, history);
-  }
-
-  const players = participants.map((participant, index) => {
-    const history = turnsByParticipant.get(String(participant.participant_id)) || [];
-    const completedTurns = history.filter((turn) => Number(turn.turn_number) <= selectedTurn);
-    const latest = completedTurns.at(-1);
-    const firstTurn = history[0];
-    const score = Number(latest?.score_after) || 0;
-    return {
-      id: participant.participant_id,
-      name: participant.uma_name || participant.participant_id,
-      display_number: Number(participant.entry_number) || index + 1,
-      current_lane: Math.min(LANE_COUNT, Math.max(1, Number(latest?.lane || firstTurn?.lane) || 1)),
-      distance: score,
-      score,
-      progress_ratio: 0.055 + (score / finalDistance) * 0.89,
-      rank: Number(latest?.position) || null,
-      running_style: participant.running_style,
-      track_avatar: participantAvatar(participant, playerAvatars[String(participant.participant_id)]),
-      latestTurn: latest,
-      finalRank: participant.final_rank,
-    };
-  });
-
-  const ranked = [...players].sort((left, right) => (
-    (left.rank || Number.MAX_SAFE_INTEGER) - (right.rank || Number.MAX_SAFE_INTEGER)
-    || right.score - left.score
-    || left.display_number - right.display_number
-  ));
-  ranked.forEach((player, index) => {
-    if (!player.rank) player.rank = index + 1;
-  });
-  return ranked;
+function RunnerAvatar({ player }) {
+  return <span className="replay-runner-avatar" data-pack={player.pack_state}>
+    {player.track_avatar ? <img src={player.track_avatar} alt="" /> : player.name.slice(0, 1)}
+    <small>{player.display_number}</small>
+  </span>;
 }
 
 export default function RaceReplayPage({ raceId, onBack }) {
-  const [detail, setDetail] = useState(null);
-  const [loading, setLoading] = useState(Boolean(raceId));
-  const [error, setError] = useState(raceId ? "" : "ไม่พบรายการการแข่งขันที่ต้องการดูรีเพลย์");
+  const [request, setRequest] = useState({ raceId: null, detail: null, error: "" });
   const [selectedTurn, setSelectedTurn] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [selectedPlayerId, setSelectedPlayerId] = useState(null);
+  const [actionsOnly, setActionsOnly] = useState(false);
   const [playerAvatars, setPlayerAvatars] = useState({});
+  const activeTurnRef = useRef(null);
+  const runnerListRef = useRef(null);
 
   useEffect(() => {
     if (!raceId) return undefined;
     const controller = new AbortController();
     fetch(`${BOT_API_BASE}/race-history/${encodeURIComponent(raceId)}`, { signal: controller.signal })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error("Could not load race replay")))
-      .then((data) => {
-        setDetail(data);
+      .then((detail) => {
+        if (controller.signal.aborted) return;
+        setRequest({ raceId, detail, error: "" });
         setSelectedTurn(0);
+        setIsPlaying(false);
+        setSelectedPlayerId(null);
       })
-      .catch((requestError) => {
-        if (requestError.name !== "AbortError") setError("ไม่สามารถโหลดข้อมูลรีเพลย์การแข่งขันได้");
-      })
-      .finally(() => setLoading(false));
+      .catch((error) => {
+        if (error.name !== "AbortError") setRequest({ raceId, detail: null, error: "โหลดรีเพลย์ไม่สำเร็จ กรุณาลองเปิดการแข่งขันนี้อีกครั้ง" });
+      });
     return () => controller.abort();
   }, [raceId]);
 
+  const detail = request.raceId === raceId ? request.detail : null;
+  const loading = Boolean(raceId && request.raceId !== raceId);
   const race = detail?.race || {};
   const participants = detail?.participants || EMPTY_LIST;
   const turns = detail?.turns || EMPTY_LIST;
@@ -127,156 +68,156 @@ export default function RaceReplayPage({ raceId, onBack }) {
   const totalTurns = Math.max(Number(race.total_turns) || 0, ...turns.map((turn) => Number(turn.turn_number) || 0), 0);
 
   useEffect(() => {
+    const controller = new AbortController();
     const persistentParticipants = participants.filter((participant) => participant?.uma_id);
-    if (!persistentParticipants.length) return undefined;
-
-    let cancelled = false;
-    Promise.all(persistentParticipants.map(async (participant) => {
-      const response = await fetch(`${BOT_API_BASE}/player/${encodeURIComponent(participant.uma_id)}`);
+    Promise.allSettled(persistentParticipants.map(async (participant) => {
+      const response = await fetch(`${BOT_API_BASE}/player/${encodeURIComponent(participant.uma_id)}`, { signal: controller.signal });
       if (!response.ok) return [String(participant.participant_id), ""];
-      const player = await response.json();
-      return [String(participant.participant_id), resolveRaceAvatar(player, "")];
-    }))
-      .then((entries) => {
-        if (!cancelled) setPlayerAvatars(Object.fromEntries(entries.filter(([, avatar]) => avatar)));
-      })
-      .catch(() => {
-        if (!cancelled) setPlayerAvatars({});
-      });
-
-    return () => { cancelled = true; };
+      return [String(participant.participant_id), resolveRaceAvatar(await response.json(), "")];
+    })).then((results) => {
+      if (!controller.signal.aborted) setPlayerAvatars(Object.fromEntries(results
+        .filter((result) => result.status === "fulfilled" && result.value[1])
+        .map((result) => result.value)));
+    });
+    return () => controller.abort();
   }, [participants]);
 
   useEffect(() => {
-    if (!isPlaying || selectedTurn >= totalTurns) return undefined;
+    if (!isPlaying || selectedTurn >= totalTurns || loading) return undefined;
     const timer = window.setTimeout(() => {
       const nextTurn = Math.min(selectedTurn + 1, totalTurns);
       setSelectedTurn(nextTurn);
       if (nextTurn >= totalTurns) setIsPlaying(false);
-    }, 1100);
+    }, 1800 / playbackSpeed);
     return () => window.clearTimeout(timer);
-  }, [isPlaying, selectedTurn, totalTurns]);
+  }, [isPlaying, loading, playbackSpeed, selectedTurn, totalTurns]);
 
-  const replayPlayers = useMemo(
-    () => buildReplayState(participants, turns, selectedTurn, playerAvatars),
-    [participants, playerAvatars, selectedTurn, turns],
-  );
-  const participantById = useMemo(
-    () => new Map(participants.map((participant) => [String(participant.participant_id), participant])),
-    [participants],
-  );
-  const turnEvents = useMemo(() => {
-    if (selectedTurn === 0) return [];
-    const movement = turns
-      .filter((turn) => Number(turn.turn_number) === selectedTurn)
-      .map((turn) => ({
-        type: "move",
-        id: `move-${turn.participant_id}`,
-        participant: participantById.get(String(turn.participant_id)),
-        turn,
-      }));
-    const actionEvents = actions
-      .filter((action) => Number(action.turn_number) === selectedTurn)
-      .map((action) => ({
-        type: "action",
-        id: `action-${action.action_id}`,
-        participant: participantById.get(String(action.participant_id)),
-        action,
-      }));
-    return [...movement, ...actionEvents];
-  }, [actions, participantById, selectedTurn, turns]);
+  const replayPlayers = useMemo(() => {
+    const avatars = Object.fromEntries(participants.map((participant) => [
+      String(participant.participant_id), participantAvatar(participant, playerAvatars[String(participant.participant_id)]),
+    ]));
+    return buildReplayState(participants, turns, selectedTurn, avatars);
+  }, [participants, playerAvatars, selectedTurn, turns]);
+  const eventsByPlayer = useMemo(() => groupReplayEvents(replayPlayers, actions, selectedTurn), [replayPlayers, actions, selectedTurn]);
+  const actionCountByTurn = useMemo(() => {
+    const counts = new Map();
+    actions.forEach((action) => counts.set(Number(action.turn_number), (counts.get(Number(action.turn_number)) || 0) + 1));
+    turns.forEach((turn) => {
+      if (getReplayTurnData(turn).skills?.length && !counts.has(Number(turn.turn_number))) counts.set(Number(turn.turn_number), 1);
+    });
+    return counts;
+  }, [actions, turns]);
+  const selectedPlayer = replayPlayers.find((player) => player.id === selectedPlayerId);
+  const visiblePlayers = actionsOnly ? replayPlayers.filter((player) => eventsByPlayer.get(player.id)?.length) : replayPlayers;
+  const activeCount = replayPlayers.filter((player) => eventsByPlayer.get(player.id)?.length).length;
+
+  useEffect(() => {
+    const active = activeTurnRef.current;
+    const container = active?.parentElement;
+    if (!active || !container) return;
+    const left = active.offsetLeft - container.offsetLeft;
+    if (left < container.scrollLeft || left + active.offsetWidth > container.scrollLeft + container.clientWidth) {
+      container.scrollLeft = left - container.clientWidth / 2 + active.offsetWidth / 2;
+    }
+  }, [selectedTurn]);
+
+  useEffect(() => {
+    const container = runnerListRef.current;
+    const row = container?.querySelector('[data-selected="true"]');
+    if (!row) return;
+    const top = row.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+    if (top < container.scrollTop || top + row.offsetHeight > container.scrollTop + container.clientHeight) container.scrollTop = top;
+  }, [selectedPlayerId, actionsOnly, selectedTurn]);
 
   const goToTurn = (turn) => {
     setIsPlaying(false);
     setSelectedTurn(Math.min(totalTurns, Math.max(0, turn)));
   };
+  const selectPlayer = (id) => {
+    setSelectedPlayerId((current) => current === String(id) ? null : String(id));
+    setActionsOnly(false);
+  };
 
-  if (loading) return <section className="race-replay-loading">กำลังโหลดรีเพลย์การแข่งขัน...</section>;
-  if (error) return <section className="race-replay-loading is-error">{error}<button type="button" onClick={onBack}>กลับหน้าสนามแข่ง</button></section>;
+  if (loading) return <section className="replay-empty" aria-live="polite"><Flag size={32} /><h1>กำลังเตรียมรีเพลย์</h1><p>กำลังโหลดตำแหน่งและเหตุการณ์ในการแข่งขัน</p></section>;
+  if (!raceId || request.error) return <section className="replay-empty">
+    <Flag size={32} /><h1>{raceId ? "ยังเปิดรีเพลย์ไม่ได้" : "เลือกการแข่งขันที่อยากดูอีกครั้ง"}</h1>
+    <p>{raceId ? request.error : "เปิดรีเพลย์จากประวัติการแข่งขัน เพื่อดูตำแหน่งและการกระทำในแต่ละเทิร์น"}</p>
+    <button type="button" onClick={onBack}><ChevronLeft size={17} /> กลับหน้าสนามแข่ง</button>
+  </section>;
 
-  return (
-    <section className="race-replay-page" aria-label="รีเพลย์การแข่งขัน">
-      <Reveal as="header" className="race-replay-header">
-        <button type="button" className="race-replay-back" onClick={onBack}><ChevronLeft size={18} /> กลับ</button>
-        <div>
-          <span>RACE REPLAY</span>
-          <h1>{race.stage_name || race.race_name || "การแข่งขัน"}</h1>
-          <p>{race.track || "-"} · {race.distance || "-"} · ผู้เข้าแข่งขัน {participants.length} คน</p>
-        </div>
-        <div className="race-replay-turn-counter"><Flag size={17} /> เทิร์น {selectedTurn} / {totalTurns}</div>
-      </Reveal>
-
-      <div className="race-replay-layout">
-        <Reveal as="aside" className="race-replay-log-panel">
-          <h2><ListChecks size={17} /> Race log</h2>
-          <p className="race-replay-panel-caption">{selectedTurn === 0 ? "ตำแหน่งก่อนเริ่มการแข่งขัน" : `เหตุการณ์ในเทิร์น ${selectedTurn}`}</p>
-          <div className="race-replay-log-list">
-            {turnEvents.length ? turnEvents.map((event) => event.type === "move" ? (
-              <article className="race-replay-log-entry" key={event.id}>
-                <b>{event.participant?.uma_name || event.turn.participant_id}</b>
-                <span>เคลื่อนที่ +{event.turn.run_score ?? 0} · เลน {event.turn.lane ?? "-"}</span>
-                <em>คะแนนรวม {Number(event.turn.score_after || 0).toLocaleString()} · อันดับ #{event.turn.position ?? "-"}</em>
-              </article>
-            ) : (
-              <article className="race-replay-log-entry is-action" key={event.id}>
-                <b>{event.participant?.uma_name || event.action.participant_id}</b>
-                <span>{formatAction(event.action)}</span>
-              </article>
-            )) : <p className="race-replay-empty">เริ่มต้นที่เส้นสตาร์ต</p>}
-          </div>
-        </Reveal>
-
-        <Reveal as="main" className="race-replay-track-panel">
-          <div className="race-replay-track-header"><span>START</span><strong>{selectedTurn === totalTurns && totalTurns ? "FINISH" : `TURN ${selectedTurn}`}</strong><span>FINISH</span></div>
-          <div className="race-replay-stage">
-            {/* <img src={raceBackground(race)} alt="สนามแข่ง" /> */}
-            <div className="race-replay-stage-shade" />
-            <div className="race-replay-lane-guides" aria-hidden="true">
-              {Array.from({ length: LANE_COUNT }, (_, index) => (
-                <span key={index} style={{ "--lane-y": `${laneCenterY(index + 1)}%` }} />
-              ))}
-            </div>
-            <RacePositionTrack players={replayPlayers} />
-            <div className="race-replay-lane-labels" aria-hidden="true">
-              {Array.from({ length: LANE_COUNT }, (_, index) => (
-                <span key={index} style={{ "--lane-y": `${laneCenterY(index + 1)}%` }}>Lane {index + 1}</span>
-              ))}
-            </div>
-          </div>
-          <div className="race-replay-controls">
-            <button type="button" onClick={() => goToTurn(0)} aria-label="กลับไปเริ่มต้น"><RotateCcw size={18} /></button>
-            <button type="button" onClick={() => goToTurn(selectedTurn - 1)} disabled={selectedTurn === 0} aria-label="เทิร์นก่อนหน้า"><ChevronLeft size={20} /></button>
-            <button type="button" className="race-replay-play" onClick={() => setIsPlaying((value) => !value)} disabled={selectedTurn >= totalTurns}>
-              {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />} {isPlaying ? "หยุดชั่วคราว" : "เล่นรีเพลย์"}
-            </button>
-            <button type="button" onClick={() => goToTurn(selectedTurn + 1)} disabled={selectedTurn >= totalTurns} aria-label="เทิร์นถัดไป"><ChevronRight size={20} /></button>
-          </div>
-          <div className="race-replay-timeline" aria-label="เลือกเทิร์น">
-            <button type="button" className={selectedTurn === 0 ? "active" : ""} onClick={() => goToTurn(0)}>Start</button>
-            {Array.from({ length: totalTurns }, (_, index) => {
-              const turn = index + 1;
-              return <button type="button" key={turn} className={selectedTurn === turn ? "active" : ""} onClick={() => goToTurn(turn)}>T{turn}</button>;
-            })}
-          </div>
-        </Reveal>
-
-        <Reveal as="aside" className="race-replay-score-panel">
-          <h2><Trophy size={17} /> Scoreboard</h2>
-          <p className="race-replay-panel-caption">อันดับ ณ เทิร์น {selectedTurn}</p>
-          <ol className="race-replay-score-list">
-            {replayPlayers.map((player) => (
-              <li key={player.id} className={player.rank === 1 ? "is-leading" : ""}>
-                <strong>#{player.rank}</strong>
-                <span className="race-replay-avatar">
-                  {player.track_avatar ? <img src={player.track_avatar} alt="" /> : String(player.name || "?").slice(0, 1)}
-                </span>
-                <span><b>{player.name}</b><small>เลน {player.current_lane} · {player.running_style || "Pace"}</small></span>
-                <em>{Number(player.score).toLocaleString()}</em>
-              </li>
-            ))}
-          </ol>
-        </Reveal>
+  return <section className="race-replay-page" aria-label="รีเพลย์การแข่งขัน">
+    <header className="replay-heading">
+      <button type="button" className="replay-back" onClick={onBack}><ChevronLeft size={18} /> กลับสนามแข่ง</button>
+      <div className="replay-race-title"><h1>{race.stage_name || race.race_name || "รีเพลย์การแข่งขัน"}</h1>
+        <p><span>รีเพลย์การแข่งขัน</span><span>{race.track || "ไม่ระบุสนาม"}</span><span>{race.distance || "ไม่ระบุระยะ"}</span><span><Users size={14} /> {participants.length} คน</span></p>
       </div>
-    </section>
-  );
+    </header>
+
+    <div className="replay-workspace">
+      <div className="replay-field-column">
+        <section className="replay-field" aria-labelledby="replay-field-title">
+          <header className="replay-field-heading">
+            <div><h2 id="replay-field-title">ภาพรวมสนาม</h2><p>กดตัวละครเพื่อดูการกระทำของคนนั้น</p></div>
+            <span className="replay-turn"><Flag size={16} />{selectedTurn === 0 ? "ก่อนเริ่ม" : `เทิร์น ${selectedTurn}`}<small>/ {totalTurns}</small></span>
+          </header>
+          <div className="replay-field-axis"><span>ท้ายสุด <b>{number(replayPlayers.at(-1)?.score)}</b></span><span>คะแนนสะสม</span><span><b>{number(replayPlayers[0]?.score)}</b> ผู้นำ <ArrowRight size={14} /></span></div>
+          <div className={`race-replay-stage${selectedPlayer ? " has-selection" : ""}`}>
+            <div className="replay-lane-bands" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <span key={index} style={{ "--lane-y": `${laneCenterY(index + 1)}%` }} />)}</div>
+            <div className="replay-lane-labels" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <span key={index} style={{ "--lane-y": `${laneCenterY(index + 1)}%` }}><small>เลน</small>{index + 1}</span>)}</div>
+            <RacePositionTrack players={replayPlayers} selectedPlayerId={selectedPlayerId} onSelectPlayer={selectPlayer} label="ตำแหน่งตัวละครจากท้ายสุดถึงผู้นำ" />
+          </div>
+          <div className="replay-field-key"><span><i data-pack="in" /> อยู่ในกลุ่ม</span><span><i data-pack="out" /> ออกนอกกลุ่ม</span>
+            <details><summary>อ่านสนามอย่างไร</summary><p>ซ้ายคือคะแนนน้อยสุด ขวาคือคะแนนมากสุดในเทิร์นนี้ หากคะแนนเท่ากันจะอยู่ตำแหน่งเดียวกัน<br />ขอบสีแสดงสถานะกลุ่มตอนวิ่งที่บันทึกไว้ในเทิร์น หากไม่มีบันทึก จะอิงระยะห่างไม่เกิน 20 คะแนนและเลนห่างไม่เกิน 1 เลน</p></details>
+          </div>
+          {selectedPlayer ? <div className="replay-following" aria-live="polite"><Focus size={16} /><span>ติดตาม <strong>{selectedPlayer.name}</strong></span><span>อันดับ {selectedPlayer.rank} · {selectedPlayer.gap_to_leader ? `ห่างผู้นำ ${number(selectedPlayer.gap_to_leader)}` : "ผู้นำ"}</span><button type="button" onClick={() => setSelectedPlayerId(null)} aria-label="ยกเลิกติดตาม"><X size={16} /></button></div>
+            : <p className="replay-field-note">ระยะบนสนามขยายตามกลุ่มผู้แข่งในแต่ละเทิร์น</p>}
+        </section>
+
+        <section className="replay-playback" aria-label="ควบคุมรีเพลย์">
+          <div className="replay-playback-toolbar">
+            <div className="replay-transport">
+              <button type="button" onClick={() => goToTurn(0)} disabled={selectedTurn === 0} aria-label="กลับไปก่อนเริ่ม"><RotateCcw size={17} /></button>
+              <button type="button" onClick={() => goToTurn(selectedTurn - 1)} disabled={selectedTurn === 0} aria-label="เทิร์นก่อนหน้า"><ChevronLeft size={20} /></button>
+              <button type="button" className="replay-play" onClick={() => {
+                if (selectedTurn >= totalTurns) setSelectedTurn(0);
+                setIsPlaying((playing) => !playing);
+              }} disabled={totalTurns === 0}>
+                {isPlaying ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" />}{isPlaying ? "พัก" : selectedTurn >= totalTurns && totalTurns ? "เล่นอีกครั้ง" : "เล่นรีเพลย์"}
+              </button>
+              <button type="button" onClick={() => goToTurn(selectedTurn + 1)} disabled={selectedTurn >= totalTurns} aria-label="เทิร์นถัดไป"><ChevronRight size={20} /></button>
+            </div>
+            <label className="replay-speed">ความเร็ว<select aria-label="ความเร็วรีเพลย์" value={playbackSpeed} onChange={(event) => setPlaybackSpeed(Number(event.target.value))}><option value={0.5}>0.5×</option><option value={1}>1×</option><option value={1.5}>1.5×</option><option value={2}>2×</option></select></label>
+          </div>
+          <label className="replay-scrubber"><span>{selectedTurn === 0 ? "ก่อนเริ่ม" : `เทิร์น ${selectedTurn}`}</span><input type="range" min={0} max={totalTurns} value={selectedTurn} disabled={!totalTurns} onChange={(event) => goToTurn(Number(event.target.value))} aria-label="เลื่อนไปยังเทิร์น" aria-valuetext={selectedTurn === 0 ? "ก่อนเริ่มการแข่งขัน" : `เทิร์น ${selectedTurn} จาก ${totalTurns}`} /><span>จบ</span></label>
+          <div className="replay-turn-list" aria-label="เลือกเทิร์น">{Array.from({ length: totalTurns + 1 }, (_, turn) => <button type="button" key={turn} ref={selectedTurn === turn ? activeTurnRef : null} className={selectedTurn === turn ? "is-current" : ""} aria-current={selectedTurn === turn ? "step" : undefined} onClick={() => goToTurn(turn)} title={`${turn === 0 ? "ก่อนเริ่ม" : `เทิร์น ${turn}`} · ${actionCountByTurn.get(turn) || 0} การกระทำ`}><span>{turn === 0 ? "เริ่ม" : turn}</span><i className={actionCountByTurn.get(turn) ? "has-events" : ""} /></button>)}</div>
+          <p className="replay-timeline-hint"><i /> จุดสีเขียวคือเทิร์นที่มีการกระทำ</p>
+        </section>
+      </div>
+
+      <aside className="replay-runners" aria-labelledby="replay-runners-title">
+        <header className="replay-runners-heading"><div><h2 id="replay-runners-title"><ListChecks size={19} /> เหตุการณ์รายคน</h2><p>{selectedTurn === 0 ? "สถานะก่อนเริ่มการแข่งขัน" : `อันดับและการกระทำในเทิร์น ${selectedTurn}`}</p></div><span>{visiblePlayers.length} คน</span></header>
+        <div className="replay-runner-filters" aria-label="กรองผู้เข้าแข่งขัน"><button type="button" aria-pressed={!actionsOnly} onClick={() => setActionsOnly(false)}>ทุกคน</button><button type="button" aria-pressed={actionsOnly} onClick={() => setActionsOnly(true)}>มีการกระทำ <span>{activeCount}</span></button></div>
+        <div className="replay-runner-list" ref={runnerListRef}>
+          {visiblePlayers.map((player) => {
+            const events = eventsByPlayer.get(player.id) || [];
+            const turn = player.latestTurn;
+            const staminaBefore = turn?.stamina_before ?? player.roll.stamina?.before;
+            const staminaAfter = turn?.stamina_after ?? player.roll.stamina?.current_stamina;
+            const isSelected = selectedPlayerId === player.id;
+            return <article className="replay-runner" key={player.id} data-selected={isSelected}>
+              <button type="button" className="replay-runner-select" onClick={() => selectPlayer(player.id)} aria-pressed={isSelected} aria-label={`ติดตาม ${player.name} อันดับ ${player.rank}`}>
+                <span className="replay-runner-rank">{player.rank}<small>อันดับ</small></span><RunnerAvatar player={player} /><span className="replay-runner-name"><strong>{player.name}</strong><small>{player.running_style || "ไม่ระบุสายวิ่ง"} <span>·</span> เลน {player.current_lane}</small></span><span className="replay-runner-score"><strong>{number(player.score)}</strong><small>คะแนน</small></span>
+              </button>
+              <div className="replay-runner-content">
+                <div className="replay-runner-facts"><span className="replay-pack" data-pack={player.pack_state} title={player.pack_source === "recorded" ? "สถานะตอนวิ่งที่บันทึกไว้ในเทิร์น" : "คำนวณจากตำแหน่งที่มีในรีเพลย์"}><i />{player.pack_state === "in" ? "อยู่ในกลุ่ม" : "นอกกลุ่ม"}</span><span>{turn ? `คะแนน ${signed(Number(turn.score_after) - Number(turn.score_before))}` : selectedTurn === 0 ? "เตรียมออกตัว" : "ไม่มีข้อมูลเทิร์นนี้"}</span>{player.gap_to_leader > 0 && <span>ตาม {number(player.gap_to_leader)}</span>}</div>
+                {events.length ? <ul className="replay-actions">{events.map((event) => <li key={event.id} data-incoming={Boolean(event.incoming)}><span className={`replay-event-dot is-${event.type}`} /><div>{event.incoming && <small>รับผลจาก {event.actor}</small>}<span>{event.label}</span>{event.target && <small><ArrowRight size={12} /> {event.target}</small>}</div></li>)}</ul> : <p className="replay-no-actions">{selectedTurn === 0 ? "ยังไม่มีการกระทำก่อนเริ่ม" : "ไม่มีการกระทำเพิ่มเติมในเทิร์นนี้"}</p>}
+                {turn && <details className="replay-run-details" open={isSelected || undefined} key={`${player.id}-${selectedTurn}-${isSelected}`}><summary>ข้อมูลการวิ่ง{staminaAfter != null && <span>Stamina {number(staminaAfter)}</span>}</summary><dl><div><dt>ผลวิ่ง</dt><dd>{turn.run_score == null ? "ไม่ได้บันทึก" : signed(turn.run_score)}</dd></div><div><dt>คะแนนสะสม</dt><dd>{number(turn.score_before)} → {number(turn.score_after)}</dd></div>{staminaAfter != null && <div><dt>Stamina</dt><dd>{staminaBefore == null ? "?" : number(staminaBefore)} → {number(staminaAfter)}</dd></div>}{player.roll.rule && <div><dt>เต๋าที่ใช้</dt><dd>{typeof player.roll.rule === "string" ? player.roll.rule : `${player.roll.rule.d || 0}d`}</dd></div>}</dl></details>}
+              </div>
+            </article>;
+          })}
+          {!visiblePlayers.length && <div className="replay-no-results"><ListChecks size={27} /><p>{actionsOnly ? "ไม่มีการกระทำเพิ่มเติมในเทิร์นนี้" : "ไม่มีข้อมูลผู้เข้าแข่งขัน"}</p>{actionsOnly && <button type="button" onClick={() => setActionsOnly(false)}>ดูผู้เข้าแข่งขันทุกคน</button>}</div>}
+        </div>
+      </aside>
+    </div>
+  </section>;
 }

@@ -195,7 +195,7 @@ button:disabled { cursor: not-allowed; }
 
 /* Consistent page hierarchy and quiet white surfaces. */
 .ui-game-card, .sheet-card, .container-card,
-:is(.wit-calculator, .news-month-section, .news-event-editor, .race-replay-log-panel, .race-replay-track-panel) {
+:is(.wit-calculator, .news-month-section, .news-event-editor) {
   border: 1px solid var(--uma-border);
   border-radius: var(--uma-radius-lg);
   background: var(--uma-surface);
@@ -404,14 +404,6 @@ button:disabled { cursor: not-allowed; }
 .role-choice { border-radius: 16px; box-shadow: none; }
 .role-confirm-modal { --confirm-primary: var(--uma-primary); --confirm-surface: var(--uma-bg-soft); }
 .wit-rate-card { background: var(--uma-bg-soft); color: var(--uma-primary-dark); border-color: var(--uma-border); }
-.race-replay-page { width: 100%; min-height: 0; padding: 0; background: var(--uma-bg); color: var(--uma-ink); box-shadow: none; }
-.race-replay-layout { min-height: 560px; }
-.race-replay-header { padding: 24px; border: 1px solid var(--uma-border); background: #fff; border-radius: 16px; }
-.race-replay-track-panel { padding: 18px; }
-.race-replay-score-panel { background: #fff; border-color: var(--uma-border); box-shadow: var(--uma-shadow-soft); border-radius: 20px; }
-.race-replay-turn-counter, .race-replay-controls button, .race-replay-back { box-shadow: none; }
-.race-replay-back { background: #fff; color: var(--uma-primary-dark); border-color: var(--uma-border-strong); }
-.race-replay-play { background: var(--uma-gradient-primary); }
 .race-game-page, .tcg-page { color: var(--uma-ink); }
 :is(.race-hero, .race-room-card, .race-create-panel, .race-score-panel, .race-command-panel, .race-runner-panel, .race-log-panel) {
   background: #fff;
@@ -463,9 +455,6 @@ button:disabled { cursor: not-allowed; }
   .topbar .game-nav { gap: 0 16px; }
   .topbar .game-nav-btn { font-size: 14px; }
 }
-@media (min-width: 1081px) {
-  .race-replay-layout { grid-template-columns: minmax(190px, .75fr) minmax(0, 1.8fr) minmax(210px, .85fr); }
-}
 @media (max-width: 1020px) {
   .home-events-layout { grid-template-columns: 1fr; gap: 16px; }
   .home-month-panel { padding: 16px 18px; }
@@ -505,8 +494,6 @@ button:disabled { cursor: not-allowed; }
   .rename-body, .rename-footer { padding: 20px; }
   .news-detail-body { padding: 22px 20px; }
   .news-listing-content { padding: 16px; }
-  .race-replay-header { padding: 18px; }
-  .race-replay-layout { min-height: 0; }
 }
 @media (max-width: 400px) {
   .topbar .dashboard-title { max-width: 110px; font-size: 12px; }
