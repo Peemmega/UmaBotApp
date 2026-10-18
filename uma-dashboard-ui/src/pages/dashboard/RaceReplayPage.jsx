@@ -11,8 +11,8 @@ const number = (value) => Number(value || 0).toLocaleString("th-TH", { maximumFr
 const signed = (value) => `${Number(value) >= 0 ? "+" : ""}${number(value)}`;
 const laneCenterY = (lane) => 12 + (lane - 1) * 15;
 const PHASE_LABELS = {
-  start: "จุดเริ่มเทิร์น",
-  lane: "เปลี่ยนเลนแล้ว",
+  start: "ก่อนเริ่ม",
+  lane: "เริ่มเทิร์น · เปลี่ยนเลน",
   run: "หลังวิ่งจบเทิร์น",
 };
 
@@ -92,12 +92,8 @@ export default function RaceReplayPage({ raceId, onBack }) {
 
   useEffect(() => {
     if (!isPlaying || loading || !totalTurns) return undefined;
-    const phaseDuration = replayPhase === "start" ? 650 : replayPhase === "lane" ? 1050 : 750;
+    const phaseDuration = replayPhase === "lane" ? 1050 : 750;
     const timer = window.setTimeout(() => {
-      if (replayPhase === "start") {
-        setReplayPhase("lane");
-        return;
-      }
       if (replayPhase === "lane") {
         setReplayPhase("run");
         return;
@@ -107,7 +103,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
         return;
       }
       setSelectedTurn((turn) => Math.min(turn + 1, totalTurns));
-      setReplayPhase("start");
+      setReplayPhase("lane");
     }, phaseDuration / playbackSpeed);
     return () => window.clearTimeout(timer);
   }, [isPlaying, loading, playMode, playbackSpeed, replayPhase, selectedTurn, totalTurns]);
@@ -151,10 +147,11 @@ export default function RaceReplayPage({ raceId, onBack }) {
     if (top < container.scrollTop || top + row.offsetHeight > container.scrollTop + container.clientHeight) container.scrollTop = top;
   }, [selectedPlayerId, actionsOnly, selectedTurn]);
 
-  const goToTurn = (turn, phase = "start") => {
+  const goToTurn = (turn, phase) => {
+    const nextTurn = Math.min(totalTurns, Math.max(0, turn));
     setIsPlaying(false);
-    setSelectedTurn(Math.min(totalTurns, Math.max(0, turn)));
-    setReplayPhase(phase);
+    setSelectedTurn(nextTurn);
+    setReplayPhase(phase || (nextTurn > 0 ? "lane" : "start"));
   };
   const choosePhase = (phase) => {
     setIsPlaying(false);
@@ -164,7 +161,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
     const firstTurn = selectedTurn >= totalTurns ? 1 : Math.max(1, selectedTurn);
     setPlayMode(mode);
     setSelectedTurn(firstTurn);
-    setReplayPhase("start");
+    setReplayPhase("lane");
     setIsPlaying(true);
   };
   const selectPlayer = (id) => {
@@ -209,8 +206,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
 
         <section className="replay-playback" aria-label="ควบคุมรีเพลย์">
           <div className="replay-phase-controls" aria-label="ดูช่วงของเทิร์น">
-            <button type="button" className={replayPhase === "start" ? "is-active" : ""} onClick={() => choosePhase("start")}>จุดเริ่ม</button>
-            <button type="button" className={replayPhase === "lane" ? "is-active" : ""} onClick={() => choosePhase("lane")} disabled={selectedTurn === 0}>เปลี่ยนเลน</button>
+            <button type="button" className={replayPhase === "lane" ? "is-active" : ""} onClick={() => choosePhase("lane")} disabled={selectedTurn === 0}>เริ่มเทิร์น</button>
             <button type="button" className={replayPhase === "run" ? "is-active" : ""} onClick={() => choosePhase("run")} disabled={selectedTurn === 0}>หลังวิ่ง</button>
           </div>
           <div className="replay-playback-toolbar">

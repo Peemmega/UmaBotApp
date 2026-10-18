@@ -74,7 +74,7 @@
 .replay-following > span:nth-of-type(2) { margin-left: auto; color: var(--replay-muted); }
 .replay-following button { display: inline-grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; background: none; color: inherit; }
 .replay-playback { min-width: 0; padding: 18px 22px; border: 1px solid var(--replay-line); border-radius: 12px; background: #fff; }
-.replay-phase-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; margin-bottom: 14px; padding: 4px; border-radius: 8px; background: #f2f5ef; }
+.replay-phase-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; margin-bottom: 14px; padding: 4px; border-radius: 8px; background: #f2f5ef; }
 .replay-phase-controls button { min-height: 34px; padding: 5px 8px; border: 0; border-radius: 5px; background: transparent; color: var(--replay-muted); font-size: 11px; font-weight: 700; }
 .replay-phase-controls button.is-active { background: #fff; color: var(--replay-green); box-shadow: 0 1px 3px #233b3014; }
 .replay-phase-controls button:disabled { opacity: .4; cursor: not-allowed; }
