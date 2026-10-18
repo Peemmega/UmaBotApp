@@ -187,10 +187,6 @@ export default function RaceReplayPage({ raceId, onBack }) {
     <div className="replay-workspace">
       <div className="replay-field-column">
         <section className="replay-field" aria-labelledby="replay-field-title">
-          <header className="replay-field-heading">
-            <div><h2 id="replay-field-title">ภาพรวมสนาม</h2><p>กดตัวละครเพื่อดูการกระทำของคนนั้น</p></div>
-            <span className="replay-turn"><Flag size={16} />{selectedTurn === 0 ? "ก่อนเริ่ม" : `เทิร์น ${selectedTurn}`}<small>/ {totalTurns} · {PHASE_LABELS[replayPhase]}</small></span>
-          </header>
           <div className="replay-field-axis"><span>ท้ายสุด <b>{number(replayPlayers.at(-1)?.score)}</b></span><span>คะแนนสะสม</span><span><b>{number(replayPlayers[0]?.score)}</b> ผู้นำ <ArrowRight size={14} /></span></div>
           <div className={`race-replay-stage${selectedPlayer ? " has-selection" : ""}`}>
             <div className="replay-lane-bands" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <span key={index} style={{ "--lane-y": `${laneCenterY(index + 1)}%` }} />)}</div>
@@ -200,8 +196,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
           <div className="replay-field-key"><span><i data-pack="in" /> อยู่ในกลุ่ม</span><span><i data-pack="out" /> ออกนอกกลุ่ม</span>
             <details><summary>อ่านสนามอย่างไร</summary><p>ซ้ายคือคะแนนน้อยสุด ขวาคือคะแนนมากสุดในเทิร์นนี้ หากคะแนนเท่ากันจะอยู่ตำแหน่งเดียวกัน<br />ขอบสีแสดงสถานะกลุ่มตอนวิ่งที่บันทึกไว้ในเทิร์น หากไม่มีบันทึก จะอิงระยะห่างไม่เกิน 20 คะแนนและเลนห่างไม่เกิน 1 เลน</p></details>
           </div>
-          {selectedPlayer ? <div className="replay-following" aria-live="polite"><Focus size={16} /><span>ติดตาม <strong>{selectedPlayer.name}</strong></span><span>อันดับ {selectedPlayer.rank} · {selectedPlayer.gap_to_leader ? `ห่างผู้นำ ${number(selectedPlayer.gap_to_leader)}` : "ผู้นำ"}</span><button type="button" onClick={() => setSelectedPlayerId(null)} aria-label="ยกเลิกติดตาม"><X size={16} /></button></div>
-            : <p className="replay-field-note">ระยะบนสนามขยายตามกลุ่มผู้แข่งในแต่ละเทิร์น</p>}
+          
         </section>
 
         <section className="replay-playback" aria-label="ควบคุมรีเพลย์">
