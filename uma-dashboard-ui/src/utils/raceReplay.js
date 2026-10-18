@@ -1,4 +1,8 @@
 const laneOf = (value) => Math.min(6, Math.max(1, Number(value) || 1));
+const defaultLaneFromEntry = (entryNumber) => {
+  const entry = Math.max(1, Number(entryNumber) || 1);
+  return laneOf(Math.floor((entry - 1) / 2) + 1);
+};
 
 function objectData(value) {
   if (typeof value !== "string") return value || {};
@@ -7,7 +11,8 @@ function objectData(value) {
 
 function laneFromTurn(turn, fallback = 1) {
   const data = getReplayTurnData(turn);
-  return laneOf(data.lane_change?.to ?? turn?.lane ?? data.roll?.current_lane ?? fallback);
+  const laneChange = data.lane_change ?? data.roll?.lane_change;
+  return laneOf(laneChange?.to ?? data.roll?.current_lane ?? turn?.lane ?? fallback);
 }
 
 export function getReplayTurnData(turn) {
@@ -48,7 +53,13 @@ export function buildReplayState(participants, turns, selectedTurn, avatars = {}
     const turn = Number(latest?.turn_number) === selectedTurn ? latest : null;
     const roll = getReplayTurnData(turn).roll || {};
     const color = String(roll.distance_color || "").toLowerCase();
-    const initialLane = laneOf(participant.initial_lane ?? participant.entry_number ?? 1);
+    const firstTurnData = getReplayTurnData(history[0]);
+    const firstLaneChange = firstTurnData.lane_change ?? firstTurnData.roll?.lane_change;
+    const initialLane = laneOf(
+      firstLaneChange?.from
+        ?? participant.initial_lane
+        ?? defaultLaneFromEntry(participant.entry_number),
+    );
     return {
       id,
       name: participant.uma_name || id,
