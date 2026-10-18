@@ -202,8 +202,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
       <div className="replay-field-column">
         <section className="replay-field" aria-labelledby="replay-field-title">
           <div className="replay-race-title">
-            <h1>{race.stage_name || race.race_name || "รีเพลย์การแข่งขัน"}</h1>
-            <p className="replay-race-date">แข่งวันที่ {formatRaceDate(race.started_at || race.created_at) || "ไม่ระบุวันที่"}</p>
+            <h1>{race.stage_name || race.race_name || "รีเพลย์การแข่งขัน"} {formatRaceDate(race.started_at || race.created_at) || "ไม่ระบุวันที่"}</h1>
           </div>
           <div className="replay-field-axis"><span>ท้ายสุด <b>{number(replayPlayers.at(-1)?.score)}</b></span><span>คะแนนสะสม</span><span><b>{number(replayPlayers[0]?.score)}</b> ผู้นำ <ArrowRight size={14} /></span></div>
           <div className={`race-replay-stage${selectedPlayer ? " has-selection" : ""}`}>
@@ -238,7 +237,6 @@ export default function RaceReplayPage({ raceId, onBack }) {
           </div>
           <label className="replay-scrubber"><span>เทิร์น {selectedTurn}</span><input type="range" min={1} max={totalTurns} value={Math.max(1, selectedTurn)} disabled={!totalTurns} onChange={(event) => goToTurn(Number(event.target.value))} aria-label="เลื่อนไปยังเทิร์น" aria-valuetext={`เทิร์น ${selectedTurn} จาก ${totalTurns}`} /><span>จบ</span></label>
           <div className="replay-turn-list" aria-label="เลือกเทิร์น">{Array.from({ length: totalTurns }, (_, index) => index + 1).map((turn) => <button type="button" key={turn} ref={selectedTurn === turn ? activeTurnRef : null} className={selectedTurn === turn ? "is-current" : ""} aria-current={selectedTurn === turn ? "step" : undefined} onClick={() => goToTurn(turn)} title={`เทิร์น ${turn} · ${actionCountByTurn.get(turn) || 0} การกระทำ`}><span>{turn}</span><i className={actionCountByTurn.get(turn) ? "has-events" : ""} /></button>)}</div>
-          <p className="replay-timeline-hint"><i /> จุดสีเขียวคือเทิร์นที่มีการกระทำ · <strong>{PHASE_LABELS[replayPhase]}</strong></p>
         </section>
       </div>
 
