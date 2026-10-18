@@ -23,7 +23,6 @@ const formatRaceDate = (value) => {
   }).format(date);
 };
 const PHASE_LABELS = {
-  start: "ก่อนเริ่ม",
   lane: "เริ่มเทิร์น · เปลี่ยนเลน",
   run: "หลังวิ่งจบเทิร์น",
 };
@@ -49,10 +48,10 @@ function RunnerAvatar({ player }) {
 
 export default function RaceReplayPage({ raceId, onBack }) {
   const [request, setRequest] = useState({ raceId: null, detail: null, error: "" });
-  const [selectedTurn, setSelectedTurn] = useState(0);
+  const [selectedTurn, setSelectedTurn] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playMode, setPlayMode] = useState("all");
-  const [replayPhase, setReplayPhase] = useState("start");
+  const [replayPhase, setReplayPhase] = useState("lane");
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [playerAvatars, setPlayerAvatars] = useState({});
@@ -67,9 +66,11 @@ export default function RaceReplayPage({ raceId, onBack }) {
       .then((detail) => {
         if (controller.signal.aborted) return;
         setRequest({ raceId, detail, error: "" });
-        setSelectedTurn(0);
+        const loadedTurns = detail?.turns || EMPTY_LIST;
+        const loadedTotalTurns = Math.max(Number(detail?.race?.total_turns) || 0, ...loadedTurns.map((turn) => Number(turn.turn_number) || 0), 0);
+        setSelectedTurn(loadedTotalTurns > 0 ? 1 : 0);
         setIsPlaying(false);
-        setReplayPhase("start");
+        setReplayPhase(loadedTotalTurns > 0 ? "lane" : "run");
         setSelectedPlayerId(null);
       })
       .catch((error) => {
@@ -169,10 +170,10 @@ export default function RaceReplayPage({ raceId, onBack }) {
   }, [selectedPlayerId, selectedTurn]);
 
   const goToTurn = (turn, phase) => {
-    const nextTurn = Math.min(totalTurns, Math.max(0, turn));
+    const nextTurn = totalTurns > 0 ? Math.min(totalTurns, Math.max(1, turn)) : 0;
     setIsPlaying(false);
     setSelectedTurn(nextTurn);
-    setReplayPhase(phase || (nextTurn > 0 ? "lane" : "start"));
+    setReplayPhase(phase || "lane");
   };
   const choosePhase = (phase) => {
     setIsPlaying(false);
@@ -218,13 +219,13 @@ export default function RaceReplayPage({ raceId, onBack }) {
 
         <section className="replay-playback" aria-label="ควบคุมรีเพลย์">
           <div className="replay-phase-controls" aria-label="ดูช่วงของเทิร์น">
-            <button type="button" className={replayPhase === "lane" ? "is-active" : ""} onClick={() => choosePhase("lane")} disabled={selectedTurn === 0}>เริ่มเทิร์น</button>
-            <button type="button" className={replayPhase === "run" ? "is-active" : ""} onClick={() => choosePhase("run")} disabled={selectedTurn === 0}>หลังวิ่ง</button>
+            <button type="button" className={replayPhase === "lane" ? "is-active" : ""} onClick={() => choosePhase("lane")} disabled={!totalTurns}>เริ่มเทิร์น</button>
+            <button type="button" className={replayPhase === "run" ? "is-active" : ""} onClick={() => choosePhase("run")} disabled={!totalTurns}>หลังวิ่ง</button>
           </div>
           <div className="replay-playback-toolbar">
             <div className="replay-transport">
-              <button type="button" onClick={() => goToTurn(0)} disabled={selectedTurn === 0} aria-label="กลับไปก่อนเริ่ม"><RotateCcw size={17} /></button>
-              <button type="button" onClick={() => goToTurn(selectedTurn - 1)} disabled={selectedTurn === 0} aria-label="เทิร์นก่อนหน้า"><ChevronLeft size={20} /></button>
+              <button type="button" onClick={() => goToTurn(1)} disabled={selectedTurn <= 1 || !totalTurns} aria-label="กลับไปเทิร์นแรก"><RotateCcw size={17} /></button>
+              <button type="button" onClick={() => goToTurn(selectedTurn - 1)} disabled={selectedTurn <= 1 || !totalTurns} aria-label="เทิร์นก่อนหน้า"><ChevronLeft size={20} /></button>
               <button type="button" className="replay-play" onClick={() => {
                 if (isPlaying) setIsPlaying(false);
                 else startPlayback("all");
@@ -235,14 +236,14 @@ export default function RaceReplayPage({ raceId, onBack }) {
             </div>
             <div className="replay-playback-actions"><button type="button" className="replay-turn-play" onClick={() => (isPlaying ? setIsPlaying(false) : startPlayback("turn"))} disabled={totalTurns === 0}>{isPlaying && playMode === "turn" ? "พักเทิร์น" : "เล่นเทิร์นนี้"}</button><label className="replay-speed">ความเร็ว<select aria-label="ความเร็วรีเพลย์" value={playbackSpeed} onChange={(event) => setPlaybackSpeed(Number(event.target.value))}><option value={0.5}>0.5×</option><option value={1}>1×</option><option value={1.5}>1.5×</option><option value={2}>2×</option></select></label></div>
           </div>
-          <label className="replay-scrubber"><span>{selectedTurn === 0 ? "ก่อนเริ่ม" : `เทิร์น ${selectedTurn}`}</span><input type="range" min={0} max={totalTurns} value={selectedTurn} disabled={!totalTurns} onChange={(event) => goToTurn(Number(event.target.value))} aria-label="เลื่อนไปยังเทิร์น" aria-valuetext={selectedTurn === 0 ? "ก่อนเริ่มการแข่งขัน" : `เทิร์น ${selectedTurn} จาก ${totalTurns}`} /><span>จบ</span></label>
-          <div className="replay-turn-list" aria-label="เลือกเทิร์น">{Array.from({ length: totalTurns + 1 }, (_, turn) => <button type="button" key={turn} ref={selectedTurn === turn ? activeTurnRef : null} className={selectedTurn === turn ? "is-current" : ""} aria-current={selectedTurn === turn ? "step" : undefined} onClick={() => goToTurn(turn)} title={`${turn === 0 ? "ก่อนเริ่ม" : `เทิร์น ${turn}`} · ${actionCountByTurn.get(turn) || 0} การกระทำ`}><span>{turn === 0 ? "เริ่ม" : turn}</span><i className={actionCountByTurn.get(turn) ? "has-events" : ""} /></button>)}</div>
+          <label className="replay-scrubber"><span>เทิร์น {selectedTurn}</span><input type="range" min={1} max={totalTurns} value={Math.max(1, selectedTurn)} disabled={!totalTurns} onChange={(event) => goToTurn(Number(event.target.value))} aria-label="เลื่อนไปยังเทิร์น" aria-valuetext={`เทิร์น ${selectedTurn} จาก ${totalTurns}`} /><span>จบ</span></label>
+          <div className="replay-turn-list" aria-label="เลือกเทิร์น">{Array.from({ length: totalTurns }, (_, index) => index + 1).map((turn) => <button type="button" key={turn} ref={selectedTurn === turn ? activeTurnRef : null} className={selectedTurn === turn ? "is-current" : ""} aria-current={selectedTurn === turn ? "step" : undefined} onClick={() => goToTurn(turn)} title={`เทิร์น ${turn} · ${actionCountByTurn.get(turn) || 0} การกระทำ`}><span>{turn}</span><i className={actionCountByTurn.get(turn) ? "has-events" : ""} /></button>)}</div>
           <p className="replay-timeline-hint"><i /> จุดสีเขียวคือเทิร์นที่มีการกระทำ · <strong>{PHASE_LABELS[replayPhase]}</strong></p>
         </section>
       </div>
 
       <aside className="replay-runners" aria-labelledby="replay-runners-title">
-        <header className="replay-runners-heading"><div><h2 id="replay-runners-title"><ListChecks size={19} /> เหตุการณ์รายคน</h2><p>{selectedTurn === 0 ? "สถานะก่อนเริ่มการแข่งขัน" : `อันดับและการกระทำในเทิร์น ${selectedTurn}`}</p></div><span>{visiblePlayers.length} คน</span></header>
+        <header className="replay-runners-heading"><div><h2 id="replay-runners-title"><ListChecks size={19} /> เหตุการณ์รายคน</h2><p>{totalTurns ? `อันดับและการกระทำในเทิร์น ${selectedTurn}` : "ไม่มีข้อมูลเทิร์น"}</p></div><span>{visiblePlayers.length} คน</span></header>
         <div className="replay-runner-list" ref={runnerListRef}>
           {visiblePlayers.map((player) => {
             const events = eventsByPlayer.get(player.id) || [];
@@ -256,8 +257,8 @@ export default function RaceReplayPage({ raceId, onBack }) {
                 <span className="replay-runner-rank">{player.rank}<small>อันดับ</small></span><RunnerAvatar player={player} /><span className="replay-runner-name"><strong>{player.name}</strong><small>{player.running_style || "ไม่ระบุสายวิ่ง"} <span>·</span> เลน {player.current_lane}</small></span><span className="replay-runner-score"><strong>{number(player.score)}</strong><small>คะแนน</small></span>
               </button>
               <div className="replay-runner-content">
-                <div className="replay-runner-facts"><span className="replay-phase-chip" data-phase={replayPhase}>{PHASE_LABELS[replayPhase]}</span><span className="replay-pack" data-pack={player.pack_state} title={player.pack_source === "recorded" ? "สถานะตอนวิ่งที่บันทึกไว้ในเทิร์น" : "คำนวณจากตำแหน่งที่มีในรีเพลย์"}><i />{player.pack_state === "in" ? "อยู่ในกลุ่ม" : "นอกกลุ่ม"}</span>{replayPhase === "lane" && player.lane_changed && <span>เลน {player.lane_before} → {player.lane_after}</span>}{replayPhase === "run" && turn ? <span>คะแนน {signed(Number(turn.score_after) - Number(turn.score_before))}</span> : replayPhase === "start" ? <span>รอเริ่มวิ่ง</span> : null}{player.gap_to_leader > 0 && replayPhase !== "start" && <span>ตาม {number(player.gap_to_leader)}</span>}</div>
-                {events.length ? <ul className="replay-actions">{events.map((event) => <li key={event.id} data-incoming={Boolean(event.incoming)}><span className={`replay-event-dot is-${event.type}`} /><div>{event.incoming && <small>รับผลจาก {event.actor}</small>}<span>{event.label}</span>{event.type === "blocked" && event.runLane != null && <small className="replay-event-context">เกิดขึ้นในเลน {event.runLane}{event.laneChanged && event.nextLane != null ? ` → เลน ${event.nextLane} หลังเทิร์น` : ""}{event.blockedRunnerNames?.length ? ` · นับ ${event.blockedRunnerNames.join(", ")}` : ""}</small>}{event.target && <small><ArrowRight size={12} /> {event.target}</small>}</div></li>)}</ul> : <p className="replay-no-actions">{selectedTurn === 0 ? "ยังไม่มีการกระทำก่อนเริ่ม" : "ไม่มีการกระทำเพิ่มเติมในเทิร์นนี้"}</p>}
+                <div className="replay-runner-facts"><span className="replay-phase-chip" data-phase={replayPhase}>{PHASE_LABELS[replayPhase]}</span><span className="replay-pack" data-pack={player.pack_state} title={player.pack_source === "recorded" ? "สถานะตอนวิ่งที่บันทึกไว้ในเทิร์น" : "คำนวณจากตำแหน่งที่มีในรีเพลย์"}><i />{player.pack_state === "in" ? "อยู่ในกลุ่ม" : "นอกกลุ่ม"}</span>{replayPhase === "lane" && player.lane_changed && <span>เลน {player.lane_before} → {player.lane_after}</span>}{replayPhase === "run" && turn ? <span>คะแนน {signed(Number(turn.score_after) - Number(turn.score_before))}</span> : null}{player.gap_to_leader > 0 && <span>ตาม {number(player.gap_to_leader)}</span>}</div>
+                {events.length ? <ul className="replay-actions">{events.map((event) => <li key={event.id} data-incoming={Boolean(event.incoming)}><span className={`replay-event-dot is-${event.type}`} /><div>{event.incoming && <small>รับผลจาก {event.actor}</small>}<span>{event.label}</span>{event.type === "blocked" && event.runLane != null && <small className="replay-event-context">เกิดขึ้นในเลน {event.runLane}{event.laneChanged && event.nextLane != null ? ` → เลน ${event.nextLane} หลังเทิร์น` : ""}{event.blockedRunnerNames?.length ? ` · นับ ${event.blockedRunnerNames.join(", ")}` : ""}</small>}{event.target && <small><ArrowRight size={12} /> {event.target}</small>}</div></li>)}</ul> : <p className="replay-no-actions">ไม่มีการกระทำเพิ่มเติมในเทิร์นนี้</p>}
                 {turn && <details className="replay-run-details" open={isSelected || undefined} key={`${player.id}-${selectedTurn}-${isSelected}`}><summary>ข้อมูลการวิ่ง{staminaAfter != null && <span className="replay-stamina-value"><img src={staminaIcon} alt="Stamina" />{number(staminaAfter)}</span>}</summary><dl><div><dt>ผลวิ่ง</dt><dd>{turn.run_score == null ? "ไม่ได้บันทึก" : signed(turn.run_score)}</dd></div><div><dt>คะแนนสะสม</dt><dd>{number(turn.score_before)} → {number(turn.score_after)}</dd></div>{staminaBefore != null && staminaAfter != null && <div><dt><img className="replay-stamina-icon" src={staminaIcon} alt="Stamina" /></dt><dd>{number(staminaBefore)} → {number(staminaAfter)}</dd></div>}{turnPlayer?.roll.rule && <div><dt>เต๋าที่ใช้</dt><dd>{typeof turnPlayer.roll.rule === "string" ? turnPlayer.roll.rule : `${turnPlayer.roll.rule.d || 0}d`}</dd></div>}</dl></details>}
               </div>
             </article>;
