@@ -241,7 +241,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
       </div>
 
       <aside className="replay-runners" aria-labelledby="replay-runners-title">
-        <header className="replay-runners-heading"><div><h2 id="replay-runners-title"><ListChecks size={19} /> เหตุการณ์รายคน</h2><p>{totalTurns ? `อันดับและการกระทำในเทิร์น ${selectedTurn}` : "ไม่มีข้อมูลเทิร์น"}</p></div><span>{visiblePlayers.length} คน</span></header>
+        <header className="replay-runners-heading"><div><h2 id="replay-runners-title">ลำดับคะแนน</h2></div><span>{visiblePlayers.length} คน</span></header>
         <div className="replay-runner-list" ref={runnerListRef}>
           {visiblePlayers.map((player) => {
             const events = eventsByPlayer.get(player.id) || [];
