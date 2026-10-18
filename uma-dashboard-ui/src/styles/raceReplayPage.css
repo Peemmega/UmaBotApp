@@ -81,6 +81,8 @@
 .replay-playback-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .replay-transport { display: flex; align-items: center; gap: 5px; }
 .replay-transport button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 35px; height: 38px; padding: 6px 8px; border: 1px solid transparent; border-radius: 7px; background: #f3f6f1; color: var(--replay-green); }
+.replay-transport .replay-key-control { min-width: 32px; padding: 5px; background: #fff; border-color: var(--replay-line); }
+.replay-key-control kbd { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 4px; border: 1px solid currentColor; border-radius: 4px; font: 700 11px/1 inherit; }
 .replay-transport .replay-play { min-width: 130px; padding-inline: 18px; background: var(--replay-green); color: #fff; font-size: 12px; font-weight: 700; }
 .replay-transport button:not(:disabled):hover { filter: brightness(.95); }
 .replay-playback-actions { display: inline-flex; align-items: center; gap: 8px; }
