@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, Flag, Focus, ListChecks, Pause, Play, RotateCcw, Users, X } from "lucide-react";
 import { BOT_API_BASE } from "../../api/playerApi";
+import staminaIcon from "../../assets/icons/Stamina.webp";
 import RacePositionTrack from "../../components/RacePositionTrack";
 import { resolveRaceAvatar } from "../../utils/avatar";
 import { buildReplayTransition, getReplayTurnData, groupReplayEvents } from "../../utils/raceReplay";
@@ -43,7 +44,6 @@ export default function RaceReplayPage({ raceId, onBack }) {
   const [replayPhase, setReplayPhase] = useState("start");
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
-  const [actionsOnly, setActionsOnly] = useState(false);
   const [playerAvatars, setPlayerAvatars] = useState({});
   const activeTurnRef = useRef(null);
   const runnerListRef = useRef(null);
@@ -132,8 +132,12 @@ export default function RaceReplayPage({ raceId, onBack }) {
     return counts;
   }, [actions, turns]);
   const selectedPlayer = replayPlayers.find((player) => player.id === selectedPlayerId);
-  const visiblePlayers = actionsOnly ? replayPlayers.filter((player) => eventsByPlayer.get(player.id)?.length) : replayPlayers;
-  const activeCount = replayPlayers.filter((player) => eventsByPlayer.get(player.id)?.length).length;
+  const visiblePlayers = useMemo(() => {
+    if (!selectedPlayerId) return replayPlayers;
+    return [...replayPlayers].sort((left, right) => (
+      left.id === selectedPlayerId ? -1 : right.id === selectedPlayerId ? 1 : 0
+    ));
+  }, [replayPlayers, selectedPlayerId]);
 
   useEffect(() => {
     const active = activeTurnRef.current;
@@ -151,7 +155,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
     if (!row) return;
     const top = row.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
     if (top < container.scrollTop || top + row.offsetHeight > container.scrollTop + container.clientHeight) container.scrollTop = top;
-  }, [selectedPlayerId, actionsOnly, selectedTurn]);
+  }, [selectedPlayerId, selectedTurn]);
 
   const goToTurn = (turn, phase) => {
     const nextTurn = Math.min(totalTurns, Math.max(0, turn));
@@ -172,7 +176,6 @@ export default function RaceReplayPage({ raceId, onBack }) {
   };
   const selectPlayer = (id) => {
     setSelectedPlayerId((current) => current === String(id) ? null : String(id));
-    setActionsOnly(false);
   };
 
   if (loading) return <section className="replay-empty" aria-live="polite"><Flag size={32} /><h1>กำลังเตรียมรีเพลย์</h1><p>กำลังโหลดตำแหน่งและเหตุการณ์ในการแข่งขัน</p></section>;
@@ -186,7 +189,6 @@ export default function RaceReplayPage({ raceId, onBack }) {
     <header className="replay-heading">
       <button type="button" className="replay-back" onClick={onBack}><ChevronLeft size={18} /> กลับสนามแข่ง</button>
       <div className="replay-race-title"><h1>{race.stage_name || race.race_name || "รีเพลย์การแข่งขัน"}</h1>
-        <p><span>รีเพลย์การแข่งขัน</span><span>{race.track || "ไม่ระบุสนาม"}</span><span>{race.distance || "ไม่ระบุระยะ"}</span><span><Users size={14} /> {participants.length} คน</span></p>
       </div>
     </header>
 
@@ -232,7 +234,6 @@ export default function RaceReplayPage({ raceId, onBack }) {
 
       <aside className="replay-runners" aria-labelledby="replay-runners-title">
         <header className="replay-runners-heading"><div><h2 id="replay-runners-title"><ListChecks size={19} /> เหตุการณ์รายคน</h2><p>{selectedTurn === 0 ? "สถานะก่อนเริ่มการแข่งขัน" : `อันดับและการกระทำในเทิร์น ${selectedTurn}`}</p></div><span>{visiblePlayers.length} คน</span></header>
-        <div className="replay-runner-filters" aria-label="กรองผู้เข้าแข่งขัน"><button type="button" aria-pressed={!actionsOnly} onClick={() => setActionsOnly(false)}>ทุกคน</button><button type="button" aria-pressed={actionsOnly} onClick={() => setActionsOnly(true)}>มีการกระทำ <span>{activeCount}</span></button></div>
         <div className="replay-runner-list" ref={runnerListRef}>
           {visiblePlayers.map((player) => {
             const events = eventsByPlayer.get(player.id) || [];
@@ -248,11 +249,11 @@ export default function RaceReplayPage({ raceId, onBack }) {
               <div className="replay-runner-content">
                 <div className="replay-runner-facts"><span className="replay-phase-chip" data-phase={replayPhase}>{PHASE_LABELS[replayPhase]}</span><span className="replay-pack" data-pack={player.pack_state} title={player.pack_source === "recorded" ? "สถานะตอนวิ่งที่บันทึกไว้ในเทิร์น" : "คำนวณจากตำแหน่งที่มีในรีเพลย์"}><i />{player.pack_state === "in" ? "อยู่ในกลุ่ม" : "นอกกลุ่ม"}</span>{replayPhase === "lane" && player.lane_changed && <span>เลน {player.lane_before} → {player.lane_after}</span>}{replayPhase === "run" && turn ? <span>คะแนน {signed(Number(turn.score_after) - Number(turn.score_before))}</span> : replayPhase === "start" ? <span>รอเริ่มวิ่ง</span> : null}{player.gap_to_leader > 0 && replayPhase !== "start" && <span>ตาม {number(player.gap_to_leader)}</span>}</div>
                 {events.length ? <ul className="replay-actions">{events.map((event) => <li key={event.id} data-incoming={Boolean(event.incoming)}><span className={`replay-event-dot is-${event.type}`} /><div>{event.incoming && <small>รับผลจาก {event.actor}</small>}<span>{event.label}</span>{event.type === "blocked" && event.runLane != null && <small className="replay-event-context">เกิดขึ้นในเลน {event.runLane}{event.laneChanged && event.nextLane != null ? ` → เลน ${event.nextLane} หลังเทิร์น` : ""}{event.blockedRunnerNames?.length ? ` · นับ ${event.blockedRunnerNames.join(", ")}` : ""}</small>}{event.target && <small><ArrowRight size={12} /> {event.target}</small>}</div></li>)}</ul> : <p className="replay-no-actions">{selectedTurn === 0 ? "ยังไม่มีการกระทำก่อนเริ่ม" : "ไม่มีการกระทำเพิ่มเติมในเทิร์นนี้"}</p>}
-                {turn && <details className="replay-run-details" open={isSelected || undefined} key={`${player.id}-${selectedTurn}-${isSelected}`}><summary>ข้อมูลการวิ่ง{staminaAfter != null && <span>Stamina {number(staminaAfter)}</span>}</summary><dl><div><dt>ผลวิ่ง</dt><dd>{turn.run_score == null ? "ไม่ได้บันทึก" : signed(turn.run_score)}</dd></div><div><dt>คะแนนสะสม</dt><dd>{number(turn.score_before)} → {number(turn.score_after)}</dd></div>{staminaAfter != null && <div><dt>Stamina</dt><dd>{staminaBefore == null ? "?" : number(staminaBefore)} → {number(staminaAfter)}</dd></div>}{turnPlayer?.roll.rule && <div><dt>เต๋าที่ใช้</dt><dd>{typeof turnPlayer.roll.rule === "string" ? turnPlayer.roll.rule : `${turnPlayer.roll.rule.d || 0}d`}</dd></div>}</dl></details>}
+                {turn && <details className="replay-run-details" open={isSelected || undefined} key={`${player.id}-${selectedTurn}-${isSelected}`}><summary>ข้อมูลการวิ่ง{staminaAfter != null && <span className="replay-stamina-value"><img src={staminaIcon} alt="Stamina" />{number(staminaAfter)}</span>}</summary><dl><div><dt>ผลวิ่ง</dt><dd>{turn.run_score == null ? "ไม่ได้บันทึก" : signed(turn.run_score)}</dd></div><div><dt>คะแนนสะสม</dt><dd>{number(turn.score_before)} → {number(turn.score_after)}</dd></div>{staminaBefore != null && staminaAfter != null && <div><dt><img className="replay-stamina-icon" src={staminaIcon} alt="Stamina" /></dt><dd>{number(staminaBefore)} → {number(staminaAfter)}</dd></div>}{turnPlayer?.roll.rule && <div><dt>เต๋าที่ใช้</dt><dd>{typeof turnPlayer.roll.rule === "string" ? turnPlayer.roll.rule : `${turnPlayer.roll.rule.d || 0}d`}</dd></div>}</dl></details>}
               </div>
             </article>;
           })}
-          {!visiblePlayers.length && <div className="replay-no-results"><ListChecks size={27} /><p>{actionsOnly ? "ไม่มีการกระทำเพิ่มเติมในเทิร์นนี้" : "ไม่มีข้อมูลผู้เข้าแข่งขัน"}</p>{actionsOnly && <button type="button" onClick={() => setActionsOnly(false)}>ดูผู้เข้าแข่งขันทุกคน</button>}</div>}
+          {!visiblePlayers.length && <div className="replay-no-results"><ListChecks size={27} /><p>ไม่มีข้อมูลผู้เข้าแข่งขัน</p></div>}
         </div>
       </aside>
     </div>
