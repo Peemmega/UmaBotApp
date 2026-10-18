@@ -5,6 +5,11 @@ function objectData(value) {
   try { return JSON.parse(value) || {}; } catch { return {}; }
 }
 
+function laneFromTurn(turn, fallback = 1) {
+  const data = getReplayTurnData(turn);
+  return laneOf(data.lane_change?.to ?? turn?.lane ?? data.roll?.current_lane ?? fallback);
+}
+
 export function getReplayTurnData(turn) {
   return objectData(turn?.turn_data ?? turn?.turn_data_json);
 }
@@ -43,11 +48,12 @@ export function buildReplayState(participants, turns, selectedTurn, avatars = {}
     const turn = Number(latest?.turn_number) === selectedTurn ? latest : null;
     const roll = getReplayTurnData(turn).roll || {};
     const color = String(roll.distance_color || "").toLowerCase();
+    const initialLane = laneOf(participant.initial_lane ?? participant.entry_number ?? 1);
     return {
       id,
       name: participant.uma_name || id,
       display_number: Number(participant.entry_number) || index + 1,
-      current_lane: laneOf(latest?.lane ?? history[0]?.lane),
+      current_lane: latest ? laneFromTurn(latest, initialLane) : initialLane,
       score: Number(latest?.score_after) || 0,
       recordedRank: Number(latest?.position) || Infinity,
       running_style: participant.running_style,
@@ -75,6 +81,40 @@ export function buildReplayState(participants, turns, selectedTurn, avatars = {}
         && Math.abs(other.score - player.score) <= 20
         && Math.abs(other.current_lane - player.current_lane) <= 1) ? "in" : "out"),
     }));
+}
+
+export function buildReplayTransition(participants, turns, selectedTurn, avatars = {}) {
+  const before = buildReplayState(participants, turns, Math.max(0, selectedTurn - 1), avatars);
+  const after = buildReplayState(participants, turns, selectedTurn, avatars);
+  const beforeById = new Map(before.map((player) => [player.id, player]));
+  const lane = after.map((player) => {
+    const previous = beforeById.get(player.id) || player;
+    return {
+      ...player,
+      score: previous.score,
+      distance: previous.distance,
+      progress_ratio: previous.progress_ratio,
+      gap_to_leader: previous.gap_to_leader,
+      rank: previous.rank,
+      lane_before: previous.current_lane,
+      lane_after: player.current_lane,
+    };
+  });
+  const addLaneContext = (players) => players.map((player) => {
+    const previous = beforeById.get(player.id) || player;
+    const next = after.find((candidate) => candidate.id === player.id) || player;
+    return {
+      ...player,
+      lane_before: previous.current_lane,
+      lane_after: next.current_lane,
+      lane_changed: previous.current_lane !== next.current_lane,
+    };
+  });
+  return {
+    start: addLaneContext(before),
+    lane: addLaneContext(lane),
+    run: addLaneContext(after),
+  };
 }
 
 export function groupReplayEvents(players, actions, selectedTurn) {
