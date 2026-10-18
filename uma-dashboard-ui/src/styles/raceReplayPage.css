@@ -207,3 +207,58 @@
 @media (prefers-reduced-motion: reduce) {
   .race-replay-page .race-track-marker-wrap { transition: none; }
 }
+
+/* Monochrome replay palette: quiet surfaces keep the race data prominent. */
+.race-replay-page {
+  --replay-green: #1b1b1b;
+  --replay-ink: #171717;
+  --replay-muted: #686868;
+  --replay-line: #dedede;
+  --replay-gray: #8d8d8d;
+  --replay-panel: #ffffff;
+  --replay-subtle: #f4f4f4;
+  --replay-stage: #f0f0f0;
+  --replay-stage-alt: #e7e7e7;
+}
+
+.race-replay-page :is(button, select, input, summary):focus-visible,
+.replay-empty button:focus-visible { outline-color: var(--replay-ink); }
+.replay-back, .replay-empty button { background: var(--replay-panel); color: var(--replay-ink); }
+.replay-race-title p span:first-child { color: var(--replay-ink); }
+.replay-turn { background: #ededed; }
+.race-replay-page .race-replay-stage { border-color: #cfcfcf; background: var(--replay-stage); }
+.replay-lane-bands span { border-color: #d0d0d0; }
+.replay-lane-bands span:nth-child(odd) { background: var(--replay-stage-alt); }
+.replay-lane-labels { background: #e2e2e2; border-color: #cfcfcf; }
+.replay-lane-labels > span { color: #555; }
+.race-replay-page .race-player-marker { box-shadow: 0 2px 5px #0000001c; }
+.race-replay-page .race-player-marker__fallback { background: #303030; }
+.race-replay-page .race-player-marker__number { background: #262626; }
+.race-replay-page .race-track-marker-wrap.is-selected .race-player-marker { outline-color: var(--replay-ink); }
+.replay-marker-name { color: var(--replay-ink); box-shadow: 0 1px 4px #0000001c; }
+.replay-field-note, .replay-following { background: var(--replay-subtle); }
+.replay-following { color: var(--replay-ink); }
+.replay-playback { background: var(--replay-panel); }
+.replay-phase-controls { background: #f0f0f0; }
+.replay-phase-controls button.is-active { color: var(--replay-ink); }
+.replay-runner-filters { background: #f0f0f0; }
+.replay-runner-filters button[aria-pressed="true"] { color: var(--replay-ink); }
+.replay-transport button { background: #f0f0f0; color: var(--replay-ink); }
+.replay-transport .replay-play { background: #1b1b1b; color: #fff; }
+.replay-turn-play { color: var(--replay-ink); }
+.replay-speed select { color: var(--replay-ink); }
+.replay-scrubber input { accent-color: var(--replay-ink); }
+.replay-turn-list button.is-current { border-color: var(--replay-ink); background: #ededed; color: var(--replay-ink); }
+.replay-turn-list .has-events, .replay-timeline-hint i { background: var(--replay-ink); }
+.replay-runners { background: var(--replay-panel); }
+.replay-runner[data-selected="true"] { background: #f4f4f4; box-shadow: inset 3px 0 var(--replay-ink); }
+.replay-runner-select:hover { background: #00000008; }
+.replay-runner-avatar { background: #eeeeee; color: var(--replay-ink); }
+.replay-runner-avatar > small { background: #303030; }
+.replay-phase-chip, .replay-phase-chip[data-phase="lane"], .replay-phase-chip[data-phase="run"] { background: #ededed; color: #333; }
+.replay-event-dot { background: #666; }
+.replay-actions li[data-incoming="true"] .replay-event-dot { background: #999; }
+.replay-event-dot.is-skill, .replay-event-dot.is-zone { background: #555; }
+.replay-runner-list { scrollbar-color: #bdbdbd transparent; }
+.replay-no-results button { background: #ededed; color: var(--replay-ink); }
+.replay-empty > svg { color: #333; }
