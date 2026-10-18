@@ -186,15 +186,10 @@ export default function RaceReplayPage({ raceId, onBack }) {
   </section>;
 
   return <section className="race-replay-page" aria-label="รีเพลย์การแข่งขัน">
-    <header className="replay-heading">
-      <button type="button" className="replay-back" onClick={onBack}><ChevronLeft size={18} /> กลับสนามแข่ง</button>
-      <div className="replay-race-title"><h1>{race.stage_name || race.race_name || "รีเพลย์การแข่งขัน"}</h1>
-      </div>
-    </header>
-
     <div className="replay-workspace">
       <div className="replay-field-column">
         <section className="replay-field" aria-labelledby="replay-field-title">
+          <div className="replay-race-title"><h1>{race.stage_name || race.race_name || "รีเพลย์การแข่งขัน"}</h1></div>
           <div className="replay-field-axis"><span>ท้ายสุด <b>{number(replayPlayers.at(-1)?.score)}</b></span><span>คะแนนสะสม</span><span><b>{number(replayPlayers[0]?.score)}</b> ผู้นำ <ArrowRight size={14} /></span></div>
           <div className={`race-replay-stage${selectedPlayer ? " has-selection" : ""}`}>
             <div className="replay-lane-bands" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <span key={index} style={{ "--lane-y": `${laneCenterY(index + 1)}%` }} />)}</div>
@@ -257,5 +252,8 @@ export default function RaceReplayPage({ raceId, onBack }) {
         </div>
       </aside>
     </div>
+    <header className="replay-heading">
+      <button type="button" className="replay-back" onClick={onBack}><ChevronLeft size={18} /> กลับสนามแข่ง</button>
+    </header>
   </section>;
 }
