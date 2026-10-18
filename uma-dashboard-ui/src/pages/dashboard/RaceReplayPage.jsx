@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight, Flag, Focus, ListChecks, Pause, Play, RotateCcw, Users, X } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Flag, Focus, ListChecks, Pause, Play, RotateCcw, X } from "lucide-react";
 import { BOT_API_BASE } from "../../api/playerApi";
 import staminaIcon from "../../assets/icons/Stamina.webp";
 import RacePositionTrack from "../../components/RacePositionTrack";
@@ -11,6 +11,17 @@ const EMPTY_LIST = [];
 const number = (value) => Number(value || 0).toLocaleString("th-TH", { maximumFractionDigits: 1 });
 const signed = (value) => `${Number(value) >= 0 ? "+" : ""}${number(value)}`;
 const laneCenterY = (lane) => 12 + (lane - 1) * 15;
+const formatRaceDate = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("th-TH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "Asia/Bangkok",
+  }).format(date);
+};
 const PHASE_LABELS = {
   start: "ก่อนเริ่ม",
   lane: "เริ่มเทิร์น · เปลี่ยนเลน",
@@ -189,7 +200,10 @@ export default function RaceReplayPage({ raceId, onBack }) {
     <div className="replay-workspace">
       <div className="replay-field-column">
         <section className="replay-field" aria-labelledby="replay-field-title">
-          <div className="replay-race-title"><h1>{race.stage_name || race.race_name || "รีเพลย์การแข่งขัน"}</h1></div>
+          <div className="replay-race-title">
+            <h1>{race.stage_name || race.race_name || "รีเพลย์การแข่งขัน"}</h1>
+            <p className="replay-race-date">แข่งวันที่ {formatRaceDate(race.started_at || race.created_at) || "ไม่ระบุวันที่"}</p>
+          </div>
           <div className="replay-field-axis"><span>ท้ายสุด <b>{number(replayPlayers.at(-1)?.score)}</b></span><span>คะแนนสะสม</span><span><b>{number(replayPlayers[0]?.score)}</b> ผู้นำ <ArrowRight size={14} /></span></div>
           <div className={`race-replay-stage${selectedPlayer ? " has-selection" : ""}`}>
             <div className="replay-lane-bands" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <span key={index} style={{ "--lane-y": `${laneCenterY(index + 1)}%` }} />)}</div>
