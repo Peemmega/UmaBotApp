@@ -396,8 +396,9 @@ export default function ProfilePage({
 
         <StaggerItem>
           <nav className="profile-section-nav" aria-label="Trainer profile sections">
-            <button type="button" className={activeProfilePage === "overview" ? "is-active" : ""} onClick={() => setActiveProfilePage("overview")}>Profile</button>
-            {isTrainer && <button type="button" className={activeProfilePage === "team" ? "is-active" : ""} onClick={() => setActiveProfilePage("team")}>My Team</button>}
+            <button type="button" className={activeProfilePage === "overview" ? "is-active" : ""} onClick={() => setActiveProfilePage("overview")}>ข้อมูลพื้นฐาน</button>
+            {isTrainer && <button type="button" className={activeProfilePage === "stats" ? "is-active" : ""} onClick={() => setActiveProfilePage("stats")}>ค่าสถานะ</button>}
+            {isTrainer && <button type="button" className={activeProfilePage === "team" ? "is-active" : ""} onClick={() => setActiveProfilePage("team")}>ทีม</button>}
           </nav>
         </StaggerItem>
 
@@ -407,8 +408,9 @@ export default function ProfilePage({
               <BasicProfileEditor userId={userId} profileType={profileType} />
             </div>
           </StaggerItem>
+        </>}
 
-          {isTrainer && <div className="profile-stats-page">
+        {isTrainer && activeProfilePage === "stats" && <div className="profile-stats-page">
             <div className="profile-data-panel">
               <StaggerItem><section className="sheet-card main-stats-card padding_container">
                 <div className="section-header-row"><div className="main-stats-header">
@@ -436,9 +438,7 @@ export default function ProfilePage({
                 zone: { ...(prev?.zone || {}), ...updatedZone },
               }))} /></div></StaggerItem>
             </div>
-            <StaggerItem><ProfileSkillLibrary userId={userId} username={profilePlayer?.username || profileName} readOnly={false} /></StaggerItem>
           </div>}
-        </>}
 
         {isTrainer && activeProfilePage === "team" && (
           <StaggerItem>
