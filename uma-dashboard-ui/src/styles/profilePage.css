@@ -614,7 +614,7 @@
 .profile-redesign .profile-identity-card .resource-value { max-width: 100%; overflow: hidden; color: #754321; font-size: 22px; font-weight: 950; text-overflow: ellipsis; white-space: nowrap; }
 .profile-redesign .profile-identity-card .resource-icon { width: 26px; height: 26px; flex: 0 0 auto; }
 
-.role-profile .profile-identity-card .profile-resources { grid-template-columns: minmax(0, 1fr); }
+/* .role-profile .profile-identity-card .profile-resources { grid-template-columns: minmax(0, 1fr); } */
 .role-profile-npc .profile-section-nav { grid-template-columns: 1fr; }
 .role-profile-npc .profile-identity-card .profile-body { grid-template-rows: minmax(0, 1fr); }
 .role-profile-npc .profile-identity-card .profile-avatar-wrap { grid-row: 1; }
