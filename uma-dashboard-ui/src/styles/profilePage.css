@@ -237,7 +237,7 @@
 }
 
 .profile-redesign .profile-section-nav button:hover { transform: translateY(-1px); }
-.role-profile .profile-section-nav { grid-template-columns: repeat(2, minmax(0,1fr)); }
+.role-profile .profile-section-nav { grid-template-columns: repeat(3, minmax(0,1fr)); }
 .profile-redesign .profile-empty-page { min-height: 180px; }
 .profile-redesign .profile-stats-page { display: grid; gap: clamp(16px, 2vw, 24px); }
 

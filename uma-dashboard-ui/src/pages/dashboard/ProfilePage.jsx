@@ -414,10 +414,10 @@ export default function ProfilePage({
             <div className="profile-data-panel">
               <StaggerItem><section className="sheet-card main-stats-card padding_container">
                 <div className="section-header-row"><div className="main-stats-header">
-                  <SectionHeader title="Core Stats" kicker="Trainer Sheet" className="profile-section-header" />
+                  <SectionHeader title="ค่าสถานะพื้นฐาน" kicker="Trainer Sheet" className="profile-section-header" />
                   <button type="button" className={`update-stats-btn ${isEditStatsOpen ? "active" : ""}`} aria-expanded={isEditStatsOpen} onClick={() => setIsEditStatsOpen((prev) => !prev)}>
                     <svg className="update-stats-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 11h3v6H3zm5-7h3v13H8zm5 4h3v9h-3z" fill="currentColor" /></svg>
-                    {isEditStatsOpen ? "Close Stats Editor" : "Edit Stats"}
+                    {isEditStatsOpen ? "ปิดปรับแต่ง Stats" : "ปรับแต่ง Stats"}
                   </button>
                 </div></div>
                 <div className="stats-grid">{mainStats.map((item) => <StatCell key={item.key} statKey={item.key} label={item.label} value={profilePlayer?.[item.key]} />)}</div>
