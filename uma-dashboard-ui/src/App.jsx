@@ -313,7 +313,7 @@ export default function App() {
   }, [discordRole, isDiscordRoleChecked, userId, username]);
 
   useEffect(() => {
-    if (!username || !userId || accountRole !== "trainee") return;
+    if (!username || !userId || !["trainee", "trainer"].includes(accountRole)) return;
 
     const cacheKey = `player:${userId}`;
     const cached = sessionStorage.getItem(cacheKey);
