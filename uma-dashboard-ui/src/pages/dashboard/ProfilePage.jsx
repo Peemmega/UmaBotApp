@@ -74,15 +74,9 @@ export default function ProfilePage({
   const [viewedPlayer, setViewedPlayer] = useState(null);
   const [viewedPlayerStatus, setViewedPlayerStatus] = useState(readOnly ? "loading" : "ready");
   const [activeProfilePage, setActiveProfilePage] = useState("overview");
-  const [activeSection, setActiveSection] = useState("profile-overview");
   const fileInputRef = useRef(null);
-  const jumpToSection = (sectionId) => {
-    setActiveSection(sectionId);
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   useEffect(() => {
-    setActiveSection(profileType === "trainee" || readOnly ? "profile-overview" : "profile-basic");
     setActiveProfilePage("overview");
   }, [profileType, readOnly, userId]);
 
@@ -401,50 +395,52 @@ export default function ProfilePage({
         </StaggerItem>
 
         <StaggerItem>
-          <nav className="profile-section-nav" aria-label="ส่วนต่าง ๆ ของโปรไฟล์">
-            <button type="button" className={activeProfilePage === "overview" ? "is-active" : ""} onClick={() => setActiveProfilePage("overview")}>Overview</button>
-            {isTrainer && <>
-              <button type="button" className={activeProfilePage === "stats" ? "is-active" : ""} onClick={() => setActiveProfilePage("stats")}>Stats</button>
-              <button type="button" className={activeProfilePage === "skills" ? "is-active" : ""} onClick={() => setActiveProfilePage("skills")}>Skills</button>
-            </>}
-            {isTrainer && <button type="button" className={activeSection === "profile-team" ? "is-active" : ""} onClick={() => jumpToSection("profile-team")}>ทีมของฉัน</button>}
+          <nav className="profile-section-nav" aria-label="Trainer profile sections">
+            <button type="button" className={activeProfilePage === "overview" ? "is-active" : ""} onClick={() => setActiveProfilePage("overview")}>Profile</button>
+            {isTrainer && <button type="button" className={activeProfilePage === "team" ? "is-active" : ""} onClick={() => setActiveProfilePage("team")}>My Team</button>}
           </nav>
         </StaggerItem>
 
-        <StaggerItem>
-          {activeProfilePage === "overview" && <div id="profile-basic" className="role-basic-profile-section">
-            <BasicProfileEditor userId={userId} profileType={profileType} />
+        {activeProfilePage === "overview" && <>
+          <StaggerItem>
+            <div id="profile-basic" className="role-basic-profile-section">
+              <BasicProfileEditor userId={userId} profileType={profileType} />
+            </div>
+          </StaggerItem>
+
+          {isTrainer && <div className="profile-stats-page">
+            <div className="profile-data-panel">
+              <StaggerItem><section className="sheet-card main-stats-card padding_container">
+                <div className="section-header-row"><div className="main-stats-header">
+                  <SectionHeader title="Core Stats" kicker="Trainer Sheet" className="profile-section-header" />
+                  <button type="button" className={`update-stats-btn ${isEditStatsOpen ? "active" : ""}`} aria-expanded={isEditStatsOpen} onClick={() => setIsEditStatsOpen((prev) => !prev)}>
+                    <svg className="update-stats-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 11h3v6H3zm5-7h3v13H8zm5 4h3v9h-3z" fill="currentColor" /></svg>
+                    {isEditStatsOpen ? "Close Stats Editor" : "Edit Stats"}
+                  </button>
+                </div></div>
+                <div className="stats-grid">{mainStats.map((item) => <StatCell key={item.key} statKey={item.key} label={item.label} value={profilePlayer?.[item.key]} />)}</div>
+                {isEditStatsOpen && <EditStatsModal userId={userId} player={player} onClose={() => setIsEditStatsOpen(false)} onSaved={(updated) => {
+                  updateProfilePlayer((prev) => ({ ...prev, ...updated }));
+                  setIsEditStatsOpen(false);
+                }} />}
+              </section></StaggerItem>
+              <StaggerItem><section className="sheet-card"><div className="title-banner"><h2>Aptitudes</h2></div><div className="padding-content"><div className="aptitude-table">
+                {aptitudeRows.map((row) => <div className="aptitude-row" key={row.title}><div className="aptitude-row-title">{row.title}</div><div className="aptitude-row-items">{row.items.map((item) => <AptitudeItem key={item.key} label={item.label} value={profilePlayer?.[item.key]} icon={aptitudeIcons[item.key]} />)}</div></div>)}
+              </div></div></section></StaggerItem>
+            </div>
+
+            <div className="profile-lower-grid">
+              <StaggerItem><div className="profile-lower-panel"><SkillLoadoutPanel userId={userId} username={profilePlayer?.username || profileName} player={profilePlayer} refreshKey={skillLoadoutVersion} readOnly={false} /></div></StaggerItem>
+              <StaggerItem><div className="profile-lower-panel"><ZonePanel userId={userId} player={profilePlayer} readOnly={false} onSaved={(updatedZone) => updateProfilePlayer((prev) => ({
+                ...prev,
+                zone: { ...(prev?.zone || {}), ...updatedZone },
+              }))} /></div></StaggerItem>
+            </div>
+            <StaggerItem><ProfileSkillLibrary userId={userId} username={profilePlayer?.username || profileName} readOnly={false} /></StaggerItem>
           </div>}
-        </StaggerItem>
+        </>}
 
-        {isTrainer && activeProfilePage === "stats" && <div className="profile-stats-page">
-          <div className="profile-data-panel">
-            <StaggerItem><section className="sheet-card main-stats-card padding_container">
-              <div className="section-header-row"><div className="main-stats-header">
-                <SectionHeader title="Core Stats" kicker="Trainer Sheet" className="profile-section-header" />
-                <button type="button" className={`update-stats-btn ${isEditStatsOpen ? "active" : ""}`} aria-expanded={isEditStatsOpen} onClick={() => setIsEditStatsOpen((prev) => !prev)}>
-                  <svg className="update-stats-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 11h3v6H3zm5-7h3v13H8zm5 4h3v9h-3z" fill="currentColor" /></svg>
-                  {isEditStatsOpen ? "Close Stats Editor" : "Edit Stats"}
-                </button>
-              </div></div>
-              <div className="stats-grid">{mainStats.map((item) => <StatCell key={item.key} statKey={item.key} label={item.label} value={profilePlayer?.[item.key]} />)}</div>
-              {isEditStatsOpen && <EditStatsModal userId={userId} player={player} onClose={() => setIsEditStatsOpen(false)} onSaved={(updated) => {
-                updateProfilePlayer((prev) => ({ ...prev, ...updated }));
-                setIsEditStatsOpen(false);
-              }} />}
-            </section></StaggerItem>
-            <StaggerItem><section className="sheet-card"><div className="title-banner"><h2>Aptitudes</h2></div><div className="padding-content"><div className="aptitude-table">
-              {aptitudeRows.map((row) => <div className="aptitude-row" key={row.title}><div className="aptitude-row-title">{row.title}</div><div className="aptitude-row-items">{row.items.map((item) => <AptitudeItem key={item.key} label={item.label} value={profilePlayer?.[item.key]} icon={aptitudeIcons[item.key]} />)}</div></div>)}
-            </div></div></section></StaggerItem>
-          </div>
-        </div>}
-
-        {isTrainer && activeProfilePage === "skills" && <div className="profile-lower-grid">
-          <StaggerItem><div className="profile-lower-panel"><SkillLoadoutPanel userId={userId} username={profilePlayer?.username || profileName} player={profilePlayer} refreshKey={skillLoadoutVersion} readOnly={false} /></div></StaggerItem>
-          <StaggerItem><div className="profile-lower-panel"><ProfileSkillLibrary userId={userId} username={profilePlayer?.username || profileName} readOnly={false} /></div></StaggerItem>
-        </div>}
-
-        {isTrainer && (
+        {isTrainer && activeProfilePage === "team" && (
           <StaggerItem>
             <section className="sheet-card trainer-team-card" id="profile-team">
               <div className="title-banner"><h2>My Uma Musume Team</h2></div>
