@@ -77,17 +77,7 @@ export default function LoginPage({ appBase, loginError = "" }) {
             <h1 className="login-title">
               เชื่อมต่อกับ <span>Discord Account</span> ของคุณ
             </h1>
-
-            {/* <p className="login-subtitle">
-              เข้าสู่ระบบเพื่อดูโปรไฟล์ อัพเกรดค่าสเตตัส Aptitude และ Mailbox ของคุณ
-            </p> */}
-
-            {/* <div className="login-features">
-              <div className="login-feature">📊 Profile & Stats</div>
-              <div className="login-feature">🏇 Aptitude</div>
-              <div className="login-feature">📬 Mailbox</div>
-            </div> */}
-
+            
             <button
               onClick={() => {
                 playSound("click");
