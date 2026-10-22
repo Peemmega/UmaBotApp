@@ -34,6 +34,7 @@ const SKILL_ICON_FILTERS = [
   { value: "navigation", label: "Navigation", icon: "navigation" },
   { value: "uniqueVelocity", label: "Unique Velocity", icon: "UniqueVelocity" },
   { value: "uniqueAcceleration", label: "Unique Acceleration", icon: "UniqueAcceleration" },
+  { value: "uniqueRecovery", label: "Unique Recovery", icon: "UniqueRecovery" },
   { value: "passive", label: "Passive", icon: "passive" },
 ];
 
@@ -49,6 +50,7 @@ const SKILL_ICON_VARIANTS = {
   navigation: ["Navigation", "Navigation_rare", "navigation"],
   uniqueVelocity: ["UniqueVelocity"],
   uniqueAcceleration: ["UniqueAcceleration"],
+  uniqueRecovery: ["UniqueRecovery"],
   passive: ["Passive", "Passive_rare", "passive"],
 };
 
