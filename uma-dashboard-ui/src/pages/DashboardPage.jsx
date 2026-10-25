@@ -121,19 +121,58 @@ export default function DashboardPage({
   const [systemTopic, setSystemTopic] = useState(getSystemTopicFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
   const [profiles, setProfiles] = useState(() => loadProfilePresets(userId, username));
+  const [loadedProfileKey, setLoadedProfileKey] = useState("");
   // App resolves and persists the account's role before mounting the dashboard.
   // Use that role as the single source for the web theme and profile data.
   const activeProfileType = accountRole;
 
   useEffect(() => {
-    const nextProfiles = loadProfilePresets(userId, player?.username || username);
+    const nextProfiles = loadProfilePresets(userId, username);
     setProfiles(nextProfiles);
+    setLoadedProfileKey("");
+    if (!userId || !accountRole) return undefined;
+
+    const controller = new AbortController();
+    const profileKey = `${userId}:${accountRole}`;
+
+    async function loadRoleProfile() {
+      try {
+        const response = await fetch(
+          `${BOT_API_BASE}/profiles/preset/${encodeURIComponent(userId)}?profile_type=${encodeURIComponent(accountRole)}`,
+          { signal: controller.signal, cache: "no-store" }
+        );
+        if (!response.ok) throw new Error("Could not load the active role profile.");
+        const data = await response.json();
+        if (controller.signal.aborted) return;
+
+        if (data.profile) {
+          setProfiles((current) => ({
+            ...current,
+            [accountRole]: {
+              ...current[accountRole],
+              type: accountRole,
+              name: data.profile.name || current[accountRole]?.name || accountRole,
+              imageUrl: data.profile.image_url ?? current[accountRole]?.imageUrl ?? "",
+            },
+          }));
+        }
+        setLoadedProfileKey(profileKey);
+      } catch (loadError) {
+        if (!controller.signal.aborted) {
+          console.warn("Could not load the active role profile.", loadError);
+        }
+      }
+    }
+
+    loadRoleProfile();
+    return () => controller.abort();
   }, [accountRole, userId, username]);
 
   useEffect(() => {
     if (!userId) return;
     saveProfilePresets(userId, profiles);
     if (accountRole !== "trainer" && accountRole !== "npc") return;
+    if (loadedProfileKey !== `${userId}:${accountRole}`) return;
 
     const profile = profiles[accountRole];
     const imageUrl = String(profile?.imageUrl || "");
@@ -178,9 +217,11 @@ export default function DashboardPage({
     return () => {
       cancelled = true;
     };
-  }, [accountRole, profiles, userId]);
+  }, [accountRole, loadedProfileKey, profiles, userId]);
 
   const activeProfile = profiles[activeProfileType] || profiles.trainee;
+  const activeProfileName = activeProfile?.name
+    || (activeProfileType === "trainee" ? player?.username || username : activeProfileType);
 
   const changePage = (page) => {
     if (page.startsWith("system/")) {
@@ -245,7 +286,7 @@ export default function DashboardPage({
           window.history.replaceState({}, "", "/dashboard/home#race-system");
         }} />;
       case "home":
-        return <HomePage username={player?.username || username} onNavigate={changePage} onOpenNews={openNewsDetail} />;
+        return <HomePage username={activeProfileName} onNavigate={changePage} onOpenNews={openNewsDetail} />;
 
       case "tutorials":
         return <TutorialsPage />;
