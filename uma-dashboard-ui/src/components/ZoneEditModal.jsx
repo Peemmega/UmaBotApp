@@ -12,7 +12,7 @@ const ZONE_FIELDS = [
   ["flat", "เพิ่มแต้มผลรวม"],
   ["add_dkh", "เพิ่มจำนวนลูกเต๋า d/kh"],
   ["cap_floor", "เพิ่มค่าทอยลูกเต๋าขั้นต่ำและสูงสุด"],
-  ["self_heal_stamina", "ฟื้นฟู Stamina"],
+  ["self_heal_stamina", "ฟื้นฟู Stamina (+10% ต่อระดับ)"],
   ["modify_current_speed", "เพิ่มอัตราเร่ง"],
   ["race_speed", "เพิ่ม Speed ในรัน (+1 ต่อ Zone pt)"],
 ];

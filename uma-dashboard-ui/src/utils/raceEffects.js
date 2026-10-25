@@ -39,6 +39,12 @@ export function describeRaceEffect(effect) {
     return `${action}ช่วงเลน In Pack ของตัวเอง ${amount} ${duration}`.trim();
   }
 
+  if (["recover_stamina", "self_heal_stamina"].includes(descriptor.type)) {
+    const percentage = Number(descriptor.value || 0) * 10;
+    const action = descriptor.type === "self_heal_stamina" ? "ฟื้นฟู Stamina ให้ตัวเอง" : "ฟื้นฟู Stamina";
+    return `${action} +${percentage}%${duration ? ` ${duration}` : ""}`;
+  }
+
   return `${descriptor.type.replace(/_/g, " ")}${amount ? ` ${Number(descriptor.value) > 0 ? "+" : ""}${descriptor.value}` : ""}${duration ? ` ${duration}` : ""}`;
 }
 

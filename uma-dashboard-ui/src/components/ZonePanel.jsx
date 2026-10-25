@@ -12,7 +12,7 @@ export default function ZonePanel({ userId, player, onSaved, readOnly = false })
     flat: 20,
     add_dkh: 1,
     cap_floor: 3,
-    self_heal_stamina: 1,
+    self_heal_stamina: 10,
     modify_current_speed: 1,
     race_speed: 1,
   };
@@ -36,7 +36,7 @@ export default function ZonePanel({ userId, player, onSaved, readOnly = false })
     if (effects.add_dkh) lines.push(`เพิ่มจำนวนลูกเต๋า d/kh +${effects.add_dkh}`);
     if (effects.cap_floor) lines.push(`เพิ่มแต้มขั้นต่ำและสูงสุด +${effects.cap_floor}`);
     if (effects.self_heal_stamina) {
-      lines.push(`ฟื้นฟู stamina ตัวเอง +${effects.self_heal_stamina}`);
+      lines.push(`ฟื้นฟู stamina ตัวเอง +${effects.self_heal_stamina}%`);
     }
     if (effects.modify_current_speed) {
       lines.push(`เพิ่มอัตราเร่ง ${effects.modify_current_speed} ระดับ`);
