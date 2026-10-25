@@ -105,10 +105,16 @@ export function buildReplayTransition(participants, turns, selectedTurn, avatars
   const after = buildReplayState(participants, turns, selectedTurn, avatars);
   const beforeBeforeById = new Map(beforeBefore.map((player) => [player.id, player]));
   const beforeById = new Map(before.map((player) => [player.id, player]));
+  const afterById = new Map(after.map((player) => [player.id, player]));
   const lane = before.map((player) => {
     const previous = beforeBeforeById.get(player.id) || player;
+    const selectedTurnPlayer = afterById.get(player.id);
     return {
       ...player,
+      // Keep start-of-turn positions, but show the distance color recorded
+      // for the selected turn in both replay phases.
+      pack_state: selectedTurnPlayer?.pack_state ?? player.pack_state,
+      pack_source: selectedTurnPlayer?.pack_source ?? player.pack_source,
       lane_before: previous.current_lane,
       lane_after: player.current_lane,
       lane_changed: previous.current_lane !== player.current_lane,
