@@ -54,6 +54,7 @@ function RunnerAvatar({ player }) {
 
 export default function RaceReplayPage({ raceId, onBack }) {
   const [request, setRequest] = useState({ raceId: null, detail: null, error: "" });
+  const [raceCatalog, setRaceCatalog] = useState(EMPTY_LIST);
   const [selectedTurn, setSelectedTurn] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playMode, setPlayMode] = useState("all");
@@ -63,6 +64,19 @@ export default function RaceReplayPage({ raceId, onBack }) {
   const [playerAvatars, setPlayerAvatars] = useState({});
   const activeTurnRef = useRef(null);
   const runnerListRef = useRef(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`${BOT_API_BASE}/races`, { signal: controller.signal })
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Could not load race paths")))
+      .then((races) => {
+        if (!controller.signal.aborted) setRaceCatalog(Array.isArray(races) ? races : EMPTY_LIST);
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") setRaceCatalog(EMPTY_LIST);
+      });
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     if (!raceId) return undefined;
@@ -92,7 +106,10 @@ export default function RaceReplayPage({ raceId, onBack }) {
   const turns = detail?.turns || EMPTY_LIST;
   const actions = detail?.actions || EMPTY_LIST;
   const totalTurns = Math.max(Number(race.total_turns) || 0, ...turns.map((turn) => Number(turn.turn_number) || 0), 0);
-  const currentPathType = Number(race.path?.[selectedTurn - 1]);
+  const replayCourse = raceCatalog.find((course) => String(course.id || "").toLowerCase() === String(race.stage_key || "").toLowerCase())
+    || raceCatalog.find((course) => String(course.name || "").trim().toLowerCase() === String(race.stage_name || "").trim().toLowerCase());
+  const replayPath = replayCourse?.path || race.path || EMPTY_LIST;
+  const currentPathType = Number(replayPath[selectedTurn - 1]);
   const currentPathLabel = PATH_TYPE_LABELS[currentPathType] || "ไม่ระบุ";
 
   useEffect(() => {
