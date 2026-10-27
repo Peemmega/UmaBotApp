@@ -3,6 +3,10 @@ import { ArrowRight, ChevronLeft, ChevronRight, Flag, Focus, ListChecks, Pause, 
 import { BOT_API_BASE } from "../../api/playerApi";
 import staminaIcon from "../../assets/icons/Stamina.webp";
 import RacePositionTrack from "../../components/RacePositionTrack";
+import AptitudeItem from "../../components/AptitudeItem";
+import StatCell from "../../components/StatCell";
+import { getSkillIcon } from "../../utils/getSkillIcon";
+import { aptitudeRows, mainStats } from "../../data/dashboardConfig";
 import { resolveRaceAvatar } from "../../utils/avatar";
 import { buildReplayTransition, getReplayTurnData, groupReplayEvents } from "../../utils/raceReplay";
 import "../../styles/raceReplayPage.css";
@@ -62,6 +66,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [playerAvatars, setPlayerAvatars] = useState({});
+  const [skillCatalog, setSkillCatalog] = useState({});
   const activeTurnRef = useRef(null);
   const runnerListRef = useRef(null);
 
@@ -74,6 +79,23 @@ export default function RaceReplayPage({ raceId, onBack }) {
       })
       .catch((error) => {
         if (error.name !== "AbortError") setRaceCatalog(EMPTY_LIST);
+      });
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`${BOT_API_BASE}/skills?tag=all`, { signal: controller.signal })
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Could not load skill details")))
+      .then((skills) => {
+        if (!controller.signal.aborted) {
+          setSkillCatalog(Object.fromEntries((Array.isArray(skills) ? skills : [])
+            .filter((skill) => skill?.id)
+            .map((skill) => [skill.id, skill])));
+        }
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") setSkillCatalog({});
       });
     return () => controller.abort();
   }, []);
@@ -169,6 +191,41 @@ export default function RaceReplayPage({ raceId, onBack }) {
     return counts;
   }, [actions, turns]);
   const selectedPlayer = replayPlayers.find((player) => player.id === selectedPlayerId);
+  const selectedParticipant = participants.find((participant) => String(participant.participant_id) === String(selectedPlayerId));
+  const focusedProfile = useMemo(() => {
+    if (!selectedParticipant) return null;
+    const snapshot = selectedParticipant.snapshot || {};
+    const baseState = selectedParticipant.replay_states?.[String(selectedTurn)]?.[replayPhase] || {};
+    const skillStates = baseState.skills || {};
+    const skillsById = new Map((Array.isArray(snapshot.skills) ? snapshot.skills : [])
+      .map((skill) => typeof skill === "string" ? { id: skill, name: skill } : skill)
+      .filter((skill) => skill?.id)
+      .map((skill) => [String(skill.id), skill]));
+    Object.keys(skillStates).forEach((skillId) => {
+      if (!skillsById.has(skillId)) skillsById.set(skillId, { id: skillId, name: skillId });
+    });
+    const skills = [...skillsById.values()].map((skill) => {
+      const id = String(skill.id);
+      const definition = skillCatalog[id] || {};
+      const state = skillStates[id] || {};
+      return {
+        ...skill,
+        definition,
+        used: Boolean(state.used),
+        useCount: Number(state.use_count) || 0,
+        cooldownRemaining: Number(state.cooldown_remaining) || 0,
+      };
+    });
+    return {
+      snapshot,
+      baseStats: snapshot.base_stats || {},
+      aptitudes: snapshot.aptitudes || {},
+      skills,
+      wit: baseState.wit,
+      witGain: baseState.wit_gain,
+      witSource: baseState.source || "simulated",
+    };
+  }, [replayPhase, selectedParticipant, selectedTurn, skillCatalog]);
   const visiblePlayers = useMemo(() => {
     if (!selectedPlayerId) return replayPlayers;
     return [...replayPlayers].sort((left, right) => (
@@ -315,6 +372,44 @@ export default function RaceReplayPage({ raceId, onBack }) {
           })}
           {!visiblePlayers.length && <div className="replay-no-results"><ListChecks size={27} /><p>ไม่มีข้อมูลผู้เข้าแข่งขัน</p></div>}
         </div>
+        {selectedPlayer && focusedProfile && <section className="replay-focus-panel" aria-label={`ข้อมูล ${selectedPlayer.name}`}>
+          <header className="replay-focus-heading">
+            <div><span>กำลังโฟกัส</span><h3>{selectedPlayer.name}</h3></div>
+            <small>เทิร์น {selectedTurn} · {replayPhase === "lane" ? "เริ่มเทิร์น" : "หลังวิ่ง"}</small>
+          </header>
+          <div className="replay-focus-wit">
+            <span>Wit ตอนนี้</span>
+            <strong>{number(focusedProfile.wit)}</strong>
+            <small>{focusedProfile.witSource === "recorded" ? "ค่าที่บันทึกไว้" : `จำลอง · ฟื้น +${number(focusedProfile.witGain)} ต่อเทิร์น`}</small>
+          </div>
+          <section className="replay-focus-section">
+            <h4>Stats ตอนลงแข่ง</h4>
+            {mainStats.some((stat) => focusedProfile.baseStats[stat.key] !== null && focusedProfile.baseStats[stat.key] !== undefined)
+              ? <div className="stats-grid replay-focus-stats-grid">{mainStats.map((stat) => <StatCell key={stat.key} statKey={stat.key} label={stat.label} value={focusedProfile.baseStats[stat.key]} />)}</div>
+              : <p className="replay-focus-empty">ไม่มี snapshot ของ Stats</p>}
+          </section>
+          <section className="replay-focus-section">
+            <h4>Aptitude</h4>
+            {Object.keys(focusedProfile.aptitudes).length
+              ? <div className="aptitude-table replay-focus-aptitudes">{aptitudeRows.map((row) => <div className="aptitude-row" key={row.title}>
+                <div className="aptitude-row-title">{row.title}</div>
+                <div className="aptitude-row-items">{row.items.map((item) => <AptitudeItem key={item.key} label={item.label} value={focusedProfile.aptitudes[item.key]} />)}</div>
+              </div>)}</div>
+              : <p className="replay-focus-empty">ไม่มี snapshot ของ Aptitude</p>}
+          </section>
+          <section className="replay-focus-section">
+            <h4>สกิลที่ติดตัว <small>{focusedProfile.skills.length}</small></h4>
+            {focusedProfile.skills.length ? <div className="replay-focus-skills">{focusedProfile.skills.map((skill) => <article className="replay-focus-skill" key={skill.id}>
+              <span className="replay-focus-skill-icon">{getSkillIcon(skill.icon || skill.definition.icon)}</span>
+              <span className="replay-focus-skill-name"><strong>{skill.name || skill.definition.name || skill.id}</strong><small>ใช้ {number(skill.definition.cost)} Wit · คูลดาวน์ {number(skill.definition.cooldown)} เทิร์น</small></span>
+              <span className="replay-focus-skill-state" data-used={skill.used}>
+                <strong>{skill.used ? `ใช้แล้ว${skill.useCount > 1 ? ` ×${skill.useCount}` : ""}` : "ยังไม่ใช้"}</strong>
+                <small>CD {number(skill.cooldownRemaining)}</small>
+              </span>
+            </article>)}</div> : <p className="replay-focus-empty">ไม่มีข้อมูลสกิลใน snapshot</p>}
+            <p className="replay-focus-footnote">สถานะสกิลและ Wit แสดงตามช่วงที่เลือกใน Replay</p>
+          </section>
+        </section>}
       </aside>
     </div>
     <header className="replay-heading">

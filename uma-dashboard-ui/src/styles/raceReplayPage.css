@@ -150,6 +150,45 @@
 .replay-run-details dl > div { display: flex; justify-content: space-between; gap: 10px; }
 .replay-run-details dt, .replay-run-details dd { margin: 0; }
 .replay-run-details dd { color: var(--replay-ink); text-align: right; font-variant-numeric: tabular-nums; }
+.replay-focus-panel { display: grid; gap: 13px; padding: 15px 16px 18px; border-top: 1px solid var(--replay-line); background: #fbfcfa; }
+.replay-focus-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.replay-focus-heading > div > span { color: var(--replay-muted); font-size: 10px; }
+.replay-focus-heading h3 { margin: 2px 0 0; color: var(--replay-ink); font-size: 15px; line-height: 1.35; overflow-wrap: anywhere; }
+.replay-focus-heading > small { color: var(--replay-muted); text-align: right; font-size: 10px; }
+.replay-focus-wit { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 3px 10px; padding: 10px 12px; border: 1px solid var(--replay-line); border-radius: 8px; background: #fff; }
+.replay-focus-wit > span { color: var(--replay-muted); font-size: 11px; font-weight: 700; }
+.replay-focus-wit > strong { justify-self: end; color: var(--replay-ink); font-size: 20px; font-variant-numeric: tabular-nums; }
+.replay-focus-wit > small { grid-column: 1 / -1; color: var(--replay-muted); font-size: 10px; }
+.replay-focus-section { display: grid; gap: 7px; min-width: 0; }
+.replay-focus-section h4 { display: flex; align-items: baseline; gap: 6px; margin: 0; color: var(--replay-ink); font-size: 12px; }
+.replay-focus-section h4 small { color: var(--replay-muted); font-size: 10px; font-weight: 500; }
+.replay-focus-stats-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; margin: 0; }
+.replay-focus-stats-grid .stat-cell { min-width: 0; padding: 5px 3px; }
+.replay-focus-stats-grid .stat-header { gap: 3px; font-size: 9px; }
+.replay-focus-stats-grid .stat-icon-frame { width: 17px; height: 17px; }
+.replay-focus-stats-grid .stat-icon { width: 14px; height: 14px; }
+.replay-focus-stats-grid .stat-body { gap: 2px; }
+.replay-focus-stats-grid .grade-image { width: 19px; height: 19px; }
+.replay-focus-stats-grid .stat-value { font-size: 12px; }
+.replay-focus-aptitudes { display: grid; gap: 6px; margin: 0; }
+.replay-focus-aptitudes .aptitude-row { grid-template-columns: 64px minmax(0, 1fr); gap: 5px; }
+.replay-focus-aptitudes .aptitude-row-title { color: var(--replay-muted); font-size: 10px; text-align: left; }
+.replay-focus-aptitudes .aptitude-row-items { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.replay-focus-aptitudes .aptitude-item { min-width: 0; min-height: 28px; padding: 3px 4px; gap: 3px; }
+.replay-focus-aptitudes .aptitude-name { font-size: 9px; }
+.replay-focus-aptitudes .aptitude-grade-image { height: 18px; }
+.replay-focus-skills { display: grid; gap: 5px; }
+.replay-focus-skill { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 7px; min-width: 0; padding: 6px; border: 1px solid var(--replay-line); border-radius: 7px; background: #fff; }
+.replay-focus-skill-icon { display: grid; place-items: center; width: 28px; height: 28px; overflow: hidden; border-radius: 6px; background: #f0f0f0; }
+.replay-focus-skill-icon img, .replay-focus-skill-icon .skill-icon-img { width: 24px; height: 24px; object-fit: contain; }
+.replay-focus-skill-name { display: grid; gap: 2px; min-width: 0; }
+.replay-focus-skill-name strong { color: var(--replay-ink); font-size: 10px; line-height: 1.4; overflow-wrap: anywhere; }
+.replay-focus-skill-name small, .replay-focus-skill-state small { color: var(--replay-muted); font-size: 9px; }
+.replay-focus-skill-state { display: grid; justify-items: end; gap: 2px; white-space: nowrap; }
+.replay-focus-skill-state strong { color: var(--replay-muted); font-size: 9px; }
+.replay-focus-skill-state[data-used="true"] strong { color: var(--replay-ink); }
+.replay-focus-empty, .replay-focus-footnote { margin: 0; color: var(--replay-muted); font-size: 10px; line-height: 1.55; }
+.replay-focus-footnote { padding-top: 2px; }
 .replay-no-results { display: grid; justify-items: center; gap: 10px; padding: 40px 24px; text-align: center; color: var(--replay-muted); font-size: 12px; }
 .replay-no-results p { margin: 0; }
 .replay-no-results button { padding: 8px; border: 0; border-radius: 6px; background: #edf4e9; color: var(--replay-green); font-size: 11px; }
