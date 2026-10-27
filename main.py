@@ -17,6 +17,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from psycopg2 import OperationalError
 from urllib.parse import urlencode
+
 load_dotenv()
 
 app = FastAPI()
@@ -37,7 +38,9 @@ app.add_middleware(
 
 IS_RAILWAY = os.getenv("RAILWAY_ENVIRONMENT") is not None
 MOUNT_PATH = "/app/data" if IS_RAILWAY else "."
-DB_NAME = os.path.join(MOUNT_PATH, "uma_database.db") # เปลี่ยนชื่อไฟล์ให้ตรงกับใน Volume
+DB_NAME = os.path.join(
+    MOUNT_PATH, "uma_database.db"
+)  # เปลี่ยนชื่อไฟล์ให้ตรงกับใน Volume
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
@@ -59,6 +62,7 @@ DISCORD_ACCOUNT_ROLE_PRIORITY = ("trainer", "npc", "trainee")
 # Use a separate, high-entropy value in Railway. Falling back to the OAuth
 # secret keeps existing deployments working while they add SESSION_SECRET.
 SESSION_SECRET = os.getenv("SESSION_SECRET") or CLIENT_SECRET
+SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
@@ -69,7 +73,7 @@ app.add_middleware(
     SessionMiddleware,
     secret_key=SESSION_SECRET,
     session_cookie="uma_dashboard_session",
-    max_age=60 * 60 * 24,
+    max_age=SESSION_MAX_AGE_SECONDS,
     same_site="lax",
     https_only=IS_RAILWAY,
 )
@@ -161,15 +165,32 @@ def build_player_summary_query(columns):
 
     image_candidates = [
         column
-        for column in ["profile_image_url", "avatar_url", "avatar", "thumbnail", "thumnail", "image_url"]
+        for column in [
+            "profile_image_url",
+            "avatar_url",
+            "avatar",
+            "thumbnail",
+            "thumnail",
+            "image_url",
+        ]
         if column in columns
     ]
 
     select_parts = [
-        f"{non_empty(user_id_column)} AS user_id" if user_id_column != "NULL" else "NULL AS user_id",
-        f"{non_empty(username_column)} AS username" if username_column != "NULL" else "NULL AS username",
         (
-            "COALESCE(" + ", ".join(non_empty(column) for column in image_candidates) + ") AS image_url"
+            f"{non_empty(user_id_column)} AS user_id"
+            if user_id_column != "NULL"
+            else "NULL AS user_id"
+        ),
+        (
+            f"{non_empty(username_column)} AS username"
+            if username_column != "NULL"
+            else "NULL AS username"
+        ),
+        (
+            "COALESCE("
+            + ", ".join(non_empty(column) for column in image_candidates)
+            + ") AS image_url"
             if image_candidates
             else "NULL AS image_url"
         ),
@@ -248,23 +269,29 @@ async def get_discord_account_role(access_token: str) -> str | None:
         for role_id in member_res.json().get("roles", [])
         if role_id in DISCORD_ACCOUNT_ROLE_MAP
     }
-    return next((role for role in DISCORD_ACCOUNT_ROLE_PRIORITY if role in assigned_roles), None)
+    return next(
+        (role for role in DISCORD_ACCOUNT_ROLE_PRIORITY if role in assigned_roles), None
+    )
 
 
 @app.get("/login")
 def login(request: Request):
     if not CLIENT_ID or not REDIRECT_URI:
-        return JSONResponse({"detail": "Discord OAuth is not configured"}, status_code=503)
+        return JSONResponse(
+            {"detail": "Discord OAuth is not configured"}, status_code=503
+        )
 
     state = secrets.token_urlsafe(32)
     request.session["discord_oauth_state"] = state
-    auth_url = "https://discord.com/api/oauth2/authorize?" + urlencode({
-        "client_id": CLIENT_ID,
-        "redirect_uri": REDIRECT_URI,
-        "response_type": "code",
-        "scope": "identify guilds guilds.members.read",
-        "state": state,
-    })
+    auth_url = "https://discord.com/api/oauth2/authorize?" + urlencode(
+        {
+            "client_id": CLIENT_ID,
+            "redirect_uri": REDIRECT_URI,
+            "response_type": "code",
+            "scope": "identify guilds guilds.members.read",
+            "state": state,
+        }
+    )
     return RedirectResponse(auth_url)
 
 
@@ -279,7 +306,11 @@ async def callback(
         return login_error_redirect("discord_login_cancelled")
 
     expected_state = request.session.pop("discord_oauth_state", None)
-    if not expected_state or not state or not secrets.compare_digest(expected_state, state):
+    if (
+        not expected_state
+        or not state
+        or not secrets.compare_digest(expected_state, state)
+    ):
         return login_error_redirect("invalid_login_request")
 
     data = {
@@ -289,7 +320,9 @@ async def callback(
         "code": code,
         "redirect_uri": REDIRECT_URI,
     }
-    response = requests.post("https://discord.com/api/oauth2/token", data=data, timeout=10)
+    response = requests.post(
+        "https://discord.com/api/oauth2/token", data=data, timeout=10
+    )
     if not response.ok:
         return login_error_redirect("discord_login_failed")
     access_token = response.json().get("access_token")
@@ -331,6 +364,8 @@ def get_authenticated_discord_user(request: Request):
     user = request.session.get("discord_user")
     if not user:
         return JSONResponse({"detail": "Authentication required"}, status_code=401)
+    # Touch the signed session so SessionMiddleware sends a fresh cookie expiry.
+    request.session["last_auth_check"] = time.time_ns()
     return {
         "username": user["username"],
         "id": user["id"],
@@ -344,6 +379,7 @@ def get_authenticated_discord_user(request: Request):
 def logout(request: Request):
     request.session.clear()
     return {"ok": True}
+
 
 @app.get("/api/bot-stats/")
 def get_bot_stats():
@@ -409,6 +445,7 @@ def get_player_summary(user_id: str):
 # Keep it environment-specific so Test does not exchange with the Production URI.
 MOBILE_REDIRECT_URI = f"{FRONTEND_URL.rstrip('/')}/callback/mobile"
 
+
 async def exchange_discord_code_and_get_user(code: str, redirect_uri: str):
     async with httpx.AsyncClient() as client:
         token_res = await client.post(
@@ -420,9 +457,7 @@ async def exchange_discord_code_and_get_user(code: str, redirect_uri: str):
                 "code": code,
                 "redirect_uri": redirect_uri,
             },
-            headers={
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
 
         token_res.raise_for_status()
@@ -432,9 +467,7 @@ async def exchange_discord_code_and_get_user(code: str, redirect_uri: str):
 
         user_res = await client.get(
             "https://discord.com/api/users/@me",
-            headers={
-                "Authorization": f"Bearer {access_token}"
-            },
+            headers={"Authorization": f"Bearer {access_token}"},
         )
 
         user_res.raise_for_status()
@@ -453,31 +486,56 @@ async def discord_mobile_callback(code: str):
         discord_role = await get_discord_account_role(access_token)
     except (httpx.HTTPError, RuntimeError):
         return RedirectResponse("umadnd://callback?error=discord_login_failed")
-    params = urlencode({
-        "username": user["username"],
-        "id": user["id"],
-        "avatar": user.get("avatar") or "",
-        "discord_role": discord_role or "",
-        "login_nonce": str(time.time_ns()),
-    })
+    params = urlencode(
+        {
+            "username": user["username"],
+            "id": user["id"],
+            "avatar": user.get("avatar") or "",
+            "discord_role": discord_role or "",
+            "login_nonce": str(time.time_ns()),
+        }
+    )
 
     return RedirectResponse(f"umadnd://callback?{params}")
+
 
 # --- 4. Serve Frontend (เฉพาะเมื่อ Deploy ขึ้น Railway) ---
 
 # ต้องวางไว้หลัง API เสมอเพื่อไม่ให้ขวางทาง Route อื่น
-FRONTEND_DIST = "dist" if os.path.exists("dist") else os.path.join("uma-dashboard-ui", "dist")
+FRONTEND_DIST = (
+    "dist" if os.path.exists("dist") else os.path.join("uma-dashboard-ui", "dist")
+)
 
 if os.path.exists(FRONTEND_DIST):
-    app.mount("/assets", StaticFiles(directory=os.path.join(FRONTEND_DIST, "assets")), name="assets")
+    app.mount(
+        "/assets",
+        StaticFiles(directory=os.path.join(FRONTEND_DIST, "assets")),
+        name="assets",
+    )
     if os.path.exists(os.path.join(FRONTEND_DIST, "tcg")):
-        app.mount("/tcg", StaticFiles(directory=os.path.join(FRONTEND_DIST, "tcg")), name="tcg-assets")
+        app.mount(
+            "/tcg",
+            StaticFiles(directory=os.path.join(FRONTEND_DIST, "tcg")),
+            name="tcg-assets",
+        )
     if os.path.exists(os.path.join(FRONTEND_DIST, "mobs")):
-        app.mount("/mobs", StaticFiles(directory=os.path.join(FRONTEND_DIST, "mobs")), name="mob-assets")
+        app.mount(
+            "/mobs",
+            StaticFiles(directory=os.path.join(FRONTEND_DIST, "mobs")),
+            name="mob-assets",
+        )
     if os.path.exists(os.path.join(FRONTEND_DIST, "race_bg")):
-        app.mount("/race_bg", StaticFiles(directory=os.path.join(FRONTEND_DIST, "race_bg")), name="race-bg-assets")
+        app.mount(
+            "/race_bg",
+            StaticFiles(directory=os.path.join(FRONTEND_DIST, "race_bg")),
+            name="race-bg-assets",
+        )
     if os.path.exists(os.path.join(FRONTEND_DIST, "race_ranking")):
-        app.mount("/race_ranking", StaticFiles(directory=os.path.join(FRONTEND_DIST, "race_ranking")), name="race-ranking-assets")
+        app.mount(
+            "/race_ranking",
+            StaticFiles(directory=os.path.join(FRONTEND_DIST, "race_ranking")),
+            name="race-ranking-assets",
+        )
     if os.path.exists(os.path.join(FRONTEND_DIST, "role_selection_banner")):
         app.mount(
             "/role_selection_banner",
@@ -491,7 +549,11 @@ if os.path.exists(FRONTEND_DIST):
             name="event-banners",
         )
     if os.path.exists(os.path.join(FRONTEND_DIST, "music")):
-        app.mount("/music", StaticFiles(directory=os.path.join(FRONTEND_DIST, "music")), name="music-assets")
+        app.mount(
+            "/music",
+            StaticFiles(directory=os.path.join(FRONTEND_DIST, "music")),
+            name="music-assets",
+        )
 
     @app.get("/{full_path:path}")
     async def serve_react(full_path: str):
@@ -502,6 +564,7 @@ if os.path.exists(FRONTEND_DIST):
             os.path.join(FRONTEND_DIST, "index.html"),
             headers={"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"},
         )
+
 
 if __name__ == "__main__":
 

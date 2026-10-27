@@ -26,6 +26,10 @@ const PHASE_LABELS = {
   lane: "เริ่มเทิร์น · เปลี่ยนเลน",
   run: "หลังวิ่งจบเทิร์น",
 };
+const TRACK_TYPE_LABELS = {
+  turf: "สนามหญ้า",
+  dirt: "สนามดิน",
+};
 
 function participantAvatar(participant, currentProfileImage = "") {
   const snapshot = participant?.snapshot || participant?.snapshot_json || {};
@@ -186,6 +190,16 @@ export default function RaceReplayPage({ raceId, onBack }) {
     setReplayPhase("lane");
     setIsPlaying(true);
   };
+  const moveReplayStep = (direction) => {
+    if (!totalTurns) return false;
+    const currentStep = ((selectedTurn - 1) * 2) + (replayPhase === "run" ? 1 : 0);
+    const nextStep = Math.max(0, Math.min(totalTurns * 2 - 1, currentStep + direction));
+    if (nextStep === currentStep) return false;
+    setIsPlaying(false);
+    setSelectedTurn(Math.floor(nextStep / 2) + 1);
+    setReplayPhase(nextStep % 2 === 0 ? "lane" : "run");
+    return true;
+  };
   const selectPlayer = (id) => {
     setSelectedPlayerId((current) => current === String(id) ? null : String(id));
   };
@@ -195,17 +209,12 @@ export default function RaceReplayPage({ raceId, onBack }) {
       const target = event.target;
       if (target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))) return;
       const key = event.key.toLowerCase();
-      if (key === "a" && selectedTurn > 1) {
-        event.preventDefault();
-        goToTurn(selectedTurn - 1);
-      } else if (key === "d" && totalTurns > 0 && selectedTurn < totalTurns) {
-        event.preventDefault();
-        goToTurn(selectedTurn + 1);
-      }
+      if (key === "a" && moveReplayStep(-1)) event.preventDefault();
+      else if (key === "d" && moveReplayStep(1)) event.preventDefault();
     };
     window.addEventListener("keydown", handleTurnKey);
     return () => window.removeEventListener("keydown", handleTurnKey);
-  }, [selectedTurn, totalTurns]);
+  }, [replayPhase, selectedTurn, totalTurns]);
 
   if (loading) return <section className="replay-empty" aria-live="polite"><Flag size={32} /><h1>กำลังเตรียมรีเพลย์</h1><p>กำลังโหลดตำแหน่งและเหตุการณ์ในการแข่งขัน</p></section>;
   if (!raceId || request.error) return <section className="replay-empty">
@@ -220,6 +229,11 @@ export default function RaceReplayPage({ raceId, onBack }) {
         <section className="replay-field" aria-labelledby="replay-field-title">
           <div className="replay-race-title">
             <h1>{race.stage_name || race.race_name || "รีเพลย์การแข่งขัน"} {formatRaceDate(race.started_at || race.created_at) || "ไม่ระบุวันที่"}</h1>
+          </div>
+          <div className="replay-stage-context" aria-live="polite" aria-label={`เทิร์น ${selectedTurn} จาก ${totalTurns}, ${PHASE_LABELS[replayPhase]}, ${TRACK_TYPE_LABELS[String(race.track || "").toLowerCase()] || race.track || "ไม่ระบุประเภทเส้นทาง"}`}>
+            <span className="replay-stage-turn"><strong>เทิร์น {selectedTurn}</strong><small>/ {totalTurns}</small></span>
+            <span className="replay-stage-phase">{replayPhase === "lane" ? "เริ่มเทิร์น" : "หลังวิ่ง"}</span>
+            <span className="replay-stage-track"><small>ประเภทเส้นทาง</small><strong>{TRACK_TYPE_LABELS[String(race.track || "").toLowerCase()] || race.track || "ไม่ระบุ"}</strong></span>
           </div>
           <div className="replay-field-axis"><span>ท้ายสุด <b>{number(replayPlayers.at(-1)?.score)}</b></span><span>คะแนนสะสม</span><span><b>{number(replayPlayers[0]?.score)}</b> ผู้นำ <ArrowRight size={14} /></span></div>
           <div className={`race-replay-stage${selectedPlayer ? " has-selection" : ""}`}>
