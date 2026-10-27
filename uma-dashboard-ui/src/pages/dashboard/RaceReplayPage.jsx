@@ -26,9 +26,11 @@ const PHASE_LABELS = {
   lane: "เริ่มเทิร์น · เปลี่ยนเลน",
   run: "หลังวิ่งจบเทิร์น",
 };
-const TRACK_TYPE_LABELS = {
-  turf: "สนามหญ้า",
-  dirt: "สนามดิน",
+const PATH_TYPE_LABELS = {
+  1: "ทางตรง",
+  2: "ทางโค้ง",
+  3: "เนินขึ้น",
+  4: "เนินลง",
 };
 
 function participantAvatar(participant, currentProfileImage = "") {
@@ -90,6 +92,8 @@ export default function RaceReplayPage({ raceId, onBack }) {
   const turns = detail?.turns || EMPTY_LIST;
   const actions = detail?.actions || EMPTY_LIST;
   const totalTurns = Math.max(Number(race.total_turns) || 0, ...turns.map((turn) => Number(turn.turn_number) || 0), 0);
+  const currentPathType = Number(race.path?.[selectedTurn - 1]);
+  const currentPathLabel = PATH_TYPE_LABELS[currentPathType] || "ไม่ระบุ";
 
   useEffect(() => {
     const controller = new AbortController();
@@ -230,10 +234,10 @@ export default function RaceReplayPage({ raceId, onBack }) {
           <div className="replay-race-title">
             <h1>{race.stage_name || race.race_name || "รีเพลย์การแข่งขัน"} {formatRaceDate(race.started_at || race.created_at) || "ไม่ระบุวันที่"}</h1>
           </div>
-          <div className="replay-stage-context" aria-live="polite" aria-label={`เทิร์น ${selectedTurn} จาก ${totalTurns}, ${PHASE_LABELS[replayPhase]}, ${TRACK_TYPE_LABELS[String(race.track || "").toLowerCase()] || race.track || "ไม่ระบุประเภทเส้นทาง"}`}>
+          <div className="replay-stage-context" aria-live="polite" aria-label={`เทิร์น ${selectedTurn} จาก ${totalTurns}, ${PHASE_LABELS[replayPhase]}, ${currentPathLabel}`}>
             <span className="replay-stage-turn"><strong>เทิร์น {selectedTurn}</strong><small>/ {totalTurns}</small></span>
             <span className="replay-stage-phase">{replayPhase === "lane" ? "เริ่มเทิร์น" : "หลังวิ่ง"}</span>
-            <span className="replay-stage-track"><small>ประเภทเส้นทาง</small><strong>{TRACK_TYPE_LABELS[String(race.track || "").toLowerCase()] || race.track || "ไม่ระบุ"}</strong></span>
+            <span className="replay-stage-track"><small>ประเภทเส้นทาง</small><strong>{currentPathLabel}</strong></span>
           </div>
           <div className="replay-field-axis"><span>ท้ายสุด <b>{number(replayPlayers.at(-1)?.score)}</b></span><span>คะแนนสะสม</span><span><b>{number(replayPlayers[0]?.score)}</b> ผู้นำ <ArrowRight size={14} /></span></div>
           <div className={`race-replay-stage${selectedPlayer ? " has-selection" : ""}`}>
