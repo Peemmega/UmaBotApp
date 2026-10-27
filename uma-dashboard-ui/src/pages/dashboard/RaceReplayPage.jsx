@@ -8,9 +8,7 @@ import gutIcon from "../../assets/icons/Gut.webp";
 import witIcon from "../../assets/icons/Wit.webp";
 import RacePositionTrack from "../../components/RacePositionTrack";
 import AptitudeItem from "../../components/AptitudeItem";
-import StatCell from "../../components/StatCell";
 import { getSkillIcon } from "../../utils/getSkillIcon";
-import { aptitudeRows, mainStats } from "../../data/dashboardConfig";
 import { resolveRaceAvatar } from "../../utils/avatar";
 import { buildReplayTransition, getReplayTurnData, groupReplayEvents } from "../../utils/raceReplay";
 import "../../styles/raceReplayPage.css";
@@ -87,6 +85,37 @@ function RunnerRaceData({ participant, aptitudeFields }) {
       {availableAptitudes.map((item) => <AptitudeItem key={item.key} label={item.label} value={aptitudes[item.key]} />)}
     </div>}
   </div>;
+}
+
+function replayPlayerInfo(participant, selectedTurn, replayPhase, skillCatalog) {
+  const snapshot = participant?.snapshot || participant?.snapshot_json || {};
+  const baseState = participant?.replay_states?.[String(selectedTurn)]?.[replayPhase] || {};
+  const skillStates = baseState.skills || {};
+  const skillsById = new Map((Array.isArray(snapshot.skills) ? snapshot.skills : [])
+    .map((skill) => typeof skill === "string" ? { id: skill, name: skill } : skill)
+    .filter((skill) => skill?.id)
+    .map((skill) => [String(skill.id), skill]));
+  Object.keys(skillStates).forEach((skillId) => {
+    if (!skillsById.has(skillId)) skillsById.set(skillId, { id: skillId, name: skillId });
+  });
+  const skills = [...skillsById.values()].map((skill) => {
+    const id = String(skill.id);
+    const definition = skillCatalog[id] || {};
+    const state = skillStates[id] || {};
+    return {
+      ...skill,
+      definition,
+      used: Boolean(state.used),
+      useCount: Number(state.use_count) || 0,
+      cooldownRemaining: Number(state.cooldown_remaining) || 0,
+    };
+  });
+  return {
+    skills,
+    wit: baseState.wit,
+    witGain: baseState.wit_gain,
+    witSource: baseState.source || "simulated",
+  };
 }
 
 function participantAvatar(participant, currentProfileImage = "") {
@@ -246,41 +275,6 @@ export default function RaceReplayPage({ raceId, onBack }) {
     return counts;
   }, [actions, turns]);
   const selectedPlayer = replayPlayers.find((player) => player.id === selectedPlayerId);
-  const selectedParticipant = participants.find((participant) => String(participant.participant_id) === String(selectedPlayerId));
-  const focusedProfile = useMemo(() => {
-    if (!selectedParticipant) return null;
-    const snapshot = selectedParticipant.snapshot || {};
-    const baseState = selectedParticipant.replay_states?.[String(selectedTurn)]?.[replayPhase] || {};
-    const skillStates = baseState.skills || {};
-    const skillsById = new Map((Array.isArray(snapshot.skills) ? snapshot.skills : [])
-      .map((skill) => typeof skill === "string" ? { id: skill, name: skill } : skill)
-      .filter((skill) => skill?.id)
-      .map((skill) => [String(skill.id), skill]));
-    Object.keys(skillStates).forEach((skillId) => {
-      if (!skillsById.has(skillId)) skillsById.set(skillId, { id: skillId, name: skillId });
-    });
-    const skills = [...skillsById.values()].map((skill) => {
-      const id = String(skill.id);
-      const definition = skillCatalog[id] || {};
-      const state = skillStates[id] || {};
-      return {
-        ...skill,
-        definition,
-        used: Boolean(state.used),
-        useCount: Number(state.use_count) || 0,
-        cooldownRemaining: Number(state.cooldown_remaining) || 0,
-      };
-    });
-    return {
-      snapshot,
-      baseStats: snapshot.base_stats || {},
-      aptitudes: snapshot.aptitudes || {},
-      skills,
-      wit: baseState.wit,
-      witGain: baseState.wit_gain,
-      witSource: baseState.source || "simulated",
-    };
-  }, [replayPhase, selectedParticipant, selectedTurn, skillCatalog]);
   const visiblePlayers = useMemo(() => {
     if (!selectedPlayerId) return replayPlayers;
     return [...replayPlayers].sort((left, right) => (
@@ -411,6 +405,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
             const events = eventsByPlayer.get(player.id) || [];
             const turnPlayer = turnPlayerById.get(player.id);
             const participant = participantById.get(player.id);
+            const playerInfo = replayPlayerInfo(participant, selectedTurn, replayPhase, skillCatalog);
             const turn = turnPlayer?.latestTurn;
             const staminaBefore = turn?.stamina_before ?? turnPlayer?.roll.stamina?.before;
             const staminaAfter = turn?.stamina_after ?? turnPlayer?.roll.stamina?.current_stamina;
@@ -422,6 +417,18 @@ export default function RaceReplayPage({ raceId, onBack }) {
               <div className="replay-runner-content">
                 <div className="replay-runner-facts"><span className="replay-phase-chip" data-phase={replayPhase}>{PHASE_LABELS[replayPhase]}</span><span className="replay-pack" data-pack={player.pack_state} title={player.pack_source === "recorded" ? "สถานะตอนวิ่งที่บันทึกไว้ในเทิร์น" : "คำนวณจากตำแหน่งที่มีในรีเพลย์"}><i />{player.pack_state === "in" ? "อยู่ในกลุ่ม" : "นอกกลุ่ม"}</span>{replayPhase === "lane" && player.lane_changed && <span>เลน {player.lane_before} → {player.lane_after}</span>}{replayPhase === "run" && turn ? <span>คะแนน {signed(Number(turn.score_after) - Number(turn.score_before))}</span> : null}{player.gap_to_leader > 0 && <span>ตาม {number(player.gap_to_leader)}</span>}</div>
                 <RunnerRaceData participant={participant} aptitudeFields={raceAptitudeFields(race, player.running_style)} />
+                {(playerInfo.wit !== null && playerInfo.wit !== undefined || playerInfo.skills.length > 0) && <details className="replay-run-details replay-skill-details">
+                  <summary>ข้อมูลสกิล{playerInfo.wit !== null && playerInfo.wit !== undefined && <span className="replay-skill-wit-summary"><img src={witIcon} alt="Wit" />Wit {number(playerInfo.wit)}</span>}</summary>
+                  <div className="replay-skill-details-content">
+                    {playerInfo.wit !== null && playerInfo.wit !== undefined && <div className="replay-skill-wit-detail"><span>Wit ตอนนี้</span><strong>{number(playerInfo.wit)}</strong><small>{playerInfo.witSource === "recorded" ? "ค่าที่บันทึกไว้" : `จำลอง · ฟื้น +${number(playerInfo.witGain)} ต่อเทิร์น`}</small></div>}
+                    {playerInfo.skills.length > 0 ? <div className="replay-focus-skills">{playerInfo.skills.map((skill) => <article className="replay-focus-skill" key={skill.id}>
+                      <span className="replay-focus-skill-icon">{getSkillIcon(skill.icon || skill.definition.icon)}</span>
+                      <span className="replay-focus-skill-name"><strong>{skill.name || skill.definition.name || skill.id}</strong><small>ใช้ {number(skill.definition.cost)} Wit · คูลดาวน์ {number(skill.definition.cooldown)} เทิร์น</small></span>
+                      <span className="replay-focus-skill-state" data-used={skill.used}><strong>{skill.used ? `ใช้แล้ว${skill.useCount > 1 ? ` ×${skill.useCount}` : ""}` : "ยังไม่ใช้"}</strong><small>CD {number(skill.cooldownRemaining)}</small></span>
+                    </article>)}</div> : <p className="replay-focus-empty">ไม่มีข้อมูลสกิลใน snapshot</p>}
+                    <p className="replay-focus-footnote">สถานะสกิลและ Wit แสดงตามเทิร์นและช่วงที่เลือกใน Replay</p>
+                  </div>
+                </details>}
                 {events.length ? <ul className="replay-actions">{events.map((event) => <li key={event.id} data-incoming={Boolean(event.incoming)}><span className={`replay-event-dot is-${event.type}`} /><div>{event.incoming && <small>รับผลจาก {event.actor}</small>}<span>{event.label}</span>{event.type === "blocked" && event.runLane != null && <small className="replay-event-context">เกิดขึ้นในเลน {event.runLane}{event.laneChanged && event.nextLane != null ? ` → เลน ${event.nextLane} หลังเทิร์น` : ""}{event.blockedRunnerNames?.length ? ` · นับ ${event.blockedRunnerNames.join(", ")}` : ""}</small>}{event.target && <small><ArrowRight size={12} /> {event.target}</small>}</div></li>)}</ul> : <p className="replay-no-actions">ไม่มีการกระทำเพิ่มเติมในเทิร์นนี้</p>}
                 {turn && <details className="replay-run-details" open={isSelected || undefined} key={`${player.id}-${selectedTurn}-${isSelected}`}><summary>ข้อมูลการวิ่ง{staminaAfter != null && <span className="replay-stamina-value"><img src={staminaIcon} alt="Stamina" />{number(staminaAfter)}</span>}</summary><dl><div><dt>ผลวิ่ง</dt><dd>{turn.run_score == null ? "ไม่ได้บันทึก" : signed(turn.run_score)}</dd></div><div><dt>คะแนนสะสม</dt><dd>{number(turn.score_before)} → {number(turn.score_after)}</dd></div>{staminaBefore != null && staminaAfter != null && <div><dt><img className="replay-stamina-icon" src={staminaIcon} alt="Stamina" /></dt><dd>{number(staminaBefore)} → {number(staminaAfter)}</dd></div>}{turnPlayer?.roll.rule && <div><dt>เต๋าที่ใช้</dt><dd>{typeof turnPlayer.roll.rule === "string" ? turnPlayer.roll.rule : `${turnPlayer.roll.rule.d || 0}d`}</dd></div>}</dl></details>}
               </div>
@@ -429,44 +436,6 @@ export default function RaceReplayPage({ raceId, onBack }) {
           })}
           {!visiblePlayers.length && <div className="replay-no-results"><ListChecks size={27} /><p>ไม่มีข้อมูลผู้เข้าแข่งขัน</p></div>}
         </div>
-        {selectedPlayer && focusedProfile && <section className="replay-focus-panel" aria-label={`ข้อมูล ${selectedPlayer.name}`}>
-          <header className="replay-focus-heading">
-            <div><span>กำลังโฟกัส</span><h3>{selectedPlayer.name}</h3></div>
-            <small>เทิร์น {selectedTurn} · {replayPhase === "lane" ? "เริ่มเทิร์น" : "หลังวิ่ง"}</small>
-          </header>
-          <div className="replay-focus-wit">
-            <span>Wit ตอนนี้</span>
-            <strong>{number(focusedProfile.wit)}</strong>
-            <small>{focusedProfile.witSource === "recorded" ? "ค่าที่บันทึกไว้" : `จำลอง · ฟื้น +${number(focusedProfile.witGain)} ต่อเทิร์น`}</small>
-          </div>
-          <section className="replay-focus-section">
-            <h4>Stats ตอนลงแข่ง</h4>
-            {mainStats.some((stat) => focusedProfile.baseStats[stat.key] !== null && focusedProfile.baseStats[stat.key] !== undefined)
-              ? <div className="stats-grid replay-focus-stats-grid">{mainStats.map((stat) => <StatCell key={stat.key} statKey={stat.key} label={stat.label} value={focusedProfile.baseStats[stat.key]} />)}</div>
-              : <p className="replay-focus-empty">ไม่มี snapshot ของ Stats</p>}
-          </section>
-          <section className="replay-focus-section">
-            <h4>Aptitude</h4>
-            {Object.keys(focusedProfile.aptitudes).length
-              ? <div className="aptitude-table replay-focus-aptitudes">{aptitudeRows.map((row) => <div className="aptitude-row" key={row.title}>
-                <div className="aptitude-row-title">{row.title}</div>
-                <div className="aptitude-row-items">{row.items.map((item) => <AptitudeItem key={item.key} label={item.label} value={focusedProfile.aptitudes[item.key]} />)}</div>
-              </div>)}</div>
-              : <p className="replay-focus-empty">ไม่มี snapshot ของ Aptitude</p>}
-          </section>
-          <section className="replay-focus-section">
-            <h4>สกิลที่ติดตัว <small>{focusedProfile.skills.length}</small></h4>
-            {focusedProfile.skills.length ? <div className="replay-focus-skills">{focusedProfile.skills.map((skill) => <article className="replay-focus-skill" key={skill.id}>
-              <span className="replay-focus-skill-icon">{getSkillIcon(skill.icon || skill.definition.icon)}</span>
-              <span className="replay-focus-skill-name"><strong>{skill.name || skill.definition.name || skill.id}</strong><small>ใช้ {number(skill.definition.cost)} Wit · คูลดาวน์ {number(skill.definition.cooldown)} เทิร์น</small></span>
-              <span className="replay-focus-skill-state" data-used={skill.used}>
-                <strong>{skill.used ? `ใช้แล้ว${skill.useCount > 1 ? ` ×${skill.useCount}` : ""}` : "ยังไม่ใช้"}</strong>
-                <small>CD {number(skill.cooldownRemaining)}</small>
-              </span>
-            </article>)}</div> : <p className="replay-focus-empty">ไม่มีข้อมูลสกิลใน snapshot</p>}
-            <p className="replay-focus-footnote">สถานะสกิลและ Wit แสดงตามช่วงที่เลือกใน Replay</p>
-          </section>
-        </section>}
       </aside>
     </div>
     <header className="replay-heading">
