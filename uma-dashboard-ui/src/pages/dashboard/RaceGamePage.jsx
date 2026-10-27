@@ -212,6 +212,7 @@ const LOCAL_MOB_AVATAR_BY_ID = {
   silecne_susuka: "/mobs/silecne_susuka.webp",
   almond_eye: "/mobs/almond_eye.webp",
   equinox: "/mobs/equinox.webp",
+  tamamo_cross: "/mobs/tamamo_cross.webp",
 };
 const LOCAL_MOB_AVATAR_BY_NAME = {
   "almond eye": "/mobs/almond_eye.webp",
@@ -234,6 +235,7 @@ const LOCAL_MOB_AVATAR_BY_NAME = {
   "sunfish ray": "/mobs/mob_04.webp",
   "special week": "/mobs/special_week.webp",
   "still in love": "/mobs/still_in_love.webp",
+  "tamamo cross": "/mobs/tamamo_cross.webp",
   verxina: "/mobs/verxina.webp",
   "waltz of shadow": "/mobs/mob_04.webp",
 };
@@ -260,6 +262,7 @@ const LOCAL_MOB_AVATAR_FILES = new Set([
   "rookie_pace.webp",
   "silecne_susuka.webp",
   "special_week.webp",
+  "tamamo_cross.webp",
   "still_in_love.webp",
   "verxina.webp",
 ]);
