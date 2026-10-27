@@ -2,6 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, Flag, Focus, ListChecks, Pause, Play, RotateCcw, X } from "lucide-react";
 import { BOT_API_BASE } from "../../api/playerApi";
 import staminaIcon from "../../assets/icons/Stamina.webp";
+import speedIcon from "../../assets/icons/Speed.webp";
+import powerIcon from "../../assets/icons/Power.webp";
+import gutIcon from "../../assets/icons/Gut.webp";
+import witIcon from "../../assets/icons/Wit.webp";
 import RacePositionTrack from "../../components/RacePositionTrack";
 import AptitudeItem from "../../components/AptitudeItem";
 import StatCell from "../../components/StatCell";
@@ -36,6 +40,54 @@ const PATH_TYPE_LABELS = {
   3: "เนินขึ้น",
   4: "เนินลง",
 };
+const REPLAY_STAT_ICONS = [
+  { key: "speed", label: "Speed", icon: speedIcon },
+  { key: "stamina", label: "Stamina", icon: staminaIcon },
+  { key: "power", label: "Power", icon: powerIcon },
+  { key: "gut", label: "Guts", icon: gutIcon },
+  { key: "wit", label: "Wit", icon: witIcon },
+];
+
+function raceAptitudeFields(race, runningStyle) {
+  const track = String(race?.track || "").trim().toLowerCase();
+  const distance = String(race?.distance || "").trim().toLowerCase();
+  const trackKey = track.includes("dirt") || track.includes("ダート")
+    ? "dirt"
+    : track.includes("turf") || track.includes("grass") || track.includes("芝") ? "turf" : "";
+  const distanceKey = ["sprint", "mile", "medium", "long"].find((key) => distance.includes(key)) || "";
+  const styleKey = ({
+    front: "front",
+    pace: "pace",
+    late: "late",
+    end: "end_style",
+    end_style: "end_style",
+  })[String(runningStyle || "").trim().toLowerCase()] || "";
+  return [
+    ...(trackKey ? [{ key: trackKey, label: trackKey === "dirt" ? "Dirt" : "Turf" }] : []),
+    ...(distanceKey ? [{ key: distanceKey, label: distanceKey[0].toUpperCase() + distanceKey.slice(1) }] : []),
+    ...(styleKey ? [{ key: styleKey, label: String(runningStyle).trim() }] : []),
+  ];
+}
+
+function RunnerRaceData({ participant, aptitudeFields }) {
+  const snapshot = participant?.snapshot || participant?.snapshot_json || {};
+  const stats = snapshot.base_stats || {};
+  const aptitudes = snapshot.aptitudes || {};
+  const availableStats = REPLAY_STAT_ICONS.filter(({ key }) => stats[key] !== null && stats[key] !== undefined);
+  const availableAptitudes = aptitudeFields.filter(({ key }) => aptitudes[key] !== null && aptitudes[key] !== undefined);
+  if (!availableStats.length && !availableAptitudes.length) return null;
+
+  return <div className="replay-runner-race-data" aria-label="ข้อมูลการวิ่ง">
+    {availableStats.length > 0 && <div className="replay-runner-stat-values" aria-label="Stats">
+      {availableStats.map((stat) => <span key={stat.key} title={stat.label}>
+        <img src={stat.icon} alt={stat.label} /><strong>{number(stats[stat.key])}</strong>
+      </span>)}
+    </div>}
+    {availableAptitudes.length > 0 && <div className="replay-runner-aptitudes" aria-label="Aptitude ที่ตรงกับสนาม">
+      {availableAptitudes.map((item) => <AptitudeItem key={item.key} label={item.label} value={aptitudes[item.key]} />)}
+    </div>}
+  </div>;
+}
 
 function participantAvatar(participant, currentProfileImage = "") {
   const snapshot = participant?.snapshot || participant?.snapshot_json || {};
@@ -133,6 +185,9 @@ export default function RaceReplayPage({ raceId, onBack }) {
   const replayPath = replayCourse?.path || race.path || EMPTY_LIST;
   const currentPathType = Number(replayPath[selectedTurn - 1]);
   const currentPathLabel = PATH_TYPE_LABELS[currentPathType] || "ไม่ระบุ";
+  const participantById = useMemo(() => new Map(participants.map((participant) => [
+    String(participant.participant_id), participant,
+  ])), [participants]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -355,6 +410,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
           {visiblePlayers.map((player) => {
             const events = eventsByPlayer.get(player.id) || [];
             const turnPlayer = turnPlayerById.get(player.id);
+            const participant = participantById.get(player.id);
             const turn = turnPlayer?.latestTurn;
             const staminaBefore = turn?.stamina_before ?? turnPlayer?.roll.stamina?.before;
             const staminaAfter = turn?.stamina_after ?? turnPlayer?.roll.stamina?.current_stamina;
@@ -365,6 +421,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
               </button>
               <div className="replay-runner-content">
                 <div className="replay-runner-facts"><span className="replay-phase-chip" data-phase={replayPhase}>{PHASE_LABELS[replayPhase]}</span><span className="replay-pack" data-pack={player.pack_state} title={player.pack_source === "recorded" ? "สถานะตอนวิ่งที่บันทึกไว้ในเทิร์น" : "คำนวณจากตำแหน่งที่มีในรีเพลย์"}><i />{player.pack_state === "in" ? "อยู่ในกลุ่ม" : "นอกกลุ่ม"}</span>{replayPhase === "lane" && player.lane_changed && <span>เลน {player.lane_before} → {player.lane_after}</span>}{replayPhase === "run" && turn ? <span>คะแนน {signed(Number(turn.score_after) - Number(turn.score_before))}</span> : null}{player.gap_to_leader > 0 && <span>ตาม {number(player.gap_to_leader)}</span>}</div>
+                <RunnerRaceData participant={participant} aptitudeFields={raceAptitudeFields(race, player.running_style)} />
                 {events.length ? <ul className="replay-actions">{events.map((event) => <li key={event.id} data-incoming={Boolean(event.incoming)}><span className={`replay-event-dot is-${event.type}`} /><div>{event.incoming && <small>รับผลจาก {event.actor}</small>}<span>{event.label}</span>{event.type === "blocked" && event.runLane != null && <small className="replay-event-context">เกิดขึ้นในเลน {event.runLane}{event.laneChanged && event.nextLane != null ? ` → เลน ${event.nextLane} หลังเทิร์น` : ""}{event.blockedRunnerNames?.length ? ` · นับ ${event.blockedRunnerNames.join(", ")}` : ""}</small>}{event.target && <small><ArrowRight size={12} /> {event.target}</small>}</div></li>)}</ul> : <p className="replay-no-actions">ไม่มีการกระทำเพิ่มเติมในเทิร์นนี้</p>}
                 {turn && <details className="replay-run-details" open={isSelected || undefined} key={`${player.id}-${selectedTurn}-${isSelected}`}><summary>ข้อมูลการวิ่ง{staminaAfter != null && <span className="replay-stamina-value"><img src={staminaIcon} alt="Stamina" />{number(staminaAfter)}</span>}</summary><dl><div><dt>ผลวิ่ง</dt><dd>{turn.run_score == null ? "ไม่ได้บันทึก" : signed(turn.run_score)}</dd></div><div><dt>คะแนนสะสม</dt><dd>{number(turn.score_before)} → {number(turn.score_after)}</dd></div>{staminaBefore != null && staminaAfter != null && <div><dt><img className="replay-stamina-icon" src={staminaIcon} alt="Stamina" /></dt><dd>{number(staminaBefore)} → {number(staminaAfter)}</dd></div>}{turnPlayer?.roll.rule && <div><dt>เต๋าที่ใช้</dt><dd>{typeof turnPlayer.roll.rule === "string" ? turnPlayer.roll.rule : `${turnPlayer.roll.rule.d || 0}d`}</dd></div>}</dl></details>}
               </div>
