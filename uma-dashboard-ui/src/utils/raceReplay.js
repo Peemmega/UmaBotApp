@@ -67,7 +67,7 @@ export function buildReplayState(participants, turns, selectedTurn, avatars = {}
     }
     return {
       id,
-      name: participant.uma_name || id,
+      name: participant.display_name || participant.uma_name || id,
       display_number: Number(participant.entry_number) || index + 1,
       current_lane: currentLane,
       score: Number(latest?.score_after) || 0,

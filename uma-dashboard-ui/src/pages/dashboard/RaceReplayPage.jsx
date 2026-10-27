@@ -118,10 +118,10 @@ function replayPlayerInfo(participant, selectedTurn, replayPhase, skillCatalog) 
   };
 }
 
-function participantAvatar(participant, currentProfileImage = "") {
+function participantAvatar(participant, currentProfile = {}) {
   const snapshot = participant?.snapshot || participant?.snapshot_json || {};
   const avatar = resolveRaceAvatar({
-    profile_image_url: currentProfileImage || snapshot.profile_image_url || participant?.profile_image_url,
+    profile_image_url: snapshot.profile_image_url || participant?.profile_image_url || currentProfile.image_url,
     avatar: snapshot.avatar_url || snapshot.avatar || participant?.avatar,
     thumbnail: snapshot.thumbnail || participant?.thumbnail,
   }, "");
@@ -146,7 +146,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
   const [replayPhase, setReplayPhase] = useState("lane");
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
-  const [playerAvatars, setPlayerAvatars] = useState({});
+  const [playerProfiles, setPlayerProfiles] = useState({});
   const [skillCatalog, setSkillCatalog] = useState({});
   const activeTurnRef = useRef(null);
   const runnerListRef = useRef(null);
@@ -220,14 +220,16 @@ export default function RaceReplayPage({ raceId, onBack }) {
 
   useEffect(() => {
     const controller = new AbortController();
+    setPlayerProfiles({});
     const persistentParticipants = participants.filter((participant) => participant?.uma_id);
     Promise.allSettled(persistentParticipants.map(async (participant) => {
-      const response = await fetch(`${BOT_API_BASE}/player/${encodeURIComponent(participant.uma_id)}`, { signal: controller.signal });
-      if (!response.ok) return [String(participant.participant_id), ""];
-      return [String(participant.participant_id), resolveRaceAvatar(await response.json(), "")];
+      const response = await fetch(`${BOT_API_BASE}/profiles/preset/${encodeURIComponent(participant.uma_id)}`, { signal: controller.signal });
+      if (!response.ok) return [String(participant.participant_id), {}];
+      const payload = await response.json();
+      return [String(participant.participant_id), payload?.profile || {}];
     })).then((results) => {
-      if (!controller.signal.aborted) setPlayerAvatars(Object.fromEntries(results
-        .filter((result) => result.status === "fulfilled" && result.value[1])
+      if (!controller.signal.aborted) setPlayerProfiles(Object.fromEntries(results
+        .filter((result) => result.status === "fulfilled")
         .map((result) => result.value)));
     });
     return () => controller.abort();
@@ -252,11 +254,22 @@ export default function RaceReplayPage({ raceId, onBack }) {
   }, [isPlaying, loading, playMode, playbackSpeed, replayPhase, selectedTurn, totalTurns]);
 
   const replayTransition = useMemo(() => {
-    const avatars = Object.fromEntries(participants.map((participant) => [
-      String(participant.participant_id), participantAvatar(participant, playerAvatars[String(participant.participant_id)]),
+    const replayParticipants = participants.map((participant) => {
+      const snapshot = participant?.snapshot || participant?.snapshot_json || {};
+      const profile = playerProfiles[String(participant.participant_id)] || {};
+      const useCurrentTrainerProfile = profile.profile_type === "trainer" && snapshot.profile_role !== "trainer";
+      return {
+        ...participant,
+        display_name: useCurrentTrainerProfile
+          ? profile.name || participant.uma_name
+          : snapshot.display_name || participant.display_name || participant.uma_name,
+      };
+    });
+    const avatars = Object.fromEntries(replayParticipants.map((participant) => [
+      String(participant.participant_id), participantAvatar(participant, playerProfiles[String(participant.participant_id)]),
     ]));
-    return buildReplayTransition(participants, turns, selectedTurn, avatars);
-  }, [participants, playerAvatars, selectedTurn, turns]);
+    return buildReplayTransition(replayParticipants, turns, selectedTurn, avatars);
+  }, [participants, playerProfiles, selectedTurn, turns]);
   const replayPlayers = replayTransition[replayPhase] || replayTransition.run;
   const eventsByPlayer = useMemo(() => groupReplayEvents(replayTransition.run, actions, selectedTurn), [replayTransition.run, actions, selectedTurn]);
   const turnPlayerById = useMemo(() => new Map(replayTransition.run.map((player) => [player.id, player])), [replayTransition.run]);
