@@ -954,8 +954,11 @@ body {
 
 .team-invite-modal {
   width: min(900px, 100%);
-  max-height: 75vh;
-  overflow: auto;
+  max-height: min(800px, calc(100vh - 40px));
+  max-height: min(800px, calc(100dvh - 40px));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   border-radius: var(--uma-radius-md);
   background: var(--uma-gradient-panel);
@@ -965,6 +968,7 @@ body {
 
 .team-invite-header {
   display: flex;
+  flex: none;
   justify-content: space-between;
   align-items: center;
   padding: 18px 22px;
@@ -978,27 +982,31 @@ body {
   width: 34px; height: 34px; border: 0; border-radius: 50%; background: rgba(255,255,255,.22); color: white; font-size: 25px; cursor: pointer;
 }
 
-.team-invite-toolbar { padding: 16px 20px; background: rgba(255,255,255,.48); }
+.team-invite-toolbar { flex: none; padding: 16px 20px; background: rgba(255,255,255,.48); }
 .team-invite-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 5%;
-  max-height: 50vh;
+  grid-auto-rows: max-content;
+  align-content: start;
+  gap: 14px;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 20px;
 }
 .team-invite-card {
   display: grid;
+  align-content: start;
   justify-items: center;
   gap: 9px;
-  overflow: hidden;
+  min-width: 0;
   padding: 10px;
   border: 1px solid var(--uma-border);
   border-radius: var(--uma-radius-sm);
   background: rgba(255,255,255,.86);
 }
 .team-invite-card img { width: 100%; height: 150px; border-radius: 7px; object-fit: cover; object-position: top; }
-.team-invite-card h3 { margin: 0; color: var(--uma-ink); font-size: 17px; }
+.team-invite-card h3 { max-width: 100%; margin: 0; color: var(--uma-ink); font-size: 17px; text-align: center; overflow-wrap: anywhere; }
 .team-invite-card button {
   width: 100%; border: 0; border-radius: var(--uma-radius-sm); padding: 9px; background: var(--uma-gradient-primary); color: white; font: inherit; font-weight: 900;
   cursor: pointer;
