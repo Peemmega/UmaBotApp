@@ -14,7 +14,7 @@ export default function ZonePanel({ userId, player, onSaved, readOnly = false })
     cap_floor: 3,
     self_heal_stamina: 10,
     modify_current_speed: 1,
-    race_speed: 1,
+    race_speed: 2,
     reduce_block_penalty: 10,
   };
 
@@ -44,7 +44,7 @@ export default function ZonePanel({ userId, player, onSaved, readOnly = false })
       lines.push(`เพิ่มอัตราเร่ง ${effects.modify_current_speed} ระดับ`);
     }
     if (effects.race_speed) {
-      lines.push(`เพิ่ม Speed ในรัน +${effects.race_speed}`);
+      lines.push(`เพิ่มเพดานความเร็วสูงสุด +${effects.race_speed}`);
     }
     if (effects.reduce_block_penalty) {
       lines.push(`ลดโทษ Blocked ${effects.reduce_block_penalty}% สำหรับ Run ถัดไป`);

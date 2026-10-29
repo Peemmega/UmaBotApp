@@ -48,7 +48,7 @@ function zoneEffects(build = {}) {
     cap_floor: ((build.cap_floor ?? 0) + (build.floor ?? 0) + (build.cap ?? 0)) * 3,
     self_heal_stamina: (build.self_heal_stamina ?? 0) * 10,
     modify_current_speed: build.modify_current_speed ?? 0,
-    race_speed: build.race_speed ?? 0,
+    race_speed: (build.race_speed ?? 0) * 2,
     reduce_block_penalty: (build.reduce_block_penalty ?? 0) * 10,
   };
   const effects = [];
@@ -57,7 +57,7 @@ function zoneEffects(build = {}) {
   if (values.cap_floor) effects.push(`เพิ่มแต้มขั้นต่ำและสูงสุด +${values.cap_floor}`);
   if (values.self_heal_stamina) effects.push(`ฟื้นฟู stamina ตัวเอง +${values.self_heal_stamina}%`);
   if (values.modify_current_speed) effects.push(`เพิ่มอัตราเร่ง ${values.modify_current_speed} ระดับ`);
-  if (values.race_speed) effects.push(`เพิ่ม Speed ในรัน +${values.race_speed}`);
+  if (values.race_speed) effects.push(`เพิ่มเพดานความเร็วสูงสุด +${values.race_speed}`);
   if (values.reduce_block_penalty) effects.push(`ลดโทษ Blocked ${values.reduce_block_penalty}% สำหรับ Run ถัดไป`);
   return effects.length ? effects : ["ยังไม่ได้ตั้งค่าโซน"];
 }

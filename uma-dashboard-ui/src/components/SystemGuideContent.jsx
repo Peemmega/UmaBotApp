@@ -47,7 +47,7 @@ export function StatsSkillsZoneGuide() {
     ["เพิ่ม Floor / Cap", `+${rules.zoneValue.cap_floor} ทั้งคู่ต่อระดับ`, "รอการวิ่งครั้งถัดไป"],
     ["ฟื้น Stamina", `+${rules.zoneValue.self_heal_stamina}% ต่อระดับ`, "ฟื้นทันที ไม่เกิน Stamina สูงสุด"],
     ["เพิ่มความเร่ง", `+${rules.zoneValue.modify_current_speed} ระดับ`, "เพิ่มความเร็วปัจจุบันทันทีตามสูตรของสายวิ่ง"],
-    ["เพิ่ม Speed ในรัน", `+${rules.zoneValue.race_speed} ต่อระดับ`, "เพิ่ม Stat Speed เฉพาะการแข่งนี้ แล้วคำนวณค่าที่ใช้แข่งใหม่"],
+    ["เพิ่มเพดานความเร็วสูงสุด", `+${rules.zoneValue.race_speed} ต่อระดับ`, "เพิ่มเพดานความเร็วตลอดการแข่งขัน โดยไม่เพิ่ม Speed stat"],
     ["ลดโทษ Blocked", `−${rules.zoneValue.reduce_block_penalty}% ต่อระดับ`, "ลดโทษก่อนจำกัดเพดาน สำหรับ Run ถัดไป"],
   ];
   return <>

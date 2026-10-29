@@ -14,7 +14,7 @@ const ZONE_FIELDS = [
   ["cap_floor", "เพิ่มค่าทอยลูกเต๋าขั้นต่ำและสูงสุด"],
   ["self_heal_stamina", "ฟื้นฟู Stamina (+10% ต่อระดับ)"],
   ["modify_current_speed", "เพิ่มอัตราเร่ง"],
-  ["race_speed", "เพิ่ม Speed ในรัน (+1 ต่อ Zone pt)"],
+  ["race_speed", "เพิ่มเพดานความเร็วสูงสุด (+2 ต่อ Zone pt)"],
   ["reduce_block_penalty", "ลดโทษ Blocked (10% ต่อระดับ สำหรับ Run ถัดไป)"],
 ];
 
