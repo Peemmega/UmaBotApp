@@ -20,7 +20,7 @@
       "last_spurt": 23
     },
     "End": {
-      "start": 12,
+      "start": 14,
       "mid": 16,
       "late": 20,
       "last_spurt": 25
@@ -185,8 +185,8 @@
     "End": [
       0.06,
       0.08,
-      0.1,
-      0.14
+      0.11,
+      0.11
     ]
   },
   "aptitudeModifier": {

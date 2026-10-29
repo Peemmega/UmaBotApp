@@ -33,12 +33,22 @@ function Table({ title, headings, rows }) {
   return <div className="system-guide-table-scroll" role="region" aria-label={title} tabIndex={0}><table className="system-guide-table"><caption>{title}</caption><thead><tr>{headings.map((heading) => <th scope="col" key={heading}>{heading}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{row.map((cell, cellIndex) => cellIndex === 0 ? <th scope="row" key={cellIndex}>{cell}</th> : <td key={cellIndex}>{cell}</td>)}</tr>)}</tbody></table></div>;
 }
 
+const fatigueFormula = (config) => (
+  Number.isFinite(config?.stamina_penalty_base_percent) && Number.isFinite(config?.stamina_penalty_guts_reduction)
+    ? `max(0, ${config.stamina_penalty_base_percent} - ${config.stamina_penalty_guts_reduction} * Guts)%`
+    : "ไม่สามารถโหลดค่าโทษจากบอทได้"
+);
+
 export function StatsSkillsZoneGuide() {
+  const { config } = useGameConfig();
+  const fatigueAtFive = Number.isFinite(config?.stamina_penalty_base_percent) && Number.isFinite(config?.stamina_penalty_guts_reduction)
+    ? Math.max(0, config.stamina_penalty_base_percent - 5 * config.stamina_penalty_guts_reduction)
+    : null;
   const stats = [
     { name: "Speed", icon: speedIcon, color: "#289ed0", summary: "ขยายเพดานความเร็วและเพิ่มแต้มทุกครั้งที่วิ่ง", items: ["โบนัสผล Run +2 × Speed", "เพดานความเร็วใช้ Speed หลังคูณ Distance aptitude และปัดเป็นจำนวนเต็ม", "ความเร็วเริ่มต้นยังเป็นค่าของสายวิ่ง แล้วค่อยเร่งขึ้นถึงเพดาน"], example: "Speed 5 → โบนัส Run +10; ถ้าความถนัดระยะ G เพดานเพิ่ม +5" },
     { name: "Stamina", icon: staminaIcon, color: "#e5787b", summary: "พลังสำรองที่พาคุณวิ่งจนถึงเทิร์นสุดท้าย", items: ["Stamina เริ่มต้น = 800 + (100 × Stamina)", "โบนัสผล Run +1 × Stamina", "เมื่อพลังไม่พอจ่าย Run จะถูกลดผลตามค่า Guts แต่ยังวิ่งต่อได้"], example: "Stamina 5 → เริ่มแข่งด้วยพลัง 1,300 และโบนัส Run +5" },
     { name: "Power", icon: powerIcon, color: "#dd9a27", summary: "เร่งความเร็ว ฝ่าเลนแออัด และรับมือกับเนินขึ้น", items: ["Power ที่ใช้แข่ง = round(Power × Track aptitude)", "เพิ่มโบนัส Run ตาม Power ที่ใช้แข่ง; บนเนินขึ้นโบนัสนี้ ×3", "ลดโทษ Blocked 1 จุดเปอร์เซ็นต์ต่อ Power ที่ใช้แข่ง 1 แต้ม", "ความเร่งต่อครั้ง = 0.3 + (ค่าสายวิ่ง × Power ที่ใช้แข่ง ×1.5 ×ระดับความเร่ง)"], example: "Power ที่ใช้แข่ง 5 → โทษถูกบัง 1 คนลดจาก 10% เหลือ 5%" },
-    { name: "Guts", icon: gutIcon, color: "#d974ab", summary: "แรงฮึดช่วงท้ายและการรับมือเมื่อพลังเริ่มหมด", items: ["ตั้งแต่ Phase 3 ได้โบนัส Run +2 × Guts", "เมื่อ In Pack เพิ่มอีก +2 × Guts ×จำนวนคู่แข่งใกล้เคียง (นับสูงสุด 2 คน)", "โทษ Fatigue = max(0, 25 − Guts)%"], example: "Guts 5, Phase 3, คู่แข่งใกล้ 2 คน → โบนัสรวม +30; Fatigue ลดผล 20%" },
+    { name: "Guts", icon: gutIcon, color: "#d974ab", summary: "แรงฮึดช่วงท้ายและการรับมือเมื่อพลังเริ่มหมด", items: ["ตั้งแต่ Phase 3 ได้โบนัส Run +2 × Guts", "เมื่อ In Pack เพิ่มอีก +2 × Guts ×จำนวนคู่แข่งใกล้เคียง (นับสูงสุด 2 คน)", `โทษ Fatigue = ${fatigueFormula(config)}`], example: `Guts 5, Phase 3, คู่แข่งใกล้ 2 คน → โบนัสรวม +30${fatigueAtFive === null ? "" : `; Fatigue ลดผล ${fatigueAtFive}%`}` },
     { name: "Wit", icon: witIcon, color: "#20a993", summary: "ทรัพยากรสกิล โอกาสแก้เต๋า และการอ่านเส้นทาง", items: ["Mana เริ่มต้น = 100 + (10 × Wit)", "ฟื้น Mana ต่อเทิร์น = round((10 + 2 × Wit) × Style aptitude)", "Wit Reroll 2 สิทธิ์ต่อการแข่ง ใช้ได้เมื่อผลรวมเต๋าที่เลือก ก่อนโบนัส ต่ำกว่า round(25 × Wit × Style aptitude)", "Wit เพิ่ม floor / cap ของเต๋าบนโค้งและเนินลง"], example: "Wit 5, ความถนัดสาย G → Mana 150, ฟื้น 20 ต่อเทิร์น, เกณฑ์ Reroll ต่ำกว่า 125" },
   ];
   const zoneRows = [
@@ -71,7 +81,7 @@ export function StatsSkillsZoneGuide() {
       <div className="system-zone-banner"><Sparkles size={30} /><div><strong>หนึ่งครั้งที่เปลี่ยนจังหวะของการแข่งขัน</strong><p>จัด Build ก่อนลงสนาม ใช้ก่อน Run และใช้ได้ 1 ครั้งต่อการแข่งขัน</p></div></div>
       <figure className="system-guide-image-example is-zone"><img src={zoneGuideImage} alt="ตัวอย่างหน้า Zone ในโปรไฟล์ แสดงสนามที่เลือกและโบนัสจาก Zone" loading="lazy" /><figcaption><strong>Zone ที่เลือกใช้ในโปรไฟล์</strong><p>Zone มีทั้งเอฟเฟกต์จากสนามที่เลือกและทางเลือกเสริมสำหรับปรับแผนการวิ่ง</p></figcaption></figure>
       <Table title="เอฟเฟกต์ Zone" headings={["ทางเลือก", "ผลต่อระดับ", "เวลาที่เกิดผล"]} rows={zoneRows} />
-      <div className="system-guide-two-col"><div className="system-guide-build"><h3>เน้นผลวิ่ง</h3><p>เพิ่มผล Run 3 ระดับ + d / kh 2 ระดับ</p><strong>ผล Run +60, d +2, kh +2</strong></div><div className="system-guide-build"><h3>เน้นยืนระยะ</h3><p>ฟื้น Stamina 3 ระดับ + ความเร่ง 2 ระดับ</p><strong>ฟื้นพลัง +300, เร่ง 2 ระดับ</strong></div></div>
+      <div className="system-guide-two-col"><div className="system-guide-build"><h3>เน้นผลวิ่ง</h3><p>เพิ่มผล Run 3 ระดับ + d / kh 2 ระดับ</p><strong>ผล Run +60, d +2, kh +2</strong></div><div className="system-guide-build"><h3>เน้นยืนระยะ</h3><p>ฟื้น Stamina 3 ระดับ + ความเร่ง 2 ระดับ</p><strong>ฟื้นพลัง 30% ของค่าสูงสุด, เร่ง 2 ระดับ</strong></div></div>
       <p>ผลคะแนนและเต๋ามีผลกับ Run ถัดไป ส่วนการฟื้นพลังและเร่งความเร็วเกิดทันที เลือกเทิร์นที่สายวิ่งได้เปรียบ หรือใช้ฟื้นพลังให้ทันก่อนเกิด Fatigue</p>
     </GuideSection>
     <GuideSection id="preparation" title="เตรียมพร้อมก่อนวิ่ง">
@@ -131,7 +141,7 @@ export function LanesGuide() {
     <GuideSection id="lane-cost" title="พลังที่ใช้ในเลน" intro="วงในใช้พลังน้อยกว่า วงนอกเปิดพื้นที่แต่มีต้นทุนมากขึ้น เลือกให้เข้ากับแผนและพลังที่เหลือ">
       <div className="system-lane-cost-summary" aria-live="polite"><span>Lane {lane}</span><strong>{rules.laneCosts[lane]} <small>STA / Run บนทางตรง</small></strong><p>บนเนินขึ้น {rules.laneCosts[lane] * 2} STA · เนินลง 0 STA ก่อนอากาศและ Draft</p></div>
       <Note title="เทิร์นแรกและการปรับต้นทุน">เทิร์น 1 ใช้ฐาน 100 STA ทุกเลนก่อนคูณเส้นทาง จากเทิร์น 2 จึงใช้ฐานเลนปัจจุบัน แดดจัดเพิ่ม +10 แล้วค่อยลดต้นทุนรวม 10% หากได้ Draft ปัดเป็นจำนวนเต็ม</Note>
-      <p>เมื่อพลังเหลือไม่พอจ่าย Run จะเกิด Fatigue และลดผลวิ่ง max(0, 25 − Guts)% หลังคิดโทษการบัง พลังลดได้ถึง 0 และยังวิ่งต่อได้</p>
+      <p>เมื่อพลังเหลือไม่พอจ่าย Run จะเกิด Fatigue และลดผลวิ่ง {fatigueFormula(config)} หลังคิดโทษการบัง พลังลดได้ถึง 0 และยังวิ่งต่อได้</p>
     </GuideSection>
     <GuideSection id="draft" title="Draft: เก็บแรงหลังคู่แข่ง">
       <div className="system-draft-illustration"><Wind size={32} /><span>คุณ</span><i /><span>คู่แข่งด้านหน้า</span></div>
