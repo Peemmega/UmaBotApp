@@ -5,7 +5,7 @@ import minusIcon from "../assets/icons/reduce.webp";
 
 import { playSound } from "../utils/soundManager";
 import { BOT_API_BASE } from "../api/playerApi";
-import { IS_MAIN_WEB } from "../api/appConfig";
+import { useGameConfig } from "../api/useGameConfig";
 
 const STAT_KEYS = [
   ["speed", "Speed"],
@@ -14,9 +14,9 @@ const STAT_KEYS = [
   ["gut", "Gut"],
   ["wit", "Wit"],
 ];
-const MAX_STAT = IS_MAIN_WEB ? 8 : 12;
-
 export default function EditStatsModal({ userId, player, onClose, onSaved }) {
+  const { config, error: configError } = useGameConfig();
+  const maxStat = config?.max_core_stat;
   const [draftStats, setDraftStats] = useState({
     speed: player?.speed ?? 0,
     stamina: player?.stamina ?? 0,
@@ -52,7 +52,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
   const draftPoints = totalPool - usedPoints;
 
   const increaseStat = (key) => {
-    if (draftPoints <= 0 || (draftStats[key] ?? 0) >= MAX_STAT) return;
+    if (!maxStat || draftPoints <= 0 || (draftStats[key] ?? 0) >= maxStat) return;
 
     setDraftStats((prev) => ({
       ...prev,
@@ -153,7 +153,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
                         playSound("click"); 
                         increaseStat(key)
                       }}
-                    disabled={draftPoints <= 0 || value >= MAX_STAT || saving}
+                    disabled={!maxStat || draftPoints <= 0 || value >= maxStat || saving}
                   >
                     <img src={plusIcon} alt="plus" />
                   </button>
@@ -184,11 +184,12 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
           <button className="green-btn" onClick={() => {
               playSound("click"); 
               saveStats()
-            }} disabled={saving}>
+            }} disabled={saving || !config}>
             {saving ? "Saving..." : "บันทึก"}
           </button>
         </div>
 
+        {configError ? <div className="save-message" role="alert">{configError}</div> : null}
         {message ? <div className="save-message">{message}</div> : null}
     </Dialog>
   );
