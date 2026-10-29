@@ -48,7 +48,7 @@ export function StatsSkillsZoneGuide() {
     ["ฟื้น Stamina", `+${rules.zoneValue.self_heal_stamina}% ต่อระดับ`, "ฟื้นทันที ไม่เกิน Stamina สูงสุด"],
     ["เพิ่มความเร่ง", `+${rules.zoneValue.modify_current_speed} ระดับ`, "เพิ่มความเร็วปัจจุบันทันทีตามสูตรของสายวิ่ง"],
     ["เพิ่ม Speed ในรัน", `+${rules.zoneValue.race_speed} ต่อระดับ`, "เพิ่ม Stat Speed เฉพาะการแข่งนี้ แล้วคำนวณค่าที่ใช้แข่งใหม่"],
-    ["ลดโทษ Blocked", `−${rules.zoneValue.reduce_block_penalty}% ต่อระดับ`, "ลดโทษหลังจำกัดเพดาน สำหรับ Run ถัดไป"],
+    ["ลดโทษ Blocked", `−${rules.zoneValue.reduce_block_penalty}% ต่อระดับ`, "ลดโทษก่อนจำกัดเพดาน สำหรับ Run ถัดไป"],
   ];
   return <>
     <GuideSection id="stats" title="ค่าสถานะทั้ง 5" intro="Stats เป็นฐานของนักวิ่ง แต่ผลที่เกิดจริงยังขึ้นกับความถนัด เส้นทาง และจังหวะของการแข่งขัน">
