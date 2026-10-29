@@ -201,7 +201,7 @@ export default function MailboxModal({ userId, profileType = "trainee", onClose,
 
         {pendingInvitation && (
           <div className="mailbox-invite-dialog" role="dialog" aria-modal="true">
-            <h3>Join this Trainer's team?</h3>
+            <h3>คุณได้รับคำเชิญให้เข้าร่วมทีม</h3>
             <p>{pendingInvitation.message}</p>
             <button onClick={() => respondToInvitation(false)}>Decline</button>
             <button onClick={() => respondToInvitation(true)}>Join team</button>
