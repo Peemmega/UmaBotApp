@@ -475,6 +475,53 @@ def get_player_summary(user_id: str):
         close_db_connection(conn)
 
 
+@app.post("/api/admin-data")
+async def proxy_admin_data(request: Request):
+    user = request.session.get("discord_user")
+    if not user or not str(user.get("id", "")).isdigit():
+        return JSONResponse({"detail": "Authentication required"}, status_code=401)
+    origin = request.headers.get("origin", "").rstrip("/")
+    if not origin or origin != FRONTEND_URL.rstrip("/"):
+        return JSONResponse({"detail": "Invalid origin"}, status_code=403)
+    secret = os.getenv("ADMIN_DATA_SECRET", "")
+    if not secret or not BOT_API_BASE:
+        return JSONResponse({"detail": "Admin data service is not configured"}, status_code=503)
+    try:
+        raw = await request.body()
+        if len(raw) > 1024 * 1024:
+            return JSONResponse({"detail": "Request too large"}, status_code=413)
+        data = json.loads(raw)
+        if not isinstance(data, dict) or data.get("operation") not in {"check", "tables", "rows", "update"}:
+            raise ValueError("Invalid request")
+        data["user_id"] = str(user["id"])
+        body = json.dumps(data, separators=(",", ":"), ensure_ascii=False).encode()
+        timestamp = str(int(time.time()))
+        signature = hmac.new(secret.encode(), timestamp.encode() + b"." + body, hashlib.sha256).hexdigest()
+        async with httpx.AsyncClient(timeout=20.0, follow_redirects=False) as client:
+            response = await client.post(BOT_API_BASE + "/internal/admin-data", content=body, headers={"Content-Type": "application/json", "X-Admin-Timestamp": timestamp, "X-Admin-Signature": signature})
+        return JSONResponse(response.json(), status_code=response.status_code, headers={"Cache-Control": "no-store"})
+    except (ValueError, TypeError):
+        return JSONResponse({"detail": "Invalid request or response"}, status_code=400)
+    except httpx.HTTPError:
+        return JSONResponse({"detail": "Bot service unavailable"}, status_code=503)
+
+
+@app.get("/admin-data.css")
+@app.get("/admin-data.js")
+def admin_data_asset(request: Request):
+    filename = request.url.path.lstrip("/")
+    root = "dist" if os.path.exists("dist") else os.path.join("uma-dashboard-ui", "dist")
+    return FileResponse(os.path.join(root, filename), headers={"Cache-Control": "no-store"})
+
+
+@app.get("/admin-data")
+def admin_data_page(request: Request):
+    if not request.session.get("discord_user"):
+        return RedirectResponse("/login")
+    path = os.path.join("dist" if os.path.exists("dist") else os.path.join("uma-dashboard-ui", "dist"), "admin-data.html")
+    return FileResponse(path, headers={"Cache-Control": "no-store"})
+
+
 # The OAuth token exchange must use the exact same URI used to start OAuth.
 # Keep it environment-specific so Test does not exchange with the Production URI.
 MOBILE_REDIRECT_URI = f"{FRONTEND_URL.rstrip('/')}/callback/mobile"
