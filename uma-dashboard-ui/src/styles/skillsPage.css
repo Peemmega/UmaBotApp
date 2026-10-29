@@ -541,6 +541,11 @@
 .skill-equip-modal {
   position: relative;
   width: min(92vw, 720px);
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border-radius: var(--uma-radius-lg);
   background:
     radial-gradient(circle at 0 0, rgba(255, 212, 90, 0.18), transparent 36%),
@@ -591,6 +596,8 @@
   align-items: baseline;
   gap: 16px;
   margin-bottom: 10px;
+  padding-right: 42px;
+  flex-wrap: wrap;
 }
 
 .skill-equip-title span {
@@ -649,6 +656,14 @@
 .skill-detail-summary ul { margin: 6px 0 0; padding-left: 17px; }
 .skill-detail-summary li + li { margin-top: 2px; }
 .skill-equip-selected-detail { font-size: 15px; font-weight: 500; margin: -6px 0 16px; padding: 11px 13px; border-radius: 12px; background: rgba(69, 201, 111, 0.1); }
+.skill-equip-current-detail { padding: 0 13px 10px; }
+
+@media (max-width: 540px) {
+  .skill-equip-backdrop { padding: 12px; }
+  .skill-equip-modal { width: 100%; max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px); padding: 20px 16px; }
+  .skill-equip-buttons { grid-template-columns: 1fr; }
+  .skill-equip-title span, .skill-equip-title h3 { font-size: 22px; overflow-wrap: anywhere; }
+}
 
 .toast {
   position: fixed;
