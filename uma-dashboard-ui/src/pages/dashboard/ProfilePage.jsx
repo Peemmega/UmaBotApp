@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { mainStats, aptitudeRows } from "../../data/dashboardConfig";
 import StatCell from "../../components/StatCell";
 import AptitudeItem from "../../components/AptitudeItem";
+import EditAptitudes from "../../components/EditAptitudes";
 import ResourcePill from "../../components/ResourcePill";
 import EditStatsModal from "../../components/EditStatsModal";
 import ZonePanel from "../../components/ZonePanel";
@@ -74,10 +75,12 @@ export default function ProfilePage({
   const [viewedPlayer, setViewedPlayer] = useState(null);
   const [viewedPlayerStatus, setViewedPlayerStatus] = useState(readOnly ? "loading" : "ready");
   const [activeProfilePage, setActiveProfilePage] = useState("overview");
+  const [editingAptitudes, setEditingAptitudes] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     setActiveProfilePage("overview");
+    setEditingAptitudes(false);
   }, [profileType, readOnly, userId]);
 
   useEffect(() => {
@@ -426,9 +429,9 @@ export default function ProfilePage({
                   setIsEditStatsOpen(false);
                 }} />}
               </section></StaggerItem>
-              <StaggerItem><section className="sheet-card"><div className="title-banner"><h2>Aptitudes</h2></div><div className="padding-content"><div className="aptitude-table">
+              <StaggerItem><section className="sheet-card"><div className="title-banner trainer-aptitude-heading"><h2>Aptitudes</h2><button type="button" className="update-stats-btn" aria-expanded={editingAptitudes} onClick={() => setEditingAptitudes((open) => !open)}>{editingAptitudes ? "??????? Aptitude" : "???? Aptitude"}</button></div><div className="padding-content"><div className="aptitude-table">
                 {aptitudeRows.map((row) => <div className="aptitude-row" key={row.title}><div className="aptitude-row-title">{row.title}</div><div className="aptitude-row-items">{row.items.map((item) => <AptitudeItem key={item.key} label={item.label} value={profilePlayer?.[item.key]} icon={aptitudeIcons[item.key]} />)}</div></div>)}
-              </div></div></section></StaggerItem>
+              </div>{editingAptitudes && <EditAptitudes player={profilePlayer} onCancel={() => setEditingAptitudes(false)} onSaved={(updated) => { updateProfilePlayer((prev) => ({ ...prev, ...updated })); setEditingAptitudes(false); }} />}</div></section></StaggerItem>
             </div>
 
             <div className="profile-lower-grid">
