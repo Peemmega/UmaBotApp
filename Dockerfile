@@ -26,6 +26,9 @@ RUN npm run build
 FROM python:3.11-slim
 WORKDIR /app
 
+# Preserve the frontend's bot URL for the server-side aptitude request too.
+ARG VITE_BOT_API_BASE
+ENV VITE_BOT_API_BASE=$VITE_BOT_API_BASE
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8080

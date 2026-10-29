@@ -49,7 +49,7 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
-BOT_API_BASE = os.getenv("BOT_API_BASE", "").rstrip("/")
+BOT_API_BASE = (os.getenv("BOT_API_BASE") or os.getenv("VITE_BOT_API_BASE") or "").rstrip("/")
 DISCORD_GUILD_ID = os.getenv("DISCORD_GUILD_ID")
 # Role IDs are intentionally stable across the production and test Discord
 # servers. A member may only enter the dashboard with one of these roles.
@@ -389,8 +389,10 @@ async def update_own_trainer_aptitudes(request: Request):
     if origin and origin.rstrip("/") != FRONTEND_URL.rstrip("/"):
         return JSONResponse({"detail": "Invalid origin"}, status_code=403)
     secret = os.getenv("APTITUDE_SYNC_SECRET", "")
-    if not secret or not BOT_API_BASE:
-        return JSONResponse({"detail": "Aptitude sync is not configured"}, status_code=503)
+    if not secret:
+        return JSONResponse({"detail": "บริการเว็บยังไม่ได้ตั้งค่า APTITUDE_SYNC_SECRET"}, status_code=503)
+    if not BOT_API_BASE:
+        return JSONResponse({"detail": "บริการเว็บยังไม่ได้ตั้งค่า BOT_API_BASE (URL ของบอต API)"}, status_code=503)
     try:
         aptitudes = await request.json()
     except ValueError:
