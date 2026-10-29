@@ -495,7 +495,7 @@ function SkillDetail({ skill, className = "" }) {
   return (
     <div className={`skill-detail-summary ${className}`}>
       {description ? <p>{renderTextWithIcons(description)}</p> : null}
-      {skill.trigger ? <span><b>Condition:</b> {renderTextWithIcons(skill.trigger)}</span> : null}
+      {skill.trigger ? <span><b>เงื่อนไข:</b> {renderTextWithIcons(skill.trigger)}</span> : null}
       {effects.length ? <ul>{effects.map((effect, index) => <li key={`${skill.id || skill.name}-${index}`}>{renderTextWithIcons(describeRaceEffect(effect))}</li>)}</ul> : null}
     </div>
   );

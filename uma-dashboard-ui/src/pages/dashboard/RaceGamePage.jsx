@@ -1890,7 +1890,7 @@ function RaceSkillPreview({ preview }) {
           </div>
 
           <div className="skill-trigger">
-            <strong>Condition:</strong> {preview.trigger}
+            <strong>เงื่อนไข:</strong> {preview.trigger}
           </div>
 
           <div className="skill-effects">
