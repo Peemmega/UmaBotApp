@@ -20,17 +20,17 @@ export default function EditAptitudes({ player, onCancel, onSaved }) {
         method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(values),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "???????????????");
+      if (!response.ok) throw new Error(data.detail || "บันทึกไม่สำเร็จ");
       onSaved(data.player);
     } catch (err) {
-      setError(err.message || "??????????????? ????????????????????");
+      setError(err.message || "บันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
     } finally {
       setSaving(false);
     }
   }
 
   return <form className="trainer-aptitude-editor" onSubmit={save}>
-    <p>????????????????????????????? ??????? G ??? S</p>
+    <p>เลือกระดับความถนัดแต่ละประเภท ตั้งแต่ G ถึง S</p>
     {aptitudeRows.map((row) => <fieldset key={row.title} disabled={saving}>
       <legend>{row.title}</legend>
       <div className="trainer-aptitude-fields">{row.items.map((item) => <label key={item.key}>
@@ -41,6 +41,6 @@ export default function EditAptitudes({ player, onCancel, onSaved }) {
       </label>)}</div>
     </fieldset>)}
     {error && <p className="trainer-aptitude-error" role="alert">{error}</p>}
-    <div className="trainer-aptitude-actions"><button type="submit" disabled={saving}>{saving ? "????????????" : "?????? Aptitude"}</button><button type="button" disabled={saving} onClick={onCancel}>??????</button></div>
+    <div className="trainer-aptitude-actions"><button type="submit" disabled={saving}>{saving ? "กำลังบันทึก…" : "บันทึก Aptitude"}</button><button type="button" disabled={saving} onClick={onCancel}>ยกเลิก</button></div>
   </form>;
 }

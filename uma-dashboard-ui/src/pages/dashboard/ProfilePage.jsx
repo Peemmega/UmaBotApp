@@ -429,7 +429,7 @@ export default function ProfilePage({
                   setIsEditStatsOpen(false);
                 }} />}
               </section></StaggerItem>
-              <StaggerItem><section className="sheet-card"><div className="title-banner trainer-aptitude-heading"><h2>Aptitudes</h2><button type="button" className="update-stats-btn" aria-expanded={editingAptitudes} onClick={() => setEditingAptitudes((open) => !open)}>{editingAptitudes ? "??????? Aptitude" : "???? Aptitude"}</button></div><div className="padding-content"><div className="aptitude-table">
+              <StaggerItem><section className="sheet-card"><div className="title-banner trainer-aptitude-heading"><h2>Aptitudes</h2><button type="button" className="update-stats-btn" aria-expanded={editingAptitudes} onClick={() => setEditingAptitudes((open) => !open)}>{editingAptitudes ? "ปิดปรับ Aptitude" : "ปรับ Aptitude"}</button></div><div className="padding-content"><div className="aptitude-table">
                 {aptitudeRows.map((row) => <div className="aptitude-row" key={row.title}><div className="aptitude-row-title">{row.title}</div><div className="aptitude-row-items">{row.items.map((item) => <AptitudeItem key={item.key} label={item.label} value={profilePlayer?.[item.key]} icon={aptitudeIcons[item.key]} />)}</div></div>)}
               </div>{editingAptitudes && <EditAptitudes player={profilePlayer} onCancel={() => setEditingAptitudes(false)} onSaved={(updated) => { updateProfilePlayer((prev) => ({ ...prev, ...updated })); setEditingAptitudes(false); }} />}</div></section></StaggerItem>
             </div>
