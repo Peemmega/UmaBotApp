@@ -15,6 +15,7 @@ const ZONE_FIELDS = [
   ["self_heal_stamina", "ฟื้นฟู Stamina (+10% ต่อระดับ)"],
   ["modify_current_speed", "เพิ่มอัตราเร่ง"],
   ["race_speed", "เพิ่ม Speed ในรัน (+1 ต่อ Zone pt)"],
+  ["reduce_block_penalty", "ลดโทษ Blocked (10% ต่อระดับ สำหรับ Run ถัดไป)"],
 ];
 
 const normalizeBuild = (build = {}) => ({
@@ -24,6 +25,7 @@ const normalizeBuild = (build = {}) => ({
   self_heal_stamina: build.self_heal_stamina ?? 0,
   modify_current_speed: build.modify_current_speed ?? 0,
   race_speed: build.race_speed ?? 0,
+  reduce_block_penalty: build.reduce_block_penalty ?? 0,
 });
 
 export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }) {
@@ -43,7 +45,8 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
       draft.cap_floor +
       draft.self_heal_stamina +
       draft.modify_current_speed +
-      draft.race_speed
+      draft.race_speed +
+      draft.reduce_block_penalty
     );
   }, [draft]);
 
@@ -54,7 +57,8 @@ export default function ZoneEditModal({ userId, player, zone, onClose, onSaved }
       originalBuild.cap_floor +
       originalBuild.self_heal_stamina +
       originalBuild.modify_current_speed +
-      originalBuild.race_speed
+      originalBuild.race_speed +
+      originalBuild.reduce_block_penalty
     );
   }, [originalBuild]);
 

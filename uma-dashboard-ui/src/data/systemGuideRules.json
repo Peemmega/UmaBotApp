@@ -213,7 +213,8 @@
     "cap_floor": 3,
     "self_heal_stamina": 10,
     "modify_current_speed": 1,
-    "race_speed": 1
+    "race_speed": 1,
+    "reduce_block_penalty": 10
   },
   "zonePointCost": {
     "flat": 1,
@@ -221,7 +222,8 @@
     "cap_floor": 1,
     "self_heal_stamina": 1,
     "modify_current_speed": 1,
-    "race_speed": 1
+    "race_speed": 1,
+    "reduce_block_penalty": 1
   },
   "zonePoints": 5,
   "packRange": 20,

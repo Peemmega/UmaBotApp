@@ -29,6 +29,10 @@ export function describeRaceEffect(effect) {
   const amount = Math.abs(Number(descriptor.value) || 0);
   const duration = durationText(descriptor.duration);
 
+  if (descriptor.type === "reduce_block_penalty") {
+    return `ลดโทษ Blocked ${amount * 10}% สำหรับ Run ถัดไป`;
+  }
+
   if (descriptor.type === "modify_enemy_gold_lane_range") {
     const action = Number(descriptor.value) < 0 ? "ลด" : "เพิ่ม";
     return `${action}ช่วงเลน In Pack ของคู่แข่ง ${amount} ${duration}`.trim();

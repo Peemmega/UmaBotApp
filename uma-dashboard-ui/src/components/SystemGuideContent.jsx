@@ -48,6 +48,7 @@ export function StatsSkillsZoneGuide() {
     ["ฟื้น Stamina", `+${rules.zoneValue.self_heal_stamina}% ต่อระดับ`, "ฟื้นทันที ไม่เกิน Stamina สูงสุด"],
     ["เพิ่มความเร่ง", `+${rules.zoneValue.modify_current_speed} ระดับ`, "เพิ่มความเร็วปัจจุบันทันทีตามสูตรของสายวิ่ง"],
     ["เพิ่ม Speed ในรัน", `+${rules.zoneValue.race_speed} ต่อระดับ`, "เพิ่ม Stat Speed เฉพาะการแข่งนี้ แล้วคำนวณค่าที่ใช้แข่งใหม่"],
+    ["ลดโทษ Blocked", `−${rules.zoneValue.reduce_block_penalty}% ต่อระดับ`, "ลดโทษหลังจำกัดเพดาน สำหรับ Run ถัดไป"],
   ];
   return <>
     <GuideSection id="stats" title="ค่าสถานะทั้ง 5" intro="Stats เป็นฐานของนักวิ่ง แต่ผลที่เกิดจริงยังขึ้นกับความถนัด เส้นทาง และจังหวะของการแข่งขัน">
@@ -69,7 +70,7 @@ export function StatsSkillsZoneGuide() {
     <GuideSection id="zone" title="Zone ที่คุณประกอบเอง" intro={`Zone เป็นความสามารถพิเศษอีกชุด แยกจากสกิล 4 ช่อง มีแต้มเริ่มต้น ${rules.zonePoints} แต้ม ทุกทางใช้ 1 แต้มต่อระดับ`}>
       <div className="system-zone-banner"><Sparkles size={30} /><div><strong>หนึ่งครั้งที่เปลี่ยนจังหวะของการแข่งขัน</strong><p>จัด Build ก่อนลงสนาม ใช้ก่อน Run และใช้ได้ 1 ครั้งต่อการแข่งขัน</p></div></div>
       <figure className="system-guide-image-example is-zone"><img src={zoneGuideImage} alt="ตัวอย่างหน้า Zone ในโปรไฟล์ แสดงสนามที่เลือกและโบนัสจาก Zone" loading="lazy" /><figcaption><strong>Zone ที่เลือกใช้ในโปรไฟล์</strong><p>Zone มีทั้งเอฟเฟกต์จากสนามที่เลือกและทางเลือกเสริมสำหรับปรับแผนการวิ่ง</p></figcaption></figure>
-      <Table title="เอฟเฟกต์ Zone ทั้ง 6 ทาง" headings={["ทางเลือก", "ผลต่อระดับ", "เวลาที่เกิดผล"]} rows={zoneRows} />
+      <Table title="เอฟเฟกต์ Zone" headings={["ทางเลือก", "ผลต่อระดับ", "เวลาที่เกิดผล"]} rows={zoneRows} />
       <div className="system-guide-two-col"><div className="system-guide-build"><h3>เน้นผลวิ่ง</h3><p>เพิ่มผล Run 3 ระดับ + d / kh 2 ระดับ</p><strong>ผล Run +60, d +2, kh +2</strong></div><div className="system-guide-build"><h3>เน้นยืนระยะ</h3><p>ฟื้น Stamina 3 ระดับ + ความเร่ง 2 ระดับ</p><strong>ฟื้นพลัง +300, เร่ง 2 ระดับ</strong></div></div>
       <p>ผลคะแนนและเต๋ามีผลกับ Run ถัดไป ส่วนการฟื้นพลังและเร่งความเร็วเกิดทันที เลือกเทิร์นที่สายวิ่งได้เปรียบ หรือใช้ฟื้นพลังให้ทันก่อนเกิด Fatigue</p>
     </GuideSection>
