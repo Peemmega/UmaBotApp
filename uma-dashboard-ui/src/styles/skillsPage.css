@@ -649,7 +649,6 @@
 .skill-detail-summary ul { margin: 6px 0 0; padding-left: 17px; }
 .skill-detail-summary li + li { margin-top: 2px; }
 .skill-equip-selected-detail { font-size: 15px; font-weight: 500; margin: -6px 0 16px; padding: 11px 13px; border-radius: 12px; background: rgba(69, 201, 111, 0.1); }
-.skill-equip-current-detail { padding: 0 13px 10px; }
 
 .toast {
   position: fixed;

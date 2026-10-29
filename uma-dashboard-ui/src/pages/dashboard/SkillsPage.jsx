@@ -215,11 +215,6 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
     ));
   }, [skills, search, activeAptitude, activeDetail, activeRarity, activeIcons]);
 
-  const skillDetailsById = useMemo(
-    () => new Map(skills.map((skill) => [String(skill.id), skill])),
-    [skills]
-  );
-
   return (
     <section className="skills-page">
       <GameCard className="page-control-card skills-page-card">
@@ -443,9 +438,6 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
             <div className="skill-equip-buttons">
               {[1, 2, 3, 4].map((slot) => {
                 const currentSkill = equippedSkills[`slot_${slot}`];
-                const currentSkillDetails = currentSkill
-                  ? skillDetailsById.get(String(currentSkill.id)) || currentSkill
-                  : null;
                 return (
                 <div className="skill-equip-slot-option" key={slot}>
                   <div className="skill-equip-slot-summary">
@@ -455,7 +447,6 @@ export default function SkillsPage({ userId, username, onSkillEquipped }) {
                       <span>{currentSkill ? currentSkill.name : "Empty slot"}</span>
                     </div>
                   </div>
-                  {currentSkillDetails && <SkillDetail skill={currentSkillDetails} className="skill-equip-current-detail" />}
                 <Button
                   type="button"
                   className="skill-equip-slot-button"
