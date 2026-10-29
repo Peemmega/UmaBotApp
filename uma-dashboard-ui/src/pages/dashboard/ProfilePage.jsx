@@ -446,7 +446,7 @@ export default function ProfilePage({
         {isTrainer && activeProfilePage === "team" && (
           <StaggerItem>
             <section className="sheet-card trainer-team-card" id="profile-team">
-              <div className="title-banner"><h2>My Uma Musume Team</h2></div>
+              <div className="title-banner"><h2>สาวม้าในทีม</h2></div>
               <div className="trainer-team-list">
                 <div className="trainer-team-toolbar">
                   <SearchInput value={teamSearch} onChange={(event) => setTeamSearch(event.target.value)} placeholder="Search team members..." />
@@ -475,7 +475,7 @@ export default function ProfilePage({
                         <span className="trainer-team-profile-link">ดูโปรไฟล์เต็ม</span>
                       </button>
                     </article>
-                  )) : <p className="trainer-team-empty">{teamMembers.length ? "No members match your search." : "No team members yet."}</p>}
+                  )) : <p className="trainer-team-empty">{teamMembers.length ? "ไม่พบสมาชิกที่ตรงกับการค้นหา" : "ยังไม่มีสมาชิกในทีม"}</p>}
                 </div>
                 <div className="trainer-team-invite-action">
                   <button className="profile-image-upload-btn" onClick={() => setIsInviteOpen(true)}>Invite to team</button>
@@ -490,13 +490,13 @@ export default function ProfilePage({
             <section className="team-invite-modal" onClick={(event) => event.stopPropagation()}>
               <header className="team-invite-header">
                 <div>
-                  <span>Team Management</span>
-                  <h2>Invite an Uma Musume</h2>
+                  <span>จัดการทีม</span>
+                  <h2>เชิญเข้าทีม</h2>
                 </div>
                 <button className="team-invite-close" onClick={() => setIsInviteOpen(false)} aria-label="Close">×</button>
               </header>
               <div className="team-invite-toolbar">
-                <SearchInput value={inviteSearch} onChange={(event) => setInviteSearch(event.target.value)} placeholder="Search Trainee name..." />
+                <SearchInput value={inviteSearch} onChange={(event) => setInviteSearch(event.target.value)} placeholder="ค้นหาชื่อสาวม้า..." />
               </div>
               <div className="team-invite-grid">
                 {filteredInvitees.length ? filteredInvitees.map((trainee) => (
@@ -506,7 +506,7 @@ export default function ProfilePage({
                     <Badge>{trainee.fans} Fans</Badge>
                     <button onClick={() => inviteTrainee(trainee.user_id).catch((err) => alert(err.message))}>Invite</button>
                   </article>
-                )) : <p className="team-invite-empty">No available Trainees with uploaded profiles.</p>}
+                )) : <p className="team-invite-empty">ไม่มีสาวม้าที่พร้อมให้เชิญ</p>}
               </div>
             </section>
             </div>
