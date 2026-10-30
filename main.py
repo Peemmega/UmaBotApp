@@ -9,7 +9,7 @@ import hmac
 import hashlib
 
 from fastapi import FastAPI, Request
-from fastapi.responses import RedirectResponse, JSONResponse, FileResponse
+from fastapi.responses import RedirectResponse, JSONResponse, FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
@@ -491,7 +491,7 @@ async def proxy_admin_data(request: Request):
         if len(raw) > 1024 * 1024:
             return JSONResponse({"detail": "Request too large"}, status_code=413)
         data = json.loads(raw)
-        if not isinstance(data, dict) or data.get("operation") not in {"check", "tables", "rows", "update"}:
+        if not isinstance(data, dict) or data.get("operation") not in {"check", "tables", "rows", "update", "export"}:
             raise ValueError("Invalid request")
         data["user_id"] = str(user["id"])
         body = json.dumps(data, separators=(",", ":"), ensure_ascii=False).encode()
@@ -499,6 +499,8 @@ async def proxy_admin_data(request: Request):
         signature = hmac.new(secret.encode(), timestamp.encode() + b"." + body, hashlib.sha256).hexdigest()
         async with httpx.AsyncClient(timeout=20.0, follow_redirects=False) as client:
             response = await client.post(BOT_API_BASE + "/internal/admin-data", content=body, headers={"Content-Type": "application/json", "X-Admin-Timestamp": timestamp, "X-Admin-Signature": signature})
+        if data["operation"] == "export" and response.is_success:
+            return Response(response.content, media_type="application/vnd.sqlite3", headers={"Cache-Control": "no-store", "Content-Disposition": 'attachment; filename="admin-data.sqlite3"'})
         return JSONResponse(response.json(), status_code=response.status_code, headers={"Cache-Control": "no-store"})
     except (ValueError, TypeError):
         return JSONResponse({"detail": "Invalid request or response"}, status_code=400)

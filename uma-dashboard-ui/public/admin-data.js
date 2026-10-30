@@ -2,7 +2,31 @@ const $=s=>document.querySelector(s), state={table:'',page:1,query:'',data:null}
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function api(data){const r=await fetch('/api/admin-data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const x=await r.json();if(!r.ok)throw Error(x.detail||'ไม่สามารถเข้าถึงข้อมูล');return x}
 function notice(s){$('#toast').textContent=s;$('#toast').classList.add('show');setTimeout(()=>$('#toast').classList.remove('show'),4000)}
-async function tables(){const d=await api({operation:'tables'});$('#table-count').textContent=d.tables.length;if(!d.tables.some(t=>t.name===state.table))state.table=d.tables[0]?.name||'';$('#tables').innerHTML=d.tables.map(t=>`<button class="nav-item ${state.table===t.name?'active':''}" data-table="${esc(t.name)}"><span>▦</span><span class="nav-name">${esc(t.name)}</span><span>${t.count}</span></button>`).join('');if(state.table)await rows();else{$('#empty').hidden=false;$('#empty').textContent='ไม่พบตาราง'}}
+async function tables(){const d=await api({operation:'tables'});$('#export').disabled=false;$('#table-count').textContent=d.tables.length;if(!d.tables.some(t=>t.name===state.table))state.table=d.tables[0]?.name||'';$('#tables').innerHTML=d.tables.map(t=>`<button class="nav-item ${state.table===t.name?'active':''}" data-table="${esc(t.name)}"><span>▦</span><span class="nav-name">${esc(t.name)}</span><span>${t.count}</span></button>`).join('');if(state.table)await rows();else{$('#empty').hidden=false;$('#empty').textContent='ไม่พบตาราง'}}
 async function rows(){const d=await api({operation:'rows',table:state.table,page:state.page,query:state.query});state.data=d;$('#breadcrumb').textContent=state.table;$('#table-title').textContent=state.table;$('#table-description').textContent=`${d.columns.length} ฟิลด์`;$('#result-count').textContent=`${d.total} รายการ`;$('#head').innerHTML='<tr><th>จัดการ</th>'+d.columns.map(c=>`<th>${esc(c.name)} ${c.pk?'•':''}</th>`).join('')+'</tr>';$('#body').innerHTML=d.rows.map((r,i)=>`<tr><td><button class="edit" data-index="${i}" ${!d.columns.some(c=>c.pk)||Object.values(r).some(v=>v!==null&&typeof v==='object')?'disabled':''}>แก้ไข</button></td>${d.columns.map(c=>`<td>${r[c.name]===null?'<span class="null">NULL</span>':esc(typeof r[c.name]==='object'?'[binary]':r[c.name])}</td>`).join('')}</tr>`).join('');$('#empty').hidden=!!d.rows.length;$('#empty').textContent='ไม่พบข้อมูล';$('#page-info').textContent=`หน้า ${d.page} จาก ${Math.max(1,Math.ceil(d.total/50))}`;$('#prev').disabled=d.page<=1;$('#next').disabled=d.page*50>=d.total}
 function edit(i){const row=state.data.rows[i];$('#fields').innerHTML=state.data.columns.map((c,n)=>`<label class="field"><span>${esc(c.name)} ${c.pk?'<small>Primary key</small>':''}</span><textarea data-field="${n}" rows="2">${esc(row[c.name]??'')}</textarea><label class="null-check"><input type="checkbox" data-null="${n}" ${row[c.name]===null?'checked':''}> ค่า NULL</label></label>`).join('');$('#error').textContent='';$('#editor').showModal();$('#edit-form').onsubmit=async e=>{e.preventDefault();const changes={};state.data.columns.forEach((c,n)=>{let v=$(`[data-null="${n}"]`).checked?null:$(`[data-field="${n}"]`).value,old=row[c.name];if(v!==null&&typeof old==='number'&&v.trim()!==''&&Number.isFinite(Number(v))&&(!Number.isInteger(Number(v))||Number.isSafeInteger(Number(v))))v=Number(v);if(v!==old)changes[c.name]=v});if(!Object.keys(changes).length){$('#editor').close();return}try{await api({operation:'update',table:state.table,original:row,changes});$('#editor').close();await tables();notice('บันทึกข้อมูลแล้ว')}catch(e){$('#error').textContent=e.message}}}
 $('#tables').onclick=e=>{const b=e.target.closest('[data-table]');if(b){state.table=b.dataset.table;state.page=1;state.query='';$('#search').value='';tables().catch(e=>notice(e.message))}};$('#body').onclick=e=>{const b=e.target.closest('[data-index]');if(b)edit(+b.dataset.index)};let timer;$('#search').oninput=e=>{clearTimeout(timer);timer=setTimeout(()=>{state.query=e.target.value;state.page=1;rows().catch(e=>notice(e.message))},250)};$('#prev').onclick=()=>{state.page--;rows().catch(e=>notice(e.message))};$('#next').onclick=()=>{state.page++;rows().catch(e=>notice(e.message))};$('#refresh').onclick=()=>tables().catch(e=>notice(e.message));$('#close').onclick=$('#cancel').onclick=()=>$('#editor').close();tables().catch(e=>{$('#empty').textContent=e.message});
+
+$('#export').onclick=async()=>{
+  const button=$('#export');
+  button.disabled=true;
+  button.textContent='กำลัง export…';
+  try{
+    const response=await fetch('/api/admin-data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({operation:'export'})});
+    if(!response.ok){
+      let message='ไม่สามารถ export ฐานข้อมูล';
+      try{message=(await response.json()).detail||message}catch{}
+      throw Error(message);
+    }
+    const url=URL.createObjectURL(await response.blob());
+    const link=document.createElement('a');
+    link.href=url;
+    link.download=`admin-data-${new Date().toISOString().slice(0,10)}.sqlite3`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    notice('ดาวน์โหลดฐานข้อมูลแล้ว');
+  }catch(e){notice(e.message)}
+  finally{button.disabled=false;button.textContent='Export database (.sqlite3)'}
+};
