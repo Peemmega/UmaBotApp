@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ArrowDownRight, ArrowUpRight, CornerDownRight, MoveRight, Sparkles, Wind } from "lucide-react";
+import { Sparkles, Wind } from "lucide-react";
+import { RACE_PATH_ICONS } from "../data/racePathIcons";
 import rules from "../data/systemGuideRules.json";
 import { RUNNING_STYLES } from "../data/systemGuide";
 import { raceImageMap } from "../utils/raceSchedule";
@@ -15,10 +16,10 @@ import zoneGuideImage from "../assets/image/Zone.webp";
 
 const PHASES = ["Start", "Mid", "Late", "Last Spurt"];
 const PATHS = [
-  { id: 1, label: "ทางตรง", name: "Straight", Icon: MoveRight, detail: "ใช้ Stamina ตามฐานของเลน ไม่มีการปรับค่าเต๋าจากเส้นทางเพิ่มเติม", cost: "ฐานเลน ×1" },
-  { id: 2, label: "ทางโค้ง", name: "Curve", Icon: CornerDownRight, detail: "แคปเต๋าลด 5 แล้วเพิ่ม Wit ให้ทั้งแคปและค่าต่ำสุดของเต๋าในเทิร์นนั้น", cost: "ฐานเลน ×1" },
-  { id: 3, label: "เนินขึ้น", name: "Uphill", Icon: ArrowUpRight, detail: "โบนัส Power หลังความถนัด ×3 และลดความเร็วปัจจุบัน 5% หนึ่งครั้งในเทิร์นนั้น การ Reroll ในเทิร์นเดียวกันไม่หักความเร็วซ้ำ", cost: "ฐานเลน ×2" },
-  { id: 4, label: "เนินลง", name: "Downhill", Icon: ArrowDownRight, detail: "เพิ่มทั้งแคปและค่าต่ำสุดของเต๋าเท่ากับ floor(Wit ×1.5) และยกเว้นต้นทุนพลังจากเลน", cost: "ฐานเลน ×0" },
+  { id: 1, label: "ทางตรง", name: "Straight", detail: "ใช้ Stamina ตามฐานของเลน ไม่มีการปรับค่าเต๋าจากเส้นทางเพิ่มเติม", cost: "ฐานเลน ×1" },
+  { id: 2, label: "ทางโค้ง", name: "Curve", detail: "แคปเต๋าลด 5 แล้วเพิ่ม Wit ให้ทั้งแคปและค่าต่ำสุดของเต๋าในเทิร์นนั้น", cost: "ฐานเลน ×1" },
+  { id: 3, label: "เนินขึ้น", name: "Uphill", detail: "โบนัส Power หลังความถนัด ×3 และลดความเร็วปัจจุบัน 5% หนึ่งครั้งในเทิร์นนั้น การ Reroll ในเทิร์นเดียวกันไม่หักความเร็วซ้ำ", cost: "ฐานเลน ×2" },
+  { id: 4, label: "เนินลง", name: "Downhill", detail: "เพิ่มทั้งแคปและค่าต่ำสุดของเต๋าเท่ากับ floor(Wit ×1.5) และยกเว้นต้นทุนพลังจากเลน", cost: "ฐานเลน ×0" },
 ];
 
 export function GuideSection({ id, title, intro, children }) {
@@ -104,7 +105,7 @@ export function RacesGuide() {
       <p>แบ่งสนามเป็น 4 Phase จากจำนวนเทิร์นทั้งหมด: Phase = ceil(เทิร์นปัจจุบัน ÷ (จำนวนเทิร์นทั้งหมด ÷4)) ตัวอย่างสนาม 12 เทิร์น: P1 เทิร์น 1–3, P2 เทิร์น 4–6, P3 เทิร์น 7–9 และ P4 เทิร์น 10–12</p>
     </GuideSection>
     <GuideSection id="paths" title="สี่รูปแบบเส้นทาง" intro="ผลของเส้นทางใช้กับ Run ในเทิร์นนั้น วางสกิลและพลังให้พร้อมก่อนถึงช่วงสำคัญ">
-      <div className="system-path-list">{PATHS.map(({ id, label, name, Icon, detail, cost }) => <div key={id}><span className={`system-path-icon is-path-${id}`}><Icon size={25} /></span><div><h3>{label} <small>{name}</small></h3><p>{detail}</p><strong>ต้นทุนพลัง: {cost}</strong></div></div>)}</div>
+      <div className="system-path-list">{PATHS.map(({ id, label, name, detail, cost }) => <div key={id}><span className={`system-path-icon is-path-${id}`}><img src={RACE_PATH_ICONS[id]} alt="" /></span><div><h3>{label} <small>{name}</small></h3><p>{detail}</p><strong>ต้นทุนพลัง: {cost}</strong></div></div>)}</div>
       <p>ค่าเต๋าใช้ความเร็วปัจจุบันปัดเศษลงเป็นฐาน แล้วปรับแคปด้วยเส้นทางและบัฟ ค่าต่ำสุดเริ่มที่ floor(แคปหลังปรับ ×0.25) ก่อนเพิ่ม floor จาก Wit และสกิล ส่วนแดดจัดเพิ่มต้นทุนพลังได้แม้เป็นเนินลง</p>
     </GuideSection>
     <GuideSection id="course-example" title="ลองอ่านเส้นทางจริง">
@@ -112,8 +113,7 @@ export function RacesGuide() {
       <div className="system-race-example"><img src={raceImageMap[race.id]} alt={race.name} loading="lazy" /><div><h3>{race.name}</h3><p>{race.course.venue} · {race.track === "turf" ? "Turf" : "Dirt"} · {race.course.distance_m.toLocaleString()} m</p><strong>{race.distanceType} / {race.turns} เทิร์น</strong><p>ทิศทาง {race.course.direction === "right" ? "วนขวา" : race.course.direction === "left" ? "วนซ้าย" : "ทางตรง"}</p></div></div>
       <div className="system-course-path" aria-label={`เส้นทาง ${race.name}`}>{race.path.map((id, index) => {
         const path = PATHS.find((item) => item.id === id);
-        const Icon = path.Icon;
-        return <div key={`${race.id}-${index}`} className={`is-path-${id}`}><span>Turn {index + 1}</span><Icon size={23} /><strong>{path.label}</strong><small>P{Math.min(4, Math.ceil((index + 1) / (race.turns / 4)))}</small></div>;
+        return <div key={`${race.id}-${index}`} className={`is-path-${id}`}><span>Turn {index + 1}</span><img className="system-course-path-icon" src={RACE_PATH_ICONS[id]} alt="" /><strong>{path.label}</strong><small>P{Math.min(4, Math.ceil((index + 1) / (race.turns / 4)))}</small></div>;
       })}</div>
     </GuideSection>
     <GuideSection id="weather" title="อากาศและกติกาห้อง">

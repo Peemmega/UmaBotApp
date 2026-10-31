@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowDownRight, ArrowLeft, ArrowUpRight, CornerDownRight, MoveRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { RACE_PATH_ICONS } from "../../data/racePathIcons";
 import "../../styles/skillsPage.css";
 import { playSound } from "../../utils/soundManager";
 import { getRaceImage } from "../../utils/raceSchedule.js";
@@ -27,10 +28,10 @@ const TRACK_FILTERS = [
 ];
 
 const RACE_PATHS = {
-  1: { label: "ทางตรง", Icon: MoveRight, color: "straight" },
-  2: { label: "ทางโค้ง", Icon: CornerDownRight, color: "curve" },
-  3: { label: "เนินขึ้น", Icon: ArrowUpRight, color: "uphill" },
-  4: { label: "เนินลง", Icon: ArrowDownRight, color: "downhill" },
+  1: { label: "ทางตรง", color: "straight" },
+  2: { label: "ทางโค้ง", color: "curve" },
+  3: { label: "เนินขึ้น", color: "uphill" },
+  4: { label: "เนินลง", color: "downhill" },
 };
 const RACE_PHASES = ["Start", "Mid", "Late", "Last Spurt"];
 
@@ -483,11 +484,10 @@ function RaceDetailsPage({
             <div className="race-detail-phase-label"><span>PHASE {phase}</span><strong>{label}</strong></div>
             <div className="race-detail-turn-grid" style={{ "--turn-count": turns.length }}>
               {turns.map(({ pathId, turn }) => {
-                const path = RACE_PATHS[pathId] || { label: `เส้นทาง ${pathId}`, Icon: MoveRight, color: "straight" };
-                const Icon = path.Icon;
+                const path = RACE_PATHS[pathId] || { label: `เส้นทาง ${pathId}`, color: "straight" };
                 return <div className={`race-detail-turn is-${path.color}`} key={`${phase}-${turn}`}>
                   <span>TURN {String(turn).padStart(2, "0")}</span>
-                  <Icon size={23} strokeWidth={2.4} aria-hidden="true" />
+                  <img src={RACE_PATH_ICONS[pathId] || RACE_PATH_ICONS[1]} alt="" />
                   <strong>{path.label}</strong>
                 </div>;
               })}

@@ -86,6 +86,7 @@
 .system-path-list { display: grid; gap: 17px; }
 .system-path-list > div { display: flex; gap: 20px; align-items: flex-start; padding: 18px 0; border-top: 1px solid #e3ecdc; }
 .system-path-icon { display: grid; place-items: center; flex-shrink: 0; width: 52px; height: 52px; border-radius: 10px; }
+.system-path-icon img { width: 100%; height: 100%; object-fit: contain; }
 .is-path-1 { color: #4e994d; background: #eff8e8; }
 .is-path-2 { color: #467fa9; background: #edf4fa; }
 .is-path-3 { color: #b08a38; background: #fbf6e8; }
@@ -102,6 +103,7 @@
 .system-course-path { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
 .system-course-path > div { display: grid; grid-template-columns: 1fr auto; gap: 7px; align-items: center; padding: 13px 10px; border-radius: 6px; }
 .system-course-path span { grid-column: 1 / -1; font-size: 10px; opacity: .85; }
+.system-course-path-icon { width: 32px; height: 32px; max-width: 100%; object-fit: contain; }
 .system-course-path strong { font-size: 10px; font-weight: 700; }
 .system-course-path small { justify-self: end; font-size: 9px; }
 .system-lane-map { padding: 15px 16px; margin: 23px 0; border: 1px solid #d7e6cb; border-radius: 9px; background: #f9fcf5; }

@@ -1090,7 +1090,7 @@
 .race-detail-turn.is-uphill { --path-color: #ba8130; --path-wash: #fbf5e9; }
 .race-detail-turn.is-downhill { --path-color: #9666a0; --path-wash: #f7f1f8; }
 .race-detail-turn > span { color: var(--uma-muted); font-size: 11px; font-weight: 900; letter-spacing: .04em; }
-.race-detail-turn > svg { color: var(--path-color); }
+.race-detail-turn > img { width: 48px; height: 48px; max-width: 100%; object-fit: contain; }
 .race-detail-turn > strong { color: var(--uma-ink); font-size: 14px; }
 .race-detail-turn-empty, .race-detail-empty-route { grid-column: 1 / -1; margin: 0; padding: 15px; border-radius: 9px; background: var(--uma-bg-soft); color: var(--uma-muted); text-align: center; }
 .race-detail-history { margin-top: 0; border-top: 1px solid var(--uma-border); }
@@ -1114,7 +1114,7 @@
   .race-detail-phase-label strong { margin-top: 1px; font-size: 16px; }
   .race-detail-turn-grid { gap: 5px; }
   .race-detail-turn { min-height: 86px; padding: 7px 3px; }
-  .race-detail-turn > svg { width: 19px; height: 19px; }
+  .race-detail-turn > img { width: 36px; height: 36px; }
   .race-detail-turn > span { font-size: 10px; }
   .race-detail-turn > strong { font-size: 12px; }
   .race-detail-history .race-history-section-heading { align-items: flex-start; }
