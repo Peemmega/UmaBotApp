@@ -212,6 +212,7 @@ const LOCAL_MOB_AVATAR_BY_ID = {
   silecne_susuka: "/mobs/silecne_susuka.webp",
   almond_eye: "/mobs/almond_eye.webp",
   equinox: "/mobs/equinox.webp",
+  sunday_silent: "/mobs/sunday_silent.webp",
   tamamo_cross: "/mobs/tamamo_cross.webp",
 };
 const LOCAL_MOB_AVATAR_BY_NAME = {
@@ -262,6 +263,7 @@ const LOCAL_MOB_AVATAR_FILES = new Set([
   "rookie_pace.webp",
   "silecne_susuka.webp",
   "special_week.webp",
+  "sunday_silent.webp",
   "tamamo_cross.webp",
   "still_in_love.webp",
   "verxina.webp",
