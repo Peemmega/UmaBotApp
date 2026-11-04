@@ -214,6 +214,7 @@ const LOCAL_MOB_AVATAR_BY_ID = {
   equinox: "/mobs/equinox.webp",
   sunday_silent: "/mobs/sunday_silent.webp",
   tamamo_cross: "/mobs/tamamo_cross.webp",
+  tokai_teio: "/mobs/tokai_teio.png",
 };
 const LOCAL_MOB_AVATAR_BY_NAME = {
   "almond eye": "/mobs/almond_eye.webp",
@@ -237,6 +238,7 @@ const LOCAL_MOB_AVATAR_BY_NAME = {
   "special week": "/mobs/special_week.webp",
   "still in love": "/mobs/still_in_love.webp",
   "tamamo cross": "/mobs/tamamo_cross.webp",
+  "tokai teio": "/mobs/tokai_teio.png",
   verxina: "/mobs/verxina.webp",
   "waltz of shadow": "/mobs/mob_04.webp",
 };
@@ -265,6 +267,7 @@ const LOCAL_MOB_AVATAR_FILES = new Set([
   "special_week.webp",
   "sunday_silent.webp",
   "tamamo_cross.webp",
+  "tokai_teio.png",
   "still_in_love.webp",
   "verxina.webp",
 ]);
