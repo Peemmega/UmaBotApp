@@ -28,6 +28,7 @@ const HomePage = lazy(() => import("./dashboard/HomePage"));
 const SystemGuidePage = lazy(() => import("./dashboard/SystemGuidePage"));
 import { getSystemTopic } from "../data/systemGuide";
 import { getNewsKind } from "../utils/newsItems";
+import { getRaceDetailPath, getRaceRouteFromPath as parseRaceRoute } from "../utils/raceRoutes";
 
 const VALID_PAGES = [
   "home",
@@ -65,6 +66,10 @@ function getCharacterRouteFromPath() {
   }
 }
 
+function getRaceRouteFromPath() {
+  return parseRaceRoute(window.location.pathname);
+}
+
 function getTraineeProfileRouteFromPath() {
   const segments = window.location.pathname.split("/").filter(Boolean);
   if (segments.length !== 4 || segments[0] !== "dashboard" || segments[1] !== "profile" || segments[2] !== "trainee") return null;
@@ -84,6 +89,7 @@ function getPageFromPath() {
   if (getSystemTopicFromPath()) return "system-guide";
   if (getNewsRouteFromPath()) return "news-detail";
   if (getCharacterRouteFromPath()) return "chars";
+  if (getRaceRouteFromPath()) return "races";
   if (getTraineeProfileRouteFromPath()) return "profile";
   const normalizedPath = window.location.pathname.replace(/\/+$/, "");
   const page = normalizedPath.split("/").pop();
@@ -117,6 +123,7 @@ export default function DashboardPage({
   const [activePage, setActivePage] = useState(getInitialPageFromPath);
   const [newsRoute, setNewsRoute] = useState(getNewsRouteFromPath);
   const [characterRoute, setCharacterRoute] = useState(getCharacterRouteFromPath);
+  const [raceRoute, setRaceRoute] = useState(getRaceRouteFromPath);
   const [traineeProfileRoute, setTraineeProfileRoute] = useState(getTraineeProfileRouteFromPath);
   const [systemTopic, setSystemTopic] = useState(getSystemTopicFromPath);
   const [skillLoadoutVersion, setSkillLoadoutVersion] = useState(0);
@@ -241,6 +248,7 @@ export default function DashboardPage({
     setSystemTopic(null);
     setNewsRoute(null);
     setCharacterRoute(null);
+    setRaceRoute(null);
     setTraineeProfileRoute(null);
     setActivePage(page);
     window.history.pushState({}, "", `/dashboard/${page}`);
@@ -264,6 +272,21 @@ export default function DashboardPage({
     setTraineeProfileRoute(null);
     setActivePage("chars");
     window.history.pushState({}, "", `/dashboard/chars/${encodeURIComponent(id)}/${encodeURIComponent(type)}`);
+    window.scrollTo(0, 0);
+  };
+
+  const openRaceDetail = (raceId) => {
+    const id = String(raceId || "").trim();
+    if (!id) return;
+    setRaceRoute({ id });
+    setActivePage("races");
+    window.history.pushState({}, "", getRaceDetailPath(id));
+    window.scrollTo(0, 0);
+  };
+
+  const closeRaceDetail = () => {
+    setRaceRoute(null);
+    window.history.pushState({}, "", "/dashboard/races");
     window.scrollTo(0, 0);
   };
 
@@ -317,7 +340,7 @@ export default function DashboardPage({
         />;
 
       case "races":
-        return <RacesPage userId={userId} profileType={activeProfileType} />;
+        return <RacesPage userId={userId} profileType={activeProfileType} raceId={raceRoute?.id} onOpenRace={openRaceDetail} onBack={closeRaceDetail} />;
 
       case "qa":
         return <QAPage />;
@@ -344,7 +367,11 @@ export default function DashboardPage({
         />;
 
       case "race-replay":
-        return <RaceReplayPage raceId={new URLSearchParams(window.location.search).get("race")} onBack={() => changePage("races")} />;
+        return <RaceReplayPage raceId={new URLSearchParams(window.location.search).get("race")} onBack={() => {
+          const raceId = window.history.state?.fromRace;
+          if (raceId) openRaceDetail(raceId);
+          else changePage("races");
+        }} />;
 
       case "profile":
       default:
@@ -443,6 +470,7 @@ export default function DashboardPage({
       setActivePage(getPageFromPath());
       setNewsRoute(getNewsRouteFromPath());
       setCharacterRoute(getCharacterRouteFromPath());
+      setRaceRoute(getRaceRouteFromPath());
       setTraineeProfileRoute(getTraineeProfileRouteFromPath());
       setSystemTopic(getSystemTopicFromPath());
     };

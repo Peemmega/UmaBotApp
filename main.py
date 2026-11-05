@@ -20,6 +20,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from psycopg2 import OperationalError
 from urllib.parse import urlencode
+from services.trainer_profile_sync import update_own_trainer_values
 
 load_dotenv()
 
@@ -380,33 +381,12 @@ def get_authenticated_discord_user(request: Request):
 
 @app.post("/api/profile/aptitudes")
 async def update_own_trainer_aptitudes(request: Request):
-    user = request.session.get("discord_user")
-    if not user:
-        return JSONResponse({"detail": "Authentication required"}, status_code=401)
-    if not user.get("discord_role_checked") or user.get("discord_role") != "trainer":
-        return JSONResponse({"detail": "Trainer role required"}, status_code=403)
-    origin = request.headers.get("origin")
-    if origin and origin.rstrip("/") != FRONTEND_URL.rstrip("/"):
-        return JSONResponse({"detail": "Invalid origin"}, status_code=403)
-    secret = os.getenv("APTITUDE_SYNC_SECRET", "")
-    if not secret:
-        return JSONResponse({"detail": "บริการเว็บยังไม่ได้ตั้งค่า APTITUDE_SYNC_SECRET"}, status_code=503)
-    if not BOT_API_BASE:
-        return JSONResponse({"detail": "บริการเว็บยังไม่ได้ตั้งค่า BOT_API_BASE (URL ของบอต API)"}, status_code=503)
-    try:
-        aptitudes = await request.json()
-    except ValueError:
-        return JSONResponse({"detail": "Invalid JSON"}, status_code=400)
-    body = json.dumps({"user_id": str(user["id"]), "aptitudes": aptitudes}, separators=(",", ":")).encode()
-    timestamp = str(int(time.time()))
-    signature = hmac.new(secret.encode(), timestamp.encode() + b"." + body, hashlib.sha256).hexdigest()
-    try:
-        async with httpx.AsyncClient(timeout=10) as client:
-            response = await client.post(f"{BOT_API_BASE}/internal/trainer-aptitudes", content=body,
-                headers={"content-type": "application/json", "x-aptitude-timestamp": timestamp, "x-aptitude-signature": signature})
-        return JSONResponse(response.json(), status_code=response.status_code)
-    except (httpx.HTTPError, ValueError):
-        return JSONResponse({"detail": "Cannot connect to the bot"}, status_code=502)
+    return await update_own_trainer_values(request, "aptitudes", frontend_url=FRONTEND_URL, bot_api_base=BOT_API_BASE)
+
+
+@app.post("/api/profile/stats")
+async def update_own_trainer_stats(request: Request):
+    return await update_own_trainer_values(request, "stats", frontend_url=FRONTEND_URL, bot_api_base=BOT_API_BASE)
 
 
 @app.post("/api/auth/logout")

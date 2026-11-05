@@ -79,13 +79,15 @@ function formatRaceDate(value) {
   }).format(date);
 }
 
-export default function RacesPage({ userId, profileType = "trainee" }) {
+export default function RacesPage({ userId, profileType = "trainee", raceId, onOpenRace, onBack }) {
   const [races, setRaces] = useState([]);
+  const [racesLoading, setRacesLoading] = useState(true);
+  const [racesError, setRacesError] = useState("");
   const [activeDistance, setActiveDistance] = useState("all");
   const [activeTrack, setActiveTrack] = useState("all");
   const [activeVenue, setActiveVenue] = useState("all");
   const [search, setSearch] = useState("");
-  const [selectedRace, setSelectedRace] = useState(null);
+  const selectedRace = useMemo(() => races.find((race) => String(race.id) === raceId) || null, [races, raceId]);
   const [raceHistory, setRaceHistory] = useState([]);
   const [historyRecordType, setHistoryRecordType] = useState("all");
   const [historyPage, setHistoryPage] = useState(1);
@@ -95,18 +97,28 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
 
   useEffect(() => {
     const closeOverlays = () => {
-      setSelectedRace(null);
       setSelectedRaceResult(null);
     };
     window.addEventListener("uma:close-overlays", closeOverlays);
-    return () => window.removeEventListener("uma:close-overlays", closeOverlays);
+    window.addEventListener("popstate", closeOverlays);
+    return () => {
+      window.removeEventListener("uma:close-overlays", closeOverlays);
+      window.removeEventListener("popstate", closeOverlays);
+    };
   }, []);
 
   useEffect(() => {
-    fetch(`${BOT_API_BASE}/races`)
-      .then((res) => res.json())
+    const controller = new AbortController();
+    fetch(`${BOT_API_BASE}/races`, { signal: controller.signal })
+      .then((res) => res.ok ? res.json() : Promise.reject(new Error("Could not load races")))
       .then((data) => setRaces(Array.isArray(data) ? data : []))
-      .catch(console.error);
+      .catch((error) => {
+        if (error.name !== "AbortError") setRacesError("ไม่สามารถโหลดข้อมูลสนามได้ กรุณาลองใหม่อีกครั้ง");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setRacesLoading(false);
+      });
+    return () => controller.abort();
   }, []);
 
   useEffect(() => {
@@ -226,6 +238,13 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
     showToast(data.message || "สร้างห้องสำเร็จ", "success");
   };
 
+  if (raceId && !selectedRace) {
+    return <section className="skills-page"><GameCard className="page-empty-state">
+      <strong>{racesLoading ? "กำลังโหลดข้อมูลสนาม..." : racesError || "ไม่พบสนามนี้"}</strong>
+      {!racesLoading && <Button variant="ghost" onClick={onBack}>กลับรายการสนาม</Button>}
+    </GameCard></section>;
+  }
+
   if (selectedRace) {
     return <RaceDetailsPage
       race={selectedRace}
@@ -245,14 +264,13 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
       onHistoryPageChange={setHistoryPage}
       onSelectHistory={setSelectedRaceResult}
       onBack={() => {
-        setSelectedRace(null);
         setSelectedRaceResult(null);
+        onBack();
       }}
       onCreateRaceRoom={createRaceRoom}
       onOpenReplay={(raceId) => {
         setSelectedRaceResult(null);
-        setSelectedRace(null);
-        window.history.pushState({}, "", `/dashboard/race-replay?race=${encodeURIComponent(raceId)}`);
+        window.history.pushState({ fromRace: selectedRace.id }, "", `/dashboard/race-replay?race=${encodeURIComponent(raceId)}`);
         window.dispatchEvent(new PopStateEvent("popstate"));
       }}
       selectedRaceResult={selectedRaceResult}
@@ -348,7 +366,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
               tabIndex={0}
               onClick={() => {
                 playSound("open");
-                setSelectedRace(race);
+                onOpenRace(race.id);
                 setHistoryPage(1);
                 window.scrollTo(0, 0);
               }}
@@ -356,7 +374,7 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
                   playSound("open");
-                  setSelectedRace(race);
+                  onOpenRace(race.id);
                   setHistoryPage(1);
                   window.scrollTo(0, 0);
                 }
@@ -394,7 +412,6 @@ export default function RacesPage({ userId, profileType = "trainee" }) {
             onClose={() => setSelectedRaceResult(null)}
             onOpenReplay={(raceId) => {
               setSelectedRaceResult(null);
-              setSelectedRace(null);
               window.history.pushState({}, "", `/dashboard/race-replay?race=${encodeURIComponent(raceId)}`);
               window.dispatchEvent(new PopStateEvent("popstate"));
             }}

@@ -37,6 +37,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY main.py .
+COPY services/trainer_profile_sync.py ./services/trainer_profile_sync.py
 COPY --from=frontend-build /app/frontend/dist ./dist
 
 EXPOSE 8080

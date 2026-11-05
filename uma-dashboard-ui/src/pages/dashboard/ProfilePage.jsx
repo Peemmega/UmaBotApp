@@ -389,7 +389,6 @@ export default function ProfilePage({
               {isTrainer && (
                 <div className="profile-resources trainer-profile-fans">
                   <ResourcePill icon={fansIcon} label="Team Fans" value={teamFans} />
-                  <ResourcePill icon={statIcon} label="Stats Points" value={player?.stats_point ?? 0} />
                   <ResourcePill icon={skillIcon} label="Event Point" value={player?.skill_point ?? 0} />
                 </div>
               )}
@@ -424,7 +423,7 @@ export default function ProfilePage({
                   </button>
                 </div></div>
                 <div className="stats-grid">{mainStats.map((item) => <StatCell key={item.key} statKey={item.key} label={item.label} value={profilePlayer?.[item.key]} />)}</div>
-                {isEditStatsOpen && <EditStatsModal userId={userId} player={player} onClose={() => setIsEditStatsOpen(false)} onSaved={(updated) => {
+                {isEditStatsOpen && <EditStatsModal userId={userId} player={player} freeStats onClose={() => setIsEditStatsOpen(false)} onSaved={(updated) => {
                   updateProfilePlayer((prev) => ({ ...prev, ...updated }));
                   setIsEditStatsOpen(false);
                 }} />}

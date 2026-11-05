@@ -5,6 +5,7 @@ import minusIcon from "../assets/icons/reduce.webp";
 
 import { playSound } from "../utils/soundManager";
 import { BOT_API_BASE } from "../api/playerApi";
+import { APP_BASE_URL } from "../api/appConfig";
 import { useGameConfig } from "../api/useGameConfig";
 
 const STAT_KEYS = [
@@ -14,7 +15,7 @@ const STAT_KEYS = [
   ["gut", "Gut"],
   ["wit", "Wit"],
 ];
-export default function EditStatsModal({ userId, player, onClose, onSaved }) {
+export default function EditStatsModal({ userId, player, onClose, onSaved, freeStats = false }) {
   const { config, error: configError } = useGameConfig();
   const maxStat = config?.max_core_stat;
   const [draftStats, setDraftStats] = useState({
@@ -52,7 +53,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
   const draftPoints = totalPool - usedPoints;
 
   const increaseStat = (key) => {
-    if (!maxStat || draftPoints <= 0 || (draftStats[key] ?? 0) >= maxStat) return;
+    if (!maxStat || (!freeStats && draftPoints <= 0) || (draftStats[key] ?? 0) >= maxStat) return;
 
     setDraftStats((prev) => ({
       ...prev,
@@ -86,12 +87,13 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
       setSaving(true);
       setMessage("");
 
-      const res = await fetch(`${BOT_API_BASE}/player/stats/update`, {
+      const res = await fetch(freeStats ? `${APP_BASE_URL}/api/profile/stats` : `${BOT_API_BASE}/player/stats/update`, {
         method: "POST",
+        ...(freeStats ? { credentials: "include" } : {}),
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
+        body: JSON.stringify(freeStats ? draftStats : {
           user_id: userId,
           speed: draftStats.speed,
           stamina: draftStats.stamina,
@@ -110,10 +112,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
 
       setMessage("บันทึกสำเร็จ");
 
-      onSaved?.({
-        ...draftStats,
-        stats_point: draftPoints,
-      });
+      onSaved?.(freeStats ? data.player : { ...draftStats, stats_point: draftPoints });
     } catch (err) {
       console.error(err);
       setMessage(`บันทึกไม่สำเร็จ: ${String(err)}`);
@@ -123,7 +122,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
   };
 
   return (
-    <Dialog className="stats-modal stats-modal-wide" backdropClassName="modal-backdrop" title="ปรับค่าสถานะ" description="จัดสรร Stats Points ให้พร้อมสำหรับการฝึกและการแข่งขัน" closeDisabled={saving} onClose={onClose}>
+    <Dialog className="stats-modal stats-modal-wide" backdropClassName="modal-backdrop" title="ปรับค่าสถานะ" description={freeStats ? "ปรับค่าสถานะ Trainer โดยไม่ใช้ Stats Points" : "จัดสรร Stats Points ให้พร้อมสำหรับการฝึกและการแข่งขัน"} closeDisabled={saving} onClose={onClose}>
         <div className="edit-stats-grid">
           {STAT_KEYS.map(([key, label]) => {
             const value = draftStats[key] ?? 1;
@@ -153,7 +152,7 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
                         playSound("click"); 
                         increaseStat(key)
                       }}
-                    disabled={!maxStat || draftPoints <= 0 || value >= maxStat || saving}
+                    disabled={!maxStat || (!freeStats && draftPoints <= 0) || value >= maxStat || saving}
                   >
                     <img src={plusIcon} alt="plus" />
                   </button>
@@ -163,13 +162,13 @@ export default function EditStatsModal({ userId, player, onClose, onSaved }) {
           })}
         </div>
 
-        <div className="edit-stats-points-box">
+        {!freeStats && <div className="edit-stats-points-box">
           <div className="edit-stats-points-label">Stats Points คงเหลือ</div>
           <div className="edit-stats-points-value">{draftPoints}</div>
           <div className="edit-stats-points-sub">
             แต้มรวมทั้งหมด {totalPool}
           </div>
-        </div>
+        </div>}
 
        
 
