@@ -677,6 +677,13 @@ export default function RaceGamePage({
   );
   const isRaceWaiting = room?.phase === "waiting";
   const raceLiveStageBg = isRaceWaiting ? RACE_WAITING_BG : TURN_RESULT_TEMPLATE_BG;
+  const hasCurrentTurnDiceResult = (room?.action_logs || []).some(
+    (log) => Number(log.turn) === Number(room?.turn) && Boolean(log.payload?.roll_summary)
+  );
+  const showSunnyDiceOverlay =
+    !isWebTiming &&
+    room?.weather?.condition === "sunny" &&
+    hasCurrentTurnDiceResult;
 
   useEffect(() => {
     preloadImages([RACE_WAITING_BG, TURN_RESULT_TEMPLATE_BG]);
@@ -1484,6 +1491,9 @@ export default function RaceGamePage({
                 <RaceSkillPreview preview={skillPreview} />
               )}
             </AnimatePresence>
+            {showSunnyDiceOverlay ? (
+              <div className="race-sunny-dice-overlay" aria-hidden="true" />
+            ) : null}
           </div>
         </main>
 
