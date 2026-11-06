@@ -89,6 +89,7 @@ export default function RacesPage({ userId, profileType = "trainee", raceId, onO
   const [search, setSearch] = useState("");
   const selectedRace = useMemo(() => races.find((race) => String(race.id) === raceId) || null, [races, raceId]);
   const [raceHistory, setRaceHistory] = useState([]);
+  const [historyTotal, setHistoryTotal] = useState(0);
   const [historyRecordType, setHistoryRecordType] = useState("all");
   const [historyPage, setHistoryPage] = useState(1);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -124,6 +125,7 @@ export default function RacesPage({ userId, profileType = "trainee", raceId, onO
   useEffect(() => {
     if (!selectedRace?.id) {
       setRaceHistory([]);
+      setHistoryTotal(0);
       setHistoryError("");
       setHistoryPage(1);
       return undefined;
@@ -133,13 +135,20 @@ export default function RacesPage({ userId, profileType = "trainee", raceId, onO
     setHistoryLoading(true);
     setHistoryError("");
 
-    fetch(`${BOT_API_BASE}/race-history?stage_key=${encodeURIComponent(selectedRace.id)}&limit=50`, {
+    const params = new URLSearchParams({
+      stage_key: selectedRace.id,
+      limit: String(RACE_HISTORY_PAGE_SIZE),
+      offset: String((historyPage - 1) * RACE_HISTORY_PAGE_SIZE),
+    });
+    if (historyRecordType !== "all") params.set("record_type", historyRecordType);
+
+    fetch(`${BOT_API_BASE}/race-history?${params}`, {
       signal: controller.signal,
     })
       .then((res) => res.ok ? res.json() : Promise.reject(new Error("Could not load race history")))
       .then((data) => {
         setRaceHistory(Array.isArray(data?.races) ? data.races : []);
-        setHistoryPage(1);
+        setHistoryTotal(Number(data?.total) || 0);
       })
       .catch((error) => {
         if (error.name !== "AbortError") setHistoryError("ไม่สามารถโหลดประวัติการแข่งขันได้");
@@ -147,24 +156,14 @@ export default function RacesPage({ userId, profileType = "trainee", raceId, onO
       .finally(() => setHistoryLoading(false));
 
     return () => controller.abort();
-  }, [selectedRace?.id]);
+  }, [selectedRace?.id, historyRecordType, historyPage]);
 
   const [toast, setToast] = useState(null);
 
-  const filteredRaceHistory = useMemo(
-    () => raceHistory.filter((record) => (
-      historyRecordType === "all" || record.record_type === historyRecordType
-    )),
-    [raceHistory, historyRecordType]
-  );
   const historyPageCount = Math.max(
     1,
-    Math.ceil(filteredRaceHistory.length / RACE_HISTORY_PAGE_SIZE)
+    Math.ceil(historyTotal / RACE_HISTORY_PAGE_SIZE)
   );
-  const paginatedRaceHistory = useMemo(() => {
-    const firstRecord = (historyPage - 1) * RACE_HISTORY_PAGE_SIZE;
-    return filteredRaceHistory.slice(firstRecord, firstRecord + RACE_HISTORY_PAGE_SIZE);
-  }, [filteredRaceHistory, historyPage]);
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
@@ -249,8 +248,8 @@ export default function RacesPage({ userId, profileType = "trainee", raceId, onO
     return <RaceDetailsPage
       race={selectedRace}
       profileType={profileType}
-      history={paginatedRaceHistory}
-      historyCount={filteredRaceHistory.length}
+      history={raceHistory}
+      historyCount={historyTotal}
       historyLoading={historyLoading}
       historyError={historyError}
       historyRecordType={historyRecordType}
