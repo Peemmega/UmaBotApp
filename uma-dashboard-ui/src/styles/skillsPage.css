@@ -1125,6 +1125,7 @@
 .race-history-detail-body { overflow-y: auto; }
 .race-history-detail-heading { justify-content: space-between; gap: 16px; }
 .race-history-detail-heading h2 { margin: 3px 0 0; color: var(--uma-ink); font-size: 24px; }
+.race-history-id { color: var(--uma-muted); font-size: 10px; font-weight: 700; overflow-wrap: anywhere; }
 .race-history-detail-meta { flex-wrap: wrap; gap: 8px; margin: 12px 0 18px; }
 .race-history-detail-meta span { padding: 5px 9px; border-radius: 999px; background: color-mix(in srgb, var(--uma-primary) 12%, transparent); color: var(--uma-primary-dark); font-size: 12px; font-weight: 900; }
 .race-history-participants h3 { margin-bottom: 10px; }

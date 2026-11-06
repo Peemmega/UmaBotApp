@@ -150,7 +150,7 @@ export default function RaceHistoryDetailModal({ raceId, fallback, onClose, onOp
         <div className="title-banner"><h2>รายละเอียดการแข่งขัน</h2></div>
         <div className="zone-edit-body race-history-detail-body">
           <div className="race-history-detail-heading">
-            <div><span>{formatHistoryDate(race.finished_at)}</span><h2>{race.stage_name || race.race_name || "การแข่งขัน"}</h2></div>
+            <div><span>{formatHistoryDate(race.finished_at)}</span><h2>{race.stage_name || race.race_name || "การแข่งขัน"} <small className="race-history-id">Race ID: {race.race_id || raceId}</small></h2></div>
             <Badge>{race.record_type === "practice" ? "Practice" : "Official"}</Badge>
           </div>
           <div className="race-history-detail-meta">
