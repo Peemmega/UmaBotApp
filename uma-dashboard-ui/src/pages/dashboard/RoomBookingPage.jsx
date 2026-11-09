@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, CalendarClock, Check, ChevronRight, Clock3, DoorOpen, LockKeyhole, Plus, RefreshCw, Users } from "lucide-react";
 import { createRoomBooking, getRoomBookingOptions, joinRoomBooking, listRoomBookings } from "../../api/roomBookingApi";
+import { getSkillIcon } from "../../utils/getSkillIcon";
+import { getGradeImage } from "../../utils/grade";
+import { toAbsoluteBotUrl } from "../../utils/avatar";
 import "../../styles/roomBookingPage.css";
 
 const TYPE_LABELS = { practice: "ห้องฝึกซ้อม", legend: "Legend Race", debut: "Debut" };
 const WEATHER_LABELS = { none: "ไม่มี", random: "สุ่ม", sunny: "แดดจัด", rainy: "ฝนตก" };
+const LEGEND_STAT_LABELS = { speed: "ความเร็ว", stamina: "ความอึด", power: "พลัง", gut: "ความมุ่งมั่น", wit: "ไหวพริบ" };
+const APTITUDE_LABELS = { turf: "สนามหญ้า", dirt: "สนามดิน", sprint: "Sprint", mile: "Mile", medium: "Medium", long: "Long", front: "Front", pace: "Pace", late: "Late", end_style: "End" };
 const THAI_DATE = new Intl.DateTimeFormat("th-TH", { dateStyle: "medium", timeZone: "Asia/Bangkok" });
 const THAI_TIME = new Intl.DateTimeFormat("th-TH", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Bangkok" });
 
@@ -200,11 +205,16 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
           <div className="booking-section-heading"><div><h3>Legend Race preset</h3><p>ค่าการแข่งกำหนดไว้ในไฟล์ preset ของบอต</p></div></div>
           <label className="booking-field"><span>เลือก Legend</span><select value={legendKey} onChange={(event) => setLegendKey(event.target.value)}>{(options?.legend_presets || []).map((preset) => <option key={preset.key} value={preset.key}>{preset.name}</option>)}</select></label>
           {selectedLegendPreset && <div className="booking-legend-preset-summary">
-            <div><strong>สนาม</strong><span>{selectedLegendPreset.stage_name}</span></div>
-            <div><strong>Legend</strong><span>{selectedLegendPreset.name} · Lv.{selectedLegendPreset.legend_level}</span></div>
-            <div><strong>Mob</strong><span>{selectedLegendPreset.mobs?.map((mob) => `${mob.name} Lv.${mob.level}`).join("、") || "ไม่มี"}</span></div>
-            <div><strong>สภาพอากาศ</strong><span>{WEATHER_LABELS[selectedLegendPreset.weather] || selectedLegendPreset.weather}</span></div>
-            <div><strong>ผลการแข่งขัน</strong><span>{selectedLegendPreset.record_type === "official" ? "Official" : "Practice"}</span></div>
+            <div className="booking-legend-profile">
+              <img className="booking-legend-portrait" src={toAbsoluteBotUrl(selectedLegendPreset.image_url)} alt={selectedLegendPreset.name} />
+              <div className="booking-legend-identity"><span>LEGEND RACER</span><strong>{selectedLegendPreset.name}</strong><small>{selectedLegendPreset.style} style · Lv.{selectedLegendPreset.legend_level}</small><small>{selectedLegendPreset.stage_name}</small></div>
+            </div>
+            <div className="booking-legend-details">
+              <section className="booking-legend-info-section"><h4>Stats</h4><div className="booking-legend-stats">{Object.entries(selectedLegendPreset.stats || {}).map(([key, value]) => <div key={key}><span>{LEGEND_STAT_LABELS[key] || key}</span><strong>{value}</strong></div>)}</div></section>
+              <section className="booking-legend-info-section"><h4>Aptitude ในสนามนี้</h4><div className="booking-legend-aptitudes">{(selectedLegendPreset.aptitudes || []).map((aptitude) => <div key={aptitude.key}><span>{APTITUDE_LABELS[aptitude.label] || aptitude.label}</span><img src={getGradeImage(aptitude.rank)} alt={`Rank ${aptitude.rank}`} /><small>{aptitude.rank}</small></div>)}</div></section>
+              <section className="booking-legend-info-section booking-legend-skills-section"><h4>Skills ทั้งหมด</h4><div className="booking-legend-skills">{(selectedLegendPreset.skills || []).map((skill) => <div className="booking-legend-skill" key={skill.id}><span className="booking-legend-skill-icon">{getSkillIcon(skill.icon)}</span><span><strong>{skill.name}</strong><small>{skill.id}</small></span></div>)}</div></section>
+            </div>
+            <div className="booking-legend-preset-meta"><span><strong>Mob</strong>{selectedLegendPreset.mobs?.map((mob) => `${mob.name} Lv.${mob.level}`).join("、") || "ไม่มี"}</span><span><strong>อากาศ</strong>{WEATHER_LABELS[selectedLegendPreset.weather] || selectedLegendPreset.weather}</span><span><strong>ผลการแข่ง</strong>{selectedLegendPreset.record_type === "official" ? "Official" : "Practice"}</span></div>
           </div>}
         </div>}
 
