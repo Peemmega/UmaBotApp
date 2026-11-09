@@ -9,5 +9,6 @@ export const gameNavItems = [
   { key: "skills", label: "สกิล", Icon: Sparkles },
   { key: "race", label: "ห้องซ้อมวิ่ง", Icon: Flag },
   { key: "tools", label: "เครื่องมือ", Icon: Calculator },
+  { key: "room-bookings", label: "จองห้องแข่ง", Icon: CalendarDays },
   { key: "tutorials", label: "เอกสาร", Icon: BookOpen, href: "https://docs.google.com/document/d/1Pi9xiyC6ontJzZ-cISxPAxtUi0LBWfMnmoWNUib8uCo/edit?usp=sharing" },
 ];

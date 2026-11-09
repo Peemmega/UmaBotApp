@@ -21,6 +21,7 @@ const CharactersPage = lazy(() => import("./dashboard/CharactersPage"));
 const QAPage = lazy(() => import("./dashboard/QAPage"));
 const RacesPage = lazy(() => import("./dashboard/RacesPage"));
 const ToolsPage = lazy(() => import("./dashboard/ToolsPage"));
+const RoomBookingPage = lazy(() => import("./dashboard/RoomBookingPage"));
 const RaceReplayPage = lazy(() => import("./dashboard/RaceReplayPage"));
 const NewsPage = lazy(() => import("./dashboard/NewsPage"));
 const NewsDetailsPage = lazy(() => import("./dashboard/NewsDetailsPage"));
@@ -37,6 +38,7 @@ const VALID_PAGES = [
   "races",
   "skills",
   "tools",
+  "room-bookings",
   "tutorials",
   "qa",
   "race-replay",
@@ -346,7 +348,10 @@ export default function DashboardPage({
         return <QAPage />;
 
       case "tools":
-        return <ToolsPage userId={userId} accountRole={activeProfileType} username={username} />;
+        return <ToolsPage />;
+
+      case "room-bookings":
+        return <RoomBookingPage userId={userId} accountRole={activeProfileType} username={username} />;
 
       case "news":
         return <NewsPage onOpenNews={openNewsDetail} />;
