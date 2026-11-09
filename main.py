@@ -395,6 +395,62 @@ def logout(request: Request):
     return {"ok": True}
 
 
+@app.api_route("/api/room-bookings", methods=["GET", "POST"])
+@app.api_route("/api/room-bookings/{booking_path:path}", methods=["GET", "POST"])
+async def proxy_room_bookings(request: Request, booking_path: str = ""):
+    user = request.session.get("discord_user")
+    if not user or not str(user.get("id", "")).isdigit():
+        return JSONResponse({"detail": "Authentication required"}, status_code=401)
+    origin = request.headers.get("origin", "").rstrip("/")
+    if origin and origin != FRONTEND_URL.rstrip("/"):
+        return JSONResponse({"detail": "Invalid origin"}, status_code=403)
+    if not BOT_API_BASE:
+        return JSONResponse({"detail": "Bot service is not configured"}, status_code=503)
+    secret = os.getenv("ADMIN_DATA_SECRET", "")
+    if not secret:
+        return JSONResponse({"detail": "Room booking service is not configured"}, status_code=503)
+
+    path = request.url.path.removeprefix("/api")
+    if request.method == "POST" and path == "/room-bookings" and user.get("discord_role") != "trainer":
+        return JSONResponse({"detail": "Trainer role required"}, status_code=403)
+    if request.method == "POST" and path.endswith("/join") and user.get("discord_role") != "trainee":
+        return JSONResponse({"detail": "Umamusume role required"}, status_code=403)
+    body = await request.body()
+    if request.method == "POST":
+        try:
+            payload = json.loads(body or b"{}")
+            if not isinstance(payload, dict):
+                raise ValueError("Expected an object")
+        except (ValueError, TypeError):
+            return JSONResponse({"detail": "Invalid request body"}, status_code=400)
+        payload["user_id"] = str(user["id"])
+        body = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode()
+    query_items = list(request.query_params.multi_items())
+    if path == "/room-bookings":
+        query_items = [(key, value) for key, value in query_items if key != "user_id"]
+        query_items.append(("user_id", str(user["id"])))
+    query = urlencode(query_items)
+    timestamp = str(int(time.time()))
+    message = b".".join((timestamp.encode(), request.method.encode(), path.encode(), query.encode(), body))
+    signature = hmac.new(secret.encode(), message, hashlib.sha256).hexdigest()
+    url = BOT_API_BASE + path + (f"?{query}" if query else "")
+    try:
+        async with httpx.AsyncClient(timeout=20.0, follow_redirects=False) as client:
+            response = await client.request(
+                request.method,
+                url,
+                content=body,
+                headers={
+                    "Content-Type": "application/json",
+                    "X-Room-Booking-Timestamp": timestamp,
+                    "X-Room-Booking-Signature": signature,
+                },
+            )
+        return JSONResponse(response.json(), status_code=response.status_code, headers={"Cache-Control": "no-store"})
+    except (httpx.HTTPError, ValueError):
+        return JSONResponse({"detail": "Bot service unavailable"}, status_code=503)
+
+
 @app.get("/api/bot-stats/")
 def get_bot_stats():
     conn = None

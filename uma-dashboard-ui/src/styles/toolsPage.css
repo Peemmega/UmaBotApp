@@ -5,6 +5,11 @@
   color: var(--uma-ink);
 }
 
+.tools-mode-switch { display: flex; gap: 7px; margin: 0 0 13px; padding: 5px; width: fit-content; border: 1px solid color-mix(in srgb, var(--uma-primary) 26%, transparent); border-radius: 12px; background: color-mix(in srgb, var(--uma-surface) 78%, transparent); }
+.tools-mode-switch button { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 12px; border: 0; border-radius: 8px; color: var(--uma-muted); background: transparent; font: inherit; font-size: 12px; font-weight: 900; cursor: pointer; }
+.tools-mode-switch button.is-active { color: var(--uma-primary-dark); background: color-mix(in srgb, var(--uma-primary) 14%, var(--uma-surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--uma-primary) 23%, transparent); }
+.tools-mode-switch button:focus-visible { outline: 3px solid color-mix(in srgb, var(--uma-primary) 55%, white); outline-offset: 2px; }
+
 .tools-page-header-card {
   position: relative;
   margin: 4px 0 18px;
@@ -104,6 +109,8 @@
 .wit-table tbody tr:hover td, .wit-table tbody tr:hover th { background: color-mix(in srgb, var(--uma-primary) 12%, var(--uma-surface)); color: var(--uma-primary-dark); }
 
 @media (max-width: 600px) {
+  .tools-mode-switch { width: 100%; box-sizing: border-box; }
+  .tools-mode-switch button { flex: 1; justify-content: center; padding: 0 6px; font-size: 11px; }
   .tools-page-header-card { margin-top: 0; }
   .tools-page-header-card .ui-section-header { padding: 14px 14px 8px; align-items: flex-start; }
   .tools-page-description { padding: 0 14px 14px; font-size: 12px; line-height: 1.5; }

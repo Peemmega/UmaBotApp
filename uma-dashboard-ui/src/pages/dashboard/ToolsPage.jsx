@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { Calculator, Gauge, MoveHorizontal, Route, Sparkles } from "lucide-react";
+import { Calculator, Flag, Gauge, MoveHorizontal, Route, Sparkles } from "lucide-react";
 import { GameCard, Reveal, SectionHeader } from "../../components/ui";
+import RoomBookingPage from "./RoomBookingPage";
 import "../../styles/toolsPage.css";
 
 const APTITUDES = [
@@ -41,7 +42,7 @@ function getWitValue({ wisdom, turn, styleModifier }) {
   return baseValue + effectiveWitGain * (turn - 1);
 }
 
-export default function ToolsPage() {
+function WitCalculator() {
   const [aptitude, setAptitude] = useState("G");
   const [distance, setDistance] = useState("medium");
   const selectedAptitude = APTITUDES.find((item) => item.rank === aptitude) || APTITUDES[0];
@@ -107,6 +108,24 @@ export default function ToolsPage() {
           </table>
         </div>
       </Reveal>
+    </section>
+  );
+}
+
+export default function ToolsPage({ userId, accountRole, username }) {
+  const [activeTool, setActiveTool] = useState("rooms");
+
+  return (
+    <section className="tools-page" aria-label="เครื่องมือ">
+      <nav className="tools-mode-switch" aria-label="เลือกเครื่องมือ">
+        <button type="button" className={activeTool === "rooms" ? "is-active" : ""} onClick={() => setActiveTool("rooms")}>
+          <Flag size={17} /> จองห้องแข่งขัน
+        </button>
+        <button type="button" className={activeTool === "calculator" ? "is-active" : ""} onClick={() => setActiveTool("calculator")}>
+          <Calculator size={17} /> Wit Calculator
+        </button>
+      </nav>
+      {activeTool === "rooms" ? <RoomBookingPage userId={userId} accountRole={accountRole} username={username} /> : <WitCalculator />}
     </section>
   );
 }

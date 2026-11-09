@@ -346,7 +346,7 @@ export default function DashboardPage({
         return <QAPage />;
 
       case "tools":
-        return <ToolsPage />;
+        return <ToolsPage userId={userId} accountRole={activeProfileType} username={username} />;
 
       case "news":
         return <NewsPage onOpenNews={openNewsDetail} />;
