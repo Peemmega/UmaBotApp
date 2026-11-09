@@ -166,6 +166,8 @@
 .booking-legend-skills-section { grid-column: 1 / -1; }
 .booking-legend-skills.skill-loadout-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .booking-legend-skills .skill-loadout-item { width: 100%; }
+.booking-legend-skills .skill-icon-box { flex: 0 0 28px; width: 28px; height: 28px; border-radius: 7px; }
+.booking-legend-skills .skill-icon-box img { width: 100%; height: 100%; object-fit: cover; }
 .booking-legend-preset-meta { display: flex; flex-wrap: wrap; gap: 7px 16px; padding-top: 10px; border-top: 1px solid color-mix(in srgb, #c89c37 23%, transparent); }
 .booking-legend-preset-meta span { display: flex; gap: 5px; color: #493a1c; font-size: 10px; font-weight: 800; }
 .booking-legend-preset-meta strong { color: var(--booking-muted); }
