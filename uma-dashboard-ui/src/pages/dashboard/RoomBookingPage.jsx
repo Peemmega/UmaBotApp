@@ -72,6 +72,7 @@ function RoomCard({ room, accountRole, userId, onJoin, busyId }) {
           {room.visibility === "private" && <span className="booking-private-mark"><LockKeyhole size={13} /> Private</span>}
           {room.status === "open" && <span className="booking-live-mark"><i /> เปิดห้องแล้ว</span>}
           {room.status === "creating" && <span className="booking-creating-mark">กำลังสร้างห้อง</span>}
+          {room.status === "restoring" && <span className="booking-creating-mark">กำลังกู้คืนห้อง</span>}
           {room.status === "failed" && <span className="booking-failed-mark">กำลังลองเปิดห้องอีกครั้ง</span>}
         </div>
         <h3>{room.stage_name || room.stage_key}</h3>
