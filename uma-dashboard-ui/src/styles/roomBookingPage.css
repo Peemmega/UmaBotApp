@@ -85,6 +85,8 @@
 .booking-private-mark svg { width: 12px; }
 .booking-live-mark { color: #276d45; background: color-mix(in srgb, #4fa66c 13%, white); }
 .booking-live-mark i { width: 6px; height: 6px; }
+.booking-failed-mark { width: fit-content; padding: 4px 8px; border-radius: 999px; color: #a34f42; background: #fff0ed; font-size: 10px; font-weight: 900; }
+.booking-creating-mark { width: fit-content; padding: 4px 8px; border-radius: 999px; color: #85631d; background: #fbf2d9; font-size: 10px; font-weight: 900; }
 .booking-room-main h3 { margin: 7px 0 2px; overflow: hidden; font-size: 17px; font-weight: 1000; text-overflow: ellipsis; white-space: nowrap; }
 .booking-room-by { margin: 0; color: var(--booking-muted); font-size: 12px; }
 .booking-room-by span { padding: 0 3px; color: color-mix(in srgb, var(--booking-muted) 50%, transparent); }
@@ -99,6 +101,8 @@
 .booking-room-details { grid-column: 2 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; padding: 13px 0 2px; border-top: 1px solid var(--booking-line); }
 .booking-room-details > div { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 12px; }
 .booking-room-details strong { color: var(--booking-muted); font-size: 11px; }
+.booking-room-details .booking-room-open-error { padding: 8px 10px; border: 1px solid #efc8c2; border-radius: 8px; background: #fff4f1; }
+.booking-room-open-error strong { color: #a34f42; }.booking-room-open-error span { color: #783c34; }
 .booking-room-details .booking-attendee-list { grid-column: 1 / -1; }
 .booking-room-details a { display: inline-flex; align-items: center; gap: 3px; width: fit-content; color: var(--uma-primary-dark, #287348); font-size: 12px; font-weight: 900; text-decoration: none; }
 .booking-error-banner,

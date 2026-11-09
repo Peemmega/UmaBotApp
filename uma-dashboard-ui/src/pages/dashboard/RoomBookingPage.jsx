@@ -71,6 +71,8 @@ function RoomCard({ room, accountRole, userId, onJoin, busyId }) {
           <span className={`booking-type-mark booking-type-${room.booking_type}`}>{TYPE_LABELS[room.booking_type]}</span>
           {room.visibility === "private" && <span className="booking-private-mark"><LockKeyhole size={13} /> Private</span>}
           {room.status === "open" && <span className="booking-live-mark"><i /> เปิดห้องแล้ว</span>}
+          {room.status === "creating" && <span className="booking-creating-mark">กำลังสร้างห้อง</span>}
+          {room.status === "failed" && <span className="booking-failed-mark">กำลังลองเปิดห้องอีกครั้ง</span>}
         </div>
         <h3>{room.stage_name || room.stage_key}</h3>
         <p className="booking-room-by">โดย {room.creator_name} <span>·</span> {members.length} คนลงชื่อ</p>
@@ -95,6 +97,7 @@ function RoomCard({ room, accountRole, userId, onJoin, busyId }) {
           {room.settings?.legend_key && <div><strong>Legend</strong><span>{room.legend_name || room.settings.legend_key} · Lv.{room.settings.legend_level || 1}</span></div>}
           {room.settings?.mob_level && <div><strong>Mob</strong><span>{room.settings.mob_count || room.settings.mobs?.length || 8} ตัว · Lv.{room.settings.mob_level}</span></div>}
           {!room.settings?.mob_level && room.settings?.mobs?.length > 0 && <div><strong>Mob</strong><span>{room.settings.mobs.map((mob) => `${mob.name || mob.key} Lv.${mob.level || 1}`).join("、")}</span></div>}
+          {room.status === "failed" && <div className="booking-room-open-error"><strong>สถานะเปิดห้อง</strong><span>{String(room.creator_id) === String(userId) && room.error ? room.error : "กำลังลองเปิดห้องอีกครั้ง"}</span></div>}
           <div className="booking-attendee-list"><strong>สมาชิก</strong><span>{members.map((member) => member.username).join("、") || "ยังไม่มีสมาชิก"}</span></div>
           {threadUrl && <a href={threadUrl} target="_blank" rel="noreferrer">เปิดเธรดใน Discord <ChevronRight size={15} /></a>}
         </div>
