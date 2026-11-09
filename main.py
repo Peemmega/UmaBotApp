@@ -411,8 +411,6 @@ async def proxy_room_bookings(request: Request, booking_path: str = ""):
         return JSONResponse({"detail": "Room booking service is not configured"}, status_code=503)
 
     path = request.url.path.removeprefix("/api")
-    if request.method == "POST" and path == "/room-bookings" and user.get("discord_role") != "trainer":
-        return JSONResponse({"detail": "Trainer role required"}, status_code=403)
     if request.method == "POST" and path.endswith("/join") and user.get("discord_role") != "trainee":
         return JSONResponse({"detail": "Umamusume role required"}, status_code=403)
     body = await request.body()
@@ -424,6 +422,11 @@ async def proxy_room_bookings(request: Request, booking_path: str = ""):
         except (ValueError, TypeError):
             return JSONResponse({"detail": "Invalid request body"}, status_code=400)
         payload["user_id"] = str(user["id"])
+        if path == "/room-bookings":
+            role = user.get("discord_role")
+            allowed = role == "trainer" or (role == "trainee" and payload.get("booking_type") == "legend")
+            if not allowed:
+                return JSONResponse({"detail": "Trainer role required; Umamusume may create Legend Race"}, status_code=403)
         body = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode()
     query_items = list(request.query_params.multi_items())
     if path == "/room-bookings":

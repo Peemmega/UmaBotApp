@@ -5,7 +5,6 @@ import "../../styles/roomBookingPage.css";
 
 const TYPE_LABELS = { practice: "ห้องฝึกซ้อม", legend: "Legend Race", debut: "Debut" };
 const WEATHER_LABELS = { none: "ไม่มี", random: "สุ่ม", sunny: "แดดจัด", rainy: "ฝนตก" };
-const LEGEND_STAGE_PRESETS = { tamamo_cross: "TennoShoAutumn" };
 const THAI_DATE = new Intl.DateTimeFormat("th-TH", { dateStyle: "medium", timeZone: "Asia/Bangkok" });
 const THAI_TIME = new Intl.DateTimeFormat("th-TH", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Bangkok" });
 
@@ -73,6 +72,7 @@ function RoomCard({ room, accountRole, userId, onJoin, busyId }) {
           <div><strong>ประเภท</strong><span>{TYPE_LABELS[room.booking_type]}{room.visibility === "public" ? " · free-join" : " · private"}</span></div>
           {room.settings?.weather && <div><strong>อากาศ</strong><span>{WEATHER_LABELS[room.settings.weather] || room.settings.weather}</span></div>}
           {room.settings?.legend_key && <div><strong>Legend</strong><span>{room.legend_name || room.settings.legend_key} · Lv.{room.settings.legend_level || 1}</span></div>}
+          {room.settings?.mobs?.length > 0 && <div><strong>Mob</strong><span>{room.settings.mobs.map((mob) => `${mob.name || mob.key} Lv.${mob.level || 1}`).join("、")}</span></div>}
           <div className="booking-attendee-list"><strong>สมาชิก</strong><span>{members.map((member) => member.username).join("、") || "ยังไม่มีสมาชิก"}</span></div>
           {threadUrl && <a href={threadUrl} target="_blank" rel="noreferrer">เปิดเธรดใน Discord <ChevronRight size={15} /></a>}
         </div>
@@ -81,10 +81,10 @@ function RoomCard({ room, accountRole, userId, onJoin, busyId }) {
   );
 }
 
-function CreateBooking({ userId, onBack, onCreated }) {
+function CreateBooking({ userId, accountRole, onBack, onCreated }) {
   const defaults = useMemo(makeDefaultTime, []);
   const [options, setOptions] = useState(null);
-  const [type, setType] = useState("practice");
+  const [type, setType] = useState(accountRole === "trainee" ? "legend" : "practice");
   const [stageKey, setStageKey] = useState("");
   const [date, setDate] = useState(defaults.date);
   const [time, setTime] = useState(defaults.time);
@@ -94,8 +94,6 @@ function CreateBooking({ userId, onBack, onCreated }) {
   const [weather, setWeather] = useState("none");
   const [mobs, setMobs] = useState([]);
   const [legendKey, setLegendKey] = useState("");
-  const [legendLevel, setLegendLevel] = useState(1);
-  const [mobLevel, setMobLevel] = useState(1);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -103,12 +101,13 @@ function CreateBooking({ userId, onBack, onCreated }) {
     getRoomBookingOptions().then((data) => {
       setOptions(data);
       setStageKey(data.stages?.find((stage) => stage.key === "Debut" || stage.name?.toLowerCase() === "debut")?.key || data.stages?.[0]?.key || "");
-      setLegendKey(data.legends?.[0]?.key || "");
+      setLegendKey(data.legend_presets?.[0]?.key || "");
     }).catch((loadError) => setError(loadError.message));
   }, []);
 
   const debutStageKey = options?.stages?.find((stage) => stage.key === "Debut" || stage.name?.toLowerCase() === "debut")?.key || stageKey;
-  const selectedStageKey = type === "debut" ? debutStageKey : stageKey;
+  const selectedLegendPreset = options?.legend_presets?.find((preset) => preset.key === legendKey);
+  const selectedStageKey = type === "debut" ? debutStageKey : type === "legend" ? selectedLegendPreset?.stage_key || stageKey : stageKey;
   const stageName = options?.stages?.find((stage) => stage.key === selectedStageKey)?.name || "";
   const guestOptions = options?.players || [];
 
@@ -124,10 +123,10 @@ function CreateBooking({ userId, onBack, onCreated }) {
       const settings = type === "practice"
         ? { weather, mobs }
         : type === "legend"
-          ? { legend_key: legendKey, legend_level: Number(legendLevel), mob_level: Number(mobLevel), weather }
+          ? { legend_preset_key: legendKey }
           : {};
       await createRoomBooking({
-        user_id: String(userId), booking_type: type, stage_key: type === "debut" ? debutStageKey : stageKey,
+        user_id: String(userId), booking_type: type, stage_key: selectedStageKey,
         date, time: atMidnight ? "24:00" : time, visibility: type === "practice" ? visibility : "public",
         invited_ids: type === "practice" ? invitedIds : [], settings,
       });
@@ -152,7 +151,7 @@ function CreateBooking({ userId, onBack, onCreated }) {
       <form className="booking-form" onSubmit={submit}>
         <fieldset className="booking-type-choices">
           <legend>ประเภทห้อง</legend>
-          {Object.entries(TYPE_LABELS).map(([value, label]) => (
+          {(accountRole === "trainee" ? [["legend", TYPE_LABELS.legend]] : Object.entries(TYPE_LABELS)).map(([value, label]) => (
             <label key={value} className={type === value ? "is-selected" : ""}>
               <input type="radio" name="booking-type" value={value} checked={type === value} onChange={() => setType(value)} />
               <span><strong>{label}</strong><small>{value === "practice" ? "Trainer ตั้งค่าได้เอง" : value === "legend" ? "ท้าทาย Legend ตาม preset" : "สนาม Debut ทางการ"}</small></span>
@@ -163,10 +162,11 @@ function CreateBooking({ userId, onBack, onCreated }) {
         <div className="booking-form-grid">
           <label className="booking-field">
             <span>สนาม</span>
-            <select value={type === "debut" ? debutStageKey : stageKey} onChange={(event) => setStageKey(event.target.value)} disabled={type === "debut"} required>
+            <select value={selectedStageKey} onChange={(event) => setStageKey(event.target.value)} disabled={type !== "practice"} required>
               {(options?.stages || []).map((stage) => <option key={stage.key} value={stage.key}>{stage.name}</option>)}
             </select>
             {type === "debut" && <small>Debut ถูกล็อกเป็นสนาม Debut</small>}
+            {type === "legend" && <small>สนามกำหนดจาก Legend preset ในไฟล์ preset</small>}
           </label>
           <label className="booking-field"><span>วันที่</span><input type="date" value={date} min={getThaiDate()} max={getThaiDate(new Date(Date.now() + 7 * 86400000))} onChange={(event) => setDate(event.target.value)} required /></label>
           <label className="booking-field"><span>เวลา (ประเทศไทย)</span><input type="time" min="10:00" max="23:59" step="60" value={time} disabled={atMidnight} onChange={(event) => { setAtMidnight(false); setTime(event.target.value); }} required={!atMidnight} /><span className="booking-midnight-option"><input type="checkbox" checked={atMidnight} onChange={(event) => setAtMidnight(event.target.checked)} /> ระบุเป็น 24:00 น.</span></label>
@@ -197,13 +197,15 @@ function CreateBooking({ userId, onBack, onCreated }) {
         </>}
 
         {type === "legend" && <div className="booking-form-section">
-          <div className="booking-section-heading"><div><h3>ตั้งค่า Legend Race</h3><p>เลือกคู่แข่งและระดับของสนาม</p></div></div>
-          <div className="booking-form-grid">
-            <label className="booking-field"><span>Legend preset</span><select value={legendKey} onChange={(event) => { const key = event.target.value; setLegendKey(key); if (LEGEND_STAGE_PRESETS[key] && options?.stages?.some((stage) => stage.key === LEGEND_STAGE_PRESETS[key])) setStageKey(LEGEND_STAGE_PRESETS[key]); }}>{(options?.legends || []).map((legend) => <option key={legend.key} value={legend.key}>{legend.name}</option>)}</select><small>preset จะเลือกสนามที่กำหนดไว้ให้ หากมี</small></label>
-            <label className="booking-field"><span>ระดับ Legend</span><select value={legendLevel} onChange={(event) => setLegendLevel(event.target.value)}>{Array.from({ length: 8 }, (_, i) => i + 1).map((level) => <option key={level} value={level}>Lv.{level}</option>)}</select></label>
-            <label className="booking-field"><span>ระดับ Mob</span><select value={mobLevel} onChange={(event) => setMobLevel(event.target.value)}>{Array.from({ length: 8 }, (_, i) => i + 1).map((level) => <option key={level} value={level}>Lv.{level}</option>)}</select></label>
-            <label className="booking-field"><span>สภาพอากาศ</span><select value={weather} onChange={(event) => setWeather(event.target.value)}>{Object.entries(WEATHER_LABELS).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
-          </div>
+          <div className="booking-section-heading"><div><h3>Legend Race preset</h3><p>ค่าการแข่งกำหนดไว้ในไฟล์ preset ของบอต</p></div></div>
+          <label className="booking-field"><span>เลือก Legend</span><select value={legendKey} onChange={(event) => setLegendKey(event.target.value)}>{(options?.legend_presets || []).map((preset) => <option key={preset.key} value={preset.key}>{preset.name}</option>)}</select></label>
+          {selectedLegendPreset && <div className="booking-legend-preset-summary">
+            <div><strong>สนาม</strong><span>{selectedLegendPreset.stage_name}</span></div>
+            <div><strong>Legend</strong><span>{selectedLegendPreset.name} · Lv.{selectedLegendPreset.legend_level}</span></div>
+            <div><strong>Mob</strong><span>{selectedLegendPreset.mobs?.map((mob) => `${mob.name} Lv.${mob.level}`).join("、") || "ไม่มี"}</span></div>
+            <div><strong>สภาพอากาศ</strong><span>{WEATHER_LABELS[selectedLegendPreset.weather] || selectedLegendPreset.weather}</span></div>
+            <div><strong>ผลการแข่งขัน</strong><span>{selectedLegendPreset.record_type === "official" ? "Official" : "Practice"}</span></div>
+          </div>}
         </div>}
 
         {type === "debut" && <div className="booking-debut-lock"><Check size={18} /><div><strong>ค่ามาตรฐาน Debut</strong><span>สุ่มสภาพอากาศ · แข่งแบบ Official · Mob Lv.2 · ลงได้สัปดาห์ละ 1 ครั้ง</span></div></div>}
@@ -255,14 +257,14 @@ export default function RoomBookingPage({ userId, accountRole, username }) {
 
   return (
     <div className="room-booking-page">
-      {view === "create" ? <CreateBooking userId={userId} onBack={() => setView("list")} onCreated={async () => { await refresh(); setView("list"); }} /> : <>
+      {view === "create" ? <CreateBooking userId={userId} accountRole={accountRole} onBack={() => setView("list")} onCreated={async () => { await refresh(); setView("list"); }} /> : <>
         <header className="room-booking-header">
           <div className="room-booking-title-wrap"><span className="room-booking-emblem"><CalendarClock size={25} /></span><div><span className="booking-eyebrow">TRACEN · RACE DESK</span><h2>ห้องแข่งขัน</h2><p>ตารางห้องนัดหมายและห้องที่กำลังเปิดใน Discord</p></div></div>
-          <div className="room-booking-header-actions"><button className="booking-refresh" type="button" onClick={refresh} aria-label="รีเฟรชรายการ"><RefreshCw size={17} /></button>{accountRole === "trainer" && <button className="booking-create-button" type="button" onClick={() => setView("create")}><Plus size={18} /> สร้างห้อง</button>}</div>
+          <div className="room-booking-header-actions"><button className="booking-refresh" type="button" onClick={refresh} aria-label="รีเฟรชรายการ"><RefreshCw size={17} /></button>{["trainer", "trainee"].includes(accountRole) && <button className="booking-create-button" type="button" onClick={() => setView("create")}><Plus size={18} /> {accountRole === "trainee" ? "สร้าง Legend Race" : "สร้างห้อง"}</button>}</div>
         </header>
         <div className="room-booking-summary"><span><i /> แสดงเวลาไทย (UTC+7)</span><span>{rooms.length} ห้องในรายการ</span>{username && <span>เข้าสู่ระบบในชื่อ {username}</span>}</div>
         {error && <div className="booking-error-banner" role="alert">{error}</div>}
-        {loading ? <div className="booking-loading">กำลังโหลดรายการห้อง…</div> : rooms.length ? <div className="booking-room-list">{rooms.map((room) => <RoomCard key={room.booking_id} room={room} accountRole={accountRole} userId={userId} onJoin={join} busyId={busyId} />)}</div> : <div className="booking-empty"><span><CalendarClock size={28} /></span><h3>ยังไม่มีห้องที่กำลังเปิดจอง</h3><p>{accountRole === "trainer" ? "สร้างห้องใหม่ แล้วกำหนดเวลาที่ต้องการให้เปิดใน Discord" : "เมื่อ Trainer เปิดห้องใหม่ รายการจะแสดงที่นี่"}</p>{accountRole === "trainer" && <button type="button" onClick={() => setView("create")}><Plus size={17} /> สร้างห้องแรก</button>}</div>}
+        {loading ? <div className="booking-loading">กำลังโหลดรายการห้อง…</div> : rooms.length ? <div className="booking-room-list">{rooms.map((room) => <RoomCard key={room.booking_id} room={room} accountRole={accountRole} userId={userId} onJoin={join} busyId={busyId} />)}</div> : <div className="booking-empty"><span><CalendarClock size={28} /></span><h3>ยังไม่มีห้องที่กำลังเปิดจอง</h3><p>{accountRole === "trainer" ? "สร้างห้องใหม่ แล้วกำหนดเวลาที่ต้องการให้เปิดใน Discord" : accountRole === "trainee" ? "สร้าง Legend Race ของตัวเอง หรือรอห้องจาก Trainer" : "เมื่อ Trainer เปิดห้องใหม่ รายการจะแสดงที่นี่"}</p>{["trainer", "trainee"].includes(accountRole) && <button type="button" onClick={() => setView("create")}><Plus size={17} /> {accountRole === "trainee" ? "สร้าง Legend Race" : "สร้างห้องแรก"}</button>}</div>}
       </>}
     </div>
   );
