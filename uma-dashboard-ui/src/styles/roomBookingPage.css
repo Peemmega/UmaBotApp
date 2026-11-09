@@ -160,9 +160,8 @@
 .booking-legend-aptitudes img { width: 35px; height: 35px; object-fit: contain; }
 .booking-legend-aptitudes small { color: #493a1c; font-size: 10px; font-weight: 950; }
 .booking-legend-skills-section { grid-column: 1 / -1; }
-.booking-legend-skills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
-.booking-legend-skill-name { min-width: 0; padding: 8px 10px; border: 1px solid #eadfbe; border-radius: 8px; color: #493a1c; background: #fffefa; text-align: left; font: inherit; font-size: 11px; font-weight: 850; cursor: pointer; }
-.booking-legend-skill-name:hover, .booking-legend-skill-name:focus-visible { border-color: #c89c37; background: #fff8e5; outline: none; }
+.booking-legend-skills.skill-loadout-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.booking-legend-skills .skill-loadout-item { width: 100%; }
 .booking-legend-preset-meta { display: flex; flex-wrap: wrap; gap: 7px 16px; padding-top: 10px; border-top: 1px solid color-mix(in srgb, #c89c37 23%, transparent); }
 .booking-legend-preset-meta span { display: flex; gap: 5px; color: #493a1c; font-size: 10px; font-weight: 800; }
 .booking-legend-preset-meta strong { color: var(--booking-muted); }
@@ -192,7 +191,7 @@
   .booking-legend-details { grid-template-columns: 1fr; }
   .booking-legend-skills-section { grid-column: auto; }
   .booking-legend-profile { gap: 11px; }.booking-legend-portrait { width: 76px; height: 76px; }.booking-legend-identity > strong { font-size: 17px; }
-  .booking-legend-skills { grid-template-columns: 1fr; }
+  .booking-legend-skills.skill-loadout-list { grid-template-columns: 1fr; }
   .booking-mob-row { grid-template-columns: minmax(0, 1fr) 76px 30px; gap: 6px; }
   .booking-form-footer { align-items: stretch; flex-direction: column; }.booking-form-footer > span { max-width: none; }
 }

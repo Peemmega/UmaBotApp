@@ -6,8 +6,8 @@ import { getSkillIcon } from "../../utils/getSkillIcon";
 import { getGradeImage } from "../../utils/grade";
 import { toAbsoluteBotUrl } from "../../utils/avatar";
 import { describeRaceEffect } from "../../utils/raceEffects";
-import speedIcon from "../../assets/icons/Speed.webp";
 import staminaIcon from "../../assets/icons/Stamina.webp";
+import speedIcon from "../../assets/icons/Speed.webp";
 import powerIcon from "../../assets/icons/Power.webp";
 import gutIcon from "../../assets/icons/Gut.webp";
 import witIcon from "../../assets/icons/Wit.webp";
@@ -18,6 +18,14 @@ const WEATHER_LABELS = { none: "ไม่มี", random: "สุ่ม", sunny:
 const LEGEND_STAT_LABELS = { speed: "ความเร็ว", stamina: "ความอึด", power: "พลัง", gut: "ความมุ่งมั่น", wit: "ไหวพริบ" };
 const LEGEND_STAT_ICONS = { speed: speedIcon, stamina: staminaIcon, power: powerIcon, gut: gutIcon, wit: witIcon };
 const APTITUDE_LABELS = { turf: "สนามหญ้า", dirt: "สนามดิน", sprint: "Sprint", mile: "Mile", medium: "Medium", long: "Long", front: "Front", pace: "Pace", late: "Late", end_style: "End" };
+const STAMINA_EMOJI_PATTERN = /(<a?:Stamina:\d+>)/g;
+
+function renderSkillText(text) {
+  if (!text) return null;
+  return String(text).split(STAMINA_EMOJI_PATTERN).map((part, index) => /^<a?:Stamina:\d+>$/.test(part)
+    ? <img key={index} src={staminaIcon} alt="Stamina" className="skill-loadout-inline-icon" />
+    : part);
+}
 const THAI_DATE = new Intl.DateTimeFormat("th-TH", { dateStyle: "medium", timeZone: "Asia/Bangkok" });
 const THAI_TIME = new Intl.DateTimeFormat("th-TH", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Bangkok" });
 
@@ -231,7 +239,7 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
             <div className="booking-legend-details">
               <section className="booking-legend-info-section"><h4>Stats</h4><div className="booking-legend-stats">{Object.entries(selectedLegendPreset.stats || {}).map(([key, value]) => <div key={key} title={LEGEND_STAT_LABELS[key] || key} aria-label={`${LEGEND_STAT_LABELS[key] || key}: ${value}`}><img src={LEGEND_STAT_ICONS[key]} alt={LEGEND_STAT_LABELS[key] || key} /><strong>{value}</strong></div>)}</div></section>
               <section className="booking-legend-info-section"><h4>Aptitude ในสนามนี้</h4><div className="booking-legend-aptitudes">{(selectedLegendPreset.aptitudes || []).map((aptitude) => <div key={aptitude.key}><span>{APTITUDE_LABELS[aptitude.label] || aptitude.label}</span><img src={getGradeImage(aptitude.rank)} alt={`Rank ${aptitude.rank}`} /><small>{aptitude.rank}</small></div>)}</div></section>
-              <section className="booking-legend-info-section booking-legend-skills-section"><h4>Skills ทั้งหมด</h4><div className="booking-legend-skills">{(selectedLegendPreset.skills || []).map((skill) => <button className="booking-legend-skill-name" type="button" key={skill.id} onClick={() => setSelectedSkill(skill)}>{skill.name}</button>)}</div></section>
+              <section className="booking-legend-info-section booking-legend-skills-section"><h4>Skills ทั้งหมด</h4><div className="booking-legend-skills skill-loadout-list">{(selectedLegendPreset.skills || []).map((skill, index) => <button className="skill-loadout-item skill-loadout-item-button" type="button" key={skill.id} onClick={() => setSelectedSkill(skill)}><span className="skill-loadout-slot">{index + 1}</span><span className="skill-icon-box">{getSkillIcon(skill.icon)}</span><span className="skill-loadout-name">{skill.name}</span><span className="skill-loadout-cd">{skill.cost ?? 0}</span></button>)}</div></section>
             </div>
             <div className="booking-legend-preset-meta"><span><strong>Mob</strong>{selectedLegendPreset.mob_count || 8} ตัว · Lv.{selectedLegendPreset.mob_level}</span><span><strong>อากาศ</strong>{WEATHER_LABELS[selectedLegendPreset.weather] || selectedLegendPreset.weather}</span><span><strong>ผลการแข่ง</strong>{selectedLegendPreset.record_type === "official" ? "Official" : "Practice"}</span></div>
           </div>}
@@ -243,16 +251,16 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
         <div className="booking-form-footer"><span>{stageName}{date ? ` · ${date}` : ""} · {atMidnight ? "24:00" : time} (เวลาไทย)</span><button className="booking-submit" type="submit" disabled={busy || !options}>{busy ? "กำลังสร้าง…" : "สร้างการจอง"}<ChevronRight size={18} /></button></div>
       </form>
       {selectedSkill && createPortal(
-        <div className="skill-loadout-detail-backdrop team-member-skill-detail-backdrop" onMouseDown={() => setSelectedSkill(null)}>
+        <div className="skill-loadout-detail-backdrop" onMouseDown={() => setSelectedSkill(null)}>
           <section className="skill-loadout-detail-modal" role="dialog" aria-modal="true" aria-labelledby="legend-skill-detail-title" onMouseDown={(event) => event.stopPropagation()}>
             <button type="button" className="skill-loadout-detail-close" aria-label="ปิดรายละเอียดสกิล" onClick={() => setSelectedSkill(null)}>×</button>
             <div className="skill-loadout-detail-heading">
               <div className="skill-icon-box">{getSkillIcon(selectedSkill.icon)}</div>
               <div><span>{selectedSkill.id}</span><h3 id="legend-skill-detail-title">{selectedSkill.name}</h3></div>
             </div>
-            <div className="skill-loadout-detail-meta"><span>CD {selectedSkill.cooldown ?? 0}</span><span>Cost {selectedSkill.cost ?? 0}</span>{selectedSkill.target && <span>{selectedSkill.target}</span>}</div>
-            {selectedSkill.trigger && <p><strong>เงื่อนไข:</strong> {selectedSkill.trigger}</p>}
-            {selectedSkill.effects?.length > 0 && <div className="skill-loadout-detail-effects"><strong>ผลของสกิล</strong><ul>{selectedSkill.effects.map((effect, index) => <li key={`${selectedSkill.id}-${index}`}>{describeRaceEffect(effect)}</li>)}</ul></div>}
+            <div className="skill-loadout-detail-meta"><span>CD {selectedSkill.cooldown ?? 0}</span><span>Cost {selectedSkill.cost ?? 0}</span>{selectedSkill.target ? <span>{renderSkillText(selectedSkill.target)}</span> : null}</div>
+            {selectedSkill.trigger ? <p><strong>เงื่อนไข:</strong> {renderSkillText(selectedSkill.trigger)}</p> : null}
+            {selectedSkill.effects?.length > 0 && <div className="skill-loadout-detail-effects"><strong>ผลของสกิล</strong><ul>{selectedSkill.effects.map((effect, index) => <li key={`${selectedSkill.id}-${index}`}>{renderSkillText(describeRaceEffect(effect))}</li>)}</ul></div>}
           </section>
         </div>,
         document.body
