@@ -106,6 +106,7 @@ const BOT_OPTIONS = [
   { id: "silecne_susuka", label: "Silecne Susuka" },
   { id: "almond_eye", label: "Almond Eye" },
   { id: "equinox", label: "Equinox" },
+  { id: "mejiro_ramonu", label: "Mejiro Ramonu" },
 ];
 
 function normalizeRaceStyle(value) {
@@ -215,6 +216,7 @@ const LOCAL_MOB_AVATAR_BY_ID = {
   sunday_silent: "/mobs/sunday_silent.webp",
   tamamo_cross: "/mobs/tamamo_cross.webp",
   tokai_teio: "/mobs/tokai_teio.png",
+  mejiro_ramonu: "/mobs/mejiro_ramonu.webp",
 };
 const LOCAL_MOB_AVATAR_BY_NAME = {
   "almond eye": "/mobs/almond_eye.webp",
