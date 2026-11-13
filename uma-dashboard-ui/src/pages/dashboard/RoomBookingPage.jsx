@@ -19,6 +19,16 @@ const LEGEND_STAT_LABELS = { speed: "ความเร็ว", stamina: "คว
 const LEGEND_STAT_ICONS = { speed: speedIcon, stamina: staminaIcon, power: powerIcon, gut: gutIcon, wit: witIcon };
 const APTITUDE_LABELS = { turf: "สนามหญ้า", dirt: "สนามดิน", sprint: "Sprint", mile: "Mile", medium: "Medium", long: "Long", front: "Front", pace: "Pace", late: "Late", end_style: "End" };
 const STAMINA_EMOJI_PATTERN = /(<a?:Stamina:\d+>)/g;
+const ROOKIE_PRESET_KEYS = [
+  "rookie_front",
+  "rookie_pace",
+  "rookie_late",
+  "rookie_end",
+  "rookie_alt_front",
+  "rookie_alt_pace",
+  "rookie_alt_late",
+  "rookie_alt_end",
+];
 
 function renderSkillText(text) {
   if (!text) return null;
@@ -147,9 +157,9 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
   const stageName = options?.stages?.find((stage) => stage.key === selectedStageKey)?.name || "";
   const guestOptions = options?.players || [];
 
-  const addMob = () => {
-    if (mobs.length < 8) setMobs((current) => [...current, { key: "rookie_pace", level: 1 }]);
-  };
+  const rookieRosterAdded = mobs.length === ROOKIE_PRESET_KEYS.length
+    && ROOKIE_PRESET_KEYS.every((key, index) => mobs[index]?.key === key);
+  const addRookies = () => setMobs(ROOKIE_PRESET_KEYS.map((key) => ({ key, level: 1 })));
 
   const submit = async (event) => {
     event.preventDefault();
@@ -227,7 +237,9 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
                 <label className="booking-field"><span>ระดับ</span><select value={mob.level} onChange={(event) => setMobs((current) => current.map((item, i) => i === index ? { ...item, level: Number(event.target.value) } : item))}>{Array.from({ length: 8 }, (_, i) => i + 1).map((level) => <option key={level} value={level}>Lv.{level}</option>)}</select></label>
                 <button type="button" className="booking-remove-mob" onClick={() => setMobs((current) => current.filter((_, i) => i !== index))} aria-label={`ลบ Mob ${index + 1}`}>×</button>
               </div>)}
-              <button type="button" className="booking-add-mob" onClick={addMob} disabled={mobs.length >= 8}><Plus size={16} /> เพิ่ม Mob <span>{mobs.length}/8</span></button>
+              <button type="button" className="booking-add-mob" onClick={addRookies} disabled={rookieRosterAdded}>
+                <Plus size={16} /> {rookieRosterAdded ? "\u0e40\u0e1e\u0e34\u0e48\u0e21 Rookie \u0e04\u0e23\u0e1a 8 \u0e15\u0e31\u0e27\u0e41\u0e25\u0e49\u0e27" : "\u0e40\u0e1e\u0e34\u0e48\u0e21 Rookie \u0e17\u0e31\u0e49\u0e07 8 \u0e15\u0e31\u0e27"}
+              </button>
             </div>
           </div>
         </>}
