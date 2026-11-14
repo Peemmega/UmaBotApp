@@ -1177,11 +1177,14 @@
 .race-history-table-section > p { margin: 0; color: var(--uma-muted); font-size: 12px; font-weight: 700; }
 .race-history-table-wrap { overflow-x: auto; border: 1px solid color-mix(in srgb, var(--uma-primary) 20%, transparent); border-radius: 9px; }
 .race-history-table-wrap table { width: 100%; min-width: 480px; border-collapse: collapse; color: var(--uma-ink); font-size: 12px; }
+.race-history-table-wrap .race-history-roll-table { min-width: 820px; }
 .race-history-table-wrap th { padding: 8px 10px; background: color-mix(in srgb, var(--uma-primary) 14%, transparent); color: var(--uma-primary-dark); font-size: 10px; font-weight: 1000; text-align: left; text-transform: uppercase; white-space: nowrap; }
 .race-history-table-wrap td { padding: 8px 10px; border-top: 1px solid color-mix(in srgb, var(--uma-primary) 16%, transparent); font-weight: 700; white-space: nowrap; }
 .race-history-table-wrap tbody tr:nth-child(even) { background: color-mix(in srgb, var(--uma-bg-soft) 62%, var(--uma-surface)); }
 .race-history-table-wrap td:last-child { white-space: normal; }
 .race-history-table-wrap code { padding: 3px 5px; border-radius: 6px; background: color-mix(in srgb, var(--uma-primary) 12%, transparent); color: var(--uma-primary-dark); font-size: 10px; font-weight: 900; }
+.race-history-dice-values span { display: inline-block; min-width: 20px; margin-right: 4px; padding: 2px 4px; border: 1px solid color-mix(in srgb, var(--uma-primary) 18%, transparent); border-radius: 5px; color: var(--uma-muted); text-align: center; }
+.race-history-dice-values span[data-kept="true"] { border-color: color-mix(in srgb, var(--uma-primary) 45%, transparent); color: var(--uma-primary-dark); background: color-mix(in srgb, var(--uma-primary) 12%, transparent); }
 .race-history-detail-actions { grid-template-columns: 1fr; }
 
 @media (max-width: 720px) {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowLeft, CalendarClock, Check, ChevronRight, Clock3, DoorOpen, LockKeyhole, Plus, RefreshCw, Users } from "lucide-react";
+import { ArrowLeft, CalendarClock, Check, ChevronRight, Clock3, DoorOpen, LockKeyhole, Plus, RefreshCw, Search, Users } from "lucide-react";
 import { createRoomBooking, getRoomBookingOptions, joinRoomBooking, listRoomBookings } from "../../api/roomBookingApi";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 import { getGradeImage } from "../../utils/grade";
@@ -127,6 +127,7 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
   const [atMidnight, setAtMidnight] = useState(defaults.time === "24:00");
   const [visibility, setVisibility] = useState("public");
   const [invitedIds, setInvitedIds] = useState([]);
+  const [memberQuery, setMemberQuery] = useState("");
   const [weather, setWeather] = useState("none");
   const [mobs, setMobs] = useState([]);
   const [legendKey, setLegendKey] = useState("");
@@ -155,7 +156,15 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
   const selectedLegendPreset = options?.legend_presets?.find((preset) => preset.key === legendKey);
   const selectedStageKey = type === "debut" ? debutStageKey : type === "legend" ? selectedLegendPreset?.stage_key || stageKey : stageKey;
   const stageName = options?.stages?.find((stage) => stage.key === selectedStageKey)?.name || "";
-  const guestOptions = options?.players || [];
+  const guestOptions = useMemo(() => [
+    ...(options?.trainers || []).map((member) => ({ ...member, role: "trainer" })),
+    ...(options?.players || []).map((member) => ({ ...member, role: "trainee" })),
+  ].filter((member) => String(member.id) !== String(userId)), [options, userId]);
+  const filteredGuests = useMemo(() => {
+    const query = memberQuery.trim().toLowerCase();
+    return query ? guestOptions.filter((member) => String(member.name || "").toLowerCase().includes(query)) : guestOptions;
+  }, [guestOptions, memberQuery]);
+  const toggleInvite = (id) => setInvitedIds((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]);
 
   const rookieRosterAdded = mobs.length === ROOKIE_PRESET_KEYS.length
     && ROOKIE_PRESET_KEYS.every((key, index) => mobs[index]?.key === key);
@@ -197,7 +206,7 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
       <form className="booking-form" onSubmit={submit}>
         <fieldset className="booking-type-choices">
           <legend>ประเภทห้อง</legend>
-          {(accountRole === "trainee" ? [["legend", TYPE_LABELS.legend]] : Object.entries(TYPE_LABELS)).map(([value, label]) => (
+          {(accountRole === "trainee" ? [["legend", TYPE_LABELS.legend]] : [["practice", TYPE_LABELS.practice]]).map(([value, label]) => (
             <label key={value} className={type === value ? "is-selected" : ""}>
               <input type="radio" name="booking-type" value={value} checked={type === value} onChange={() => setType(value)} />
               <span><strong>{label}</strong><small>{value === "practice" ? "Trainer ตั้งค่าได้เอง" : value === "legend" ? "ท้าทาย Legend ตาม preset" : "สนาม Debut ทางการ"}</small></span>
@@ -226,7 +235,23 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
               <button type="button" className={visibility === "public" ? "is-active" : ""} onClick={() => setVisibility("public")}><DoorOpen size={17} /><span><strong>Free-join</strong><small>ทุกคนเข้าร่วมได้</small></span></button>
               <button type="button" className={visibility === "private" ? "is-active" : ""} onClick={() => setVisibility("private")}><LockKeyhole size={17} /><span><strong>Private</strong><small>ผู้สร้างและสมาชิกที่เลือก</small></span></button>
             </div>
-            <label className="booking-field booking-member-picker"><span><Users size={15} /> เพิ่มสมาชิก (เลือกได้หลายคน)</span><select multiple value={invitedIds} onChange={(event) => setInvitedIds(Array.from(event.target.selectedOptions, (option) => option.value))}>{guestOptions.map((player) => <option key={player.id} value={player.id}>{player.name}</option>)}</select><small>สมาชิกที่เลือกจะได้รับ ping และเข้าร่วมในเธรดที่สร้าง</small></label>
+            <div className="booking-field booking-member-picker">
+              <span><Users size={15} /> เพิ่มสมาชิก{invitedIds.length > 0 && ` · เลือกแล้ว ${invitedIds.length} คน`}</span>
+              <div className="booking-member-search"><Search size={15} aria-hidden="true" /><input type="search" value={memberQuery} onChange={(event) => setMemberQuery(event.target.value)} placeholder="ค้นหาชื่อสาวม้าหรือเทรนเนอร์" aria-label="ค้นหาสมาชิก" /></div>
+              <ul className="booking-member-list" aria-label="รายชื่อสมาชิก">
+                {filteredGuests.map((member) => {
+                  const checked = invitedIds.includes(member.id);
+                  return <li key={`${member.role}-${member.id}`}><label className={checked ? "is-selected" : ""}>
+                    <input type="checkbox" checked={checked} onChange={() => toggleInvite(member.id)} />
+                    {member.image_url ? <img src={toAbsoluteBotUrl(member.image_url)} alt="" loading="lazy" /> : <span className="booking-member-avatar" aria-hidden="true">{String(member.name || "?").slice(0, 1)}</span>}
+                    <span className="booking-member-name">{member.name}</span>
+                    <span className={`booking-member-role booking-member-role-${member.role}`}>{member.role === "trainer" ? "Trainer" : "Umamusume"}</span>
+                  </label></li>;
+                })}
+                {filteredGuests.length === 0 && <li className="booking-member-empty">ไม่พบสมาชิกที่ตรงกับคำค้น</li>}
+              </ul>
+              <small>สมาชิกที่เลือกจะได้รับ ping และเข้าร่วมในเธรดที่สร้าง</small>
+            </div>
           </div>
           <div className="booking-form-section">
             <div className="booking-section-heading"><div><h3>การตั้งค่าการแข่ง</h3><p>ปรับได้ก่อนห้องเปิด</p></div></div>

@@ -158,6 +158,9 @@
 .replay-run-details dl > div { display: flex; justify-content: space-between; gap: 10px; }
 .replay-run-details dt, .replay-run-details dd { margin: 0; }
 .replay-run-details dd { color: var(--replay-ink); text-align: right; font-variant-numeric: tabular-nums; }
+.replay-dice-values-row dd { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
+.replay-die-value { min-width: 22px; padding: 2px 5px; border: 1px solid var(--replay-line); border-radius: 5px; color: var(--replay-muted); background: #fff; text-align: center; }
+.replay-die-value[data-kept="true"] { border-color: #a7ca7d; color: #416f33; background: #eff7e8; font-weight: 700; }
 .replay-skill-details { margin-top: 8px; }
 .replay-skill-details summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .replay-skill-wit-summary { display: inline-flex; align-items: center; gap: 4px; float: none !important; color: var(--replay-ink); }

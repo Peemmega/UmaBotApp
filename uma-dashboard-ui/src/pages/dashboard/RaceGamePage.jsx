@@ -669,6 +669,10 @@ export default function RaceGamePage({
     myPlayer &&
     !myPlayer.is_mob &&
     myPlayer.last_roll_turn === room.turn;
+  const hasRolledThisTurn =
+    room?.phase === "running" &&
+    Boolean(myPlayer) &&
+    Number(myPlayer.last_roll_turn) === Number(room.turn);
   const hasConfirmedTurn = room?.turn_confirmations?.some(
     (confirmedId) => String(confirmedId) === String(userId)
   );
@@ -1692,6 +1696,7 @@ export default function RaceGamePage({
               </button>
               <RaceSkillMenu
                 actionBusy={actionBusy}
+                actionsLocked={hasRolledThisTurn}
                 myPlayer={myPlayer}
                 onSkill={handleSkill}
                 onZone={handleZone}
@@ -1789,6 +1794,7 @@ export default function RaceGamePage({
 
               <RaceSkillMenu
                 actionBusy={actionBusy}
+                actionsLocked={hasRolledThisTurn}
                 myPlayer={myPlayer}
                 onSkill={handleSkill}
                 onZone={handleZone}
@@ -1816,6 +1822,7 @@ function PanelTitle({ icon, title }) {
 
 function RaceSkillMenu({
   actionBusy,
+  actionsLocked,
   myPlayer,
   onSkill,
   onZone,
@@ -1843,7 +1850,8 @@ function RaceSkillMenu({
               type="button"
               className="race-zone-btn"
               onClick={onZone}
-              disabled={!myPlayer || myPlayer.zone_left <= 0 || Boolean(actionBusy)}
+              disabled={!myPlayer || myPlayer.zone_left <= 0 || actionsLocked || Boolean(actionBusy)}
+              title={actionsLocked ? "ทอยเต๋าแล้ว ใช้ Zone ไม่ได้ในเทิร์นนี้" : undefined}
             >
               <span>Zone</span>
               <strong>{myPlayer?.zone?.name || "Use Zone"}</strong>
@@ -1859,7 +1867,8 @@ function RaceSkillMenu({
             >
               <button
                 type="button"
-                disabled={!skill.id || skill.cooldown > 0 || Boolean(actionBusy)}
+                disabled={!skill.id || skill.cooldown > 0 || actionsLocked || Boolean(actionBusy)}
+                title={actionsLocked ? "ทอยเต๋าแล้ว ใช้สกิลไม่ได้ในเทิร์นนี้" : undefined}
                 onClick={() => onSkill(skill)}
               >
                 <span>{skill.slot}</span>

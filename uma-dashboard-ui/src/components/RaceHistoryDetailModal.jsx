@@ -58,10 +58,29 @@ function RaceResultTable({ turns }) {
   return (
     <section className="race-history-table-section">
       <span>ผลการทอยแต่ละเทิร์น</span>
-      {turns.length ? <div className="race-history-table-wrap"><table>
-        <thead><tr><th>เทิร์น</th><th>ผลทอย</th><th>คะแนนรวม</th><th>เลน</th><th>อันดับ</th></tr></thead>
+      {turns.length ? <div className="race-history-table-wrap"><table className="race-history-roll-table">
+        <thead><tr><th>เทิร์น</th><th>เต๋าตาม Style</th><th>ความเร็วตอนทอย</th><th>แต้มเต๋า</th><th>ผลทอย</th><th>คะแนนรวม</th><th>เลน</th><th>อันดับ</th></tr></thead>
         <tbody>{turns.map((turn) => <tr key={`${turn.participant_id}-${turn.turn_number}`}>
-          <td>T{turn.turn_number}</td><td>+{turn.run_score ?? "-"}</td><td>{turn.score_after ?? "-"}</td><td>{turn.lane ?? "-"}</td><td>#{turn.position ?? "-"}</td>
+          {(() => {
+            const roll = turn.turn_data?.roll || {};
+            const diceValues = Array.isArray(roll.dice_values) ? roll.dice_values : [];
+            const rule = roll.derived_rule;
+            const orderedDice = diceValues
+              .map((value, index) => ({ value: Number(value), index }))
+              .filter((die) => Number.isFinite(die.value))
+              .sort((left, right) => right.value - left.value || left.index - right.index);
+            const keepCount = rule ? (rule.kh == null ? orderedDice.length : Math.max(0, Number(rule.kh) || 0)) : 0;
+            return <>
+              <td>T{turn.turn_number}</td>
+              <td>{rule ? `${rule.d}d${rule.kh == null ? "" : ` kh${rule.kh}`}` : "-"}</td>
+              <td>{roll.current_max_speed == null ? "-" : Number(roll.current_max_speed).toLocaleString("th-TH", { maximumFractionDigits: 1 })}</td>
+              <td className="race-history-dice-values">{orderedDice.length ? orderedDice.map((die, index) => <span data-kept={index < keepCount} key={`${die.index}-${die.value}`}>{die.value}</span>) : "-"}</td>
+              <td>+{turn.run_score ?? "-"}</td>
+              <td>{turn.score_after ?? "-"}</td>
+              <td>{turn.lane ?? "-"}</td>
+              <td>#{turn.position ?? "-"}</td>
+            </>;
+          })()}
         </tr>)}</tbody>
       </table></div> : <p>ยังไม่มีผลทอยที่บันทึกไว้</p>}
     </section>

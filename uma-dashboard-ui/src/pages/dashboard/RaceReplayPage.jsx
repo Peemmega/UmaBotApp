@@ -16,6 +16,16 @@ import "../../styles/raceReplayPage.css";
 const EMPTY_LIST = [];
 const number = (value) => Number(value || 0).toLocaleString("th-TH", { maximumFractionDigits: 1 });
 const signed = (value) => `${Number(value) >= 0 ? "+" : ""}${number(value)}`;
+function getReplayDiceValues(roll = {}) {
+  if (!Array.isArray(roll.dice_values)) return [];
+  const values = roll.dice_values
+    .map((value, index) => ({ value: Number(value), index }))
+    .filter((die) => Number.isFinite(die.value))
+    .sort((left, right) => right.value - left.value || left.index - right.index);
+  const keep = roll.derived_rule?.kh;
+  const keepCount = keep == null ? (roll.derived_rule ? values.length : 0) : Math.max(0, Math.min(values.length, Number(keep) || 0));
+  return values.map((die, index) => ({ ...die, kept: index < keepCount }));
+}
 const laneCenterY = (lane) => 12 + (lane - 1) * 15;
 const formatRaceDate = (value) => {
   if (!value) return "";
@@ -420,6 +430,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
             const participant = participantById.get(player.id);
             const playerInfo = replayPlayerInfo(participant, selectedTurn, replayPhase, skillCatalog);
             const turn = turnPlayer?.latestTurn;
+            const replayDice = getReplayDiceValues(turnPlayer?.roll);
             const staminaBefore = turn?.stamina_before ?? turnPlayer?.roll.stamina?.before;
             const staminaAfter = turn?.stamina_after ?? turnPlayer?.roll.stamina?.current_stamina;
             const isSelected = selectedPlayerId === player.id;
@@ -443,7 +454,7 @@ export default function RaceReplayPage({ raceId, onBack }) {
                   </div>
                 </details>}
                 {events.length ? <ul className="replay-actions">{events.map((event) => <li key={event.id} data-incoming={Boolean(event.incoming)}><span className={`replay-event-dot is-${event.type}`} /><div>{event.incoming && <small>รับผลจาก {event.actor}</small>}<span>{event.label}</span>{event.type === "blocked" && event.runLane != null && <small className="replay-event-context">เกิดขึ้นในเลน {event.runLane}{event.laneChanged && event.nextLane != null ? ` → เลน ${event.nextLane} หลังเทิร์น` : ""}{event.blockedRunnerNames?.length ? ` · นับ ${event.blockedRunnerNames.join(", ")}` : ""}</small>}{event.target && <small><ArrowRight size={12} /> {event.target}</small>}</div></li>)}</ul> : <p className="replay-no-actions">ไม่มีการกระทำเพิ่มเติมในเทิร์นนี้</p>}
-                {turn && <details className="replay-run-details" open={isSelected || undefined} key={`${player.id}-${selectedTurn}-${isSelected}`}><summary>ข้อมูลการวิ่ง{staminaAfter != null && <span className="replay-stamina-value"><img src={staminaIcon} alt="Stamina" />{number(staminaAfter)}</span>}</summary><dl><div><dt>ผลวิ่ง</dt><dd>{turn.run_score == null ? "ไม่ได้บันทึก" : signed(turn.run_score)}</dd></div><div><dt>คะแนนสะสม</dt><dd>{number(turn.score_before)} → {number(turn.score_after)}</dd></div>{staminaBefore != null && staminaAfter != null && <div><dt><img className="replay-stamina-icon" src={staminaIcon} alt="Stamina" /></dt><dd>{number(staminaBefore)} → {number(staminaAfter)}</dd></div>}{turnPlayer?.roll.rule && <div><dt>เต๋าที่ใช้</dt><dd>{typeof turnPlayer.roll.rule === "string" ? turnPlayer.roll.rule : `${turnPlayer.roll.rule.d || 0}d`}</dd></div>}</dl></details>}
+                {turn && <details className="replay-run-details" open={isSelected || undefined} key={`${player.id}-${selectedTurn}-${isSelected}`}><summary>ข้อมูลการวิ่ง{staminaAfter != null && <span className="replay-stamina-value"><img src={staminaIcon} alt="Stamina" />{number(staminaAfter)}</span>}</summary><dl><div><dt>ผลวิ่ง</dt><dd>{turn.run_score == null ? "ไม่ได้บันทึก" : signed(turn.run_score)}</dd></div><div><dt>คะแนนสะสม</dt><dd>{number(turn.score_before)} → {number(turn.score_after)}</dd></div>{staminaBefore != null && staminaAfter != null && <div><dt><img className="replay-stamina-icon" src={staminaIcon} alt="Stamina" /></dt><dd>{number(staminaBefore)} → {number(staminaAfter)}</dd></div>}{turnPlayer?.roll.current_max_speed != null && <div><dt>ความเร็วตอนทอย</dt><dd>{number(turnPlayer.roll.current_max_speed)}</dd></div>}{replayDice.length > 0 && <div className="replay-dice-values-row"><dt>ผลเต๋า</dt><dd>{replayDice.map((die) => <span className="replay-die-value" data-kept={die.kept} key={`${die.index}-${die.value}`}>{number(die.value)}</span>)}</dd></div>}{turnPlayer?.roll.derived_rule && <div><dt>รูปแบบเต๋าโดยประมาณ</dt><dd>{`${turnPlayer.roll.derived_rule.d}d${turnPlayer.roll.derived_rule.kh == null ? "" : ` kh${turnPlayer.roll.derived_rule.kh}`}`}</dd></div>}</dl></details>}
               </div>
             </article>;
           })}

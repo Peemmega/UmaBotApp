@@ -424,9 +424,10 @@ async def proxy_room_bookings(request: Request, booking_path: str = ""):
         payload["user_id"] = str(user["id"])
         if path == "/room-bookings":
             role = user.get("discord_role")
-            allowed = role == "trainer" or (role == "trainee" and payload.get("booking_type") == "legend")
+            booking_type = payload.get("booking_type")
+            allowed = (role == "trainer" and booking_type == "practice") or (role == "trainee" and booking_type == "legend")
             if not allowed:
-                return JSONResponse({"detail": "Trainer role required; Umamusume may create Legend Race"}, status_code=403)
+                return JSONResponse({"detail": "Trainers may create practice rooms; Umamusume may create Legend Race"}, status_code=403)
         body = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode()
     query_items = list(request.query_params.multi_items())
     if path == "/room-bookings":
