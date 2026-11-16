@@ -130,6 +130,7 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
   const [memberQuery, setMemberQuery] = useState("");
   const [weather, setWeather] = useState("none");
   const [mobs, setMobs] = useState([]);
+  const [mobLevel, setMobLevel] = useState(1);
   const [legendKey, setLegendKey] = useState("");
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -168,7 +169,11 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
 
   const rookieRosterAdded = mobs.length === ROOKIE_PRESET_KEYS.length
     && ROOKIE_PRESET_KEYS.every((key, index) => mobs[index]?.key === key);
-  const addRookies = () => setMobs(ROOKIE_PRESET_KEYS.map((key) => ({ key, level: 1 })));
+  const addRookies = () => setMobs(ROOKIE_PRESET_KEYS.map((key) => ({ key, level: mobLevel })));
+  const updateMobLevel = (level) => {
+    setMobLevel(level);
+    setMobs((current) => current.map((mob) => ({ ...mob, level })));
+  };
 
   const submit = async (event) => {
     event.preventDefault();
@@ -176,7 +181,7 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
     setError("");
     try {
       const settings = type === "practice"
-        ? { weather, mobs }
+        ? { weather, mobs, ...(mobs.length ? { mob_level: mobLevel } : {}) }
         : type === "legend"
           ? { legend_preset_key: legendKey }
           : {};
@@ -257,14 +262,12 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
             <div className="booking-section-heading"><div><h3>การตั้งค่าการแข่ง</h3><p>ปรับได้ก่อนห้องเปิด</p></div></div>
             <label className="booking-field booking-weather-field"><span>สภาพอากาศ</span><select value={weather} onChange={(event) => setWeather(event.target.value)}>{Object.entries(WEATHER_LABELS).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
             <div className="booking-mob-list">
-              {mobs.map((mob, index) => <div className="booking-mob-row" key={`mob-${index}`}>
-                <label className="booking-field"><span>Mob {index + 1}</span><select value={mob.key} onChange={(event) => setMobs((current) => current.map((item, i) => i === index ? { ...item, key: event.target.value } : item))}>{(options?.mobs || []).map((option) => <option key={option.key} value={option.key}>{option.name}</option>)}</select></label>
-                <label className="booking-field"><span>ระดับ</span><select value={mob.level} onChange={(event) => setMobs((current) => current.map((item, i) => i === index ? { ...item, level: Number(event.target.value) } : item))}>{Array.from({ length: 8 }, (_, i) => i + 1).map((level) => <option key={level} value={level}>Lv.{level}</option>)}</select></label>
-                <button type="button" className="booking-remove-mob" onClick={() => setMobs((current) => current.filter((_, i) => i !== index))} aria-label={`ลบ Mob ${index + 1}`}>×</button>
-              </div>)}
+              <label className="booking-field"><span>ระดับ Mob ทุกตัว</span><select value={mobLevel} onChange={(event) => updateMobLevel(Number(event.target.value))}>{Array.from({ length: 8 }, (_, i) => i + 1).map((level) => <option key={level} value={level}>Lv.{level}</option>)}</select></label>
+              {rookieRosterAdded && <div className="booking-mob-roster-summary"><strong>Mob ครบ 8 ตัว</strong><span>ใช้ตัวละคร Rookie มาตรฐานทุกตัว · Lv.{mobLevel}</span></div>}
               <button type="button" className="booking-add-mob" onClick={addRookies} disabled={rookieRosterAdded}>
-                <Plus size={16} /> {rookieRosterAdded ? "\u0e40\u0e1e\u0e34\u0e48\u0e21 Rookie \u0e04\u0e23\u0e1a 8 \u0e15\u0e31\u0e27\u0e41\u0e25\u0e49\u0e27" : "\u0e40\u0e1e\u0e34\u0e48\u0e21 Rookie \u0e17\u0e31\u0e49\u0e07 8 \u0e15\u0e31\u0e27"}
+                {rookieRosterAdded ? <><Check size={16} /> เพิ่ม Rookie ครบ 8 ตัวแล้ว</> : <><Plus size={16} /> เพิ่ม Rookie ทั้ง 8 ตัว</>}
               </button>
+              {rookieRosterAdded && <button type="button" className="booking-clear-mobs" onClick={() => setMobs([])}>นำ Mob ออก</button>}
             </div>
           </div>
         </>}

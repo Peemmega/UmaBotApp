@@ -186,6 +186,10 @@
 .booking-legend-preset-meta span { display: flex; gap: 5px; color: #493a1c; font-size: 10px; font-weight: 800; }
 .booking-legend-preset-meta strong { color: var(--booking-muted); }
 .booking-mob-list { display: grid; gap: 8px; }
+.booking-mob-roster-summary { display: grid; gap: 3px; padding: 10px 12px; border: 1px solid var(--booking-line); border-radius: 9px; color: var(--booking-ink); background: color-mix(in srgb, var(--uma-primary, #4b9a69) 7%, white); }
+.booking-mob-roster-summary strong { font-size: 12px; }
+.booking-mob-roster-summary span { color: var(--booking-muted); font-size: 11px; }
+.booking-clear-mobs { width: fit-content; padding: 5px 9px; border: 1px solid var(--booking-line); border-radius: 7px; color: #99463d; background: transparent; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
 .booking-mob-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(90px, .38fr) 31px; align-items: end; gap: 8px; }
 .booking-remove-mob { width: 31px; height: 39px; border: 1px solid var(--booking-line); border-radius: 8px; color: #99463d; background: transparent; font-size: 22px; cursor: pointer; }.booking-remove-mob:disabled { opacity: .35; cursor: not-allowed; }
 .booking-add-mob { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 7px 10px; border: 1px dashed color-mix(in srgb, var(--uma-primary, #4b9a69) 48%, transparent); border-radius: 8px; color: var(--uma-primary-dark, #287348); background: transparent; font: inherit; font-size: 12px; font-weight: 900; cursor: pointer; }.booking-add-mob span { color: var(--booking-muted); font-size: 10px; }.booking-add-mob:disabled { opacity: .45; cursor: not-allowed; }
