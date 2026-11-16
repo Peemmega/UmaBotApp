@@ -128,6 +128,7 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
   const [visibility, setVisibility] = useState("public");
   const [invitedIds, setInvitedIds] = useState([]);
   const [memberQuery, setMemberQuery] = useState("");
+  const [stageQuery, setStageQuery] = useState("");
   const [weather, setWeather] = useState("none");
   const [mobs, setMobs] = useState([]);
   const [mobLevel, setMobLevel] = useState(1);
@@ -157,6 +158,16 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
   const selectedLegendPreset = options?.legend_presets?.find((preset) => preset.key === legendKey);
   const selectedStageKey = type === "debut" ? debutStageKey : type === "legend" ? selectedLegendPreset?.stage_key || stageKey : stageKey;
   const stageName = options?.stages?.find((stage) => stage.key === selectedStageKey)?.name || "";
+  const sortedStages = useMemo(() => [...(options?.stages || [])].sort((a, b) => String(a.name || a.key).localeCompare(String(b.name || b.key), ["th", "en"], { sensitivity: "base", numeric: true })), [options]);
+  const stageMatches = useMemo(() => {
+    const query = stageQuery.trim().toLowerCase();
+    return query ? sortedStages.filter((stage) => String(stage.name || stage.key).toLowerCase().includes(query)) : sortedStages;
+  }, [sortedStages, stageQuery]);
+  const stageHasMatch = stageMatches.length > 0;
+  // Keep the currently selected stage in the list so the <select> value stays valid.
+  const filteredStages = stageMatches.some((stage) => stage.key === selectedStageKey)
+    ? stageMatches
+    : [...sortedStages.filter((stage) => stage.key === selectedStageKey), ...stageMatches];
   const guestOptions = useMemo(() => [
     ...(options?.trainers || []).map((member) => ({ ...member, role: "trainer" })),
     ...(options?.players || []).map((member) => ({ ...member, role: "trainee" })),
@@ -220,14 +231,18 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
         </fieldset>
 
         <div className="booking-form-grid">
-          <label className="booking-field">
-            <span>สนาม</span>
-            <select value={selectedStageKey} onChange={(event) => setStageKey(event.target.value)} disabled={type !== "practice"} required>
-              {(options?.stages || []).map((stage) => <option key={stage.key} value={stage.key}>{stage.name}</option>)}
+          <div className="booking-field">
+            <label htmlFor="booking-stage-select">สนาม</label>
+            {type === "practice" && (
+              <div className="booking-member-search"><Search size={15} aria-hidden="true" /><input type="search" value={stageQuery} onChange={(event) => setStageQuery(event.target.value)} placeholder="ค้นหาสนาม" aria-label="ค้นหาสนาม" /></div>
+            )}
+            <select id="booking-stage-select" value={selectedStageKey} onChange={(event) => setStageKey(event.target.value)} disabled={type !== "practice"} required>
+              {filteredStages.map((stage) => <option key={stage.key} value={stage.key}>{stage.name}</option>)}
             </select>
+            {type === "practice" && stageQuery.trim() && !stageHasMatch && <small>ไม่พบสนามที่ตรงกับคำค้นหา</small>}
             {type === "debut" && <small>Debut ถูกล็อกเป็นสนาม Debut</small>}
             {type === "legend" && <small>สนามกำหนดจาก Legend preset ในไฟล์ preset</small>}
-          </label>
+          </div>
           <label className="booking-field"><span>วันที่</span><input type="date" value={date} min={getThaiDate()} max={getThaiDate(new Date(Date.now() + 7 * 86400000))} onChange={(event) => setDate(event.target.value)} required /></label>
           <label className="booking-field"><span>เวลา (ประเทศไทย)</span><input type="time" min="10:00" max="23:59" step="60" value={time} disabled={atMidnight} onChange={(event) => { setAtMidnight(false); setTime(event.target.value); }} required={!atMidnight} /><span className="booking-midnight-option"><input type="checkbox" checked={atMidnight} onChange={(event) => setAtMidnight(event.target.checked)} /> ระบุเป็น 24:00 น.</span></label>
           <div className="booking-time-note"><Clock3 size={15} /> เวลาให้เลือกตั้งแต่ 10:00 ถึง 24:00 น.</div>
