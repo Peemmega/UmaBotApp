@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ArrowLeft, CalendarClock, Check, ChevronRight, Clock3, DoorOpen, LockKeyhole, Plus, RefreshCw, Search, Users } from "lucide-react";
 import { createRoomBooking, getRoomBookingOptions, joinRoomBooking, listRoomBookings } from "../../api/roomBookingApi";
@@ -117,6 +117,89 @@ function RoomCard({ room, accountRole, userId, onJoin, busyId }) {
   );
 }
 
+const HOLD_TO_CONFIRM_MS = 1200;
+
+// Fires onConfirm only after the button is held down for HOLD_TO_CONFIRM_MS (mouse, touch, or Space/Enter).
+function HoldToConfirmButton({ onConfirm, disabled, children }) {
+  const [progress, setProgress] = useState(0);
+  const frameRef = useRef(0);
+  const startRef = useRef(0);
+  const firedRef = useRef(false);
+
+  const stop = useCallback(() => {
+    cancelAnimationFrame(frameRef.current);
+    startRef.current = 0;
+    if (!firedRef.current) setProgress(0);
+  }, []);
+
+  const start = () => {
+    if (disabled || startRef.current) return;
+    firedRef.current = false;
+    startRef.current = performance.now();
+    const tick = (now) => {
+      const ratio = Math.min((now - startRef.current) / HOLD_TO_CONFIRM_MS, 1);
+      setProgress(ratio);
+      if (ratio >= 1) {
+        firedRef.current = true;
+        startRef.current = 0;
+        onConfirm();
+        return;
+      }
+      frameRef.current = requestAnimationFrame(tick);
+    };
+    frameRef.current = requestAnimationFrame(tick);
+  };
+
+  useEffect(() => () => cancelAnimationFrame(frameRef.current), []);
+  useEffect(() => { if (!disabled) { firedRef.current = false; setProgress(0); } }, [disabled]);
+
+  return (
+    <button
+      type="button"
+      className="booking-hold-button"
+      disabled={disabled}
+      style={{ "--hold-progress": progress }}
+      onPointerDown={(event) => { event.currentTarget.setPointerCapture?.(event.pointerId); start(); }}
+      onPointerUp={stop}
+      onPointerCancel={stop}
+      onLostPointerCapture={stop}
+      onContextMenu={(event) => event.preventDefault()}
+      onKeyDown={(event) => { if ((event.key === " " || event.key === "Enter") && !event.repeat) { event.preventDefault(); start(); } }}
+      onKeyUp={(event) => { if (event.key === " " || event.key === "Enter") stop(); }}
+      onBlur={stop}
+    >
+      <span className="booking-hold-fill" aria-hidden="true" />
+      <span className="booking-hold-label">{children}</span>
+    </button>
+  );
+}
+
+function BookingConfirmDialog({ summary, busy, error, onCancel, onConfirm }) {
+  useEffect(() => {
+    const closeOnEscape = (event) => { if (event.key === "Escape" && !busy) onCancel(); };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [busy, onCancel]);
+
+  return createPortal(
+    <div className="booking-confirm-backdrop" onMouseDown={() => !busy && onCancel()}>
+      <section className="booking-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="booking-confirm-title" onMouseDown={(event) => event.stopPropagation()}>
+        <span className="booking-eyebrow">ตรวจสอบก่อนสร้าง</span>
+        <h3 id="booking-confirm-title">ยืนยันการจองห้อง</h3>
+        <dl className="booking-confirm-list">
+          {summary.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+        </dl>
+        {error && <p className="booking-form-error" role="alert">{error}</p>}
+        <div className="booking-confirm-actions">
+          <button type="button" className="booking-quiet-button" onClick={onCancel} disabled={busy}>กลับไปแก้ไข</button>
+          <HoldToConfirmButton onConfirm={onConfirm} disabled={busy}>{busy ? "กำลังสร้าง…" : "กดค้างเพื่อสร้างห้อง"}</HoldToConfirmButton>
+        </div>
+      </section>
+    </div>,
+    document.body
+  );
+}
+
 function CreateBooking({ userId, accountRole, onBack, onCreated }) {
   const defaults = useMemo(makeDefaultTime, []);
   const [options, setOptions] = useState(null);
@@ -136,6 +219,7 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     getRoomBookingOptions().then((data) => {
@@ -186,8 +270,37 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
     setMobs((current) => current.map((mob) => ({ ...mob, level })));
   };
 
-  const submit = async (event) => {
+  const effectiveTime = atMidnight ? "24:00" : time;
+  const confirmSummary = (() => {
+    const rows = [
+      ["ประเภทห้อง", `${TYPE_LABELS[type]}${type === "practice" ? (visibility === "public" ? " · Free-join" : " · Private") : ""}`],
+      ["สนาม", stageName || selectedStageKey],
+      ["วันที่", date ? THAI_DATE.format(new Date(`${date}T12:00:00+07:00`)) : "-"],
+      ["เวลา", `${effectiveTime} น. (เวลาไทย)`],
+    ];
+    if (type === "practice") {
+      const invitedNames = guestOptions.filter((member) => invitedIds.includes(member.id)).map((member) => member.name);
+      rows.push(["สมาชิกที่เชิญ", invitedNames.length ? invitedNames.join("、") : "ไม่มี"]);
+      rows.push(["สภาพอากาศ", WEATHER_LABELS[weather] || weather]);
+      rows.push(["Mob", mobs.length ? `Rookie ${mobs.length} ตัว · Lv.${mobLevel}` : "ไม่มี"]);
+    } else if (type === "legend" && selectedLegendPreset) {
+      rows.push(["Legend", `${selectedLegendPreset.name} · ${selectedLegendPreset.style} · Lv.${selectedLegendPreset.legend_level}`]);
+      rows.push(["Mob", `${selectedLegendPreset.mob_count || 8} ตัว · Lv.${selectedLegendPreset.mob_level}`]);
+      rows.push(["สภาพอากาศ", WEATHER_LABELS[selectedLegendPreset.weather] || selectedLegendPreset.weather]);
+      rows.push(["ผลการแข่ง", selectedLegendPreset.record_type === "official" ? "Official" : "Practice"]);
+    } else if (type === "debut") {
+      rows.push(["กติกา", "สุ่มสภาพอากาศ · Official · Mob Lv.2"]);
+    }
+    return rows;
+  })();
+
+  const submit = (event) => {
     event.preventDefault();
+    setError("");
+    setConfirmOpen(true);
+  };
+
+  const createConfirmed = async () => {
     setBusy(true);
     setError("");
     try {
@@ -198,7 +311,7 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
           : {};
       await createRoomBooking({
         user_id: String(userId), booking_type: type, stage_key: selectedStageKey,
-        date, time: atMidnight ? "24:00" : time, visibility: type === "practice" ? visibility : "public",
+        date, time: effectiveTime, visibility: type === "practice" ? visibility : "public",
         invited_ids: type === "practice" ? invitedIds : [], settings,
       });
       onCreated();
@@ -309,6 +422,7 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
         {error && <p className="booking-form-error" role="alert">{error}</p>}
         <div className="booking-form-footer"><span>{stageName}{date ? ` · ${date}` : ""} · {atMidnight ? "24:00" : time} (เวลาไทย)</span><button className="booking-submit" type="submit" disabled={busy || !options}>{busy ? "กำลังสร้าง…" : "สร้างการจอง"}<ChevronRight size={18} /></button></div>
       </form>
+      {confirmOpen && <BookingConfirmDialog summary={confirmSummary} busy={busy} error={error} onCancel={() => setConfirmOpen(false)} onConfirm={createConfirmed} />}
       {selectedSkill && createPortal(
         <div className="skill-loadout-detail-backdrop" onMouseDown={() => setSelectedSkill(null)}>
           <section className="skill-loadout-detail-modal" role="dialog" aria-modal="true" aria-labelledby="legend-skill-detail-title" onMouseDown={(event) => event.stopPropagation()}>
