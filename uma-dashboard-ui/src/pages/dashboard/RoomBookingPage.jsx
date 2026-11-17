@@ -14,7 +14,9 @@ import witIcon from "../../assets/icons/Wit.webp";
 import "../../styles/roomBookingPage.css";
 
 const TYPE_LABELS = { practice: "ห้องฝึกซ้อม", legend: "Legend Race", debut: "Debut" };
-const WEATHER_LABELS = { none: "ไม่มี", random: "สุ่ม", sunny: "แดดจัด", rainy: "ฝนตก" };
+const WEATHER_LABELS = { none: "ไม่มี", random: "สุ่ม", sunny: "แดดจัด", rainy: "ฝนตก", warm: "อบอุ่น" };
+// Trainers may only pick these; "warm" is admin-only.
+const TRAINER_WEATHERS = ["none", "random", "sunny", "rainy"];
 const LEGEND_STAT_LABELS = { speed: "ความเร็ว", stamina: "ความอึด", power: "พลัง", gut: "ความมุ่งมั่น", wit: "ไหวพริบ" };
 const LEGEND_STAT_ICONS = { speed: speedIcon, stamina: staminaIcon, power: powerIcon, gut: gutIcon, wit: witIcon };
 const APTITUDE_LABELS = { turf: "สนามหญ้า", dirt: "สนามดิน", sprint: "Sprint", mile: "Mile", medium: "Medium", long: "Long", front: "Front", pace: "Pace", late: "Late", end_style: "End" };
@@ -60,13 +62,16 @@ function localDateTime(value) {
   return { date: THAI_DATE.format(date), time: THAI_TIME.format(date) };
 }
 
-function RoomCard({ room, accountRole, userId, onJoin, busyId }) {
+function RoomCard({ room, userId, isAdmin, onJoin, busyId }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const time = localDateTime(room.starts_at);
   const members = room.members || [];
   const isMember = members.some((member) => String(member.user_id) === String(userId));
-  const canJoin = accountRole === "trainee" && !isMember && room.status !== "failed" && (
-    room.booking_type !== "practice" || room.visibility === "public"
+  const isInvited = String(room.creator_id) === String(userId)
+    || (room.invited_ids || []).some((id) => String(id) === String(userId));
+  // Anyone signed in may register (only Umamusume race); admins bypass private rooms.
+  const canJoin = Boolean(userId) && !isMember && room.status !== "failed" && (
+    room.visibility === "public" || isInvited || isAdmin
   );
   const threadUrl = room.thread_id && room.guild_id ? `https://discord.com/channels/${room.guild_id}/${room.thread_id}` : "";
 
@@ -105,6 +110,7 @@ function RoomCard({ room, accountRole, userId, onJoin, busyId }) {
           <div><strong>ผู้สร้าง</strong><span>{room.creator_name}</span></div>
           <div><strong>ประเภท</strong><span>{TYPE_LABELS[room.booking_type]}{room.visibility === "public" ? " · free-join" : " · private"}</span></div>
           {room.settings?.weather && <div><strong>อากาศ</strong><span>{WEATHER_LABELS[room.settings.weather] || room.settings.weather}</span></div>}
+          {room.settings?.fast_mode && <div><strong>Fast Mode</strong><span>เปิด · แสดงผลแบบข้อความ</span></div>}
           {room.settings?.legend_key && <div><strong>Legend</strong><span>{room.legend_name || room.settings.legend_key} · Lv.{room.settings.legend_level || 1}</span></div>}
           {room.settings?.mob_level && <div><strong>Mob</strong><span>{room.settings.mob_count || room.settings.mobs?.length || 8} ตัว · Lv.{room.settings.mob_level}</span></div>}
           {!room.settings?.mob_level && room.settings?.mobs?.length > 0 && <div><strong>Mob</strong><span>{room.settings.mobs.map((mob) => `${mob.name || mob.key} Lv.${mob.level || 1}`).join("、")}</span></div>}
@@ -200,10 +206,12 @@ function BookingConfirmDialog({ summary, busy, error, onCancel, onConfirm }) {
   );
 }
 
-function CreateBooking({ userId, accountRole, onBack, onCreated }) {
+function CreateBooking({ userId, accountRole, isAdmin, onBack, onCreated }) {
   const defaults = useMemo(makeDefaultTime, []);
   const [options, setOptions] = useState(null);
-  const [type, setType] = useState(accountRole === "trainee" ? "legend" : "practice");
+  const [type, setType] = useState(accountRole === "trainee" && !isAdmin ? "legend" : "practice");
+  const [fastMode, setFastMode] = useState(false);
+  const [adminMobKey, setAdminMobKey] = useState("");
   const [stageKey, setStageKey] = useState("");
   const [date, setDate] = useState(defaults.date);
   const [time, setTime] = useState(defaults.time);
@@ -267,13 +275,24 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
   const addRookies = () => setMobs(ROOKIE_PRESET_KEYS.map((key) => ({ key, level: mobLevel })));
   const updateMobLevel = (level) => {
     setMobLevel(level);
-    setMobs((current) => current.map((mob) => ({ ...mob, level })));
+    // Admin custom rosters keep per-mob levels; the level picker then applies to the next mob added.
+    if (!isAdmin || rookieRosterAdded) setMobs((current) => current.map((mob) => ({ ...mob, level })));
   };
+  const mobName = (key) => options?.mobs?.find((mob) => mob.key === key)?.name || key;
+  const addAdminMob = () => {
+    if (!adminMobKey) return;
+    setMobs((current) => [...current, { key: adminMobKey, level: mobLevel }]);
+  };
+  const removeMobAt = (index) => setMobs((current) => current.filter((_, i) => i !== index));
+  const typeChoices = isAdmin
+    ? Object.entries(TYPE_LABELS)
+    : accountRole === "trainee" ? [["legend", TYPE_LABELS.legend]] : [["practice", TYPE_LABELS.practice]];
+  const weatherChoices = isAdmin ? Object.keys(WEATHER_LABELS) : TRAINER_WEATHERS;
 
   const effectiveTime = atMidnight ? "24:00" : time;
   const confirmSummary = (() => {
     const rows = [
-      ["ประเภทห้อง", `${TYPE_LABELS[type]}${type === "practice" ? (visibility === "public" ? " · Free-join" : " · Private") : ""}`],
+      ["ประเภทห้อง", `${TYPE_LABELS[type]}${type === "practice" || isAdmin ? (visibility === "public" ? " · Free-join" : " · Private") : ""}`],
       ["สนาม", stageName || selectedStageKey],
       ["วันที่", date ? THAI_DATE.format(new Date(`${date}T12:00:00+07:00`)) : "-"],
       ["เวลา", `${effectiveTime} น. (เวลาไทย)`],
@@ -282,7 +301,7 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
       const invitedNames = guestOptions.filter((member) => invitedIds.includes(member.id)).map((member) => member.name);
       rows.push(["สมาชิกที่เชิญ", invitedNames.length ? invitedNames.join("、") : "ไม่มี"]);
       rows.push(["สภาพอากาศ", WEATHER_LABELS[weather] || weather]);
-      rows.push(["Mob", mobs.length ? `Rookie ${mobs.length} ตัว · Lv.${mobLevel}` : "ไม่มี"]);
+      rows.push(["Mob", !mobs.length ? "ไม่มี" : rookieRosterAdded ? `Rookie ${mobs.length} ตัว · Lv.${mobLevel}` : mobs.map((mob) => `${mobName(mob.key)} Lv.${mob.level}`).join("、")]);
     } else if (type === "legend" && selectedLegendPreset) {
       rows.push(["Legend", `${selectedLegendPreset.name} · ${selectedLegendPreset.style} · Lv.${selectedLegendPreset.legend_level}`]);
       rows.push(["Mob", `${selectedLegendPreset.mob_count || 8} ตัว · Lv.${selectedLegendPreset.mob_level}`]);
@@ -291,6 +310,8 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
     } else if (type === "debut") {
       rows.push(["กติกา", "สุ่มสภาพอากาศ · Official · Mob Lv.2"]);
     }
+    rows.push(["Fast Mode", fastMode ? "เปิด" : "ปิด"]);
+    if (isAdmin) rows.push(["สิทธิ์", "Admin · ข้ามกฎการจองทั้งหมด"]);
     return rows;
   })();
 
@@ -304,15 +325,17 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
     setBusy(true);
     setError("");
     try {
-      const settings = type === "practice"
-        ? { weather, mobs, ...(mobs.length ? { mob_level: mobLevel } : {}) }
+      const baseSettings = type === "practice"
+        ? { weather, mobs, ...(mobs.length && rookieRosterAdded ? { mob_level: mobLevel } : {}) }
         : type === "legend"
           ? { legend_preset_key: legendKey }
           : {};
+      const settings = { ...baseSettings, fast_mode: fastMode };
+      const allowsPrivate = type === "practice" || isAdmin;
       await createRoomBooking({
         user_id: String(userId), booking_type: type, stage_key: selectedStageKey,
-        date, time: effectiveTime, visibility: type === "practice" ? visibility : "public",
-        invited_ids: type === "practice" ? invitedIds : [], settings,
+        date, time: effectiveTime, visibility: allowsPrivate ? visibility : "public",
+        invited_ids: allowsPrivate ? invitedIds : [], settings,
       });
       onCreated();
     } catch (createError) {
@@ -335,7 +358,7 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
       <form className="booking-form" onSubmit={submit}>
         <fieldset className="booking-type-choices">
           <legend>ประเภทห้อง</legend>
-          {(accountRole === "trainee" ? [["legend", TYPE_LABELS.legend]] : [["practice", TYPE_LABELS.practice]]).map(([value, label]) => (
+          {typeChoices.map(([value, label]) => (
             <label key={value} className={type === value ? "is-selected" : ""}>
               <input type="radio" name="booking-type" value={value} checked={type === value} onChange={() => setType(value)} />
               <span><strong>{label}</strong><small>{value === "practice" ? "Trainer ตั้งค่าได้เอง" : value === "legend" ? "ท้าทาย Legend ตาม preset" : "สนาม Debut ทางการ"}</small></span>
@@ -356,12 +379,12 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
             {type === "debut" && <small>Debut ถูกล็อกเป็นสนาม Debut</small>}
             {type === "legend" && <small>สนามกำหนดจาก Legend preset ในไฟล์ preset</small>}
           </div>
-          <label className="booking-field"><span>วันที่</span><input type="date" value={date} min={getThaiDate()} max={getThaiDate(new Date(Date.now() + 7 * 86400000))} onChange={(event) => setDate(event.target.value)} required /></label>
-          <label className="booking-field"><span>เวลา (ประเทศไทย)</span><input type="time" min="10:00" max="23:59" step="60" value={time} disabled={atMidnight} onChange={(event) => { setAtMidnight(false); setTime(event.target.value); }} required={!atMidnight} /><span className="booking-midnight-option"><input type="checkbox" checked={atMidnight} onChange={(event) => setAtMidnight(event.target.checked)} /> ระบุเป็น 24:00 น.</span></label>
-          <div className="booking-time-note"><Clock3 size={15} /> เวลาให้เลือกตั้งแต่ 10:00 ถึง 24:00 น.</div>
+          <label className="booking-field"><span>วันที่</span><input type="date" value={date} min={getThaiDate()} max={isAdmin ? undefined : getThaiDate(new Date(Date.now() + 7 * 86400000))} onChange={(event) => setDate(event.target.value)} required /></label>
+          <label className="booking-field"><span>เวลา (ประเทศไทย)</span><input type="time" min={isAdmin ? undefined : "10:00"} max={isAdmin ? undefined : "23:59"} step="60" value={time} disabled={atMidnight} onChange={(event) => { setAtMidnight(false); setTime(event.target.value); }} required={!atMidnight} /><span className="booking-midnight-option"><input type="checkbox" checked={atMidnight} onChange={(event) => setAtMidnight(event.target.checked)} /> ระบุเป็น 24:00 น.</span></label>
+          <div className="booking-time-note"><Clock3 size={15} /> {isAdmin ? "Admin เลือกเวลาและวันได้อิสระ" : "เวลาให้เลือกตั้งแต่ 10:00 ถึง 24:00 น."}</div>
         </div>
 
-        {type === "practice" && <>
+        {(type === "practice" || isAdmin) && <>
           <div className="booking-form-section">
             <div className="booking-section-heading"><div><h3>รูปแบบห้อง</h3><p>กำหนดว่าใครเข้าห้องได้</p></div></div>
             <div className="booking-visibility-switch">
@@ -386,19 +409,23 @@ function CreateBooking({ userId, accountRole, onBack, onCreated }) {
               <small>สมาชิกที่เลือกจะได้รับ ping และเข้าร่วมในเธรดที่สร้าง</small>
             </div>
           </div>
-          <div className="booking-form-section">
-            <div className="booking-section-heading"><div><h3>การตั้งค่าการแข่ง</h3><p>ปรับได้ก่อนห้องเปิด</p></div></div>
-            <label className="booking-field booking-weather-field"><span>สภาพอากาศ</span><select value={weather} onChange={(event) => setWeather(event.target.value)}>{Object.entries(WEATHER_LABELS).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
-            <div className="booking-mob-list">
-              <label className="booking-field"><span>ระดับ Mob ทุกตัว</span><select value={mobLevel} onChange={(event) => updateMobLevel(Number(event.target.value))}>{Array.from({ length: 8 }, (_, i) => i + 1).map((level) => <option key={level} value={level}>Lv.{level}</option>)}</select></label>
-              {rookieRosterAdded && <div className="booking-mob-roster-summary"><strong>Mob ครบ 8 ตัว</strong><span>ใช้ตัวละคร Rookie มาตรฐานทุกตัว · Lv.{mobLevel}</span></div>}
-              <button type="button" className="booking-add-mob" onClick={addRookies} disabled={rookieRosterAdded}>
-                {rookieRosterAdded ? <><Check size={16} /> เพิ่ม Rookie ครบ 8 ตัวแล้ว</> : <><Plus size={16} /> เพิ่ม Rookie ทั้ง 8 ตัว</>}
-              </button>
-              {rookieRosterAdded && <button type="button" className="booking-clear-mobs" onClick={() => setMobs([])}>นำ Mob ออก</button>}
-            </div>
-          </div>
         </>}
+
+        <div className="booking-form-section">
+          <div className="booking-section-heading"><div><h3>การตั้งค่าการแข่ง</h3><p>{isAdmin ? "Admin ปรับได้ทุกค่า" : type === "practice" ? "Trainer ปรับได้เฉพาะสภาพอากาศ, Fast Mode และ Mob Rookie" : "ค่าอื่นล็อกตาม preset"}</p></div></div>
+          {type === "practice" && <label className="booking-field booking-weather-field"><span>สภาพอากาศ</span><select value={weather} onChange={(event) => setWeather(event.target.value)}>{weatherChoices.map((key) => <option key={key} value={key}>{WEATHER_LABELS[key]}</option>)}</select></label>}
+          <label className="booking-midnight-option"><input type="checkbox" checked={fastMode} onChange={(event) => setFastMode(event.target.checked)} /> Fast Mode · แสดงผลทอยบอทแบบข้อความ</label>
+          {type === "practice" && <div className="booking-mob-list">
+            <label className="booking-field"><span>{isAdmin ? "ระดับ Mob (ตัวถัดไป / Rookie)" : "ระดับ Mob ทุกตัว"}</span><select value={mobLevel} onChange={(event) => updateMobLevel(Number(event.target.value))}>{Array.from({ length: 8 }, (_, i) => i + 1).map((level) => <option key={level} value={level}>Lv.{level}</option>)}</select></label>
+            {rookieRosterAdded && <div className="booking-mob-roster-summary"><strong>Mob ครบ 8 ตัว</strong><span>ใช้ตัวละคร Rookie มาตรฐานทุกตัว · Lv.{mobLevel}</span></div>}
+            {!rookieRosterAdded && mobs.length > 0 && <ul className="booking-member-list" aria-label="Mob ที่เลือก">{mobs.map((mob, index) => <li key={`${mob.key}-${index}`}><span className="booking-member-name">{mobName(mob.key)} · Lv.{mob.level}</span><button type="button" className="booking-clear-mobs" onClick={() => removeMobAt(index)}>นำออก</button></li>)}</ul>}
+            <button type="button" className="booking-add-mob" onClick={addRookies} disabled={rookieRosterAdded}>
+              {rookieRosterAdded ? <><Check size={16} /> เพิ่ม Rookie ครบ 8 ตัวแล้ว</> : <><Plus size={16} /> เพิ่ม Rookie ทั้ง 8 ตัว</>}
+            </button>
+            {isAdmin && <div className="booking-field"><span>Admin · เพิ่ม Mob ตัวใดก็ได้</span><select value={adminMobKey} onChange={(event) => setAdminMobKey(event.target.value)}><option value="">เลือก Mob</option>{(options?.mobs || []).map((mob) => <option key={mob.key} value={mob.key}>{mob.name}</option>)}</select><button type="button" className="booking-add-mob" onClick={addAdminMob} disabled={!adminMobKey}><Plus size={16} /> เพิ่ม Mob</button></div>}
+            {mobs.length > 0 && <button type="button" className="booking-clear-mobs" onClick={() => setMobs([])}>นำ Mob ออกทั้งหมด</button>}
+          </div>}
+        </div>
 
         {type === "legend" && <div className="booking-form-section">
           <div className="booking-section-heading"><div><h3>Legend Race preset</h3><p>ค่าการแข่งกำหนดไว้ในไฟล์ preset ของบอต</p></div></div>
@@ -448,11 +475,13 @@ export default function RoomBookingPage({ userId, accountRole, username }) {
   const [busyId, setBusyId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
       const data = await listRoomBookings(userId);
       setRooms(data.rooms || []);
+      setIsAdmin(Boolean(data.viewer?.is_admin));
       setError("");
     } catch (loadError) {
       setError(loadError.message);
@@ -482,14 +511,14 @@ export default function RoomBookingPage({ userId, accountRole, username }) {
 
   return (
     <div className="room-booking-page">
-      {view === "create" ? <CreateBooking userId={userId} accountRole={accountRole} onBack={() => setView("list")} onCreated={async () => { await refresh(); setView("list"); }} /> : <>
+      {view === "create" ? <CreateBooking userId={userId} accountRole={accountRole} isAdmin={isAdmin} onBack={() => setView("list")} onCreated={async () => { await refresh(); setView("list"); }} /> : <>
         <header className="room-booking-header">
           <div className="room-booking-title-wrap"><span className="room-booking-emblem"><CalendarClock size={25} /></span><div><span className="booking-eyebrow">TRACEN · RACE DESK</span><h2>ห้องแข่งขัน</h2><p>ตารางห้องนัดหมายและห้องที่กำลังเปิดใน Discord</p></div></div>
-          <div className="room-booking-header-actions"><button className="booking-refresh" type="button" onClick={refresh} aria-label="รีเฟรชรายการ"><RefreshCw size={17} /></button>{["trainer", "trainee"].includes(accountRole) && <button className="booking-create-button" type="button" onClick={() => setView("create")}><Plus size={18} /> {accountRole === "trainee" ? "สร้าง Legend Race" : "สร้างห้อง"}</button>}</div>
+          <div className="room-booking-header-actions"><button className="booking-refresh" type="button" onClick={refresh} aria-label="รีเฟรชรายการ"><RefreshCw size={17} /></button>{(isAdmin || ["trainer", "trainee"].includes(accountRole)) && <button className="booking-create-button" type="button" onClick={() => setView("create")}><Plus size={18} /> {accountRole === "trainee" && !isAdmin ? "สร้าง Legend Race" : "สร้างห้อง"}</button>}</div>
         </header>
         <div className="room-booking-summary"><span><i /> แสดงเวลาไทย (UTC+7)</span><span>{rooms.length} ห้องในรายการ</span>{username && <span>เข้าสู่ระบบในชื่อ {username}</span>}</div>
         {error && <div className="booking-error-banner" role="alert">{error}</div>}
-        {loading ? <div className="booking-loading">กำลังโหลดรายการห้อง…</div> : rooms.length ? <div className="booking-room-list">{rooms.map((room) => <RoomCard key={room.booking_id} room={room} accountRole={accountRole} userId={userId} onJoin={join} busyId={busyId} />)}</div> : <div className="booking-empty"><span><CalendarClock size={28} /></span><h3>ยังไม่มีห้องที่กำลังเปิดจอง</h3><p>{accountRole === "trainer" ? "สร้างห้องใหม่ แล้วกำหนดเวลาที่ต้องการให้เปิดใน Discord" : accountRole === "trainee" ? "สร้าง Legend Race ของตัวเอง หรือรอห้องจาก Trainer" : "เมื่อ Trainer เปิดห้องใหม่ รายการจะแสดงที่นี่"}</p>{["trainer", "trainee"].includes(accountRole) && <button type="button" onClick={() => setView("create")}><Plus size={17} /> {accountRole === "trainee" ? "สร้าง Legend Race" : "สร้างห้องแรก"}</button>}</div>}
+        {loading ? <div className="booking-loading">กำลังโหลดรายการห้อง…</div> : rooms.length ? <div className="booking-room-list">{rooms.map((room) => <RoomCard key={room.booking_id} room={room} userId={userId} isAdmin={isAdmin} onJoin={join} busyId={busyId} />)}</div> : <div className="booking-empty"><span><CalendarClock size={28} /></span><h3>ยังไม่มีห้องที่กำลังเปิดจอง</h3><p>{accountRole === "trainer" ? "สร้างห้องใหม่ แล้วกำหนดเวลาที่ต้องการให้เปิดใน Discord" : accountRole === "trainee" ? "สร้าง Legend Race ของตัวเอง หรือรอห้องจาก Trainer" : "เมื่อ Trainer เปิดห้องใหม่ รายการจะแสดงที่นี่"}</p>{["trainer", "trainee"].includes(accountRole) && <button type="button" onClick={() => setView("create")}><Plus size={17} /> {accountRole === "trainee" ? "สร้าง Legend Race" : "สร้างห้องแรก"}</button>}</div>}
       </>}
     </div>
   );

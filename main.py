@@ -411,8 +411,6 @@ async def proxy_room_bookings(request: Request, booking_path: str = ""):
         return JSONResponse({"detail": "Room booking service is not configured"}, status_code=503)
 
     path = request.url.path.removeprefix("/api")
-    if request.method == "POST" and path.endswith("/join") and user.get("discord_role") != "trainee":
-        return JSONResponse({"detail": "Umamusume role required"}, status_code=403)
     body = await request.body()
     if request.method == "POST":
         try:
@@ -422,15 +420,12 @@ async def proxy_room_bookings(request: Request, booking_path: str = ""):
         except (ValueError, TypeError):
             return JSONResponse({"detail": "Invalid request body"}, status_code=400)
         payload["user_id"] = str(user["id"])
-        if path == "/room-bookings":
-            role = user.get("discord_role")
-            booking_type = payload.get("booking_type")
-            allowed = (role == "trainer" and booking_type == "practice") or (role == "trainee" and booking_type == "legend")
-            if not allowed:
-                return JSONResponse({"detail": "Trainers may create practice rooms; Umamusume may create Legend Race"}, status_code=403)
+        if path.endswith("/join"):
+            payload["username"] = str(user.get("username") or "")
+        # Role rules (Trainer/Umamusume/Admin) are enforced by the signed bot API.
         body = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode()
     query_items = list(request.query_params.multi_items())
-    if path == "/room-bookings":
+    if path in {"/room-bookings", "/room-bookings/options"}:
         query_items = [(key, value) for key, value in query_items if key != "user_id"]
         query_items.append(("user_id", str(user["id"])))
     query = urlencode(query_items)
