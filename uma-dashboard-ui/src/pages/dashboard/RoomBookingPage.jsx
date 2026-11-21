@@ -209,7 +209,7 @@ function BookingConfirmDialog({ summary, busy, error, onCancel, onConfirm }) {
 function CreateBooking({ userId, accountRole, isAdmin, onBack, onCreated }) {
   const defaults = useMemo(makeDefaultTime, []);
   const [options, setOptions] = useState(null);
-  const [type, setType] = useState(accountRole === "trainee" && !isAdmin ? "legend" : "practice");
+  const [type, setType] = useState("practice");
   const [fastMode, setFastMode] = useState(false);
   const [adminMobKey, setAdminMobKey] = useState("");
   const [stageKey, setStageKey] = useState("");
@@ -286,7 +286,7 @@ function CreateBooking({ userId, accountRole, isAdmin, onBack, onCreated }) {
   const removeMobAt = (index) => setMobs((current) => current.filter((_, i) => i !== index));
   const typeChoices = isAdmin
     ? Object.entries(TYPE_LABELS)
-    : accountRole === "trainee" ? [["legend", TYPE_LABELS.legend]] : [["practice", TYPE_LABELS.practice]];
+    : [["practice", TYPE_LABELS.practice]];
   const weatherChoices = isAdmin ? Object.keys(WEATHER_LABELS) : TRAINER_WEATHERS;
 
   const effectiveTime = atMidnight ? "24:00" : time;
@@ -514,11 +514,11 @@ export default function RoomBookingPage({ userId, accountRole, username }) {
       {view === "create" ? <CreateBooking userId={userId} accountRole={accountRole} isAdmin={isAdmin} onBack={() => setView("list")} onCreated={async () => { await refresh(); setView("list"); }} /> : <>
         <header className="room-booking-header">
           <div className="room-booking-title-wrap"><span className="room-booking-emblem"><CalendarClock size={25} /></span><div><span className="booking-eyebrow">TRACEN · RACE DESK</span><h2>ห้องแข่งขัน</h2><p>ตารางห้องนัดหมายและห้องที่กำลังเปิดใน Discord</p></div></div>
-          <div className="room-booking-header-actions"><button className="booking-refresh" type="button" onClick={refresh} aria-label="รีเฟรชรายการ"><RefreshCw size={17} /></button>{(isAdmin || ["trainer", "trainee"].includes(accountRole)) && <button className="booking-create-button" type="button" onClick={() => setView("create")}><Plus size={18} /> {accountRole === "trainee" && !isAdmin ? "สร้าง Legend Race" : "สร้างห้อง"}</button>}</div>
+          <div className="room-booking-header-actions"><button className="booking-refresh" type="button" onClick={refresh} aria-label="รีเฟรชรายการ"><RefreshCw size={17} /></button>{(isAdmin || accountRole === "trainer") && <button className="booking-create-button" type="button" onClick={() => setView("create")}><Plus size={18} /> สร้างห้อง</button>}</div>
         </header>
         <div className="room-booking-summary"><span><i /> แสดงเวลาไทย (UTC+7)</span><span>{rooms.length} ห้องในรายการ</span>{username && <span>เข้าสู่ระบบในชื่อ {username}</span>}</div>
         {error && <div className="booking-error-banner" role="alert">{error}</div>}
-        {loading ? <div className="booking-loading">กำลังโหลดรายการห้อง…</div> : rooms.length ? <div className="booking-room-list">{rooms.map((room) => <RoomCard key={room.booking_id} room={room} userId={userId} isAdmin={isAdmin} onJoin={join} busyId={busyId} />)}</div> : <div className="booking-empty"><span><CalendarClock size={28} /></span><h3>ยังไม่มีห้องที่กำลังเปิดจอง</h3><p>{accountRole === "trainer" ? "สร้างห้องใหม่ แล้วกำหนดเวลาที่ต้องการให้เปิดใน Discord" : accountRole === "trainee" ? "สร้าง Legend Race ของตัวเอง หรือรอห้องจาก Trainer" : "เมื่อ Trainer เปิดห้องใหม่ รายการจะแสดงที่นี่"}</p>{["trainer", "trainee"].includes(accountRole) && <button type="button" onClick={() => setView("create")}><Plus size={17} /> {accountRole === "trainee" ? "สร้าง Legend Race" : "สร้างห้องแรก"}</button>}</div>}
+        {loading ? <div className="booking-loading">กำลังโหลดรายการห้อง…</div> : rooms.length ? <div className="booking-room-list">{rooms.map((room) => <RoomCard key={room.booking_id} room={room} userId={userId} isAdmin={isAdmin} onJoin={join} busyId={busyId} />)}</div> : <div className="booking-empty"><span><CalendarClock size={28} /></span><h3>ยังไม่มีห้องที่กำลังเปิดจอง</h3><p>{accountRole === "trainer" ? "สร้างห้องใหม่ แล้วกำหนดเวลาที่ต้องการให้เปิดใน Discord" : "เมื่อ Trainer เปิดห้องใหม่ รายการจะแสดงที่นี่"}</p>{(isAdmin || accountRole === "trainer") && <button type="button" onClick={() => setView("create")}><Plus size={17} /> สร้างห้องแรก</button>}</div>}
       </>}
     </div>
   );

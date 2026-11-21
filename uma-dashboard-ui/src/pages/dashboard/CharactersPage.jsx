@@ -647,6 +647,13 @@ function CharacterProfilePage({ character, userId, detail, loading, error, onClo
     )),
     [detail?.history, historyRecordType]
   );
+  const racePlacements = useMemo(() => filteredRaceHistory.reduce((counts, record) => {
+    const place = Number(record?.final_rank ?? record?.placement ?? record?.rank ?? record?.position ?? record?.place);
+    if (place === 1) counts.first += 1;
+    if (place === 2) counts.second += 1;
+    if (place === 3) counts.third += 1;
+    return counts;
+  }, { first: 0, second: 0, third: 0 }), [filteredRaceHistory]);
   const historyPageCount = Math.max(
     1,
     Math.ceil(filteredRaceHistory.length / RACE_HISTORY_PAGE_SIZE)
@@ -766,6 +773,12 @@ function CharacterProfilePage({ character, userId, detail, loading, error, onClo
                     <option value="practice">Practice</option>
                   </select>
                 </label>
+              </div>
+              <div className="character-race-summary" aria-label="สรุปผลการแข่งขัน">
+                <div><span>จำนวนการแข่ง</span><strong>{filteredRaceHistory.length.toLocaleString()}</strong></div>
+                <div><span>ที่ 1</span><strong>{racePlacements.first.toLocaleString()}</strong></div>
+                <div><span>ที่ 2</span><strong>{racePlacements.second.toLocaleString()}</strong></div>
+                <div><span>ที่ 3</span><strong>{racePlacements.third.toLocaleString()}</strong></div>
               </div>
               {detail?.history?.length ? (filteredRaceHistory.length ? <div className="character-race-list" role="table" aria-label="Race history">
                 <div className="character-race-row character-race-row--header" role="row">
