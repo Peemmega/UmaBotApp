@@ -28,6 +28,27 @@ export function createRoomBooking(payload) {
   });
 }
 
+export function updateRoomBooking(bookingId, payload) {
+  return request(`/api/room-bookings/${encodeURIComponent(bookingId)}/update`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function cancelRoomBooking(bookingId, userId) {
+  return request(`/api/room-bookings/${encodeURIComponent(bookingId)}/cancel`, {
+    method: "POST",
+    body: JSON.stringify({ user_id: String(userId) }),
+  });
+}
+
+export function withdrawRoomBooking(bookingId, userId) {
+  return request(`/api/room-bookings/${encodeURIComponent(bookingId)}/withdraw`, {
+    method: "POST",
+    body: JSON.stringify({ user_id: String(userId) }),
+  });
+}
+
 export function joinRoomBooking(bookingId, userId) {
   return request(`/api/room-bookings/${encodeURIComponent(bookingId)}/join`, {
     method: "POST",

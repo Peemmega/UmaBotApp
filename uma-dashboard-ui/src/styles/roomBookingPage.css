@@ -240,6 +240,10 @@
 .booking-hold-button:focus-visible { outline: 3px solid color-mix(in srgb, var(--uma-primary, #4b9a69) 55%, white); outline-offset: 2px; }
 .booking-hold-fill { position: absolute; inset: 0; background: var(--uma-gradient-primary, linear-gradient(135deg, #2f8b58, #65af6d)); transform-origin: left center; transform: scaleX(var(--hold-progress, 0)); }
 .booking-hold-label { position: relative; }
+.booking-hold-compact { min-height: 36px; padding: 0 12px; border-radius: 9px; font-size: 12px; white-space: nowrap; }
+.booking-hold-danger { border: 1px solid #e3b4ac; color: #a34f42; background: #fff4f1; }
+.booking-hold-danger .booking-hold-fill { background: linear-gradient(135deg, #c4574a, #e07a62); }
+.booking-hold-danger:not(:disabled):active .booking-hold-label { color: white; }
 @media (max-width: 480px) {
   .booking-confirm-list div { grid-template-columns: 1fr; gap: 2px; }
   .booking-confirm-actions > * { flex: 1 1 100%; }

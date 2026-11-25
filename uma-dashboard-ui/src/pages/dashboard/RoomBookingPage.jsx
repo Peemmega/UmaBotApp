@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowLeft, CalendarClock, Check, ChevronRight, Clock3, DoorOpen, LockKeyhole, Plus, RefreshCw, Search, Users } from "lucide-react";
-import { createRoomBooking, getRoomBookingOptions, joinRoomBooking, listRoomBookings } from "../../api/roomBookingApi";
+import { ArrowLeft, CalendarClock, Check, ChevronRight, Clock3, DoorOpen, LockKeyhole, Pencil, Plus, RefreshCw, Search, Users } from "lucide-react";
+import { cancelRoomBooking, createRoomBooking, getRoomBookingOptions, joinRoomBooking, listRoomBookings, updateRoomBooking, withdrawRoomBooking } from "../../api/roomBookingApi";
 import { getSkillIcon } from "../../utils/getSkillIcon";
 import { getGradeImage } from "../../utils/grade";
 import { toAbsoluteBotUrl } from "../../utils/avatar";
@@ -62,7 +62,15 @@ function localDateTime(value) {
   return { date: THAI_DATE.format(date), time: THAI_TIME.format(date) };
 }
 
-function RoomCard({ room, userId, isAdmin, onJoin, busyId }) {
+// Thai-time date/time inputs for an existing booking; midnight maps back to "24:00" of the previous day.
+function bookingFormTime(startsAt) {
+  const start = new Date(startsAt);
+  const time = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Bangkok", hour: "2-digit", minute: "2-digit", hour12: false }).format(start);
+  if (time === "00:00") return { date: getThaiDate(new Date(start.getTime() - 60000)), time: "24:00" };
+  return { date: getThaiDate(start), time };
+}
+
+function RoomCard({ room, userId, isAdmin, onJoin, onEdit, onCancel, onWithdraw, busyId }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const time = localDateTime(room.starts_at);
   const members = room.members || [];
@@ -73,6 +81,14 @@ function RoomCard({ room, userId, isAdmin, onJoin, busyId }) {
   const canJoin = Boolean(userId) && !isMember && room.status !== "failed" && (
     room.visibility === "public" || isInvited || isAdmin
   );
+  // The creator (or an admin) may edit until the Discord room is created.
+  const isCreator = String(room.creator_id) === String(userId);
+  const canEdit = room.status === "scheduled" && (isCreator || isAdmin);
+  // Cancel / withdraw only while the Discord room does not exist yet.
+  const isPreOpen = room.status === "scheduled" || room.status === "failed";
+  const canCancel = isPreOpen && (isCreator || isAdmin);
+  const canWithdraw = isPreOpen && isMember && !isCreator;
+  const isBusy = busyId === room.booking_id;
   const threadUrl = room.thread_id && room.guild_id ? `https://discord.com/channels/${room.guild_id}/${room.thread_id}` : "";
 
   return (
@@ -97,12 +113,27 @@ function RoomCard({ room, userId, isAdmin, onJoin, busyId }) {
         <button className="booking-quiet-button" type="button" onClick={() => setDetailsOpen((open) => !open)} aria-expanded={detailsOpen}>
           รายละเอียด <ChevronRight size={16} className={detailsOpen ? "is-rotated" : ""} />
         </button>
+        {canEdit && (
+          <button className="booking-quiet-button" type="button" onClick={() => onEdit(room)}>
+            <Pencil size={15} /> แก้ไข
+          </button>
+        )}
         {canJoin && (
           <button className="booking-join-button" type="button" onClick={() => onJoin(room)} disabled={busyId === room.booking_id}>
             {busyId === room.booking_id ? "กำลังลงชื่อ..." : "ลงชื่อเข้าร่วม"}
           </button>
         )}
         {isMember && <span className="booking-joined"><Check size={15} /> ลงชื่อแล้ว</span>}
+        {canWithdraw && (
+          <HoldToConfirmButton className="booking-hold-button booking-hold-compact booking-hold-danger" onConfirm={() => onWithdraw(room)} disabled={isBusy}>
+            {isBusy ? "กำลังถอนชื่อ…" : "กดค้างเพื่อถอนชื่อ"}
+          </HoldToConfirmButton>
+        )}
+        {canCancel && (
+          <HoldToConfirmButton className="booking-hold-button booking-hold-compact booking-hold-danger" onConfirm={() => onCancel(room)} disabled={isBusy}>
+            {isBusy ? "กำลังยกเลิก…" : "กดค้างเพื่อยกเลิกการจอง"}
+          </HoldToConfirmButton>
+        )}
       </div>
       {detailsOpen && (
         <div className="booking-room-details">
@@ -116,6 +147,7 @@ function RoomCard({ room, userId, isAdmin, onJoin, busyId }) {
           {!room.settings?.mob_level && room.settings?.mobs?.length > 0 && <div><strong>Mob</strong><span>{room.settings.mobs.map((mob) => `${mob.name || mob.key} Lv.${mob.level || 1}`).join("、")}</span></div>}
           {room.status === "failed" && <div className="booking-room-open-error"><strong>สถานะเปิดห้อง</strong><span>{String(room.creator_id) === String(userId) && room.error ? room.error : "กำลังลองเปิดห้องอีกครั้ง"}</span></div>}
           <div className="booking-attendee-list"><strong>สมาชิก</strong><span>{members.map((member) => member.username).join("、") || "ยังไม่มีสมาชิก"}</span></div>
+          <div><strong>การเข้าสนาม</strong><span>ผู้ลงชื่อจะถูกแท็กในเธรดเมื่อห้องเปิด แล้วกดเข้าร่วมใน Lobby เอง</span></div>
           {threadUrl && <a href={threadUrl} target="_blank" rel="noreferrer">เปิดเธรดใน Discord <ChevronRight size={15} /></a>}
         </div>
       )}
@@ -126,7 +158,7 @@ function RoomCard({ room, userId, isAdmin, onJoin, busyId }) {
 const HOLD_TO_CONFIRM_MS = 1200;
 
 // Fires onConfirm only after the button is held down for HOLD_TO_CONFIRM_MS (mouse, touch, or Space/Enter).
-function HoldToConfirmButton({ onConfirm, disabled, children }) {
+function HoldToConfirmButton({ onConfirm, disabled, children, className = "booking-hold-button" }) {
   const [progress, setProgress] = useState(0);
   const frameRef = useRef(0);
   const startRef = useRef(0);
@@ -162,7 +194,7 @@ function HoldToConfirmButton({ onConfirm, disabled, children }) {
   return (
     <button
       type="button"
-      className="booking-hold-button"
+      className={className}
       disabled={disabled}
       style={{ "--hold-progress": progress }}
       onPointerDown={(event) => { event.currentTarget.setPointerCapture?.(event.pointerId); start(); }}
@@ -180,7 +212,7 @@ function HoldToConfirmButton({ onConfirm, disabled, children }) {
   );
 }
 
-function BookingConfirmDialog({ summary, busy, error, onCancel, onConfirm }) {
+function BookingConfirmDialog({ summary, busy, error, onCancel, onConfirm, isEditing = false }) {
   useEffect(() => {
     const closeOnEscape = (event) => { if (event.key === "Escape" && !busy) onCancel(); };
     window.addEventListener("keydown", closeOnEscape);
@@ -190,15 +222,15 @@ function BookingConfirmDialog({ summary, busy, error, onCancel, onConfirm }) {
   return createPortal(
     <div className="booking-confirm-backdrop" onMouseDown={() => !busy && onCancel()}>
       <section className="booking-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="booking-confirm-title" onMouseDown={(event) => event.stopPropagation()}>
-        <span className="booking-eyebrow">ตรวจสอบก่อนสร้าง</span>
-        <h3 id="booking-confirm-title">ยืนยันการจองห้อง</h3>
+        <span className="booking-eyebrow">{isEditing ? "ตรวจสอบก่อนบันทึก" : "ตรวจสอบก่อนสร้าง"}</span>
+        <h3 id="booking-confirm-title">{isEditing ? "ยืนยันการแก้ไขห้อง" : "ยืนยันการจองห้อง"}</h3>
         <dl className="booking-confirm-list">
           {summary.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
         </dl>
         {error && <p className="booking-form-error" role="alert">{error}</p>}
         <div className="booking-confirm-actions">
           <button type="button" className="booking-quiet-button" onClick={onCancel} disabled={busy}>กลับไปแก้ไข</button>
-          <HoldToConfirmButton onConfirm={onConfirm} disabled={busy}>{busy ? "กำลังสร้าง…" : "กดค้างเพื่อสร้างห้อง"}</HoldToConfirmButton>
+          <HoldToConfirmButton onConfirm={onConfirm} disabled={busy}>{busy ? (isEditing ? "กำลังบันทึก…" : "กำลังสร้าง…") : (isEditing ? "กดค้างเพื่อบันทึก" : "กดค้างเพื่อสร้างห้อง")}</HoldToConfirmButton>
         </div>
       </section>
     </div>,
@@ -206,24 +238,26 @@ function BookingConfirmDialog({ summary, busy, error, onCancel, onConfirm }) {
   );
 }
 
-function CreateBooking({ userId, accountRole, isAdmin, onBack, onCreated }) {
-  const defaults = useMemo(makeDefaultTime, []);
+function CreateBooking({ userId, accountRole, isAdmin, editing = null, onBack, onCreated }) {
+  const isEditing = Boolean(editing);
+  const defaults = useMemo(() => (editing ? bookingFormTime(editing.starts_at) : makeDefaultTime()), [editing]);
+  const editSettings = editing?.settings || {};
   const [options, setOptions] = useState(null);
-  const [type, setType] = useState("practice");
-  const [fastMode, setFastMode] = useState(false);
+  const [type, setType] = useState(editing?.booking_type || "practice");
+  const [fastMode, setFastMode] = useState(Boolean(editSettings.fast_mode));
   const [adminMobKey, setAdminMobKey] = useState("");
-  const [stageKey, setStageKey] = useState("");
+  const [stageKey, setStageKey] = useState(editing?.stage_key || "");
   const [date, setDate] = useState(defaults.date);
-  const [time, setTime] = useState(defaults.time);
+  const [time, setTime] = useState(defaults.time === "24:00" ? "23:59" : defaults.time);
   const [atMidnight, setAtMidnight] = useState(defaults.time === "24:00");
-  const [visibility, setVisibility] = useState("public");
-  const [invitedIds, setInvitedIds] = useState([]);
+  const [visibility, setVisibility] = useState(editing?.visibility || "public");
+  const [invitedIds, setInvitedIds] = useState(() => (editing?.invited_ids || []).map(String));
   const [memberQuery, setMemberQuery] = useState("");
   const [stageQuery, setStageQuery] = useState("");
-  const [weather, setWeather] = useState("none");
-  const [mobs, setMobs] = useState([]);
-  const [mobLevel, setMobLevel] = useState(1);
-  const [legendKey, setLegendKey] = useState("");
+  const [weather, setWeather] = useState(editing?.booking_type === "practice" ? editSettings.weather || "none" : "none");
+  const [mobs, setMobs] = useState(() => (editing?.booking_type === "practice" ? (editSettings.mobs || []).map((mob) => ({ key: mob.key, level: Number(mob.level) || 1 })) : []));
+  const [mobLevel, setMobLevel] = useState(editing?.booking_type === "practice" ? Number(editSettings.mob_level || editSettings.mobs?.[0]?.level) || 1 : 1);
+  const [legendKey, setLegendKey] = useState(editSettings.legend_preset_key || "");
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -232,8 +266,11 @@ function CreateBooking({ userId, accountRole, isAdmin, onBack, onCreated }) {
   useEffect(() => {
     getRoomBookingOptions().then((data) => {
       setOptions(data);
-      setStageKey(data.stages?.find((stage) => stage.key === "Debut" || stage.name?.toLowerCase() === "debut")?.key || data.stages?.[0]?.key || "");
-      setLegendKey(data.legend_presets?.[0]?.key || "");
+      // Keep the booking's own stage/preset when editing; otherwise pick defaults.
+      setStageKey((current) => (current && data.stages?.some((stage) => stage.key === current))
+        ? current
+        : data.stages?.find((stage) => stage.key === "Debut" || stage.name?.toLowerCase() === "debut")?.key || data.stages?.[0]?.key || "");
+      setLegendKey((current) => (current && data.legend_presets?.some((preset) => preset.key === current)) ? current : data.legend_presets?.[0]?.key || "");
     }).catch((loadError) => setError(loadError.message));
   }, []);
 
@@ -284,9 +321,12 @@ function CreateBooking({ userId, accountRole, isAdmin, onBack, onCreated }) {
     setMobs((current) => [...current, { key: adminMobKey, level: mobLevel }]);
   };
   const removeMobAt = (index) => setMobs((current) => current.filter((_, i) => i !== index));
-  const typeChoices = isAdmin
-    ? Object.entries(TYPE_LABELS)
-    : [["practice", TYPE_LABELS.practice]];
+  // The room type is fixed once booked; only its time, stage and settings can change.
+  const typeChoices = isEditing
+    ? [[type, TYPE_LABELS[type]]]
+    : isAdmin
+      ? Object.entries(TYPE_LABELS)
+      : [["practice", TYPE_LABELS.practice]];
   const weatherChoices = isAdmin ? Object.keys(WEATHER_LABELS) : TRAINER_WEATHERS;
 
   const effectiveTime = atMidnight ? "24:00" : time;
@@ -332,11 +372,13 @@ function CreateBooking({ userId, accountRole, isAdmin, onBack, onCreated }) {
           : {};
       const settings = { ...baseSettings, fast_mode: fastMode };
       const allowsPrivate = type === "practice" || isAdmin;
-      await createRoomBooking({
-        user_id: String(userId), booking_type: type, stage_key: selectedStageKey,
+      const payload = {
+        user_id: String(userId), stage_key: selectedStageKey,
         date, time: effectiveTime, visibility: allowsPrivate ? visibility : "public",
         invited_ids: allowsPrivate ? invitedIds : [], settings,
-      });
+      };
+      if (isEditing) await updateRoomBooking(editing.booking_id, payload);
+      else await createRoomBooking({ ...payload, booking_type: type });
       onCreated();
     } catch (createError) {
       setError(createError.message);
@@ -352,7 +394,7 @@ function CreateBooking({ userId, accountRole, isAdmin, onBack, onCreated }) {
       <button type="button" className="booking-back-button" onClick={onBack}><ArrowLeft size={17} /> กลับไปหน้าห้อง</button>
       <div className="booking-create-heading">
         <span className="booking-create-icon"><CalendarClock size={23} /></span>
-        <div><span className="booking-eyebrow">กำหนดการแข่งขัน</span><h2 id="booking-create-title">สร้างห้องใหม่</h2><p>เลือกสนามและเวลาตามเวลาไทย ห้องจะเปิดใน Discord อัตโนมัติ</p></div>
+        <div><span className="booking-eyebrow">กำหนดการแข่งขัน</span><h2 id="booking-create-title">{isEditing ? "แก้ไขห้อง" : "สร้างห้องใหม่"}</h2><p>{isEditing ? "แก้ได้จนกว่าห้องจะถูกสร้างใน Discord" : "เลือกสนามและเวลาตามเวลาไทย ห้องจะเปิดใน Discord อัตโนมัติ"}</p></div>
       </div>
 
       <form className="booking-form" onSubmit={submit}>
@@ -406,7 +448,7 @@ function CreateBooking({ userId, accountRole, isAdmin, onBack, onCreated }) {
                 })}
                 {filteredGuests.length === 0 && <li className="booking-member-empty">ไม่พบสมาชิกที่ตรงกับคำค้น</li>}
               </ul>
-              <small>สมาชิกที่เลือกจะได้รับ ping และเข้าร่วมในเธรดที่สร้าง</small>
+              <small>สมาชิกที่เลือกจะถูกแท็กในเธรดเมื่อห้องเปิด แล้วกดเข้าร่วมใน Lobby เอง</small>
             </div>
           </div>
         </>}
@@ -447,9 +489,9 @@ function CreateBooking({ userId, accountRole, isAdmin, onBack, onCreated }) {
         {type === "debut" && <div className="booking-debut-lock"><Check size={18} /><div><strong>ค่ามาตรฐาน Debut</strong><span>สุ่มสภาพอากาศ · แข่งแบบ Official · Mob Lv.2 · ลงได้สัปดาห์ละ 1 ครั้ง</span></div></div>}
 
         {error && <p className="booking-form-error" role="alert">{error}</p>}
-        <div className="booking-form-footer"><span>{stageName}{date ? ` · ${date}` : ""} · {atMidnight ? "24:00" : time} (เวลาไทย)</span><button className="booking-submit" type="submit" disabled={busy || !options}>{busy ? "กำลังสร้าง…" : "สร้างการจอง"}<ChevronRight size={18} /></button></div>
+        <div className="booking-form-footer"><span>{stageName}{date ? ` · ${date}` : ""} · {atMidnight ? "24:00" : time} (เวลาไทย)</span><button className="booking-submit" type="submit" disabled={busy || !options}>{busy ? (isEditing ? "กำลังบันทึก…" : "กำลังสร้าง…") : (isEditing ? "บันทึกการแก้ไข" : "สร้างการจอง")}<ChevronRight size={18} /></button></div>
       </form>
-      {confirmOpen && <BookingConfirmDialog summary={confirmSummary} busy={busy} error={error} onCancel={() => setConfirmOpen(false)} onConfirm={createConfirmed} />}
+      {confirmOpen && <BookingConfirmDialog summary={confirmSummary} busy={busy} error={error} onCancel={() => setConfirmOpen(false)} onConfirm={createConfirmed} isEditing={isEditing} />}
       {selectedSkill && createPortal(
         <div className="skill-loadout-detail-backdrop" onMouseDown={() => setSelectedSkill(null)}>
           <section className="skill-loadout-detail-modal" role="dialog" aria-modal="true" aria-labelledby="legend-skill-detail-title" onMouseDown={(event) => event.stopPropagation()}>
@@ -472,6 +514,7 @@ function CreateBooking({ userId, accountRole, isAdmin, onBack, onCreated }) {
 export default function RoomBookingPage({ userId, accountRole, username }) {
   const [rooms, setRooms] = useState([]);
   const [view, setView] = useState("list");
+  const [editingRoom, setEditingRoom] = useState(null);
   const [busyId, setBusyId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -496,29 +539,33 @@ export default function RoomBookingPage({ userId, accountRole, username }) {
     return () => window.clearInterval(timer);
   }, [refresh]);
 
-  const join = async (room) => {
+  // Runs one room action (join / cancel / withdraw), then reloads the list.
+  const runRoomAction = async (room, action) => {
     setBusyId(room.booking_id);
     setError("");
     try {
-      await joinRoomBooking(room.booking_id, userId);
+      await action(room.booking_id, userId);
       await refresh();
-    } catch (joinError) {
-      setError(joinError.message);
+    } catch (actionError) {
+      setError(actionError.message);
     } finally {
       setBusyId("");
     }
   };
+  const join = (room) => runRoomAction(room, joinRoomBooking);
+  const cancel = (room) => runRoomAction(room, cancelRoomBooking);
+  const withdraw = (room) => runRoomAction(room, withdrawRoomBooking);
 
   return (
     <div className="room-booking-page">
-      {view === "create" ? <CreateBooking userId={userId} accountRole={accountRole} isAdmin={isAdmin} onBack={() => setView("list")} onCreated={async () => { await refresh(); setView("list"); }} /> : <>
+      {view === "create" ? <CreateBooking key={editingRoom?.booking_id || "new"} userId={userId} accountRole={accountRole} isAdmin={isAdmin} editing={editingRoom} onBack={() => { setEditingRoom(null); setView("list"); }} onCreated={async () => { await refresh(); setEditingRoom(null); setView("list"); }} /> : <>
         <header className="room-booking-header">
           <div className="room-booking-title-wrap"><span className="room-booking-emblem"><CalendarClock size={25} /></span><div><span className="booking-eyebrow">TRACEN · RACE DESK</span><h2>ห้องแข่งขัน</h2><p>ตารางห้องนัดหมายและห้องที่กำลังเปิดใน Discord</p></div></div>
           <div className="room-booking-header-actions"><button className="booking-refresh" type="button" onClick={refresh} aria-label="รีเฟรชรายการ"><RefreshCw size={17} /></button>{(isAdmin || accountRole === "trainer") && <button className="booking-create-button" type="button" onClick={() => setView("create")}><Plus size={18} /> สร้างห้อง</button>}</div>
         </header>
         <div className="room-booking-summary"><span><i /> แสดงเวลาไทย (UTC+7)</span><span>{rooms.length} ห้องในรายการ</span>{username && <span>เข้าสู่ระบบในชื่อ {username}</span>}</div>
         {error && <div className="booking-error-banner" role="alert">{error}</div>}
-        {loading ? <div className="booking-loading">กำลังโหลดรายการห้อง…</div> : rooms.length ? <div className="booking-room-list">{rooms.map((room) => <RoomCard key={room.booking_id} room={room} userId={userId} isAdmin={isAdmin} onJoin={join} busyId={busyId} />)}</div> : <div className="booking-empty"><span><CalendarClock size={28} /></span><h3>ยังไม่มีห้องที่กำลังเปิดจอง</h3><p>{accountRole === "trainer" ? "สร้างห้องใหม่ แล้วกำหนดเวลาที่ต้องการให้เปิดใน Discord" : "เมื่อ Trainer เปิดห้องใหม่ รายการจะแสดงที่นี่"}</p>{(isAdmin || accountRole === "trainer") && <button type="button" onClick={() => setView("create")}><Plus size={17} /> สร้างห้องแรก</button>}</div>}
+        {loading ? <div className="booking-loading">กำลังโหลดรายการห้อง…</div> : rooms.length ? <div className="booking-room-list">{rooms.map((room) => <RoomCard key={room.booking_id} room={room} userId={userId} isAdmin={isAdmin} onJoin={join} onEdit={(target) => { setEditingRoom(target); setView("create"); }} onCancel={cancel} onWithdraw={withdraw} busyId={busyId} />)}</div> : <div className="booking-empty"><span><CalendarClock size={28} /></span><h3>ยังไม่มีห้องที่กำลังเปิดจอง</h3><p>{accountRole === "trainer" ? "สร้างห้องใหม่ แล้วกำหนดเวลาที่ต้องการให้เปิดใน Discord" : "เมื่อ Trainer เปิดห้องใหม่ รายการจะแสดงที่นี่"}</p>{(isAdmin || accountRole === "trainer") && <button type="button" onClick={() => setView("create")}><Plus size={17} /> สร้างห้องแรก</button>}</div>}
       </>}
     </div>
   );
