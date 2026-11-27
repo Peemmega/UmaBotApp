@@ -43,6 +43,8 @@ ns = {'MAX_SPEED_PHASE': caps, 'is_wet_lane': lambda *_: False}
 import math
 ns['math'] = math
 ns['get_phase_from_turn'] = pure_function('utils/race/race_dice.py', 'get_phase_from_turn', ns)
+ns['ACCELERATION_BASE'] = literal('utils/game/progression.py', 'ACCELERATION_BASE')
+ns['acceleration_power_factor'] = pure_function('utils/game/progression.py', 'acceleration_power_factor', ns)
 accelerate = pure_function('utils/game/progression.py', 'incrase_speed_by_acceleration', ns)
 scales = {}
 for style in caps:
